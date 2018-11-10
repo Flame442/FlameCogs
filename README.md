@@ -23,7 +23,7 @@ Images have to be attatched to the command, links do NOT work!
 
 `[p]deepfry <amount>`
 
-Deepfries the attatched image by the <amount> provided.
+Deepfries the attatched image by the amount provided.
 
 `[p]nuke`
 
