@@ -14,6 +14,10 @@ Add this repo using
 Then, install each cog individually with
 
 `[p]cog install flamecogs <cog name>`
+
+And load each cog with
+
+`[p]load <cog name>`
 # Cogs
 
 ## Deepfry
