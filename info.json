@@ -3,7 +3,7 @@
     "install_msg" : "Thanks for installing my cogs!",
     "name" : "FlameCogs",
     "short" : "Various random cogs",
-    "requirements" : ["pillow", "requests", "io", "re"],
+    "requirements" : ["pillow", "requests", "io"],
     "description" : "A mixture of board games and random things packed together",
     "tags" : ["Games", "Fun"]
 }
