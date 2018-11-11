@@ -97,15 +97,17 @@ class Hangman(commands.Cog):
 			try:
 				t = await self.bot.wait_for('message', check=check, timeout=60)
 			except:
-				raise
 				return await ctx.send("Canceling selection. You took too long.")
 			t = t.content[0].lower()
-			if t not in word:
-				fails += 1
-				if fails == 6: #too many fails
-					await ctx.send('```'+self.man[6]+'```\nGame Over\nThe word was '+word)
+			if t in guessed:
+				await ctx.send('You already guessed that letter')
+			else:
+				if t not in word:
+					fails += 1
+					if fails == 6: #too many fails
+						await ctx.send('```'+self.man[6]+'```\nGame Over\nThe word was '+word)
+						end = 1
+				guessed += t
+				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
+					await ctx.send('```'+self.man[fails]+'```\nYou win!\nThe word was '+word)
 					end = 1
-			guessed += t
-			if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
-				await ctx.send('```'+self.man[fails]+'```\nYou win!\nThe word was '+word)
-				end = 1
