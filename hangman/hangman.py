@@ -1,6 +1,5 @@
 import discord
 from redbot.core import commands
-import os
 from random import randint
 from redbot.core.data_manager import bundled_data_path
 
