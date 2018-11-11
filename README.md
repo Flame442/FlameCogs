@@ -29,12 +29,6 @@ Deepfries the attatched image by the `amount` provided.
 
 Nukes the attatched image
 
-## WordStats
-This cog tracks the most commonly written words in any server the bot is in.
-### Usage
-`[p]wordstats <user>`
-
-Shows the top 30 words said in any server the bot is in. Using the optional `user` argument will only show words said by that user.
 # Contact
 Feel free to create an issue on this repository for any bugs you find. 
 # Credit
