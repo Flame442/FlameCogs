@@ -2,6 +2,7 @@ import discord
 from redbot.core import commands
 import os
 from random import randint
+from redbot.core.data_manager import bundled_data_path
 
 class Hangman(commands.Cog):
 	"""Play hangman with the bot"""
@@ -105,9 +106,14 @@ class Hangman(commands.Cog):
 				if t not in word:
 					fails += 1
 					if fails == 6: #too many fails
-						await ctx.send('```'+self.man[6]+'```\nGame Over\nThe word was '+word)
+						await ctx.send('```'+self.man[6]+'```Game Over\nThe word was '+word)
 						end = 1
 				guessed += t
 				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
-					await ctx.send('```'+self.man[fails]+'```\nYou win!\nThe word was '+word)
+					await ctx.send('```'+self.man[fails]+'```You win!\nThe word was '+word)
 					end = 1
+
+	@commands.command()
+	async def htest(self, ctx):
+		fp = bundled_data_path(self) / 'words.txt'
+		await ctx.send(fp)
