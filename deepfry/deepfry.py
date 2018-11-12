@@ -4,7 +4,7 @@ from PIL import Image, ImageEnhance
 from random import randint
 import requests
 from io import BytesIO
-
+from redbot.core.data_manager import cog_data_path
 
 
 class Deepfry(commands.Cog):
@@ -12,7 +12,6 @@ class Deepfry(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.f = 0
-		self.savelocation = 'temp.jpg'
 
 	@commands.command()
 	async def deepfry(self, ctx, amount: float=0):
@@ -42,8 +41,8 @@ class Deepfry(commands.Cog):
 		img = e.enhance(1.5)
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance((amount*99)+1)	
-		img.save(self.savelocation)
-		await ctx.send(file=discord.File(self.savelocation))
+		img.save(cog_data_path(self))+'\\temp.jpg')
+		await ctx.send(file=discord.File(cog_data_path(self))+'\\temp.jpg'))
 		
 	@commands.command()
 	async def nuke(self, ctx):
@@ -78,8 +77,8 @@ class Deepfry(commands.Cog):
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance(100)
 		img = img.resize((w,h),Image.BILINEAR)
-		img.save(self.savelocation, quality=1)
-		await ctx.send(file=discord.File(self.savelocation))
+		img.save(str(cog_data_path(self))+'\\temp.jpg', quality=1)
+		await ctx.send(file=discord.File(cog_data_path(self))+'\\temp.jpg'))
 		
 	async def run(self, t):
 		"""Passively deepfries random images"""
@@ -112,8 +111,8 @@ class Deepfry(commands.Cog):
 					img = e.enhance(1.5)
 					e = ImageEnhance.Sharpness(img)
 					img = e.enhance((self.f*99)+1)
-					img.save(self.savelocation, quality=10)
-					await t.channel.send(file=discord.File(self.savelocation))
+					img.save(cog_data_path(self))+'\\temp.jpg', quality=10)
+					await t.channel.send(file=discord.File(cog_data_path(self))+'\\temp.jpg'))
 					self.f = 0
 				else:
 					self.f += 0.07
