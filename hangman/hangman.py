@@ -64,16 +64,16 @@ class Hangman(commands.Cog):
    |  / \  \n\
    |       \n\
    ']
-		fp = bundled_data_path(self) / 'words.txt'
-		x = open(fp) #default wordlist
-		self.wordlist = []
-		for line in x:
-			self.wordlist.append(line.strip().lower())
 
 	@commands.command()
 	async def hangman(self, ctx):
 		"""Play hangman with the bot"""
-		word = self.wordlist[randint(0,len(self.wordlist))] #pick and format random word
+		fp = bundled_data_path(self) / 'words.txt'
+		x = open(fp) #default wordlist
+		wordlist = []
+		for line in x:
+			wordlist.append(line.strip().lower())
+		word = wordlist[randint(0,len(wordlist))] #pick and format random word
 		guessed = ''
 		fails = 0
 		end = 0
