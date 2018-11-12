@@ -3,7 +3,7 @@
     "install_msg" : "Thanks for installing deepfry. Use `[p]deepfry` or `[p]nuke`.",
     "name" : "Deepfry",
     "short" : "Deepfry or nuke images",
-    "requirements" : ["Pillow"],
+    "requirements" : ["pillow"],
     "description" : "Deepfry or nuke images passively and actively",
     "permissions" : ["Manage Messages", "Embed Links"],
     "tags" : ["Fun"],
