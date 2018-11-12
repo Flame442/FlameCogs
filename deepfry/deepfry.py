@@ -91,7 +91,7 @@ class Deepfry(commands.Cog):
 				l = randint(1,10)
 				if l == 4:
 					async with aiohttp.ClientSession() as session:
-						async with session.get(ctx.message.attachments[0].url) as response:
+						async with session.get(t.attachments[0].url) as response:
 							r = await response.read()
 							img = Image.open(BytesIO(r))
 					e = ImageEnhance.Sharpness(img)
