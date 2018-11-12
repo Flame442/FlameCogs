@@ -1,8 +1,8 @@
 import discord
+import aiohttp
 from redbot.core import commands
 from PIL import Image, ImageEnhance
 from random import randint
-import requests
 from io import BytesIO
 from redbot.core.data_manager import cog_data_path
 
@@ -16,8 +16,10 @@ class Deepfry(commands.Cog):
 	@commands.command()
 	async def deepfry(self, ctx, amount: float=0):
 		"""Deepfries images"""
-		response = requests.get(ctx.message.attachments[0].url)
-		img = Image.open(BytesIO(response.content))
+		async with aiohttp.ClientSession() as session:
+			async with session.get(ctx.message.attachments[0].url) as response:
+				r = await response.read()
+				img = Image.open(BytesIO(r))
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance(100)
 		e = ImageEnhance.Contrast(img)
@@ -47,8 +49,10 @@ class Deepfry(commands.Cog):
 	@commands.command()
 	async def nuke(self, ctx):
 		"""Demolishes images"""
-		response = requests.get(ctx.message.attachments[0].url)
-		img = Image.open(BytesIO(response.content))
+		async with aiohttp.ClientSession() as session:
+			async with session.get(ctx.message.attachments[0].url) as response:
+				r = await response.read()
+				img = Image.open(BytesIO(r))
 		w, h = img.size[0], img.size[1]
 		dx = ((w+200)//200)*2
 		dy = ((h+200)//200)*2
@@ -86,8 +90,10 @@ class Deepfry(commands.Cog):
 			if t.attachments != [] and t.content.find('!deepfry') == -1 and t.content.find('!nuke') == -1:
 				l = randint(1,10)
 				if l == 4:
-					response = requests.get(t.attachments[0].url)
-					img = Image.open(BytesIO(response.content))
+					async with aiohttp.ClientSession() as session:
+						async with session.get(ctx.message.attachments[0].url) as response:
+							r = await response.read()
+							img = Image.open(BytesIO(r))
 					e = ImageEnhance.Sharpness(img)
 					img = e.enhance(100)
 					e = ImageEnhance.Contrast(img)
