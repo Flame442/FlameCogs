@@ -1,3 +1,4 @@
+from redbot.core import data_manager
 from .monopoly import Monopoly
 
 def setup(bot):
