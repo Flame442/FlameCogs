@@ -44,7 +44,13 @@ This cog will play hangman with you.
 `[p]hangman`
 
 Begin a game of hangman.
+## Monopoly
+This cog will let you play monopoly with up to 7 other people in your server.
+### Usage
+`[p]monopoly`
+
+Begin a game of monopoly.
 # Contact
-Feel free to create an issue on this repository for any bugs you find. 
+Feel free to create an issue on this repository for any bugs you find.
 # Credit
 Thanks to the creators of Redbot for creating the base these cogs run on and the helpful support staff at the Redbot [discord](https://discord.gg/red).
