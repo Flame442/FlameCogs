@@ -47,9 +47,11 @@ Begin a game of hangman.
 ## Monopoly
 This cog will let you play monopoly with up to 7 other people in your server.
 ### Usage
-`[p]monopoly`
+`[p]monopoly [save name]`
 
-Begin a game of monopoly.
+Begin a game of monopoly. 
+
+Use the optional paramater `save name` to load a saved game.
 # Contact
 Feel free to create an issue on this repository for any bugs you find.
 # Credit
