@@ -4,7 +4,7 @@ from random import randint, shuffle
 from PIL import Image
 from redbot.core.data_manager import cog_data_path
 from redbot.core.data_manager import bundled_data_path
-import asyncio
+import asyncio, os
 
 
 class Monopoly(commands.Cog):
@@ -14,47 +14,83 @@ class Monopoly(commands.Cog):
 
 	@commands.guild_only()
 	@commands.command()
-	async def monopoly(self, ctx):
+	async def monopoly(self, ctx, savefile: str=None):
 		"""A fun game of monopoly for 2-8 people"""
 		try:
 			channel = ctx.message.channel
-			id = [None, ctx.message.author]
-			name = [None, str(ctx.message.author)[:-5]] #name of each player
-			await ctx.send('Welcome to Monopoly. How many players?')
-			i = 0
-			while i == 0:
-				try:
-					num = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author == id[1] and m.channel == channel)
-					num = int(num.content)
-					if num < 2 or num > 8: #2-8 player game
+			global injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn,p,num,numalive,id,name
+			if savefile != None:
+				hold = []
+				for x in os.listdir(cog_data_path(self)):
+					if x[-4:] == '.txt':
+						hold.append(x[:-4])
+				if savefile in hold:
+					cfgdict = {}
+					await ctx.send('Using save file '+savefile)
+					with open(str(cog_data_path(self))+'\\'+savefile+'.txt') as f:
+						for line in f:
+							line = line.strip()
+							if not line or line.startswith("#"):
+								continue
+							try:
+								key, value = line.split("=") #split to variable and value
+							except ValueError:
+								await ctx.send("Bad line in save file "+savefile+':\n'+line)
+								continue
+							key, value = key.strip(), value.strip()
+							if value in ["True", "False", "None", "''", '""']:
+								value = eval(value) #turn to bool
+							else:
+								try:
+									value = int(value) #turn to int
+								except ValueError:
+									pass #value need not be converted
+							cfgdict[key] = value #put in dictionary
+						injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn,p,num,numalive,id,name = cfgdict['injail'],cfgdict['tile'],cfgdict['bal'],cfgdict['ownedby'],cfgdict['numhouse'],cfgdict['ismortgaged'],cfgdict['goojf'],cfgdict['alive'],cfgdict['jailturn'],cfgdict['p'],cfgdict['num'],cfgdict['numalive'],cfgdict['id'],cfgdict['name']
+				elif hold != []:
+					holdlist = ''
+					for x in hold:
+						holdlist += x+'\n'
+					return await ctx.send('That file does not exist.\nAvailable save files:\n```'+holdlist+'```')
+				else:
+					return await ctx.send('You have no save files.')
+			else:
+				id = [None, ctx.message.author]
+				name = [None, str(ctx.message.author)[:-5]] #name of each player
+				await ctx.send('Welcome to Monopoly. How many players?')
+				i = 0
+				while i == 0:
+					try:
+						num = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author == id[1] and m.channel == channel)
+						num = int(num.content)
+						if num < 2 or num > 8: #2-8 player game
+							await ctx.send('Please select a number between 2 and 8')
+						else:
+							numalive = num #set number of players still in the game for later
+							i = 1 #leave loop
+							hold = 1
+					except: #not a number
 						await ctx.send('Please select a number between 2 and 8')
-					else:
-						global numalive
-						numalive = num #set number of players still in the game for later
-						i = 1 #leave loop
-						hold = 1
-				except: #not a number
-					await ctx.send('Please select a number between 2 and 8')
-			if hold == 1: #unindent everything to remove test case
-				for a in range(2,num+1):
-					check = lambda m: m.author not in id and m.author.bot == False
-					await ctx.send('Player '+str(a)+', say I')
-					r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author not in id and m.author.bot == False and m.channel == channel)
-					name.append(str(r.author)[:-5])
-					id.append(r.author)
-
-			#LETS DEFINE SOME VARIABLES!!!
-			global injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn
-			injail = [-1, False, False, False, False, False, False, False, False]
-			tile = [-1, 0, 0, 0, 0, 0, 0, 0, 0]
-			bal = [-1, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500]
-			ownedby = [-1, 0, -1, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, -1, 0]
-			numhouse = [-1, 0, -1, 0, -1, -1, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, -1, -1, 0, -1, 0]
-			ismortgaged = [-1, 0, -1, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, -1, 0]
-			goojf = [-1, 0, 0, 0, 0, 0, 0, 0, 0]
-			alive = [-1, True, True, True, True, True, True, True, True]
-			jailturn = [-1, -1, -1, -1, -1, -1, -1, -1, -1]
-			tilename = ['Go', 'Mediterranean Avenue', 'Community Chest', 'Baltic Avenue', 'Income Tax', 'Reading Rainbow', 'Oriental Avenue', 'Chance', 'Vermont Avenue', 'Connecticut Avenue', 'Jail', 'St. Charles Place', 'Electric Company', 'States Avenue', 'States Avenue', 'Pennsylvania Railroad', 'St. James Place', 'Community Chest', 'Tennessee Avenue', 'New York Avenue', 'Free Parking', 'Kentucky Avenue', 'Chance', 'Indiana Avenue', 'Illinois Avenue', 'B&O Railroad', 'Atlantic Avenue', 'Ventnor Avenue', 'Water Works', 'Marvin Gardens', 'Go To Jail', 'Pacific Avenue', 'North Carolina Avenue', 'Community Chest', 'Pennsylvania Avenue', 'Short Line', 'Chance', 'Park Place', 'Luxury Tax', 'Boardwalk']
+				if hold == 1: #unindent everything to remove test case
+					for a in range(2,num+1):
+						check = lambda m: m.author not in id and m.author.bot == False
+						await ctx.send('Player '+str(a)+', say I')
+						r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author not in id and m.author.bot == False and m.channel == channel)
+						name.append(str(r.author)[:-5])
+						id.append(r.author)
+				#LETS DEFINE SOME VARIABLES!!!
+				p = 1
+				injail = [-1, False, False, False, False, False, False, False, False]
+				tile = [-1, 0, 0, 0, 0, 0, 0, 0, 0]
+				bal = [-1, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500]
+				ownedby = [-1, 0, -1, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, -1, 0]
+				numhouse = [-1, 0, -1, 0, -1, -1, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, -1, -1, 0, -1, 0]
+				ismortgaged = [-1, 0, -1, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, -1, 0]
+				goojf = [-1, 0, 0, 0, 0, 0, 0, 0, 0]
+				alive = [-1, True, True, True, True, True, True, True, True]
+				jailturn = [-1, -1, -1, -1, -1, -1, -1, -1, -1]
+				tilename = ['Go', 'Mediterranean Avenue', 'Community Chest', 'Baltic Avenue', 'Income Tax', 'Reading Rainbow', 'Oriental Avenue', 'Chance', 'Vermont Avenue', 'Connecticut Avenue', 'Jail', 'St. Charles Place', 'Electric Company', 'States Avenue', 'States Avenue', 'Pennsylvania Railroad', 'St. James Place', 'Community Chest', 'Tennessee Avenue', 'New York Avenue', 'Free Parking', 'Kentucky Avenue', 'Chance', 'Indiana Avenue', 'Illinois Avenue', 'B&O Railroad', 'Atlantic Avenue', 'Ventnor Avenue', 'Water Works', 'Marvin Gardens', 'Go To Jail', 'Pacific Avenue', 'North Carolina Avenue', 'Community Chest', 'Pennsylvania Avenue', 'Short Line', 'Chance', 'Park Place', 'Luxury Tax', 'Boardwalk']
+			
 			pricebuy = [-1, 60, -1, 60, -1, 200, 100, -1, 100, 120, -1, 140, 150, 140, 160, 200, 180, -1, 180, 200, -1, 220, -1, 220, 240, 200, 260, 260, 150, 280, -1, 300, 300, -1, 320, 200, -1, 350, -1, 400]
 			rentprice = [-1, -1, -1, -1, -1, -1, 2, 10, 30, 90, 160, 250, -1, -1, -1, -1, -1, -1, 4, 20, 60, 180, 360, 450, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 6, 30, 90, 270, 400, 550, -1, -1, -1, -1, -1, -1, 6, 30, 90, 270, 400, 550, 8, 40, 100, 300, 450, 600, -1, -1, -1, -1, -1, -1, 10, 50, 150, 450, 625, 750, -1, -1, -1, -1, -1, -1, 10, 50, 150, 450, 625, 750, 12, 60, 180, 500, 700, 900, -1, -1, -1, -1, -1, -1, 14, 70, 200, 550, 750, 950, -1, -1, -1, -1, -1, -1, 14, 70, 200, 550, 750, 950, 16, 80, 220, 600, 800, 1000, -1, -1, -1, -1, -1, -1, 18, 90, 250, 700, 875, 1050, -1, -1, -1, -1, -1, -1, 10, 90, 250, 700, 875, 1050, 20, 100, 300, 750, 925, 1100, -1, -1, -1, -1, -1, -1, 22, 110, 330, 800, 975, 1150, 22, 110, 330, 800, 975, 1150, -1, -1, -1, -1, -1, -1, 22, 120, 360, 850, 1025, 1200, -1, -1, -1, -1, -1, -1, 26, 130, 390, 900, 1100, 1275, 26, 130, 390, 900, 1100, 1275, -1, -1, -1, -1, -1, -1, 28, 150, 450, 1000, 1200, 1400, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 35, 175, 500, 1100, 1300, 1500, -1, -1, -1, -1, -1, -1, 50, 200, 600, 1400, 1700, 2000]
 			rrprice = [0, 25, 50, 100, 200]
@@ -1162,8 +1198,10 @@ class Monopoly(commands.Cog):
 							elif choice == 'h': #manage houses
 								await house()
 							elif choice == 's': #print game save message
-								global autosave
-								await ctx.send('Copy the following, put it in a text file called "save.txt", and relaunch monopoly.py to restart from here.\n\n```'+autosave+'```\n')
+								await ctx.send('Save file name?')
+								savename = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author == id[p] and m.channel == channel)
+								with open(str(cog_data_path(self))+'\\'+savename+'.txt','w') as f:
+									f.write(autosave)
 				r = 1
 				while r == 1 and alive[p]:
 					await ctx.send('Type t to trade, m to mortgage, h to manage houses, or d when done.')
@@ -1195,23 +1233,18 @@ class Monopoly(commands.Cog):
 				await ctx.send('```'+hold.strip()+'```')
 
 			#start of run code
-			global p
-			p = 1
 			while numalive >= 2:
 				if p > num:
 					p = 1
 				if alive[p]:
-					autosave = ('name = '+str(name)+'\ntilename = '+str(tilename)+'\ninjail = '+str(injail)+'\ntile = '+str(tile)+'\nbal = '+str(bal)+'\np = '+str(p)+'\nownedby = '+str(ownedby)+'\nnumhouse = '+str(numhouse)+'\nismortgaged = '+str(ismortgaged)+'\ngoojf = '+str(goojf)+'\nalive = '+str(alive)+'\njailturn ='+str(jailturn))
+					autosave = ('name = '+str(name)+'\ntilename = '+str(tilename)+'\ninjail = '+str(injail)+'\ntile = '+str(tile)+'\nbal = '+str(bal)+'\np = '+str(p)+'\nownedby = '+str(ownedby)+'\nnumhouse = '+str(numhouse)+'\nismortgaged = '+str(ismortgaged)+'\ngoojf = '+str(goojf)+'\nalive = '+str(alive)+'\njailturn = '+str(jailturn)+'\nnum = '+str(num)+'\nnumalive = '+str(numalive)+'\nid = '+str(id)+'\nname = '+str(name))
 					await turn()
 				p += 1
 			for o in range(1,num+1):
 				if alive[o]:
 					await ctx.send(name[o]+' wins!')
-			await ctx.send('\nDebug information\n')
-			await debug()
-			await ctx.send('\nSave information\n\n'+autosave)
 		except asyncio.TimeoutError:
-			await ctx.send('You took too long, shutting down.\nSave info:\n'+autosave)
+			await ctx.send('You took too long, shutting down.\nSave info:\n```'+autosave+'```')
 		except:
-			await ctx.send('A fatal error has occurred, shutting down.\nSave info:\n'+autosave)
+			await ctx.send('A fatal error has occurred, shutting down.\nSave info:\n```'+autosave+'```')
 			raise
