@@ -43,12 +43,11 @@ class Monopoly(commands.Cog):
 							value = eval(value)
 						cfgdict[key] = value #put in dictionary
 					injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn,p,num,numalive,id,name,tilename = cfgdict['injail'],cfgdict['tile'],cfgdict['bal'],cfgdict['ownedby'],cfgdict['numhouse'],cfgdict['ismortgaged'],cfgdict['goojf'],cfgdict['alive'],cfgdict['jailturn'],cfgdict['p'],cfgdict['num'],cfgdict['numalive'],cfgdict['id'],cfgdict['name'],cfgdict['tilename']
-					
 			elif hold != []:
 				holdlist = ''
 				for x in hold:
 					holdlist += x+'\n'
-				return await ctx.send('That file does not exist.\nAvailable save files:\n```'+holdlist+'```')
+				return await ctx.send('That file does not exist.\nAvailable save files:\n`'+holdlist.strip()+'`')
 			else:
 				return await ctx.send('You have no save files.')
 		else:
@@ -65,6 +64,8 @@ class Monopoly(commands.Cog):
 					else:
 						numalive = num #set number of players still in the game for later
 						i = 1 #leave loop
+				except asyncio.TimeoutError:
+					return await ctx.send('You took too long to respond')
 				except: #not a number
 					await ctx.send('Please select a number between 2 and 8')
 			for a in range(2,num+1):
@@ -1197,6 +1198,8 @@ class Monopoly(commands.Cog):
 								savename = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 								with open(str(cog_data_path(self))+'\\'+savename.content+'.txt','w') as f:
 									f.write(autosave)
+									global numalive
+									numalive = 0
 									return await ctx.send('Saved')
 									
 				r = 1
@@ -1217,16 +1220,16 @@ class Monopoly(commands.Cog):
 
 			async def debug(): #print debug info
 				a = 0
-				hold = 'id price owner ism mprice numh hprice name'
+				hold = 'id price owner ism mprice numh hprice name\n'
 				while a < 20:
 					hold += '{:2d} {:5d} {:5d} {:3d} {:6d} {:4d} {:6d} {}'.format(a,pricebuy[a],ownedby[a],ismortgaged[a],mortgageprice[a],numhouse[a],houseprice[a],tilename[a])+'\n'
 					a += 1
-				hold += str(bal[1:])
 				await ctx.send('```'+hold.strip()+'```')
-				hold = 'id price owner ism mprice numh hprice name'
+				hold = 'id price owner ism mprice numh hprice name\n'
 				while a < 40:
 					hold += '{:2d} {:5d} {:5d} {:3d} {:6d} {:4d} {:6d} {}'.format(a,pricebuy[a],ownedby[a],ismortgaged[a],mortgageprice[a],numhouse[a],houseprice[a],tilename[a])+'\n'
 					a += 1
+				hold += str(bal[1:])
 				await ctx.send('```'+hold.strip()+'```')
 
 			#start of run code
@@ -1237,9 +1240,10 @@ class Monopoly(commands.Cog):
 					autosave = ('name = '+str(name)+'\ntilename = '+str(tilename)+'\ninjail = '+str(injail)+'\ntile = '+str(tile)+'\nbal = '+str(bal)+'\np = '+str(p)+'\nownedby = '+str(ownedby)+'\nnumhouse = '+str(numhouse)+'\nismortgaged = '+str(ismortgaged)+'\ngoojf = '+str(goojf)+'\nalive = '+str(alive)+'\njailturn = '+str(jailturn)+'\nnum = '+str(num)+'\nnumalive = '+str(numalive)+'\nid = '+str(id))
 					await turn()
 				p += 1
-			for o in range(1,num+1):
-				if alive[o]:
-					await ctx.send(name[o]+' wins!')
+			if numalive == 1:
+				for o in range(1,num+1):
+					if alive[o]:
+						await ctx.send(name[o]+' wins!')
 		except asyncio.TimeoutError:
 			await ctx.send('You took too long, shutting down.\nSave info:\n```'+autosave+'```')
 		except:
