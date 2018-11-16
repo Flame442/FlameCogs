@@ -8,7 +8,7 @@ class Hangman(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.man = ['\
-	___    \n\
+    ___    \n\
    |   |   \n\
    |   O   \n\
    |       \n\
@@ -16,7 +16,7 @@ class Hangman(commands.Cog):
    |       \n\
    |       \n\
   ','\
-	___    \n\
+    ___    \n\
    |   |   \n\
    |   O   \n\
    |   |   \n\
@@ -24,7 +24,7 @@ class Hangman(commands.Cog):
    |       \n\
    |       \n\
   ','\
-	___    \n\
+    ___    \n\
    |   |   \n\
    |   O   \n\
    |  \|   \n\
@@ -32,7 +32,7 @@ class Hangman(commands.Cog):
    |       \n\
    |       \n\
   ','\
-	___    \n\
+    ___    \n\
    |   |   \n\
    |   O   \n\
    |  \|/  \n\
@@ -40,7 +40,7 @@ class Hangman(commands.Cog):
    |       \n\
    |       \n\
    ','\
-	___    \n\
+    ___    \n\
    |   |   \n\
    |   O   \n\
    |  \|/  \n\
@@ -48,7 +48,7 @@ class Hangman(commands.Cog):
    |  /    \n\
    |       \n\
    ','\
-	___    \n\
+    ___    \n\
    |   |   \n\
    |   O   \n\
    |  \|/  \n\
@@ -56,7 +56,7 @@ class Hangman(commands.Cog):
    |  / \  \n\
    |       \n\
    ','\
-	___    \n\
+    ___    \n\
    |   |   \n\
    |   X   \n\
    |  \|/  \n\
@@ -93,11 +93,11 @@ class Hangman(commands.Cog):
 					p += l
 			p += ")"
 			check = lambda m: m.channel == starter.channel and m.author == starter.author
-			await ctx.send("```"+self.man[fails]+"\n"+p+"```Guess:")
+			await ctx.send("```"+self.man[fails]+'\n'+p+'```Guess:')
 			try:
 				t = await self.bot.wait_for('message', check=check, timeout=60)
 			except:
-				return await ctx.send("Canceling selection. You took too long.")
+				return await ctx.send('Canceling selection. You took too long.\nThe word was '+word)
 			t = t.content[0].lower()
 			if t in guessed:
 				await ctx.send('You already guessed that letter')
