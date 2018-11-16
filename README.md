@@ -38,6 +38,13 @@ Deepfries the attatched image by the `amount` provided.
 `[p]nuke`
 
 Nukes the attatched image
+
+`[p]deepfryset`
+
+Change the rate images are automatically deepfried.
+Images will have a 1/`<value>` chance to be deepfried.
+Higher values cause less often fries.
+Set to `0` to disable.
 ## Hangman
 This cog will play hangman with you.
 ### Usage
@@ -47,11 +54,11 @@ Begin a game of hangman.
 ## Monopoly
 This cog will let you play monopoly with up to 7 other people in your server.
 ### Usage
-`[p]monopoly [save name]`
+`[p]monopoly [savename]`
 
 Begin a game of monopoly. 
 
-Use the optional paramater `save name` to load a saved game.
+Use the optional paramater `savename` to load a saved game.
 # Contact
 Feel free to create an issue on this repository for any bugs you find.
 # Credit
