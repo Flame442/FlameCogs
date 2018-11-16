@@ -111,8 +111,3 @@ class Hangman(commands.Cog):
 				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
 					await ctx.send('```'+self.man[fails]+'```You win!\nThe word was '+word)
 					end = 1
-
-	@commands.command()
-	async def htest(self, ctx):
-		fp = bundled_data_path(self) / 'words.txt'
-		await ctx.send(fp)
