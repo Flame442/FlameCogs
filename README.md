@@ -27,11 +27,11 @@ This cog will let you play battleship against another member of your server.
 
 Begin a game of battleship.
 ## Deepfry
-This cog lets you deepfry and nuke images. It has a 1/10 chance to deepfry any image posted automaticly and users can choose to deepfry or nuke images. 
+This cog lets you deepfry and nuke images. It has a configurable chance to deepfry any image posted automaticly and users can choose to deepfry or nuke images. 
 
 Images have to be attatched to the command, links do NOT work!
 ### Usage
-`[p]deepfry <amount>`
+`[p]deepfry [amount]`
 
 Deepfries the attatched image by the `amount` provided.
 
@@ -39,7 +39,7 @@ Deepfries the attatched image by the `amount` provided.
 
 Nukes the attatched image
 
-`[p]deepfryset`
+`[p]deepfryset <value>`
 
 Change the rate images are automatically deepfried.
 Images will have a 1/`<value>` chance to be deepfried.
