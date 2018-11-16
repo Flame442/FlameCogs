@@ -59,6 +59,13 @@ This cog will let you play monopoly with up to 7 other people in your server.
 Begin a game of monopoly. 
 
 Use the optional paramater `savename` to load a saved game.
+# Planned changes
+
+**[Battleship]** Make placing ships eaisier to understand
+
+**[Hangman]** Allow user wordlists to be used
+
+**[Monopoly]** Add config for various house rules (auctions, free parking, landing on go, etc)
 # Contact
 Feel free to create an issue on this repository for any bugs you find.
 # Credit
