@@ -5,17 +5,22 @@ from PIL import Image, ImageEnhance
 from random import randint
 from io import BytesIO
 from redbot.core.data_manager import cog_data_path
+from redbot.core import Config
 
 
 class Deepfry(commands.Cog):
-	"""Deepfries memes"""
+	"""Deepfries memes."""
 	def __init__(self, bot):
 		self.bot = bot
 		self.f = 0
-
+		self.config = Config.get_conf(self, identifier=7345167900)
+		self.config.register_guild(
+			chance = 0
+		)
+		
 	@commands.command()
 	async def deepfry(self, ctx, amount: float=0):
-		"""Deepfries images"""
+		"""Deepfries images."""
 		async with aiohttp.ClientSession() as session:
 			async with session.get(ctx.message.attachments[0].url) as response:
 				r = await response.read()
@@ -48,7 +53,7 @@ class Deepfry(commands.Cog):
 		
 	@commands.command()
 	async def nuke(self, ctx):
-		"""Demolishes images"""
+		"""Demolishes images."""
 		async with aiohttp.ClientSession() as session:
 			async with session.get(ctx.message.attachments[0].url) as response:
 				r = await response.read()
@@ -83,13 +88,25 @@ class Deepfry(commands.Cog):
 		img = img.resize((w,h),Image.BILINEAR)
 		img.save(str(cog_data_path(self))+'\\temp.jpg', quality=1)
 		await ctx.send(file=discord.File(str(cog_data_path(self))+'\\temp.jpg'))
+	
+	@commands.command()
+	async def deepfryset(self, ctx, value: int):
+		"""
+		Change the rate images are automatically deepfried.
+		Images will have a 1/<value> chance to be deepfried.
+		Higher values cause less often fries.
+		Set to 0 to disable.
+		"""
+		await self.config.guild(ctx.guild).chance.set(value)
+		await ctx.send('1 out of every '+str(value)+' images will be fried.')
 		
 	async def run(self, t):
-		"""Passively deepfries random images"""
+		"""Passively deepfries random images."""
 		if t.author.id != self.bot.user.id:
-			if t.attachments != [] and t.content.find('!deepfry') == -1 and t.content.find('!nuke') == -1:
-				l = randint(1,10)
-				if l == 4:
+			v = await self.config.guild(t.guild).chance()
+			if t.attachments != [] and t.content.find('!deepfry') == -1 and t.content.find('!nuke') == -1 and v != 0:
+				l = randint(1,v)
+				if l == 1:
 					async with aiohttp.ClientSession() as session:
 						async with session.get(t.attachments[0].url) as response:
 							r = await response.read()
