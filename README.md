@@ -71,6 +71,8 @@ Use the optional paramater `savename` to load a saved game.
 
 **[Battleship]** Fix timeout loops
 
+**[Deepfry]** Fix crash when trying to deepfry mp4's and other unsupported filetypes
+
 **[Hangman]** Allow user wordlists to be used
 
 **[Monopoly]** Add config for various house rules (auctions, free parking, landing on go, etc)
