@@ -90,15 +90,26 @@ class Deepfry(commands.Cog):
 		await ctx.send(file=discord.File(str(cog_data_path(self))+'\\temp.jpg'))
 	
 	@commands.command()
-	async def deepfryset(self, ctx, value: int):
+	async def deepfryset(self, ctx, value: int=None):
 		"""
 		Change the rate images are automatically deepfried.
 		Images will have a 1/<value> chance to be deepfried.
 		Higher values cause less often fries.
 		Set to 0 to disable.
+		This value is server based.
 		"""
-		await self.config.guild(ctx.guild).chance.set(value)
-		await ctx.send('1 out of every '+str(value)+' images will be fried.')
+		if value == None:
+			v = await self.config.guild(ctx.message.guild).chance()
+			if v == 0:
+				await ctx.send('Autofrying is currently disabled.')
+			else:
+				await ctx.send('1 out of every '+str(v)+' images are being fried.')
+		else:
+			await self.config.guild(ctx.guild).chance.set(value)
+			if value == 0:
+				await ctx.send('Autofrying is now disabled.')
+			else:
+				await ctx.send('1 out of every '+str(value)+' images will be fried.')
 		
 	async def run(self, t):
 		"""Passively deepfries random images."""
