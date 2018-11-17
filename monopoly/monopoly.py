@@ -71,7 +71,10 @@ class Monopoly(commands.Cog):
 			for a in range(2,num+1):
 				check = lambda m: m.author not in id and m.author.bot == False
 				await ctx.send('Player '+str(a)+', say I')
-				r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author not in id and m.author.bot == False and m.channel == channel)
+				try:
+					r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author not in id and m.author.bot == False and m.channel == channel)
+				except asyncio.TimeoutError:
+					return await ctx.send('You took too long to respond')
 				name.append(str(r.author)[:-5])
 				id.append(r.author.id)
 				#LETS DEFINE SOME VARIABLES!!!
@@ -241,8 +244,8 @@ class Monopoly(commands.Cog):
 				await ctx.send('```'+hold.strip()+'```')
 				i = 0
 				while i != 1:
+					tradep = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel) #select the number of the player to trade
 					try:
-						tradep = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel) #select the number of the player to trade
 						tradep = int(tradep.content)
 						if 1 <= tradep <= num and tradep != p and alive[tradep] == True: #make sure the number is a player, is not the person starting the trade, and is alive
 							i = 1
@@ -285,27 +288,31 @@ class Monopoly(commands.Cog):
 							pass
 					except ValueError: #not a number
 						if t == 'm': #money select screen
+							await ctx.send('How much money? You have $'+str(bal[p]))
+							monp = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 							try:
-								await ctx.send('How much money? You have $'+str(bal[p]))
-								monp = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 								monp = int(monp.content)
 								if monp > bal[p]: #can't be greater than owned money
+									await ctx.send('Invalid response')
 									monp = 0
 								continue
 							except:
+								await ctx.send('Invalid response')
 								monp = 0
 						elif t == 'd': #exit loop
 							i = 2
 							continue
 						elif t == 'j':
+							await ctx.send('How many? You have '+str(goojf[p]))
+							jp = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 							try:
-								await ctx.send('How many? You have '+str(goojf[p]))
-								jp = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 								jp = int(jp.content)
 								if jp > goojf[p]: #can't be greater than owned goojf
+									await ctx.send('Invalid response')
 									jp = 0
 								continue
 							except:
+								await ctx.send('Invalid response')
 								jp = 0
 						else:
 							continue
@@ -343,27 +350,32 @@ class Monopoly(commands.Cog):
 							pass
 					except ValueError:
 						if t == 'm':
+							await ctx.send('How much money? You have $'+str(bal[tradep]))
+							monn = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 							try:
-								await ctx.send('How much money? You have $'+str(bal[tradep]))
-								monn = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 								monn = int(monn.content)
 								if monn > bal[tradep]:
+									await ctx.send('Invalid response')
 									monn = 0
 								continue
 							except:
+								await ctx.send('Invalid response')
 								monn = 0
 						elif t == 'd':
 							i = 3
 							continue
 						elif t == 'm':
+
+							await ctx.send('How many? You have '+str(goojf[tradep]))
+							jn = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 							try:
-								await ctx.send('How many? You have '+str(goojf[tradep]))
-								jn = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 								jn = int(jn.content)
 								if jn > goojf[tradep]:
+									await ctx.send('Invalid response')
 									jn = 0
 								continue
 							except:
+								await ctx.send('Invalid response')
 								jn = 0
 						else:
 							continue
