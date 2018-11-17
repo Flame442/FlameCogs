@@ -76,8 +76,6 @@ Use the optional paramater `savename` to load a saved game.
 **[Hangman]** Allow user wordlists to be used
 
 **[Monopoly]** Add config for various house rules (auctions, free parking, landing on go, etc)
-
-**[Monopoly]** Fix timeout loops
 # Contact
 Feel free to create an issue on this repository for any bugs you find.
 # Credit
