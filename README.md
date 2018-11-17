@@ -69,7 +69,7 @@ Use the optional paramater `savename` to load a saved game.
 
 **[Battleship]** Make placing ships eaisier to understand
 
-**[Battleship]** Fix timeout loops
+**[Battleship]** Add config for hits allowing another shot
 
 **[Deepfry]** Fix crash when trying to deepfry mp4's and other unsupported filetypes
 
