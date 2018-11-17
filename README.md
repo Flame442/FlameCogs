@@ -42,9 +42,15 @@ Nukes the attatched image
 `[p]deepfryset <value>`
 
 Change the rate images are automatically deepfried.
+
 Images will have a 1/`<value>` chance to be deepfried.
+
 Higher values cause less often fries.
+
 Set to `0` to disable.
+
+This value is server specific.
+
 ## Hangman
 This cog will play hangman with you.
 ### Usage
