@@ -13,7 +13,7 @@ class Battleship(commands.Cog):
 		"""Start a game of battleship"""
 		await ctx.send('Setting up, please wait')
 		channel = ctx.message.channel
-		name = [str(ctx.message.author)[:-5]]
+		name = [ctx.message.author.display_name]
 		board = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
 		let = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 		letnum = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8, 'j': 9, 'k': 10, 'l': 11, 'm': 12, 'n': 13, 'o': 14, 'p': 15, 'q': 16, 'r': 17, 's': 18, 't': 19, 'u': 20, 'v': 21, 'w': 22, 'x': 23, 'y': 24, 'z': 25}
@@ -83,7 +83,7 @@ class Battleship(commands.Cog):
 			r = await self.bot.wait_for('message', timeout=60, check=check)
 		except asyncio.TimeoutError:
 			return await ctx.send('You took too long, shutting down.')
-		name.append(str(r.author)[:-5])
+		name.append(r.author.display_name)
 		pid.append(r.author)
 		await ctx.send('A game of battleship will be played between '+name[0]+' and '+name[1]+'.')
 		for x in range(2): #each player
