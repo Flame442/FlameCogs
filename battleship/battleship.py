@@ -34,30 +34,47 @@ class Battleship(commands.Cog):
 				b += '\n'
 			return '```'+b+'```'
 
-		def place(player,length,value): #create a ship for player of length at position value
+		async def place(player,length,value): #create a ship for player of length at position value
 			hold = {}
-			x = letnum[value[0]]
-			y = int(value[1])
+			try:
+				x = letnum[value[0]]
+			except:
+				await pid[player].send('Invalid input, x cord must be a letter from A-J.')
+				return False
+			try:
+				y = int(value[1])
+			except:
+				await pid[player].send('Invalid input, y cord must be a number from 0-9.')
+				return False
 			d = value[2]
-			if d == 'r': #right
-				if 10 - length < x: #ship would wrap over right edge
-					1 / 0
-				for z in range(length):
-					if board[player][(y*10)+x+z] != 0: #a spot taken by another ship
-						1 / 0
-				for z in range(length):
-					board[player][(y*10)+x+z] = 3
-					hold[(y*10)+x+z] = 0
-			elif d == 'd': #down
-				for z in range(length):
-					if board[player][((y+z)*10)+x] != 0: #a spot taken by another ship
-						1 / 0
-				for z in range(length):
-					board[player][((y+z)*10)+x] = 3
-					hold[((y+z)*10)+x] = 0
-			else:
-				1 / 0
+			try:
+				if d == 'r': #right
+					if 10 - length < x: #ship would wrap over right edge
+						await pid[player].send('Invalid input, too far to the right.')
+						return False
+					for z in range(length):
+						if board[player][(y*10)+x+z] != 0: #a spot taken by another ship
+							await pid[player].send('Invalid input, another ship is in that range.')
+							return False
+					for z in range(length):
+						board[player][(y*10)+x+z] = 3
+						hold[(y*10)+x+z] = 0
+				elif d == 'd': #down
+					for z in range(length):
+						if board[player][((y+z)*10)+x] != 0: #a spot taken by another ship
+							await pid[player].send('Invalid input, another ship is in that range.')
+							return False
+					for z in range(length):
+						board[player][((y+z)*10)+x] = 3
+						hold[((y+z)*10)+x] = 0
+				else:
+					await pid[player].send('Invalid input, choose a direction of "d" or "r".')
+					return False
+			except:
+				await pid[player].send('Invalid input, too far down.')
+				return False
 			key[player].append(hold)
+			return True
 
 		#RUN CODE
 		check = lambda m: m.author != ctx.message.author and m.author.bot == False and m.channel == ctx.message.channel
@@ -80,11 +97,8 @@ class Battleship(commands.Cog):
 						t = await self.bot.wait_for('message', timeout=120, check=lambda m:m.channel == stupid.channel and m.author.bot == False)
 					except asyncio.TimeoutError:
 						return await ctx.send(name[x]+' took too long, shutting down.')
-					try:
-						place(x,k,t.content.lower())
+					if await place(x,k,t.content.lower()) == True:
 						break
-					except:
-						await pid[x].send('Invalid input.')
 		###############################################################
 		game = True
 		p = 1
