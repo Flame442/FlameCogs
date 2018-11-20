@@ -52,7 +52,7 @@ class Monopoly(commands.Cog):
 				return await ctx.send('You have no save files.')
 		else:
 			id = [None, ctx.message.author.id]
-			name = [None, ctx.message.author.display_name] #name of each player
+			name = [None, str(ctx.message.author)[:-5]] #name of each player
 			await ctx.send('Welcome to Monopoly. How many players?')
 			i = 0
 			while i == 0:
@@ -75,7 +75,7 @@ class Monopoly(commands.Cog):
 					r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author not in id and m.author.bot == False and m.channel == channel)
 				except asyncio.TimeoutError:
 					return await ctx.send('You took too long to respond')
-				name.append(r.author.display_name)
+				name.append(str(r.author)[:-5])
 				id.append(r.author.id)
 				#LETS DEFINE SOME VARIABLES!!!
 				p = 1
