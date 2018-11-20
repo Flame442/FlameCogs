@@ -81,7 +81,7 @@ class Battleship(commands.Cog):
 					except asyncio.TimeoutError:
 						return await ctx.send(name[x]+' took too long, shutting down.')
 					try:
-						place(x,k,t.content)
+						place(x,k,t.content.lower())
 						break
 					except:
 						await pid[x].send('Invalid input.')
@@ -98,7 +98,7 @@ class Battleship(commands.Cog):
 				except asyncio.TimeoutError:
 					return await ctx.send('You took too long, shutting down.')
 				try: #makes sure input is valid
-					x = letnum[s.content[0]]
+					x = letnum[s.content[0].lower()]
 					y = int(s.content[1])
 					board[pswap[p]][(y*10)+x]
 				except:
