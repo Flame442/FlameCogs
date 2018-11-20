@@ -1179,7 +1179,7 @@ class Monopoly(commands.Cog):
 					while wd == 1 and alive[p]:
 						r = 0
 						while r == 0:
-							await ctx.send('Type r to roll, t to trade, h to manage houses, or m to mortgage.')
+							await ctx.send('Type r to roll, t to trade, h to manage houses, m to mortgage, or s to save.')
 							choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 							choice = choice.content
 							if choice == 'r': #normal turn, roll dice
