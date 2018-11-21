@@ -78,6 +78,7 @@ class Hangman(commands.Cog):
 		fails = 0
 		end = 0
 		starter = ctx.message
+		err = 0
 		while end == 0:
 			p = ''
 			for l in word:
@@ -87,27 +88,35 @@ class Hangman(commands.Cog):
 					p += l+' '
 				else:
 					p += '_ ' 
-			p += "    ("
+			p += '    ('
 			for l in guessed:
 				if l not in word:
 					p += l
-			p += ")"
+			p += ')'
+			p = '```'+self.man[fails]+'\n'+p+'```'
+			if err == 1:
+				p += 'You already guessed that letter.\n'
+			elif err == 2:
+				p += 'Pick a letter.\n'
 			check = lambda m: m.channel == starter.channel and m.author == starter.author
-			await ctx.send("```"+self.man[fails]+'\n'+p+'```Guess:')
+			await ctx.send(p+'Guess:')
 			try:
 				t = await self.bot.wait_for('message', check=check, timeout=60)
 			except:
-				return await ctx.send('Canceling selection. You took too long.\nThe word was '+word)
+				return await ctx.send('Canceling selection. You took too long.\nThe word was '+word+'.')
 			t = t.content[0].lower()
 			if t in guessed:
-				await ctx.send('You already guessed that letter')
+				err = 1
+			elif t not in 'abcdefghijklmnopqrstuvwxyz':
+				err = 2
 			else:
+				err = 0
 				if t not in word:
 					fails += 1
 					if fails == 6: #too many fails
-						await ctx.send('```'+self.man[6]+'```Game Over\nThe word was '+word)
+						await ctx.send('```'+self.man[6]+'```Game Over\nThe word was '+word+'.')
 						end = 1
 				guessed += t
 				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
-					await ctx.send('```'+self.man[fails]+'```You win!\nThe word was '+word)
+					await ctx.send('```'+self.man[fails]+'```You win!\nThe word was '+word+'.')
 					end = 1
