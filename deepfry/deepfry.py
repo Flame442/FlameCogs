@@ -18,7 +18,7 @@ class Deepfry(commands.Cog):
 			chance = 0
 		)
 		
-	@commands.command()
+	@commands.command(aliases=['df'])
 	async def deepfry(self, ctx, amount: float=0):
 		"""Deepfries images."""
 		if ctx.message.attachments == []:
