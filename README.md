@@ -35,6 +35,8 @@ Images have to be attatched to the command, links do NOT work!
 
 Deepfries the attatched image by the `amount` provided.
 
+Alias: `[p]df [amount]`
+
 `[p]nuke`
 
 Nukes the attatched image
@@ -50,6 +52,8 @@ Higher values cause less often fries.
 Set to `0` to disable.
 
 This value is server specific.
+
+Defaults to `0` (off)
 
 ## Hangman
 This cog will play hangman with you.
