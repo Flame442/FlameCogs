@@ -1,12 +1,19 @@
 import discord
 from redbot.core import commands
-from random import randint
 from redbot.core.data_manager import bundled_data_path
+from redbot.core.data_manager import cog_data_path
+from redbot.core import Config
+from random import randint
+import os
 
 class Hangman(commands.Cog):
 	"""Play hangman with the bot"""
 	def __init__(self, bot):
 		self.bot = bot
+		self.config = Config.get_conf(self, identifier=7345167902)
+		self.config.register_global(
+			fp = bundled_data_path(self) / 'words.txt'
+		)
 		self.man = ['\
     ___    \n\
    |   |   \n\
@@ -68,7 +75,7 @@ class Hangman(commands.Cog):
 	@commands.command()
 	async def hangman(self, ctx):
 		"""Play hangman with the bot"""
-		fp = bundled_data_path(self) / 'words.txt'
+		fp = await self.config.fp()
 		x = open(fp) #default wordlist
 		wordlist = []
 		for line in x:
@@ -125,3 +132,43 @@ class Hangman(commands.Cog):
 				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
 					await boardmsg.edit(content=str('```'+self.man[fails]+'```You win!\nThe word was '+word+'.'))
 					end = 1
+
+	@commands.command()
+	async def hangmanset(self, ctx, value: str=None):
+		"""
+		Change the wordlist used.
+		Extra wordlists can be put in the data folder of this cog.
+		Wordlists are a text file with every new line being a new word.
+		Use default to restore the default wordlist.
+		Use list to list available wordlists.
+		This value is global.
+		"""
+		if value == None:
+			v = await self.config.fp()
+			if v == str(bundled_data_path(self) / 'words.txt'):
+				await ctx.send('The wordlist is set to the default list.')
+			else:
+				await ctx.send('The wordlist is set to `'+v[::-1].split('\\')[0][::-1][:-4]+'`.')
+		elif value.lower() == 'default':
+			set = str(bundled_data_path(self) / 'words.txt')
+			await self.config.fp.set(set)
+			await ctx.send('The wordlist is now the default list.')
+		else:
+			y = []
+			for x in os.listdir(cog_data_path(self)):
+				if x[-4:] == '.txt':
+					y.append(x[:-4])
+			if y == []:
+				await ctx.send('You do not have any wordlists.')
+			elif value.lower() == 'list':
+				z = ''
+				for x in y:
+					z += x+'\n'
+				await ctx.send('Available wordlists:\n`'+z+'`')
+			else:
+				if value in y:
+					set = str(cog_data_path(self) / str(value+'.txt'))
+					await self.config.fp.set(set)
+					await ctx.send('The wordlist is now set to '+value)
+				else:
+					await ctx.send('Wordlist not found')
