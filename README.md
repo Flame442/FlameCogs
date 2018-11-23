@@ -73,8 +73,6 @@ Use the optional paramater `savename` to load a saved game.
 
 **[Battleship]** Make placing ships eaisier to understand
 
-**[Battleship]** Add config for hits allowing another shot
-
 **[Hangman]** Allow user wordlists to be used
 
 **[Monopoly]** Add config for various house rules (auctions, free parking, landing on go, etc)
