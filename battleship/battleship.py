@@ -1,11 +1,16 @@
 import discord
 from redbot.core import commands
+from redbot.core import Config
 import asyncio
 
 class Battleship(commands.Cog):
 	"""Play battleship with one other person"""
 	def __init__(self, bot):
 		self.bot = bot
+		self.config = Config.get_conf(self, identifier=7345167901)
+		self.config.register_global(
+			extraHit = True
+		)
 
 	@commands.guild_only()
 	@commands.command()
@@ -46,7 +51,11 @@ class Battleship(commands.Cog):
 			except:
 				await pid[player].send('Invalid input, y cord must be a number from 0-9.')
 				return False
-			d = value[2]
+			try:
+				d = value[2]
+			except:
+				await pid[player].send('Invalid input, d cord must be d or r')
+				return False
 			try:
 				if d == 'r': #right
 					if 10 - length < x: #ship would wrap over right edge
@@ -150,4 +159,26 @@ class Battleship(commands.Cog):
 									game = False
 									i = 1
 							if game == True:
-								await ctx.send('Take another shot.')
+								if await self.config.extraShot() == True:
+									await ctx.send('Take another shot.')
+								else:
+									i = 1
+	@commands.command()
+	async def battleshipset(self, ctx, value: bool=None):
+		"""
+		Set if an extra shot should be given after a hit.
+		Defaults to True.
+		This value is global.
+		"""
+		if value == None:
+			v = await self.config.extraHit()
+			if v == True:
+				await ctx.send('You are currently able to shoot again after a hit')
+			else:
+				await ctx.send('You are currently not able to shoot again after a hit')
+		else:
+			await self.config.extraHit.set(value)
+			if value == True:
+				await ctx.send('You will now be able to shoot again after a hit')
+			else:
+				await ctx.send('You will no longer be able to shoot again after a hit')
