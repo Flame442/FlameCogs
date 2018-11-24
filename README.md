@@ -26,6 +26,14 @@ This cog will let you play battleship against another member of your server.
 `[p]battleship`
 
 Begin a game of battleship.
+
+`[p]battleshipset [value]`
+
+Set if an extra shot should be given after a hit.
+
+Defaults to True.
+
+This value is global.
 ## Deepfry
 This cog lets you deepfry and nuke images. It has a configurable chance to deepfry any image posted automaticly and users can choose to deepfry or nuke images. 
 
@@ -35,21 +43,25 @@ Images have to be attatched to the command, links do NOT work!
 
 Deepfries the attatched image by the `amount` provided.
 
+Alias: `[p]df [amount]`
+
 `[p]nuke`
 
 Nukes the attatched image
 
-`[p]deepfryset <value>`
+`[p]deepfryset [value]`
 
 Change the rate images are automatically deepfried.
 
-Images will have a 1/`<value>` chance to be deepfried.
+Images will have a 1/`[value]` chance to be deepfried.
 
 Higher values cause less often fries.
 
 Set to `0` to disable.
 
 This value is server specific.
+
+Defaults to `0` (off)
 ## Gamevoice
 This cog lets you make voice channels that require a user to be playing a specific game in order to join.
 ### Usage
@@ -74,6 +86,20 @@ This cog will play hangman with you.
 `[p]hangman`
 
 Begin a game of hangman.
+
+`[p]hangmanset [value]`
+
+Change the wordlist used.
+
+Extra wordlists can be put in the data folder of this cog.
+
+Wordlists are a text file with every new line being a new word.
+
+Use `default` to restore the default wordlist.
+
+Use `list` to list available wordlists.
+
+This value is global.
 ## Monopoly
 This cog will let you play monopoly with up to 7 other people in your server.
 ### Usage
@@ -86,15 +112,7 @@ Use the optional paramater `savename` to load a saved game.
 
 **[Battleship]** Make placing ships eaisier to understand
 
-**[Battleship]** Add config for hits allowing another shot
-
-**[Deepfry]** Fix crash when trying to deepfry mp4's and other unsupported filetypes
-
-**[Hangman]** Allow user wordlists to be used
-
 **[Monopoly]** Add config for various house rules (auctions, free parking, landing on go, etc)
-
-**[Gamevoice]** Give role when "set" is used to applicable members
 # Contact
 Feel free to create an issue on this repository for any bugs you find.
 # Credit

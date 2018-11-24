@@ -18,9 +18,13 @@ class Deepfry(commands.Cog):
 			chance = 0
 		)
 		
-	@commands.command()
+	@commands.command(aliases=['df'])
 	async def deepfry(self, ctx, amount: float=0):
 		"""Deepfries images."""
+		if ctx.message.attachments == []:
+			return await ctx.send('Please provide an attachment.')
+		if ctx.message.attachments[0].url[::-1].split(".")[0][::-1] not in ['png', 'jpg']:
+			return await ctx.send('"'+ctx.message.attachments[0].url[::-1].split(".")[0][::-1].title()+'" is not a supported filetype.')
 		async with aiohttp.ClientSession() as session:
 			async with session.get(ctx.message.attachments[0].url) as response:
 				r = await response.read()
@@ -54,6 +58,10 @@ class Deepfry(commands.Cog):
 	@commands.command()
 	async def nuke(self, ctx):
 		"""Demolishes images."""
+		if ctx.message.attachments == []:
+			return await ctx.send('Please provide an attachment.')
+		if ctx.message.attachments[0].url[::-1].split(".")[0][::-1] not in ['png', 'jpg']:
+			return await ctx.send('"'+ctx.message.attachments[0].url[::-1].split(".")[0][::-1].title()+'" is not a supported filetype.')
 		async with aiohttp.ClientSession() as session:
 			async with session.get(ctx.message.attachments[0].url) as response:
 				r = await response.read()
@@ -115,7 +123,7 @@ class Deepfry(commands.Cog):
 		"""Passively deepfries random images."""
 		if t.author.id != self.bot.user.id:
 			v = await self.config.guild(t.guild).chance()
-			if t.attachments != [] and t.content.find('!deepfry') == -1 and t.content.find('!nuke') == -1 and v != 0:
+			if t.attachments != [] and t.attachments[0].url[::-1].split(".")[0][::-1] in ['png', 'jpg'] and t.content.find('!deepfry') == -1 and t.content.find('!nuke') == -1 and v != 0:
 				l = randint(1,v)
 				if l == 1:
 					async with aiohttp.ClientSession() as session:

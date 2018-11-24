@@ -1,12 +1,19 @@
 import discord
 from redbot.core import commands
-from random import randint
 from redbot.core.data_manager import bundled_data_path
+from redbot.core.data_manager import cog_data_path
+from redbot.core import Config
+from random import randint
+import os
 
 class Hangman(commands.Cog):
 	"""Play hangman with the bot"""
 	def __init__(self, bot):
 		self.bot = bot
+		self.config = Config.get_conf(self, identifier=7345167902)
+		self.config.register_global(
+			fp = bundled_data_path(self) / 'words.txt'
+		)
 		self.man = ['\
     ___    \n\
    |   |   \n\
@@ -68,7 +75,7 @@ class Hangman(commands.Cog):
 	@commands.command()
 	async def hangman(self, ctx):
 		"""Play hangman with the bot"""
-		fp = bundled_data_path(self) / 'words.txt'
+		fp = await self.config.fp()
 		x = open(fp) #default wordlist
 		wordlist = []
 		for line in x:
@@ -78,6 +85,8 @@ class Hangman(commands.Cog):
 		fails = 0
 		end = 0
 		starter = ctx.message
+		err = 0
+		boardmsg = None
 		while end == 0:
 			p = ''
 			for l in word:
@@ -87,27 +96,79 @@ class Hangman(commands.Cog):
 					p += l+' '
 				else:
 					p += '_ ' 
-			p += "    ("
+			p += '    ('
 			for l in guessed:
 				if l not in word:
 					p += l
-			p += ")"
+			p += ')'
+			p = '```'+self.man[fails]+'\n'+p+'```'
+			if err == 1:
+				p += 'You already guessed that letter.\n'
+			elif err == 2:
+				p += 'Pick a letter.\n'
 			check = lambda m: m.channel == starter.channel and m.author == starter.author
-			await ctx.send("```"+self.man[fails]+'\n'+p+'```Guess:')
-			try:
-				t = await self.bot.wait_for('message', check=check, timeout=60)
-			except:
-				return await ctx.send('Canceling selection. You took too long.\nThe word was '+word)
-			t = t.content[0].lower()
-			if t in guessed:
-				await ctx.send('You already guessed that letter')
+			if boardmsg == None:
+				boardmsg = await ctx.send(p+'Guess:')
 			else:
+				await boardmsg.edit(content=str(p+'Guess:'))
+			try:
+				umsg = await self.bot.wait_for('message', check=check, timeout=60)
+			except:
+				return await ctx.send('Canceling selection. You took too long.\nThe word was '+word+'.')
+			t = umsg.content[0].lower()
+			await umsg.delete()
+			if t in guessed:
+				err = 1
+			elif t not in 'abcdefghijklmnopqrstuvwxyz':
+				err = 2
+			else:
+				err = 0
 				if t not in word:
 					fails += 1
 					if fails == 6: #too many fails
-						await ctx.send('```'+self.man[6]+'```Game Over\nThe word was '+word)
+						await boardmsg.edit(content=str('```'+self.man[6]+'```Game Over\nThe word was '+word+'.'))
 						end = 1
 				guessed += t
 				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
-					await ctx.send('```'+self.man[fails]+'```You win!\nThe word was '+word)
+					await boardmsg.edit(content=str('```'+self.man[fails]+'```You win!\nThe word was '+word+'.'))
 					end = 1
+
+	@commands.command()
+	async def hangmanset(self, ctx, value: str=None):
+		"""
+		Change the wordlist used.
+		Extra wordlists can be put in the data folder of this cog.
+		Wordlists are a text file with every new line being a new word.
+		Use default to restore the default wordlist.
+		Use list to list available wordlists.
+		This value is global.
+		"""
+		if value == None:
+			v = await self.config.fp()
+			if v == str(bundled_data_path(self) / 'words.txt'):
+				await ctx.send('The wordlist is set to the default list.')
+			else:
+				await ctx.send('The wordlist is set to `'+v[::-1].split('\\')[0][::-1][:-4]+'`.')
+		elif value.lower() == 'default':
+			set = str(bundled_data_path(self) / 'words.txt')
+			await self.config.fp.set(set)
+			await ctx.send('The wordlist is now the default list.')
+		else:
+			y = []
+			for x in os.listdir(cog_data_path(self)):
+				if x[-4:] == '.txt':
+					y.append(x[:-4])
+			if y == []:
+				await ctx.send('You do not have any wordlists.')
+			elif value.lower() == 'list':
+				z = ''
+				for x in y:
+					z += x+'\n'
+				await ctx.send('Available wordlists:\n`'+z+'`')
+			else:
+				if value in y:
+					set = str(cog_data_path(self) / str(value+'.txt'))
+					await self.config.fp.set(set)
+					await ctx.send('The wordlist is now set to '+value)
+				else:
+					await ctx.send('Wordlist not found')

@@ -5,7 +5,7 @@
     "short" : "Play hangman with the bot.",
     "requirements" : [],
     "description" : "Play hangman with the bot.",
-    "permissions" : ["Manage Messages"],
+    "permissions" : ["Manage Messages", "Send Messages"],
     "tags" : ["Fun", "Games"],
     "min_python_version": [3, 6, 0]
 }

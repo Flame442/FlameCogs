@@ -1,11 +1,16 @@
 import discord
 from redbot.core import commands
+from redbot.core import Config
 import asyncio
 
 class Battleship(commands.Cog):
 	"""Play battleship with one other person"""
 	def __init__(self, bot):
 		self.bot = bot
+		self.config = Config.get_conf(self, identifier=7345167901)
+		self.config.register_global(
+			extraHit = True
+		)
 
 	@commands.guild_only()
 	@commands.command()
@@ -13,7 +18,7 @@ class Battleship(commands.Cog):
 		"""Start a game of battleship"""
 		await ctx.send('Setting up, please wait')
 		channel = ctx.message.channel
-		name = [str(ctx.message.author)[:-5]]
+		name = [ctx.message.author.display_name]
 		board = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
 		let = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 		letnum = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8, 'j': 9, 'k': 10, 'l': 11, 'm': 12, 'n': 13, 'o': 14, 'p': 15, 'q': 16, 'r': 17, 's': 18, 't': 19, 'u': 20, 'v': 21, 'w': 22, 'x': 23, 'y': 24, 'z': 25}
@@ -34,30 +39,51 @@ class Battleship(commands.Cog):
 				b += '\n'
 			return '```'+b+'```'
 
-		def place(player,length,value): #create a ship for player of length at position value
+		async def place(player,length,value): #create a ship for player of length at position value
 			hold = {}
-			x = letnum[value[0]]
-			y = int(value[1])
-			d = value[2]
-			if d == 'r': #right
-				if 10 - length < x: #ship would wrap over right edge
-					1 / 0
-				for z in range(length):
-					if board[player][(y*10)+x+z] != 0: #a spot taken by another ship
-						1 / 0
-				for z in range(length):
-					board[player][(y*10)+x+z] = 3
-					hold[(y*10)+x+z] = 0
-			elif d == 'd': #down
-				for z in range(length):
-					if board[player][((y+z)*10)+x] != 0: #a spot taken by another ship
-						1 / 0
-				for z in range(length):
-					board[player][((y+z)*10)+x] = 3
-					hold[((y+z)*10)+x] = 0
-			else:
-				1 / 0
+			try:
+				x = letnum[value[0]]
+			except:
+				await pid[player].send('Invalid input, x cord must be a letter from A-J.')
+				return False
+			try:
+				y = int(value[1])
+			except:
+				await pid[player].send('Invalid input, y cord must be a number from 0-9.')
+				return False
+			try:
+				d = value[2]
+			except:
+				await pid[player].send('Invalid input, d cord must be d or r')
+				return False
+			try:
+				if d == 'r': #right
+					if 10 - length < x: #ship would wrap over right edge
+						await pid[player].send('Invalid input, too far to the right.')
+						return False
+					for z in range(length):
+						if board[player][(y*10)+x+z] != 0: #a spot taken by another ship
+							await pid[player].send('Invalid input, another ship is in that range.')
+							return False
+					for z in range(length):
+						board[player][(y*10)+x+z] = 3
+						hold[(y*10)+x+z] = 0
+				elif d == 'd': #down
+					for z in range(length):
+						if board[player][((y+z)*10)+x] != 0: #a spot taken by another ship
+							await pid[player].send('Invalid input, another ship is in that range.')
+							return False
+					for z in range(length):
+						board[player][((y+z)*10)+x] = 3
+						hold[((y+z)*10)+x] = 0
+				else:
+					await pid[player].send('Invalid input, choose a direction of "d" or "r".')
+					return False
+			except:
+				await pid[player].send('Invalid input, too far down.')
+				return False
 			key[player].append(hold)
+			return True
 
 		#RUN CODE
 		check = lambda m: m.author != ctx.message.author and m.author.bot == False and m.channel == ctx.message.channel
@@ -66,7 +92,7 @@ class Battleship(commands.Cog):
 			r = await self.bot.wait_for('message', timeout=60, check=check)
 		except asyncio.TimeoutError:
 			return await ctx.send('You took too long, shutting down.')
-		name.append(str(r.author)[:-5])
+		name.append(r.author.display_name)
 		pid.append(r.author)
 		await ctx.send('A game of battleship will be played between '+name[0]+' and '+name[1]+'.')
 		for x in range(2): #each player
@@ -80,11 +106,8 @@ class Battleship(commands.Cog):
 						t = await self.bot.wait_for('message', timeout=120, check=lambda m:m.channel == stupid.channel and m.author.bot == False)
 					except asyncio.TimeoutError:
 						return await ctx.send(name[x]+' took too long, shutting down.')
-					try:
-						place(x,k,t.content)
+					if await place(x,k,t.content.lower()) == True:
 						break
-					except:
-						await pid[x].send('Invalid input.')
 		###############################################################
 		game = True
 		p = 1
@@ -98,7 +121,7 @@ class Battleship(commands.Cog):
 				except asyncio.TimeoutError:
 					return await ctx.send('You took too long, shutting down.')
 				try: #makes sure input is valid
-					x = letnum[s.content[0]]
+					x = letnum[s.content[0].lower()]
 					y = int(s.content[1])
 					board[pswap[p]][(y*10)+x]
 				except:
@@ -136,4 +159,26 @@ class Battleship(commands.Cog):
 									game = False
 									i = 1
 							if game == True:
-								await ctx.send('Take another shot.')
+								if await self.config.extraShot() == True:
+									await ctx.send('Take another shot.')
+								else:
+									i = 1
+	@commands.command()
+	async def battleshipset(self, ctx, value: bool=None):
+		"""
+		Set if an extra shot should be given after a hit.
+		Defaults to True.
+		This value is global.
+		"""
+		if value == None:
+			v = await self.config.extraHit()
+			if v == True:
+				await ctx.send('You are currently able to shoot again after a hit')
+			else:
+				await ctx.send('You are currently not able to shoot again after a hit')
+		else:
+			await self.config.extraHit.set(value)
+			if value == True:
+				await ctx.send('You will now be able to shoot again after a hit')
+			else:
+				await ctx.send('You will no longer be able to shoot again after a hit')
