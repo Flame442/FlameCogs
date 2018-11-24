@@ -1,6 +1,6 @@
 {
     "author" : ["Flame442 (Flame#2941)"],
-    "install_msg" : "Thanks for installing gamevoice. Use `[p]gv` to for further help.",
+    "install_msg" : "Thanks for installing gamevoice. Use `[p]gv` for further help.",
     "name" : "Gamevoice",
     "short" : "Create game specific voice channels.",
     "requirements" : [],
