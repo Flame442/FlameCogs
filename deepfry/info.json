@@ -5,7 +5,7 @@
     "short" : "Deepfry or nuke images",
     "requirements" : ["pillow"],
     "description" : "Deepfry or nuke images passively and actively",
-    "permissions" : ["Manage Messages", "Embed Links"],
+    "permissions" : ["Send Messages", "Attach Files"],
     "tags" : ["Fun"],
     "min_python_version": [3, 6, 0]
 }
