@@ -50,7 +50,24 @@ Higher values cause less often fries.
 Set to `0` to disable.
 
 This value is server specific.
+## Gamevoice
+This cog lets you make voice channels that require a user to be playing a specific game in order to join.
+### Usage
+`[p]gamevoice set`
 
+Sets the voice channel you are in to only work with the game you are playing.
+
+If you are not playing a game, the channel will be reset.
+
+Any activity will count, including Spotify, so make sure discord thinks you are doing the correct activity.
+
+This command is only usable by the guild owner and bot owner.
+
+`[p]gamevoice recheck`
+
+Force a recheck of your current game.
+
+Use this if you are playing the correct game and it does not let you join.
 ## Hangman
 This cog will play hangman with you.
 ### Usage
@@ -76,6 +93,8 @@ Use the optional paramater `savename` to load a saved game.
 **[Hangman]** Allow user wordlists to be used
 
 **[Monopoly]** Add config for various house rules (auctions, free parking, landing on go, etc)
+
+**[Gamevoice]** Give role when "set" is used to applicable members
 # Contact
 Feel free to create an issue on this repository for any bugs you find.
 # Credit
