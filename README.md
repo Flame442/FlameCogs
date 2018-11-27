@@ -65,6 +65,10 @@ Defaults to `0` (off)
 ## Gamevoice
 This cog lets you make voice channels that require a user to be playing a specific game in order to join.
 ### Usage
+`[p]gamevoice <argument>`
+
+Alias `[p]gv <argument`
+
 `[p]gamevoice set`
 
 Sets the voice channel you are in to only work with the game you are playing.
