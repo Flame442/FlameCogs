@@ -121,7 +121,7 @@ class Deepfry(commands.Cog):
 		
 	async def run(self, t):
 		"""Passively deepfries random images."""
-		if t.author.id != self.bot.user.id:
+		if t.author.id != self.bot.user.id and isinstance(t.channel, discord.TextChannel):
 			v = await self.config.guild(t.guild).chance()
 			if t.attachments != [] and t.attachments[0].url[::-1].split(".")[0][::-1] in ['png', 'jpg'] and t.content.find('!deepfry') == -1 and t.content.find('!nuke') == -1 and v != 0:
 				l = randint(1,v)
