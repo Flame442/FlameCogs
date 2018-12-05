@@ -1,8 +1,9 @@
 import discord
-from redbot.core import commands
 from redbot.core.data_manager import bundled_data_path
 from redbot.core.data_manager import cog_data_path
+from redbot.core import commands
 from redbot.core import Config
+from redbot.core import checks
 from random import randint
 import os
 
@@ -13,6 +14,7 @@ class Hangman(commands.Cog):
 		self.config = Config.get_conf(self, identifier=7345167902)
 		self.config.register_global(
 			fp = bundled_data_path(self) / 'words.txt'
+			doEdit = True
 		)
 		self.man = ['\
     ___    \n\
@@ -132,8 +134,13 @@ class Hangman(commands.Cog):
 				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
 					await boardmsg.edit(content=str('```'+self.man[fails]+'```You win!\nThe word was '+word+'.'))
 					end = 1
-
-	@commands.command()
+	@commands.group()
+	async def hangmanset(self, ctx):
+		"""Config options for hangman"""
+		pass
+	
+	@checks.guildowner()
+	@hangmanset.command(name='wordlist')
 	async def hangmanset(self, ctx, value: str=None):
 		"""
 		Change the wordlist used.
@@ -172,3 +179,12 @@ class Hangman(commands.Cog):
 					await ctx.send('The wordlist is now set to '+value)
 				else:
 					await ctx.send('Wordlist not found')
+
+	@hangmanset.command(name='edit')
+	async def hangmanset(self, ctx, value: str=None):
+		"""
+		Set if hangman messages should be one edited message or many individual messages.
+		Defaults to True.
+		This value is global.
+		"""
+		pass
