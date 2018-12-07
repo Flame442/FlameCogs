@@ -1,12 +1,12 @@
 import discord
 import aiohttp
+from redbot.core.data_manager import cog_data_path
 from redbot.core import commands
+from redbot.core import Config
+from redbot.core import checks
 from PIL import Image, ImageEnhance
 from random import randint
 from io import BytesIO
-from redbot.core.data_manager import cog_data_path
-from redbot.core import Config
-
 
 class Deepfry(commands.Cog):
 	"""Deepfries memes."""
@@ -97,6 +97,7 @@ class Deepfry(commands.Cog):
 		img.save(str(cog_data_path(self))+'\\temp.jpg', quality=1)
 		await ctx.send(file=discord.File(str(cog_data_path(self))+'\\temp.jpg'))
 	
+	@checks.guildowner()
 	@commands.command()
 	async def deepfryset(self, ctx, value: int=None):
 		"""
