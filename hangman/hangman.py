@@ -12,7 +12,7 @@ class Hangman(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167902)
-		self.config.register_global(
+		self.config.register_guild(
 			fp = bundled_data_path(self) / 'words.txt'
 			doEdit = True
 		)
@@ -77,7 +77,7 @@ class Hangman(commands.Cog):
 	@commands.command()
 	async def hangman(self, ctx):
 		"""Play hangman with the bot"""
-		fp = await self.config.fp()
+		fp = await self.config.guild(ctx.guild).fp()
 		x = open(fp) #default wordlist
 		wordlist = []
 		for line in x:
@@ -134,6 +134,8 @@ class Hangman(commands.Cog):
 				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
 					await boardmsg.edit(content=str('```'+self.man[fails]+'```You win!\nThe word was '+word+'.'))
 					end = 1
+	
+	@checks.guildowner()
 	@commands.group()
 	async def hangmanset(self, ctx):
 		"""Config options for hangman"""
@@ -141,7 +143,7 @@ class Hangman(commands.Cog):
 	
 	@checks.guildowner()
 	@hangmanset.command(name='wordlist')
-	async def hangmanset(self, ctx, value: str=None):
+	async def wordlist(self, ctx, value: str=None):
 		"""
 		Change the wordlist used.
 		Extra wordlists can be put in the data folder of this cog.
@@ -151,14 +153,14 @@ class Hangman(commands.Cog):
 		This value is global.
 		"""
 		if value == None:
-			v = await self.config.fp()
+			v = await self.config.guild(ctx.guild).fp()
 			if v == str(bundled_data_path(self) / 'words.txt'):
 				await ctx.send('The wordlist is set to the default list.')
 			else:
 				await ctx.send('The wordlist is set to `'+v[::-1].split('\\')[0][::-1][:-4]+'`.')
 		elif value.lower() == 'default':
 			set = str(bundled_data_path(self) / 'words.txt')
-			await self.config.fp.set(set)
+			await self.config.guild(ctx.guild).fp.set(set)
 			await ctx.send('The wordlist is now the default list.')
 		else:
 			y = []
@@ -175,13 +177,14 @@ class Hangman(commands.Cog):
 			else:
 				if value in y:
 					set = str(cog_data_path(self) / str(value+'.txt'))
-					await self.config.fp.set(set)
+					await self.config.guild(ctx.guild).fp.set(set)
 					await ctx.send('The wordlist is now set to '+value)
 				else:
 					await ctx.send('Wordlist not found')
-
+	
+	@checks.guildowner()
 	@hangmanset.command(name='edit')
-	async def hangmanset(self, ctx, value: str=None):
+	async def edit(self, ctx, value: str=None):
 		"""
 		Set if hangman messages should be one edited message or many individual messages.
 		Defaults to True.
