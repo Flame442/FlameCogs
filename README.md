@@ -31,9 +31,9 @@ Begin a game of battleship.
 
 Set if an extra shot should be given after a hit.
 
-Defaults to True.
+Defaults to `True`.
 
-This value is global.
+This value is server specific.
 ## Deepfry
 This cog lets you deepfry and nuke images. It has a configurable chance to deepfry any image posted automaticly and users can choose to deepfry or nuke images. 
 
@@ -58,6 +58,8 @@ Images will have a 1/`[value]` chance to be deepfried.
 Higher values cause less often fries.
 
 Set to `0` to disable.
+
+This command is only usable by the guild owner and bot owner.
 
 This value is server specific.
 
@@ -91,7 +93,13 @@ This cog will play hangman with you.
 
 Begin a game of hangman.
 
-`[p]hangmanset [value]`
+`[p]hangmanset <argument>`
+
+Settings for hangman.
+
+This command is only usable by the guild owner and bot owner.
+
+`[p]hangmanset wordlist [value]`
 
 Change the wordlist used.
 
@@ -103,7 +111,11 @@ Use `default` to restore the default wordlist.
 
 Use `list` to list available wordlists.
 
-This value is global.
+This value is server specific.
+
+`[p]hangmanset edit [value]`
+
+<In development>
 ## Monopoly
 This cog will let you play monopoly with up to 7 other people in your server.
 ### Usage
