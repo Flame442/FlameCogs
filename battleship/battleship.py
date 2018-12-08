@@ -160,7 +160,7 @@ class Battleship(commands.Cog):
 									game = False
 									i = 1
 							if game == True:
-								if await self.config.guild(ctx.guild).extraShot() == True:
+								if await self.config.guild(ctx.guild).extraHit() == True:
 									await ctx.send('Take another shot.')
 								else:
 									i = 1
