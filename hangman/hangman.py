@@ -13,7 +13,7 @@ class Hangman(commands.Cog):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167902)
 		self.config.register_guild(
-			fp = bundled_data_path(self) / 'words.txt'
+			fp = str(bundled_data_path(self) / 'words.txt'),
 			doEdit = True
 		)
 		self.man = ['\
@@ -154,7 +154,7 @@ class Hangman(commands.Cog):
 		"""
 		if value == None:
 			v = await self.config.guild(ctx.guild).fp()
-			if v == str(bundled_data_path(self) / 'words.txt'):
+			if str(v) == str(bundled_data_path(self) / 'words.txt'):
 				await ctx.send('The wordlist is set to the default list.')
 			else:
 				await ctx.send('The wordlist is set to `'+v[::-1].split('\\')[0][::-1][:-4]+'`.')
