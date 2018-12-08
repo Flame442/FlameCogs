@@ -115,7 +115,7 @@ This value is server specific.
 
 `[p]hangmanset edit [value]`
 
-<In development>
+*In development*
 ## Monopoly
 This cog will let you play monopoly with up to 7 other people in your server.
 ### Usage
