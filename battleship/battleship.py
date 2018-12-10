@@ -165,13 +165,14 @@ class Battleship(commands.Cog):
 								else:
 									i = 1
 
+	@commands.guild_only()
 	@checks.guildowner()
 	@commands.command()
 	async def battleshipset(self, ctx, value: bool=None):
 		"""
 		Set if an extra shot should be given after a hit.
 		Defaults to True.
-		This value is global.
+		This value is server specific.
 		"""
 		if value == None:
 			v = await self.config.guild(ctx.guild).extraHit()
