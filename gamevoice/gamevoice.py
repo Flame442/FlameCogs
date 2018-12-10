@@ -1,7 +1,7 @@
 import discord
 from redbot.core import commands
-from redbot.core import checks
 from redbot.core import Config
+from redbot.core import checks
 
 class Gamevoice(commands.Cog):
 	"""Create game specific voice channels."""
@@ -11,12 +11,14 @@ class Gamevoice(commands.Cog):
 		self.config.register_guild(
 			rolelist = {}
 		)
-		
+
+	@commands.guild_only()
 	@commands.group(aliases=['gv'])
 	async def gamevoice(self, ctx):
 		"""Create game specific voice channels."""
 		pass
-	
+
+	@commands.guild_only()
 	@checks.guildowner()
 	@gamevoice.command(name='set')
 	async def gamevoice_set(self, ctx):
@@ -58,6 +60,7 @@ class Gamevoice(commands.Cog):
 			await ctx.message.author.voice.channel.set_permissions(role, connect=True, speak=True)
 			await ctx.send('`'+str(ctx.message.author.voice.channel)+'` will now only allow people playing `'+str(ctx.message.author.activity)+'` to join.')
 
+	@commands.guild_only()
 	@gamevoice.command(name='recheck')
 	async def gamevoice_recheck(self, ctx):
 		"""Force a recheck of your current game."""
