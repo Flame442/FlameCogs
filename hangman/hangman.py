@@ -79,7 +79,7 @@ class Hangman(commands.Cog):
 		"""Play hangman with the bot"""
 		if ctx.guild == None: #default vars in pms
 			fp = str(bundled_data_path(self) / 'words.txt')
-			doEdit = True
+			doEdit = False #cant delete messages in pms
 		else: #server specific vars
 			fp = await self.config.guild(ctx.guild).fp()
 			doEdit = await self.config.guild(ctx.guild).doEdit()
