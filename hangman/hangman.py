@@ -77,8 +77,13 @@ class Hangman(commands.Cog):
 	@commands.command()
 	async def hangman(self, ctx):
 		"""Play hangman with the bot"""
-		fp = await self.config.guild(ctx.guild).fp()
-		x = open(fp) #default wordlist
+		if ctx.guild == None: #default vars in pms
+			fp = str(bundled_data_path(self) / 'words.txt')
+			doEdit = True
+		else: #server specific vars
+			fp = await self.config.guild(ctx.guild).fp()
+			doEdit = await self.config.guild(ctx.guild).doEdit()
+		x = open(fp)
 		wordlist = []
 		for line in x:
 			wordlist.append(line.strip().lower())
@@ -86,7 +91,6 @@ class Hangman(commands.Cog):
 		guessed = ''
 		fails = 0
 		end = 0
-		starter = ctx.message
 		err = 0
 		boardmsg = None
 		while end == 0:
@@ -108,8 +112,8 @@ class Hangman(commands.Cog):
 				p += 'You already guessed that letter.\n'
 			elif err == 2:
 				p += 'Pick a letter.\n'
-			check = lambda m: m.channel == starter.channel and m.author == starter.author
-			if boardmsg == None:
+			check = lambda m: m.channel == ctx.message.channel and m.author == ctx.message.author
+			if boardmsg == None or doEdit == False:
 				boardmsg = await ctx.send(p+'Guess:')
 			else:
 				await boardmsg.edit(content=str(p+'Guess:'))
@@ -118,7 +122,8 @@ class Hangman(commands.Cog):
 			except:
 				return await ctx.send('Canceling selection. You took too long.\nThe word was '+word+'.')
 			t = umsg.content[0].lower()
-			await umsg.delete()
+			if doEdit:
+				await umsg.delete()
 			if t in guessed:
 				err = 1
 			elif t not in 'abcdefghijklmnopqrstuvwxyz':
@@ -128,19 +133,27 @@ class Hangman(commands.Cog):
 				if t not in word:
 					fails += 1
 					if fails == 6: #too many fails
-						await boardmsg.edit(content=str('```'+self.man[6]+'```Game Over\nThe word was '+word+'.'))
+						if doEdit:
+							await boardmsg.edit(content=str('```'+self.man[6]+'```Game Over\nThe word was '+word+'.'))
+						else:
+							await ctx.send(str('```'+self.man[6]+'```Game Over\nThe word was '+word+'.'))
 						end = 1
 				guessed += t
 				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
-					await boardmsg.edit(content=str('```'+self.man[fails]+'```You win!\nThe word was '+word+'.'))
+					if doEdit:
+						await boardmsg.edit(content=str('```'+self.man[fails]+'```You win!\nThe word was '+word+'.'))
+					else:
+						await ctx.send(str('```'+self.man[fails]+'```You win!\nThe word was '+word+'.'))
 					end = 1
 	
+	@commands.guild_only()
 	@checks.guildowner()
 	@commands.group()
 	async def hangmanset(self, ctx):
 		"""Config options for hangman"""
 		pass
 	
+	@commands.guild_only()
 	@checks.guildowner()
 	@hangmanset.command(name='wordlist')
 	async def wordlist(self, ctx, value: str=None):
@@ -150,7 +163,7 @@ class Hangman(commands.Cog):
 		Wordlists are a text file with every new line being a new word.
 		Use default to restore the default wordlist.
 		Use list to list available wordlists.
-		This value is global.
+		This value is server specific.
 		"""
 		if value == None:
 			v = await self.config.guild(ctx.guild).fp()
@@ -182,12 +195,24 @@ class Hangman(commands.Cog):
 				else:
 					await ctx.send('Wordlist not found')
 	
+	@commands.guild_only()
 	@checks.guildowner()
 	@hangmanset.command(name='edit')
-	async def edit(self, ctx, value: str=None):
+	async def edit(self, ctx, value: bool=None):
 		"""
 		Set if hangman messages should be one edited message or many individual messages.
 		Defaults to True.
-		This value is global.
+		This value is server specific.
 		"""
-		pass
+		if value == None:
+			v = await self.config.guild(ctx.guild).doEdit()
+			if v:
+				await ctx.send('Games are currently being played on a single, edited message.')
+			else:
+				await ctx.send('Games are currently being played on multiple messages.')
+		else:
+			await self.config.guild(ctx.guild).doEdit.set(value)
+			if value:
+				await ctx.send('Games will now be played on a single, edited message.')
+			else:
+				await ctx.send('Games will now be played on multiple messages.')
