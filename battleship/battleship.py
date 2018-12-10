@@ -1,6 +1,7 @@
 import discord
 from redbot.core import commands
 from redbot.core import Config
+from redbot.core import checks
 import asyncio
 
 class Battleship(commands.Cog):
@@ -8,7 +9,7 @@ class Battleship(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167901)
-		self.config.register_global(
+		self.config.register_guild(
 			extraHit = True
 		)
 
@@ -159,25 +160,28 @@ class Battleship(commands.Cog):
 									game = False
 									i = 1
 							if game == True:
-								if await self.config.extraShot() == True:
+								if await self.config.guild(ctx.guild).extraHit() == True:
 									await ctx.send('Take another shot.')
 								else:
 									i = 1
+
+	@commands.guild_only()
+	@checks.guildowner()
 	@commands.command()
 	async def battleshipset(self, ctx, value: bool=None):
 		"""
 		Set if an extra shot should be given after a hit.
 		Defaults to True.
-		This value is global.
+		This value is server specific.
 		"""
 		if value == None:
-			v = await self.config.extraHit()
+			v = await self.config.guild(ctx.guild).extraHit()
 			if v == True:
 				await ctx.send('You are currently able to shoot again after a hit')
 			else:
 				await ctx.send('You are currently not able to shoot again after a hit')
 		else:
-			await self.config.extraHit.set(value)
+			await self.config.guild(ctx.guild).extraHit.set(value)
 			if value == True:
 				await ctx.send('You will now be able to shoot again after a hit')
 			else:

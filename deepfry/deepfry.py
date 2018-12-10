@@ -1,12 +1,12 @@
 import discord
 import aiohttp
+from redbot.core.data_manager import cog_data_path
 from redbot.core import commands
+from redbot.core import Config
+from redbot.core import checks
 from PIL import Image, ImageEnhance
 from random import randint
 from io import BytesIO
-from redbot.core.data_manager import cog_data_path
-from redbot.core import Config
-
 
 class Deepfry(commands.Cog):
 	"""Deepfries memes."""
@@ -97,6 +97,8 @@ class Deepfry(commands.Cog):
 		img.save(str(cog_data_path(self))+'\\temp.jpg', quality=1)
 		await ctx.send(file=discord.File(str(cog_data_path(self))+'\\temp.jpg'))
 	
+	@commands.guild_only()
+	@checks.guildowner()
 	@commands.command()
 	async def deepfryset(self, ctx, value: int=None):
 		"""
@@ -104,7 +106,7 @@ class Deepfry(commands.Cog):
 		Images will have a 1/<value> chance to be deepfried.
 		Higher values cause less often fries.
 		Set to 0 to disable.
-		This value is server based.
+		This value is server specific.
 		"""
 		if value == None:
 			v = await self.config.guild(ctx.message.guild).chance()
@@ -121,7 +123,7 @@ class Deepfry(commands.Cog):
 		
 	async def run(self, t):
 		"""Passively deepfries random images."""
-		if t.author.id != self.bot.user.id:
+		if t.author.id != self.bot.user.id and isinstance(t.channel, discord.TextChannel):
 			v = await self.config.guild(t.guild).chance()
 			if t.attachments != [] and t.attachments[0].url[::-1].split(".")[0][::-1] in ['png', 'jpg'] and t.content.find('!deepfry') == -1 and t.content.find('!nuke') == -1 and v != 0:
 				l = randint(1,v)

@@ -69,10 +69,9 @@ class Monopoly(commands.Cog):
 				except: #not a number
 					await ctx.send('Please select a number between 2 and 8')
 			for a in range(2,num+1):
-				check = lambda m: m.author not in id and m.author.bot == False
 				await ctx.send('Player '+str(a)+', say I')
 				try:
-					r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author not in id and m.author.bot == False and m.channel == channel)
+					r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id not in id and m.author.bot == False and m.channel == channel)
 				except asyncio.TimeoutError:
 					return await ctx.send('You took too long to respond')
 				name.append(str(r.author)[:-5])
