@@ -5,7 +5,7 @@ from redbot.core import checks
 import asyncio
 
 class Battleship(commands.Cog):
-	"""Play battleship with one other person"""
+	"""Play battleship with one other person."""
 	def __init__(self, bot):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167901)
@@ -16,8 +16,7 @@ class Battleship(commands.Cog):
 	@commands.guild_only()
 	@commands.command()
 	async def battleship(self, ctx):
-		"""Start a game of battleship"""
-		await ctx.send('Setting up, please wait')
+		"""Start a game of battleship."""
 		channel = ctx.message.channel
 		name = [ctx.message.author.display_name]
 		board = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
@@ -55,7 +54,7 @@ class Battleship(commands.Cog):
 			try:
 				d = value[2]
 			except:
-				await pid[player].send('Invalid input, d cord must be d or r')
+				await pid[player].send('Invalid input, d cord must be a direction of d or r.')
 				return False
 			try:
 				if d == 'r': #right
@@ -78,7 +77,7 @@ class Battleship(commands.Cog):
 						board[player][((y+z)*10)+x] = 3
 						hold[((y+z)*10)+x] = 0
 				else:
-					await pid[player].send('Invalid input, choose a direction of "d" or "r".')
+					await pid[player].send('Invalid input, d cord must be a direction of d or r.')
 					return False
 			except:
 				await pid[player].send('Invalid input, too far down.')
@@ -112,7 +111,7 @@ class Battleship(commands.Cog):
 		###############################################################
 		game = True
 		p = 1
-		while game == True:
+		while game:
 			p = pswap[p]
 			await ctx.send(name[p]+'\'s turn!\n'+bprint(pswap[p],0)+name[p]+', take your shot.')
 			i = 0
@@ -126,7 +125,7 @@ class Battleship(commands.Cog):
 					y = int(s.content[1])
 					board[pswap[p]][(y*10)+x]
 				except:
-					await ctx.send('Invalid input')
+					await ctx.send('Invalid input.')
 					continue
 				if board[pswap[p]][(y*10)+x] == 0:
 					board[pswap[p]][(y*10)+x] = 1
@@ -177,12 +176,12 @@ class Battleship(commands.Cog):
 		if value == None:
 			v = await self.config.guild(ctx.guild).extraHit()
 			if v == True:
-				await ctx.send('You are currently able to shoot again after a hit')
+				await ctx.send('You are currently able to shoot again after a hit.')
 			else:
-				await ctx.send('You are currently not able to shoot again after a hit')
+				await ctx.send('You are currently not able to shoot again after a hit.')
 		else:
 			await self.config.guild(ctx.guild).extraHit.set(value)
 			if value == True:
-				await ctx.send('You will now be able to shoot again after a hit')
+				await ctx.send('You will now be able to shoot again after a hit.')
 			else:
-				await ctx.send('You will no longer be able to shoot again after a hit')
+				await ctx.send('You will no longer be able to shoot again after a hit.')
