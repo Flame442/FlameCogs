@@ -8,7 +8,7 @@ from random import randint
 import os
 
 class Hangman(commands.Cog):
-	"""Play hangman with the bot"""
+	"""Play hangman with the bot."""
 	def __init__(self, bot):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167902)
@@ -76,7 +76,7 @@ class Hangman(commands.Cog):
 
 	@commands.command()
 	async def hangman(self, ctx):
-		"""Play hangman with the bot"""
+		"""Play hangman with the bot."""
 		if ctx.guild == None: #default vars in pms
 			fp = str(bundled_data_path(self) / 'words.txt')
 			doEdit = False #cant delete messages in pms
@@ -150,7 +150,7 @@ class Hangman(commands.Cog):
 	@checks.guildowner()
 	@commands.group()
 	async def hangmanset(self, ctx):
-		"""Config options for hangman"""
+		"""Config options for hangman."""
 		pass
 	
 	@commands.guild_only()
@@ -191,9 +191,9 @@ class Hangman(commands.Cog):
 				if value in y:
 					set = str(cog_data_path(self) / str(value+'.txt'))
 					await self.config.guild(ctx.guild).fp.set(set)
-					await ctx.send('The wordlist is now set to '+value)
+					await ctx.send('The wordlist is now set to `'+value+'`.')
 				else:
-					await ctx.send('Wordlist not found')
+					await ctx.send('Wordlist not found.')
 	
 	@commands.guild_only()
 	@checks.guildowner()
