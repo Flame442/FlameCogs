@@ -41,7 +41,7 @@ class Gamevoice(commands.Cog):
 					await ctx.message.author.voice.channel.set_permissions(role, overwrite=None)
 				except:
 					pass
-			await ctx.send(str(ctx.message.author.voice.channel)+' is now open.')
+			await ctx.send(str(ctx.message.author.voice.channel)+' is now unrestricted.')
 		else:
 			list = ctx.message.guild.roles
 			roleid = None
@@ -58,7 +58,7 @@ class Gamevoice(commands.Cog):
 			await ctx.message.author.voice.channel.set_permissions(everyone, connect=False, speak=False)
 			role = ctx.message.guild.get_role(roleid)
 			await ctx.message.author.voice.channel.set_permissions(role, connect=True, speak=True)
-			await ctx.send('`'+str(ctx.message.author.voice.channel)+'` will now only allow people playing `'+str(ctx.message.author.activity)+'` to join.')
+			await ctx.send('`'+str(ctx.message.author.voice.channel)+'` will now only allow people playing `'+str(ctx.message.author.activity)+'` and any other previously added restrictions to join.')
 
 	@commands.guild_only()
 	@gamevoice.command(name='recheck')
