@@ -868,6 +868,7 @@ class Monopoly(commands.Cog):
 							if response == 'y': #buy property
 								bal[p] -= pricebuy[tile[p]]
 								ownedby[tile[p]] = p
+								await bprint()
 								await ctx.send(name[p]+' now owns '+tilename[tile[p]]+' and has $'+str(bal[p]))
 								a = 1
 							elif response == 'n': #pass on property
