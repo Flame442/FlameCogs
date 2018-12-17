@@ -138,7 +138,7 @@ This value is server specific.
 
 Set if hangman messages should be one edited message or many individual messages.
 
-Defaults to True.
+Defaults to `True`.
 
 This value is server specific.
 
@@ -155,8 +155,6 @@ Begin a game of monopoly.
 Use the optional paramater `savename` to load a saved game.
 
 # Planned changes
-
-**[Battleship]** Make placing ships eaisier to understand
 
 **[Monopoly]** Add config for various house rules (auctions, free parking, landing on go, etc)
 
