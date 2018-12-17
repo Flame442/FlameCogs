@@ -97,7 +97,7 @@ class Battleship(commands.Cog):
 		await ctx.send('A game of battleship will be played between '+name[0]+' and '+name[1]+'.')
 		for x in range(2): #each player
 			await ctx.send('Messaging '+name[x]+' for setup now.')
-			await pid[x].send(str(name[x]+', it is your turn to set up your ships. Place ships by entering the top left cord in xyd format.'))
+			await pid[x].send(str(name[x]+', it is your turn to set up your ships.\nPlace ships by entering the top left coordinate and the direction of (r)ight or (d)own in xyd format.'))
 			for k in [5,4,3,3,2]: #each ship length
 				await pid[x].send(bprint(x,1))
 				stupid = await pid[x].send('Place your '+str(k)+' length ship.')
