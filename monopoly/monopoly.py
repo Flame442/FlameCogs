@@ -562,11 +562,14 @@ class Monopoly(commands.Cog):
 						await land()
 						jr = 1
 					else:
-						await ctx.send('Select one of the options.')
+						continue
 
 			async def debt(): #player balance below 0 turn code
+				doprint = True
 				while bal[p] < 0 and alive[p]:
-					await ctx.send('You are in debt. You have $'+str(bal[p])+'.\nSelect an option to get out of debt:\nt: Trade\nm: Mortgage\nh: Sell Houses\ng: Give up')
+					if doprint:
+						await ctx.send('You are in debt. You have $'+str(bal[p])+'.\nSelect an option to get out of debt:\nt: Trade\nm: Mortgage\nh: Sell Houses\ng: Give up')
+					doprint = True
 					choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 					choice = choice.content
 					if choice == 't':
@@ -597,7 +600,7 @@ class Monopoly(commands.Cog):
 							else:
 								await ctx.send('Select one of the options')
 					else:
-						await ctx.send('Select one of the options')
+						doprint = False
 				if alive[p]:
 					await ctx.send('You are now out of debt. You now have $'+str(bal[p]))
 
@@ -609,18 +612,21 @@ class Monopoly(commands.Cog):
 						mid[mi] = a
 						mi += 1
 				i = 0
+				doprint = True
 				while i == 0:
-					a = 1
-					await ctx.send('Select the property you want to mortgage')
-					hold = 'id isM price name\n'
-					while a < mi:
-						if monopolytest(a,'h') == False: #cannot morgage a property in a color group with houses because houses can only be built on full monopolies
-							if ismortgaged[mid[a]] == 1:
-								hold += '{:2}   + {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
-							else:
-								hold += '{:2}     {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
-						a += 1
-					await ctx.send('```'+hold.strip()+'```')
+					if doprint:
+						a = 1
+						await ctx.send('Select the property you want to mortgage')
+						hold = 'id isM price name\n'
+						while a < mi:
+							if monopolytest(a,'h') == False: #cannot morgage a property in a color group with houses because houses can only be built on full monopolies
+								if ismortgaged[mid[a]] == 1:
+									hold += '{:2}   + {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
+								else:
+									hold += '{:2}     {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
+							a += 1
+						await ctx.send('```'+hold.strip()+'```')
+					doprint = True
 					t = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 					t = t.content
 					try:
@@ -665,7 +671,7 @@ class Monopoly(commands.Cog):
 						if t == 'd':
 							i = 1
 						else:
-							await ctx.send('Select one of the options')
+							doprint = False
 
 			async def house(): #buy/sell houses
 				io = 0
@@ -706,7 +712,7 @@ class Monopoly(commands.Cog):
 							if t == 'd':
 								i,io = 10,1
 							else:
-								await ctx.send('Select one of the options')
+								continue
 					while i == 1:
 						await ctx.send('Enter a new house amount or "c" to cancel')
 						tt = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
@@ -1180,7 +1186,7 @@ class Monopoly(commands.Cog):
 						r = 0
 						while r == 0:
 							await ctx.send('Type r to roll, t to trade, h to manage houses, m to mortgage, or s to save.')
-							choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel and m.content in ['r', '?', 't', 'm', 'h', 's'])
 							choice = choice.content
 							if choice == 'r': #normal turn, roll dice
 								global d1,d2
