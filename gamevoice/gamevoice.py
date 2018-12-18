@@ -25,23 +25,12 @@ class Gamevoice(commands.Cog):
 		"""
 		Create game specific voice channels.
 		Sets the voice channel you are in to only work with the game you are playing.
-		If you are not playing a game, the channel will be reset.
 		Any activity will count, including Spotify, so make sure discord thinks you are doing the correct activity.
 		"""
 		if ctx.message.author.voice == None:
 			return await ctx.send('You need to be in a voice channel.')
-		if ctx.message.author.activity == None:
-			list = ctx.message.guild.roles
-			everyone = list[0]
-			rolelist = await self.config.guild(ctx.guild).rolelist()
-			await ctx.message.author.voice.channel.set_permissions(everyone, connect=True, speak=True)
-			for x in rolelist.keys():
-				role = ctx.message.guild.get_role(rolelist[x])
-				try:
-					await ctx.message.author.voice.channel.set_permissions(role, overwrite=None)
-				except:
-					pass
-			await ctx.send(str(ctx.message.author.voice.channel)+' is now unrestricted.')
+		elif ctx.message.author.activity == None:
+			return await ctx.send('You need to be playing a game.')
 		else:
 			list = ctx.message.guild.roles
 			roleid = None
@@ -52,14 +41,36 @@ class Gamevoice(commands.Cog):
 			if roleid == None: #create role if it doesnt exist
 				roleid = await ctx.message.guild.create_role(name=str(ctx.message.author.activity))
 				roleid = roleid.id
-			rolelist = await self.config.guild(ctx.guild).rolelist()	#add
-			rolelist[str(ctx.message.author.activity)] = roleid			#to
-			await self.config.guild(ctx.guild).rolelist.set(rolelist)	#dict
+			rolelist = await self.config.guild(ctx.guild).rolelist()  #add
+			rolelist[str(ctx.message.author.activity)] = roleid       #to
+			await self.config.guild(ctx.guild).rolelist.set(rolelist) #dict
 			await ctx.message.author.voice.channel.set_permissions(everyone, connect=False, speak=False)
 			role = ctx.message.guild.get_role(roleid)
 			await ctx.message.author.voice.channel.set_permissions(role, connect=True, speak=True)
 			await ctx.send('`'+str(ctx.message.author.voice.channel)+'` will now only allow people playing `'+str(ctx.message.author.activity)+'` and any other previously added restrictions to join.')
 
+	@commands.guild_only()
+	@checks.guildowner()
+	@gamevoice.command(name='reset')
+	async def gamevoice_reset(self, ctx):
+		"""
+		Resets the voice channel you are in to defaults.
+		Will remove ALL permissions, not just those set by the cog, making it completely open.
+		"""
+		if ctx.message.author.voice == None:
+			return await ctx.send('You need to be in a voice channel.')
+		list = ctx.message.guild.roles
+		everyone = list[0]
+		rolelist = await self.config.guild(ctx.guild).rolelist()
+		await ctx.message.author.voice.channel.set_permissions(everyone, connect=True, speak=True)
+		for x in rolelist.keys():
+			role = ctx.message.guild.get_role(rolelist[x])
+			try:
+				await ctx.message.author.voice.channel.set_permissions(role, overwrite=None)
+			except:
+				pass
+		await ctx.send(str(ctx.message.author.voice.channel)+' is now unrestricted.')
+			
 	@commands.guild_only()
 	@gamevoice.command(name='recheck')
 	async def gamevoice_recheck(self, ctx):
