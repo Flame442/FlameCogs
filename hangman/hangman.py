@@ -110,9 +110,7 @@ class Hangman(commands.Cog):
 			p = '```'+self.man[fails]+'\n'+p+'```'
 			if err == 1:
 				p += 'You already guessed that letter.\n'
-			elif err == 2:
-				p += 'Pick a letter.\n'
-			check = lambda m: m.channel == ctx.message.channel and m.author == ctx.message.author
+			check = lambda m: m.channel == ctx.message.channel and m.author == ctx.message.author and len(m.content) == 1 and m.content in 'abcdefghijklmnopqrstuvwxyz'
 			if boardmsg == None or doEdit == False:
 				boardmsg = await ctx.send(p+'Guess:')
 			else:
@@ -121,13 +119,11 @@ class Hangman(commands.Cog):
 				umsg = await self.bot.wait_for('message', check=check, timeout=60)
 			except:
 				return await ctx.send('Canceling selection. You took too long.\nThe word was '+word+'.')
-			t = umsg.content[0].lower()
+			t = umsg.content.lower()
 			if doEdit:
 				await umsg.delete()
 			if t in guessed:
 				err = 1
-			elif t not in 'abcdefghijklmnopqrstuvwxyz':
-				err = 2
 			else:
 				err = 0
 				if t not in word:
