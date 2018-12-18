@@ -92,11 +92,15 @@ Alias `[p]gv <argument`
 
 Sets the voice channel you are in to only work with the game you are playing.
 
-If you are not playing a game, the channel will be reset.
-
 Any activity will count, including Spotify, so make sure discord thinks you are doing the correct activity.
 
 This command is only usable by the guild owner and bot owner.
+
+`[p]gamevoice reset`
+
+Resets the voice channel you are in to defaults.
+	
+Will remove ALL permissions, not just those set by the cog, making it completely open.
 
 `[p]gamevoice recheck`
 
@@ -159,6 +163,8 @@ Use the optional paramater `savename` to load a saved game.
 **[Monopoly]** Add config for various house rules (auctions, free parking, landing on go, etc)
 
 **[Battleship/Hangman/Monopoly]** Add optional betting to games
+
+**[Battleship]** Add command to end game
 
 # Contact
 
