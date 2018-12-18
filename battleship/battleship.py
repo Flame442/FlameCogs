@@ -8,6 +8,7 @@ class Battleship(commands.Cog):
 	"""Play battleship with one other person."""
 	def __init__(self, bot):
 		self.bot = bot
+		self.runningin = []
 		self.config = Config.get_conf(self, identifier=7345167901)
 		self.config.register_guild(
 			extraHit = True
@@ -17,11 +18,14 @@ class Battleship(commands.Cog):
 	@commands.command()
 	async def battleship(self, ctx):
 		"""Start a game of battleship."""
+		if ctx.channel.id in self.runningin:
+			return await ctx.send('There is already a game running in this channel.')
+		self.runningin.append(ctx.channel.id)
 		channel = ctx.message.channel
 		name = [ctx.message.author.display_name]
 		board = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
-		let = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-		letnum = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8, 'j': 9, 'k': 10, 'l': 11, 'm': 12, 'n': 13, 'o': 14, 'p': 15, 'q': 16, 'r': 17, 's': 18, 't': 19, 'u': 20, 'v': 21, 'w': 22, 'x': 23, 'y': 24, 'z': 25}
+		let = ['A','B','C','D','E','F','G','H','I','J']
+		letnum = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8, 'j': 9}
 		bkey = [{0:'· ',1:'O ',2:'X ',3:'· '},{0:'· ',1:'O ',2:'X ',3:'# '}]
 		pswap = {1:0,0:1}
 		key = [[],[]]
@@ -91,6 +95,7 @@ class Battleship(commands.Cog):
 		try:
 			r = await self.bot.wait_for('message', timeout=60, check=check)
 		except asyncio.TimeoutError:
+			self.runningin.remove(ctx.channel.id)
 			return await ctx.send('You took too long, shutting down.')
 		name.append(r.author.display_name)
 		pid.append(r.author)
@@ -105,6 +110,7 @@ class Battleship(commands.Cog):
 					try:
 						t = await self.bot.wait_for('message', timeout=120, check=lambda m:m.channel == stupid.channel and m.author.bot == False)
 					except asyncio.TimeoutError:
+						self.runningin.remove(ctx.channel.id)
 						return await ctx.send(name[x]+' took too long, shutting down.')
 					if await place(x,k,t.content.lower()) == True:
 						break
@@ -119,13 +125,13 @@ class Battleship(commands.Cog):
 				try:
 					s = await self.bot.wait_for('message', timeout=120, check=lambda m: m.author == pid[p] and m.channel == channel)
 				except asyncio.TimeoutError:
+					self.runningin.remove(ctx.channel.id)
 					return await ctx.send('You took too long, shutting down.')
 				try: #makes sure input is valid
 					x = letnum[s.content[0].lower()]
 					y = int(s.content[1])
 					board[pswap[p]][(y*10)+x]
 				except:
-					await ctx.send('Invalid input.')
 					continue
 				if board[pswap[p]][(y*10)+x] == 0:
 					board[pswap[p]][(y*10)+x] = 1
@@ -156,6 +162,7 @@ class Battleship(commands.Cog):
 										break
 								if l == 0: #if all ships destroyed
 									await ctx.send(name[p]+' wins!')
+									self.runningin.remove(ctx.channel.id)
 									game = False
 									i = 1
 							if game == True:
