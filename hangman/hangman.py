@@ -5,7 +5,7 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
 from random import randint
-import os
+import asyncio, os
 
 class Hangman(commands.Cog):
 	"""Play hangman with the bot."""
@@ -121,6 +121,7 @@ class Hangman(commands.Cog):
 				return await ctx.send('Canceling selection. You took too long.\nThe word was '+word+'.')
 			t = umsg.content.lower()
 			if doEdit:
+				asyncio.sleep(.5)
 				await umsg.delete()
 			if t in guessed:
 				err = 1
@@ -166,7 +167,7 @@ class Hangman(commands.Cog):
 			if str(v) == str(bundled_data_path(self) / 'words.txt'):
 				await ctx.send('The wordlist is set to the default list.')
 			else:
-				await ctx.send('The wordlist is set to `'+v[::-1].split('\\')[0][::-1][:-4]+'`.')
+				await ctx.send('The wordlist is set to `'+str(v)[::-1].split('\\')[0][::-1][:-4]+'`.')
 		elif value.lower() == 'default':
 			set = str(bundled_data_path(self) / 'words.txt')
 			await self.config.guild(ctx.guild).fp.set(set)
