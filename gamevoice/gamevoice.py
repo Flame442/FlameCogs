@@ -35,19 +35,19 @@ class Gamevoice(commands.Cog):
 			list = ctx.message.guild.roles
 			roleid = None
 			for x in list:
-				if str(ctx.message.author.activity) == x.name: #find role if it exists
+				if str(ctx.message.author.activity.name) == x.name: #find role if it exists
 					roleid = x.id
 			everyone = list[0]
 			if roleid == None: #create role if it doesnt exist
-				roleid = await ctx.message.guild.create_role(name=str(ctx.message.author.activity))
+				roleid = await ctx.message.guild.create_role(name=str(ctx.message.author.activity.name))
 				roleid = roleid.id
 			rolelist = await self.config.guild(ctx.guild).rolelist()  #add
-			rolelist[str(ctx.message.author.activity)] = roleid       #to
+			rolelist[str(ctx.message.author.activity.name)] = roleid       #to
 			await self.config.guild(ctx.guild).rolelist.set(rolelist) #dict
 			await ctx.message.author.voice.channel.set_permissions(everyone, connect=False, speak=False)
 			role = ctx.message.guild.get_role(roleid)
 			await ctx.message.author.voice.channel.set_permissions(role, connect=True, speak=True)
-			await ctx.send('`'+str(ctx.message.author.voice.channel)+'` will now only allow people playing `'+str(ctx.message.author.activity)+'` and any other previously added restrictions to join.')
+			await ctx.send('`'+str(ctx.message.author.voice.channel)+'` will now only allow people playing `'+str(ctx.message.author.activity.name)+'` and any other previously added restrictions to join.')
 
 	@commands.guild_only()
 	@checks.guildowner()
@@ -80,7 +80,7 @@ class Gamevoice(commands.Cog):
 		for x in rolelist.keys():
 			await ctx.message.author.remove_roles(ctx.message.guild.get_role(rolelist[x]))
 		try:
-			roleid = rolelist[str(ctx.message.author.activity)]
+			roleid = rolelist[str(ctx.message.author.activity.name)]
 			role = ctx.message.guild.get_role(roleid)
 			await ctx.message.author.add_roles(role)
 		except:
@@ -95,7 +95,7 @@ class Gamevoice(commands.Cog):
 			for x in rolelist.keys():
 				await afterMem.remove_roles(afterMem.guild.get_role(rolelist[x]))
 			try:
-				roleid = rolelist[str(afterMem.activity)]
+				roleid = rolelist[str(afterMem.activity.name)]
 				role = afterMem.guild.get_role(roleid)
 				await afterMem.add_roles(role)
 			except:
