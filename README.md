@@ -86,7 +86,7 @@ This cog lets you make voice channels that require a user to be playing a specif
 
 `[p]gamevoice <argument>`
 
-Alias `[p]gv <argument`
+Alias `[p]gv <argument>`
 
 `[p]gamevoice set`
 
@@ -101,6 +101,26 @@ This command is only usable by the guild owner and bot owner.
 Resets the voice channel you are in to defaults.
 	
 Will remove ALL permissions, not just those set by the cog, making it completely open.
+
+`[p]gamevoice listroles`
+
+Lists all the roles created for games on the server.
+
+This command is only usable by the guild owner and bot owner.
+
+`[p]gamevoice deleterole <name>`
+
+Delete a role from the server.
+
+Also removes that game's restrictions from all channels.
+
+Case sensitive.
+
+Use `[p]gv listroles` to see all roles.
+
+This command is only usable by the guild owner and bot owner.
+
+Alias `[p]gamevoice delrole <name>`
 
 `[p]gamevoice recheck`
 
