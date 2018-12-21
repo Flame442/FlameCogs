@@ -110,7 +110,7 @@ class Hangman(commands.Cog):
 			p = '```'+self.man[fails]+'\n'+p+'```'
 			if err == 1:
 				p += 'You already guessed that letter.\n'
-			check = lambda m: m.channel == ctx.message.channel and m.author == ctx.message.author and len(m.content) == 1 and m.content in 'abcdefghijklmnopqrstuvwxyz'
+			check = lambda m: m.channel == ctx.message.channel and m.author == ctx.message.author and len(m.content) == 1 and m.content.lower() in 'abcdefghijklmnopqrstuvwxyz'
 			if boardmsg == None or doEdit == False:
 				boardmsg = await ctx.send(p+'Guess:')
 			else:
