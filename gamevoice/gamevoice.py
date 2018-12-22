@@ -92,10 +92,13 @@ class Gamevoice(commands.Cog):
 		"""Lists all the roles created for games."""
 		rolelist = await self.config.guild(ctx.guild).rolelist()
 		namelist = list(rolelist.keys())
-		p = 'The game roles on this server are:\n`'
-		for x in namelist:
-			p += x+'\n'
-		await ctx.send(p+'`')
+		if namelist == []:
+			await ctx.send('There are no game roles on this server.')
+		else:
+			p = 'The game roles on this server are:\n`'
+			for x in namelist:
+				p += x+'\n'
+			await ctx.send(p+'`')
 		
 	@commands.guild_only()
 	@checks.guildowner()
