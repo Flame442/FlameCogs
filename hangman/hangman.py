@@ -83,10 +83,8 @@ class Hangman(commands.Cog):
 		else: #server specific vars
 			fp = await self.config.guild(ctx.guild).fp()
 			doEdit = await self.config.guild(ctx.guild).doEdit()
-		x = open(fp)
-		wordlist = []
-		for line in x:
-			wordlist.append(line.strip().lower())
+		f = open(fp)
+		wordlist = [line.strip().lower() for line in f]
 		word = wordlist[randint(0,len(wordlist))] #pick and format random word
 		guessed = ''
 		fails = 0
@@ -122,7 +120,10 @@ class Hangman(commands.Cog):
 			t = umsg.content.lower()
 			if doEdit:
 				asyncio.sleep(.5)
-				await umsg.delete()
+				try:
+					await umsg.delete()
+				except discord.errors.Forbidden:
+					pass
 			if t in guessed:
 				err = 1
 			else:
