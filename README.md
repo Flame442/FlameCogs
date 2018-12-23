@@ -154,4 +154,4 @@ Feel free to create an issue on this repository for any bugs you find.
 
 # Credit
 
-Thanks to the [creators of Redbot](https://github.com/Cog-Creators/Red-DiscordBot/graphs/contributors) for creating the base these cogs run on and the helpful support staff at the [Redbot discord](https://discord.gg/red).
+Thanks to the [creators of Redbot](https://github.com/Cog-Creators/Red-DiscordBot/graphs/contributors) for creating the base these cogs run on, the helpful support staff at the [Redbot discord](https://discord.gg/red), Aikaterna for taking the time to QA this repo, and [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman.
