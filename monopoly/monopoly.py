@@ -1222,8 +1222,9 @@ class Monopoly(commands.Cog):
 								savename = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 								with open(str(cog_data_path(self))+'\\'+savename.content+'.txt','w') as f:
 									f.write(autosave)
-									self.runningin.remove(ctx.channel.id)
-									return await ctx.send('Saved')
+								self.runningin.remove(ctx.channel.id)
+								numalive = 0
+								return await ctx.send('Saved.')
 									
 				r = 1
 				while r == 1 and alive[p]:
