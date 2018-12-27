@@ -1223,6 +1223,7 @@ class Monopoly(commands.Cog):
 								with open(str(cog_data_path(self))+'\\'+savename.content+'.txt','w') as f:
 									f.write(autosave)
 								self.runningin.remove(ctx.channel.id)
+								global numalive
 								numalive = 0
 								return await ctx.send('Saved.')
 									
