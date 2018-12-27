@@ -5,10 +5,10 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
 from random import randint
-import os
+import asyncio, os
 
 class Hangman(commands.Cog):
-	"""Play hangman with the bot"""
+	"""Play hangman with the bot."""
 	def __init__(self, bot):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167902)
@@ -76,17 +76,15 @@ class Hangman(commands.Cog):
 
 	@commands.command()
 	async def hangman(self, ctx):
-		"""Play hangman with the bot"""
+		"""Play hangman with the bot."""
 		if ctx.guild == None: #default vars in pms
 			fp = str(bundled_data_path(self) / 'words.txt')
 			doEdit = False #cant delete messages in pms
 		else: #server specific vars
 			fp = await self.config.guild(ctx.guild).fp()
 			doEdit = await self.config.guild(ctx.guild).doEdit()
-		x = open(fp)
-		wordlist = []
-		for line in x:
-			wordlist.append(line.strip().lower())
+		f = open(fp)
+		wordlist = [line.strip().lower() for line in f]
 		word = wordlist[randint(0,len(wordlist))] #pick and format random word
 		guessed = ''
 		fails = 0
@@ -110,9 +108,7 @@ class Hangman(commands.Cog):
 			p = '```'+self.man[fails]+'\n'+p+'```'
 			if err == 1:
 				p += 'You already guessed that letter.\n'
-			elif err == 2:
-				p += 'Pick a letter.\n'
-			check = lambda m: m.channel == ctx.message.channel and m.author == ctx.message.author
+			check = lambda m: m.channel == ctx.message.channel and m.author == ctx.message.author and len(m.content) == 1 and m.content.lower() in 'abcdefghijklmnopqrstuvwxyz'
 			if boardmsg == None or doEdit == False:
 				boardmsg = await ctx.send(p+'Guess:')
 			else:
@@ -121,13 +117,15 @@ class Hangman(commands.Cog):
 				umsg = await self.bot.wait_for('message', check=check, timeout=60)
 			except:
 				return await ctx.send('Canceling selection. You took too long.\nThe word was '+word+'.')
-			t = umsg.content[0].lower()
+			t = umsg.content.lower()
 			if doEdit:
-				await umsg.delete()
+				asyncio.sleep(.5)
+				try:
+					await umsg.delete()
+				except discord.errors.Forbidden:
+					pass
 			if t in guessed:
 				err = 1
-			elif t not in 'abcdefghijklmnopqrstuvwxyz':
-				err = 2
 			else:
 				err = 0
 				if t not in word:
@@ -150,7 +148,7 @@ class Hangman(commands.Cog):
 	@checks.guildowner()
 	@commands.group()
 	async def hangmanset(self, ctx):
-		"""Config options for hangman"""
+		"""Config options for hangman."""
 		pass
 	
 	@commands.guild_only()
@@ -170,7 +168,7 @@ class Hangman(commands.Cog):
 			if str(v) == str(bundled_data_path(self) / 'words.txt'):
 				await ctx.send('The wordlist is set to the default list.')
 			else:
-				await ctx.send('The wordlist is set to `'+v[::-1].split('\\')[0][::-1][:-4]+'`.')
+				await ctx.send('The wordlist is set to `'+str(v)[::-1].split('\\')[0][::-1][:-4]+'`.')
 		elif value.lower() == 'default':
 			set = str(bundled_data_path(self) / 'words.txt')
 			await self.config.guild(ctx.guild).fp.set(set)
@@ -191,9 +189,9 @@ class Hangman(commands.Cog):
 				if value in y:
 					set = str(cog_data_path(self) / str(value+'.txt'))
 					await self.config.guild(ctx.guild).fp.set(set)
-					await ctx.send('The wordlist is now set to '+value)
+					await ctx.send('The wordlist is now set to `'+value+'`.')
 				else:
-					await ctx.send('Wordlist not found')
+					await ctx.send('Wordlist not found.')
 	
 	@commands.guild_only()
 	@checks.guildowner()

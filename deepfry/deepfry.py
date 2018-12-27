@@ -17,13 +17,14 @@ class Deepfry(commands.Cog):
 		self.config.register_guild(
 			chance = 0
 		)
+		self.filetypes = ['png', 'jpg', 'jpeg']
 		
 	@commands.command(aliases=['df'])
 	async def deepfry(self, ctx, amount: float=0):
 		"""Deepfries images."""
 		if ctx.message.attachments == []:
 			return await ctx.send('Please provide an attachment.')
-		if ctx.message.attachments[0].url[::-1].split(".")[0][::-1] not in ['png', 'jpg']:
+		if ctx.message.attachments[0].url[::-1].split(".")[0][::-1] not in self.filetypes:
 			return await ctx.send('"'+ctx.message.attachments[0].url[::-1].split(".")[0][::-1].title()+'" is not a supported filetype.')
 		async with aiohttp.ClientSession() as session:
 			async with session.get(ctx.message.attachments[0].url) as response:
@@ -60,7 +61,7 @@ class Deepfry(commands.Cog):
 		"""Demolishes images."""
 		if ctx.message.attachments == []:
 			return await ctx.send('Please provide an attachment.')
-		if ctx.message.attachments[0].url[::-1].split(".")[0][::-1] not in ['png', 'jpg']:
+		if ctx.message.attachments[0].url[::-1].split(".")[0][::-1] not in self.filetypes:
 			return await ctx.send('"'+ctx.message.attachments[0].url[::-1].split(".")[0][::-1].title()+'" is not a supported filetype.')
 		async with aiohttp.ClientSession() as session:
 			async with session.get(ctx.message.attachments[0].url) as response:
@@ -112,20 +113,24 @@ class Deepfry(commands.Cog):
 			v = await self.config.guild(ctx.message.guild).chance()
 			if v == 0:
 				await ctx.send('Autofrying is currently disabled.')
+			elif v == 1:
+				await ctx.send('All images are being fried.')
 			else:
 				await ctx.send('1 out of every '+str(v)+' images are being fried.')
 		else:
 			await self.config.guild(ctx.guild).chance.set(value)
 			if value == 0:
 				await ctx.send('Autofrying is now disabled.')
+			elif value == 1:
+				await ctx.send('All images will be fried.')
 			else:
 				await ctx.send('1 out of every '+str(value)+' images will be fried.')
 		
 	async def run(self, t):
 		"""Passively deepfries random images."""
-		if t.author.id != self.bot.user.id and isinstance(t.channel, discord.TextChannel):
+		if t.author.id != self.bot.user.id and isinstance(t.channel, discord.TextChannel) and t.attachments != []:
 			v = await self.config.guild(t.guild).chance()
-			if t.attachments != [] and t.attachments[0].url[::-1].split(".")[0][::-1] in ['png', 'jpg'] and t.content.find('!deepfry') == -1 and t.content.find('!nuke') == -1 and v != 0:
+			if t.attachments[0].url[::-1].split(".")[0][::-1] in self.filetypes and False if True in [t.content.startswith(x) for x in await self.bot.get_prefix(t)] else True and v != 0:
 				l = randint(1,v)
 				if l == 1:
 					async with aiohttp.ClientSession() as session:

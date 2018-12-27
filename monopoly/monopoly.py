@@ -11,11 +11,15 @@ class Monopoly(commands.Cog):
 	"""A fun game of monopoly for 2-8 people"""
 	def __init__(self, bot):
 		self.bot = bot
+		self.runningin = []
 
 	@commands.guild_only()
 	@commands.command()
 	async def monopoly(self, ctx, savefile: str=None):
 		"""A fun game of monopoly for 2-8 people"""
+		if ctx.channel.id in self.runningin:
+			return await ctx.send('There is already a game running in this channel.')
+		self.runningin.append(ctx.channel.id)
 		channel = ctx.message.channel
 		global injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn,p,num,numalive,id,name
 		if savefile != None:
@@ -60,20 +64,22 @@ class Monopoly(commands.Cog):
 					num = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[1] and m.channel == channel)
 					num = int(num.content)
 					if num < 2 or num > 8: #2-8 player game
-						await ctx.send('Please select a number between 2 and 8')
+						await ctx.send('Please select a number between 2 and 8.')
 					else:
 						numalive = num #set number of players still in the game for later
 						i = 1 #leave loop
 				except asyncio.TimeoutError:
-					return await ctx.send('You took too long to respond')
+					self.runningin.remove(ctx.channel.id)
+					return await ctx.send('You took too long to respond.')
 				except: #not a number
-					await ctx.send('Please select a number between 2 and 8')
+					await ctx.send('Please select a number between 2 and 8.')
 			for a in range(2,num+1):
 				await ctx.send('Player '+str(a)+', say I')
 				try:
 					r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id not in id and m.author.bot == False and m.channel == channel)
 				except asyncio.TimeoutError:
-					return await ctx.send('You took too long to respond')
+					self.runningin.remove(ctx.channel.id)
+					return await ctx.send('You took too long to respond.')
 				name.append(str(r.author)[:-5])
 				id.append(r.author.id)
 				#LETS DEFINE SOME VARIABLES!!!
@@ -562,11 +568,14 @@ class Monopoly(commands.Cog):
 						await land()
 						jr = 1
 					else:
-						await ctx.send('Select one of the options.')
+						continue
 
 			async def debt(): #player balance below 0 turn code
+				doprint = True
 				while bal[p] < 0 and alive[p]:
-					await ctx.send('You are in debt. You have $'+str(bal[p])+'.\nSelect an option to get out of debt:\nt: Trade\nm: Mortgage\nh: Sell Houses\ng: Give up')
+					if doprint:
+						await ctx.send('You are in debt. You have $'+str(bal[p])+'.\nSelect an option to get out of debt:\nt: Trade\nm: Mortgage\nh: Sell Houses\ng: Give up')
+					doprint = True
 					choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 					choice = choice.content
 					if choice == 't':
@@ -597,7 +606,7 @@ class Monopoly(commands.Cog):
 							else:
 								await ctx.send('Select one of the options')
 					else:
-						await ctx.send('Select one of the options')
+						doprint = False
 				if alive[p]:
 					await ctx.send('You are now out of debt. You now have $'+str(bal[p]))
 
@@ -609,18 +618,21 @@ class Monopoly(commands.Cog):
 						mid[mi] = a
 						mi += 1
 				i = 0
+				doprint = True
 				while i == 0:
-					a = 1
-					await ctx.send('Select the property you want to mortgage')
-					hold = 'id isM price name\n'
-					while a < mi:
-						if monopolytest(a,'h') == False: #cannot morgage a property in a color group with houses because houses can only be built on full monopolies
-							if ismortgaged[mid[a]] == 1:
-								hold += '{:2}   + {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
-							else:
-								hold += '{:2}     {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
-						a += 1
-					await ctx.send('```'+hold.strip()+'```')
+					if doprint:
+						a = 1
+						await ctx.send('Select the property you want to mortgage')
+						hold = 'id isM price name\n'
+						while a < mi:
+							if monopolytest(a,'h') == False: #cannot morgage a property in a color group with houses because houses can only be built on full monopolies
+								if ismortgaged[mid[a]] == 1:
+									hold += '{:2}   + {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
+								else:
+									hold += '{:2}     {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
+							a += 1
+						await ctx.send('```'+hold.strip()+'```')
+					doprint = True
 					t = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 					t = t.content
 					try:
@@ -665,7 +677,7 @@ class Monopoly(commands.Cog):
 						if t == 'd':
 							i = 1
 						else:
-							await ctx.send('Select one of the options')
+							doprint = False
 
 			async def house(): #buy/sell houses
 				io = 0
@@ -706,7 +718,7 @@ class Monopoly(commands.Cog):
 							if t == 'd':
 								i,io = 10,1
 							else:
-								await ctx.send('Select one of the options')
+								continue
 					while i == 1:
 						await ctx.send('Enter a new house amount or "c" to cancel')
 						tt = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
@@ -868,6 +880,7 @@ class Monopoly(commands.Cog):
 							if response == 'y': #buy property
 								bal[p] -= pricebuy[tile[p]]
 								ownedby[tile[p]] = p
+								await bprint()
 								await ctx.send(name[p]+' now owns '+tilename[tile[p]]+' and has $'+str(bal[p]))
 								a = 1
 							elif response == 'n': #pass on property
@@ -1179,7 +1192,7 @@ class Monopoly(commands.Cog):
 						r = 0
 						while r == 0:
 							await ctx.send('Type r to roll, t to trade, h to manage houses, m to mortgage, or s to save.')
-							choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel and m.content in ['r', '?', 't', 'm', 'h', 's'])
 							choice = choice.content
 							if choice == 'r': #normal turn, roll dice
 								global d1,d2
@@ -1209,9 +1222,10 @@ class Monopoly(commands.Cog):
 								savename = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 								with open(str(cog_data_path(self))+'\\'+savename.content+'.txt','w') as f:
 									f.write(autosave)
-									global numalive
-									numalive = 0
-									return await ctx.send('Saved')
+								self.runningin.remove(ctx.channel.id)
+								global numalive
+								numalive = 0
+								return await ctx.send('Saved.')
 									
 				r = 1
 				while r == 1 and alive[p]:
@@ -1254,9 +1268,12 @@ class Monopoly(commands.Cog):
 			if numalive == 1:
 				for o in range(1,num+1):
 					if alive[o]:
+						self.runningin.remove(ctx.channel.id)
 						await ctx.send(name[o]+' wins!')
 		except asyncio.TimeoutError:
+			self.runningin.remove(ctx.channel.id)
 			await ctx.send('You took too long, shutting down.\nSave info:\n```'+autosave+'```')
 		except:
+			self.runningin.remove(ctx.channel.id)
 			await ctx.send('A fatal error has occurred, shutting down.\nSave info:\n```'+autosave+'```')
 			raise
