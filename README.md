@@ -114,7 +114,7 @@ This cog will play hangman with you.
 Begin a game of hangman.
 
 `[p]hangmanset <argument>`  
-Settings for hangman.  
+Config options for hangman.  
 This command is only usable by the guild owner and bot owner.
 
 `[p]hangmanset wordlist [value]`  
@@ -128,6 +128,7 @@ This value is server specific.
 `[p]hangmanset edit [value]`  
 Set if hangman messages should be one edited message or many individual messages.  
 Defaults to `True`.  
+This command is only usable by the guild owner and bot owner.  
 This value is server specific.
 
 ## Monopoly
@@ -139,6 +140,16 @@ This cog will let you play monopoly with up to 7 other people in your server.
 `[p]monopoly [savename]`  
 Begin a game of monopoly.   
 Use the optional paramater `savename` to load a saved game.
+
+`[p]monopolyset <argument>` 
+Config options for monopoly.  
+This command is only usable by the guild owner and bot owner.
+
+`[p]monopolyset mention [value]`  
+Set if players should be mentioned when their turn begins.  
+Defaults to `False`.  
+This command is only usable by the guild owner and bot owner.
+This value is server specific.  
 
 # Planned changes
 
