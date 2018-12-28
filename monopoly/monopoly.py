@@ -1,9 +1,11 @@
 import discord
-from redbot.core import commands
 from random import randint, shuffle
 from PIL import Image
-from redbot.core.data_manager import cog_data_path
 from redbot.core.data_manager import bundled_data_path
+from redbot.core.data_manager import cog_data_path
+from redbot.core import commands
+from redbot.core import Config
+from redbot.core import checks
 import asyncio, os
 
 
@@ -12,7 +14,40 @@ class Monopoly(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.runningin = []
-
+		self.config = Config.get_conf(self, identifier=7345167904)
+		self.config.register_guild(
+			doMention = False
+		)
+	
+	@commands.guild_only()
+	@checks.guildowner()
+	@commands.group()
+	async def monopolyset(self, ctx):
+		"""Config options for monopoly"""
+		pass
+		
+	@commands.guild_only()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def mention(self, ctx, value: bool=None):
+		"""
+		Set if players should be mentioned when their turn begins.
+		Defaults to False.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).doMention()
+			if v:
+				await ctx.send('Players are being mentioned when their turn begins.')
+			else:
+				await ctx.send('Players are not being mentioned when their turn begins.')
+		else:
+			await self.config.guild(ctx.guild).doMention.set(value)
+			if value:
+				await ctx.send('Players will be mentioned when their turn begins.')
+			else:
+				await ctx.send('Players will not be mentioned when their turn begins.')
+	
 	@commands.guild_only()
 	@commands.command()
 	async def monopoly(self, ctx, savefile: str=None):
@@ -1180,7 +1215,13 @@ class Monopoly(commands.Cog):
 				global bal
 				nod = 0
 				await bprint()
-				await ctx.send(name[p]+'\'s turn!')
+				v = await self.config.guild(ctx.guild).doMention()
+				if v:
+					mem = ctx.guild.get_member(id[p])
+					mention = mem.mention
+				else:
+					mention = name[p]
+				await ctx.send(mention+'\'s turn!')
 				if bal[p] < 0:
 					await debt()
 				if injail[p] and alive[p]:
