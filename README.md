@@ -37,10 +37,10 @@ This cog will let you play battleship against another member of your server.
 
 ### Usage
 
-`[p]battleship`  
+**`[p]battleship`**  
 Begin a game of battleship.
 
-`[p]battleshipset [value]`  
+**`[p]battleshipset [value]`**  
 Set if an extra shot should be given after a hit.  
 Defaults to `True`.  
 This command is only usable by the guild owner and bot owner.  
@@ -53,14 +53,14 @@ Images have to be attatched to the command, links do NOT work!
 
 ### Usage
 
-`[p]deepfry [amount]`  
+**`[p]deepfry [amount]`**  
 Deepfries the attatched image by the `amount` provided.  
 Alias: `[p]df [amount]`
 
-`[p]nuke`  
+**`[p]nuke`**  
 Nukes the attatched image
 
-`[p]deepfryset [value]`  
+**`[p]deepfryset [value]`**  
 Change the rate images are automatically deepfried.  
 Images will have a 1/`[value]` chance to be deepfried.  
 Higher values cause less often fries.  
@@ -75,24 +75,24 @@ This cog lets you make voice channels that require a user to be playing a specif
 
 ### Usage
 
-`[p]gamevoice <argument>`  
+**`[p]gamevoice <argument>`**  
 Alias `[p]gv <argument>`
 
-`[p]gamevoice set`  
+**`[p]gamevoice set`**  
 Sets the voice channel you are in to only work with the game you are playing.  
 Any activity will count, including Spotify, so make sure discord thinks you are doing the correct activity.  
 This command is only usable by the guild owner and bot owner.
 
-`[p]gamevoice reset`  
+**`[p]gamevoice reset`**  
 Resets the voice channel you are in to defaults.  
 Will remove ALL permissions, not just those set by the cog, making it completely open.  
 This command is only usable by the guild owner and bot owner.
 
-`[p]gamevoice listroles`  
+**`[p]gamevoice listroles`**  
 Lists all the roles created for games on the server.  
 This command is only usable by the guild owner and bot owner.
 
-`[p]gamevoice deleterole <name>`  
+**`[p]gamevoice deleterole <name>`**  
 Delete a role from the server.  
 Also removes that game's restrictions from all channels.  
 Case sensitive.  
@@ -100,7 +100,7 @@ Use `[p]gv listroles` to see all roles.
 This command is only usable by the guild owner and bot owner.  
 Alias `[p]gamevoice delrole <name>`
 
-`[p]gamevoice recheck`  
+**`[p]gamevoice recheck`**  
 Force a recheck of your current game.  
 Use this if you are playing the correct game and it does not let you join.
 
@@ -110,14 +110,14 @@ This cog will play hangman with you.
 
 ### Usage
 
-`[p]hangman`  
+**`[p]hangman`**  
 Begin a game of hangman.
 
-`[p]hangmanset <argument>`  
+**`[p]hangmanset <argument>`**  
 Config options for hangman.  
 This command is only usable by the guild owner and bot owner.
 
-`[p]hangmanset wordlist [value]`  
+**`[p]hangmanset wordlist [value]`**  
 Change the wordlist used.  
 Extra wordlists can be put in the data folder of this cog.  
 Wordlists are a text file with every new line being a new word.  
@@ -125,7 +125,7 @@ Use `default` to restore the default wordlist.
 Use `list` to list available wordlists.  
 This value is server specific.
 
-`[p]hangmanset edit [value]`  
+**`[p]hangmanset edit [value]`**  
 Set if hangman messages should be one edited message or many individual messages.  
 Defaults to `True`.  
 This command is only usable by the guild owner and bot owner.  
@@ -137,19 +137,37 @@ This cog will let you play monopoly with up to 7 other people in your server.
 
 ### Usage
 
-`[p]monopoly [savename]`  
+**`[p]monopoly [savename]`**  
 Begin a game of monopoly.   
 Use the optional paramater `savename` to load a saved game.
 
-`[p]monopolyset <argument>` 
+**`[p]monopolyset <argument>`** 
 Config options for monopoly.  
 This command is only usable by the guild owner and bot owner.
 
-`[p]monopolyset mention [value]`  
+**`[p]monopolyset mention [value]`**  
 Set if players should be mentioned when their turn begins.  
 Defaults to `False`.  
 This command is only usable by the guild owner and bot owner.
 This value is server specific.  
+
+**`[p]monopolyset startingcash [value]`**  
+Set how much money players should start the game with.  
+Defaults to `1500`.  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset income [value]`**  
+Set how much Income Tax should cost.  
+Defaults to `200`.  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset luxury [value]`**  
+Set how much Luxury Tax should cost.  
+Defaults to `100`.  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
 
 # Planned changes
 
