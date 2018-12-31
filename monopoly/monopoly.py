@@ -721,7 +721,6 @@ class Monopoly(commands.Cog):
 				while i == 0:
 					if doprint:
 						a = 1
-						await ctx.send('Select the property you want to mortgage')
 						hold = 'id isM price name\n'
 						while a < mi:
 							if monopolytest(a,'h') == False: #cannot morgage a property in a color group with houses because houses can only be built on full monopolies
@@ -730,7 +729,7 @@ class Monopoly(commands.Cog):
 								else:
 									hold += '{:2}     {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
 							a += 1
-						await ctx.send('```'+hold.strip()+'```')
+						await ctx.send('Select the number of the property you want to mortgage or type "d" to exit.\n```'+hold.strip()+'```')
 					doprint = True
 					t = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 					t = t.content
@@ -797,12 +796,11 @@ class Monopoly(commands.Cog):
 								hid[hi] = x
 								hi += 1
 					a = 1
-					await ctx.send('Select the color groups to buy houses')
 					hold = 'id numh price name\n'
 					while a < hi:
 						hold += '{:2} {:4} {:5d} {}'.format(a,numhouse[hid[a]],houseprice[hid[a]],color[hid[a]])+'\n'
 						a += 1
-					await ctx.send('```'+hold.strip()+'\nYou have $'+str(bal[p])+'```')
+					await ctx.send('Select the number of the color group or type "d" to exit.\n```'+hold.strip()+'\nYou have $'+str(bal[p])+'```')
 					i = 0
 					while i == 0:
 						t = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
