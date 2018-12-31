@@ -104,8 +104,7 @@ class Battleship(commands.Cog):
 			await ctx.send('Messaging '+name[x]+' for setup now.')
 			await pid[x].send(str(name[x]+', it is your turn to set up your ships.\nPlace ships by entering the top left coordinate and the direction of (r)ight or (d)own in xyd format.'))
 			for k in [5,4,3,3,2]: #each ship length
-				await pid[x].send(bprint(x,1))
-				stupid = await pid[x].send('Place your '+str(k)+' length ship.')
+				stupid = await pid[x].send(bprint(x,1)+'Place your '+str(k)+' length ship.')
 				while True:
 					try:
 						t = await self.bot.wait_for('message', timeout=120, check=lambda m:m.channel == stupid.channel and m.author.bot == False)
@@ -123,7 +122,7 @@ class Battleship(commands.Cog):
 			i = 0
 			while i == 0:
 				try:
-					s = await self.bot.wait_for('message', timeout=120, check=lambda m: m.author == pid[p] and m.channel == channel)
+					s = await self.bot.wait_for('message', timeout=120, check=lambda m: m.author == pid[p] and m.channel == channel and len(m.content) == 2)
 				except asyncio.TimeoutError:
 					self.runningin.remove(ctx.channel.id)
 					return await ctx.send('You took too long, shutting down.')
