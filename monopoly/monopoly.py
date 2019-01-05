@@ -10,20 +10,23 @@ import asyncio, os
 
 
 class Monopoly(commands.Cog):
-	"""A fun game of monopoly for 2-8 people"""
+	"""A fun game of monopoly for 2-8 people."""
 	def __init__(self, bot):
 		self.bot = bot
 		self.runningin = []
 		self.config = Config.get_conf(self, identifier=7345167904)
 		self.config.register_guild(
-			doMention = False
+			doMention = False,
+			startCash = 1500,
+			incomeValue = 200,
+			luxuryValue = 100
 		)
 	
 	@commands.guild_only()
 	@checks.guildowner()
 	@commands.group()
 	async def monopolyset(self, ctx):
-		"""Config options for monopoly"""
+		"""Config options for monopoly."""
 		pass
 		
 	@commands.guild_only()
@@ -47,6 +50,54 @@ class Monopoly(commands.Cog):
 				await ctx.send('Players will be mentioned when their turn begins.')
 			else:
 				await ctx.send('Players will not be mentioned when their turn begins.')
+	
+	@commands.guild_only()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def startingcash(self, ctx, value: int=None):
+		"""
+		Set how much money players should start the game with.
+		Defaults to 1500.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).startCash()
+			await ctx.send('Players are starting with $'+str(v)+'.')
+		else:
+			await self.config.guild(ctx.guild).startCash.set(value)
+			await ctx.send('Players will start with $'+str(value)+'.')
+	
+	@commands.guild_only()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def income(self, ctx, value: int=None):
+		"""
+		Set how much Income Tax should cost.
+		Defaults to 200.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).incomeValue()
+			await ctx.send('Income Tax currently costs $'+str(v)+'.')
+		else:
+			await self.config.guild(ctx.guild).incomeValue.set(value)
+			await ctx.send('Income Tax will now cost $'+str(value)+'.')
+	
+	@commands.guild_only()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def luxury(self, ctx, value: int=None):
+		"""
+		Set how much Luxury Tax should cost.
+		Defaults to 100.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).luxuryValue()
+			await ctx.send('Luxury Tax currently costs $'+str(v)+'.')
+		else:
+			await self.config.guild(ctx.guild).luxuryValue.set(value)
+			await ctx.send('Luxury Tax will now cost $'+str(value)+'.')
 	
 	@commands.guild_only()
 	@commands.command()
@@ -121,7 +172,8 @@ class Monopoly(commands.Cog):
 				p = 1
 				injail = [-1, False, False, False, False, False, False, False, False]
 				tile = [-1, 0, 0, 0, 0, 0, 0, 0, 0]
-				bal = [-1, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500]
+				v = await self.config.guild(ctx.guild).startCash()
+				bal = [-1, v, v, v, v, v, v, v, v]
 				ownedby = [-1, 0, -1, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, -1, 0]
 				numhouse = [-1, 0, -1, 0, -1, -1, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, 0, -1, 0, -1, 0, 0, -1, 0, -1, -1, 0, -1, 0]
 				ismortgaged = [-1, 0, -1, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, -1, 0]
@@ -454,7 +506,13 @@ class Monopoly(commands.Cog):
 					else:
 						await ctx.send('Select y or n')
 				if i == 4:
-					await ctx.send(name[tradep]+',\n'+name[p]+' would like to trade with you. Here is their offer.\nAccept with y or deny with n.\n\nYou will get:')
+					v = await self.config.guild(ctx.guild).doMention()
+					if v:
+						mem = ctx.guild.get_member(id[tradep])
+						mention = mem.mention
+					else:
+						mention = name[tradep]
+					await ctx.send(mention+',\n'+name[p]+' would like to trade with you. Here is their offer.\nAccept with y or deny with n.\n\nYou will get:')
 					a = 1
 					hold = ''
 					while a < pti:
@@ -508,7 +566,13 @@ class Monopoly(commands.Cog):
 							ownedby[tradeidn[a]] = p
 						a += 1
 					await bprint()
-				await ctx.send('Back to '+name[p]+'\'s turn')
+				v = await self.config.guild(ctx.guild).doMention()
+				if v:
+					mem = ctx.guild.get_member(id[p])
+					mention = mem.mention
+				else:
+					mention = name[p]
+				await ctx.send('Back to '+mention+'\'s turn')
 				
 			async def roll(): #rolls d1 and d2 (1-6) and prints if 'doubles'
 				global d1
@@ -657,7 +721,6 @@ class Monopoly(commands.Cog):
 				while i == 0:
 					if doprint:
 						a = 1
-						await ctx.send('Select the property you want to mortgage')
 						hold = 'id isM price name\n'
 						while a < mi:
 							if monopolytest(a,'h') == False: #cannot morgage a property in a color group with houses because houses can only be built on full monopolies
@@ -666,7 +729,7 @@ class Monopoly(commands.Cog):
 								else:
 									hold += '{:2}     {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
 							a += 1
-						await ctx.send('```'+hold.strip()+'```')
+						await ctx.send('Select the number of the property you want to mortgage or type "d" to exit.\n```'+hold.strip()+'```')
 					doprint = True
 					t = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 					t = t.content
@@ -733,12 +796,11 @@ class Monopoly(commands.Cog):
 								hid[hi] = x
 								hi += 1
 					a = 1
-					await ctx.send('Select the color groups to buy houses')
 					hold = 'id numh price name\n'
 					while a < hi:
 						hold += '{:2} {:4} {:5d} {}'.format(a,numhouse[hid[a]],houseprice[hid[a]],color[hid[a]])+'\n'
 						a += 1
-					await ctx.send('```'+hold.strip()+'\nYou have $'+str(bal[p])+'```')
+					await ctx.send('Select the number of the color group or type "d" to exit.\n```'+hold.strip()+'\nYou have $'+str(bal[p])+'```')
 					i = 0
 					while i == 0:
 						t = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
@@ -1201,11 +1263,13 @@ class Monopoly(commands.Cog):
 						await bprint()
 						await ctx.send('You are now in jail!')
 					elif tile[p] == 4:
-						bal[p] -= 200
-						await ctx.send('You paid $200 of Income Tax. You now have $'+str(bal[p]))
+						v = await self.config.guild(ctx.guild).incomeValue()
+						bal[p] -= v
+						await ctx.send('You paid $'+str(v)+' of Income Tax. You now have $'+str(bal[p]))
 					elif tile[p] == 38:
-						bal[p] -= 100
-						await ctx.send('You paid $100 of Super Tax. You now have $'+str(bal[p]))
+						v = await self.config.guild(ctx.guild).luxuryValue()
+						bal[p] -= v
+						await ctx.send('You paid $'+str(v)+' of Luxury Tax. You now have $'+str(bal[p]))
 				if bal[p] < 0:
 					await debt() 
 

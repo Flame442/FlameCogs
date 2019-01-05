@@ -39,14 +39,20 @@ class Gamevoice(commands.Cog):
 					roleid = x.id
 			everyone = l[0]
 			if roleid == None: #create role if it doesnt exist
-				roleid = await ctx.message.guild.create_role(name=str(ctx.message.author.activity.name))
+				try:
+					roleid = await ctx.message.guild.create_role(name=str(ctx.message.author.activity.name))
+				except discord.errors.Forbidden:
+					return await ctx.send('I need permission to create roles.')
 				roleid = roleid.id
 			rolelist = await self.config.guild(ctx.guild).rolelist()  #add
 			rolelist[str(ctx.message.author.activity.name)] = roleid  #to
 			await self.config.guild(ctx.guild).rolelist.set(rolelist) #dict
-			await ctx.message.author.voice.channel.set_permissions(everyone, connect=False, speak=False)
-			role = ctx.message.guild.get_role(roleid)
-			await ctx.message.author.voice.channel.set_permissions(role, connect=True, speak=True)
+			try:
+				await ctx.message.author.voice.channel.set_permissions(everyone, connect=False, speak=False)
+				role = ctx.message.guild.get_role(roleid)
+				await ctx.message.author.voice.channel.set_permissions(role, connect=True, speak=True)
+			except discord.errors.Forbidden:
+				return await ctx.send('I need permission to edit channels.')
 			await ctx.send('`'+str(ctx.message.author.voice.channel)+'` will now only allow people playing `'+str(ctx.message.author.activity.name)+'` and any other previously added restrictions to join.')
 
 	@commands.guild_only()
@@ -62,7 +68,10 @@ class Gamevoice(commands.Cog):
 		l = ctx.message.guild.roles
 		everyone = l[0]
 		rolelist = await self.config.guild(ctx.guild).rolelist()
-		await ctx.message.author.voice.channel.set_permissions(everyone, connect=True, speak=True)
+		try:
+			await ctx.message.author.voice.channel.set_permissions(everyone, connect=True, speak=True)
+		except discord.errors.Forbidden:
+			return await ctx.send('I need permission to edit channels.')
 		for x in rolelist.keys():
 			role = ctx.message.guild.get_role(rolelist[x])
 			try:
@@ -76,12 +85,17 @@ class Gamevoice(commands.Cog):
 	async def gamevoice_recheck(self, ctx):
 		"""Force a recheck of your current game."""
 		rolelist = await self.config.guild(ctx.guild).rolelist()
-		for x in rolelist.keys():
-			await ctx.message.author.remove_roles(ctx.message.guild.get_role(rolelist[x]))
+		try:
+			for x in rolelist.keys():
+				await ctx.message.author.remove_roles(ctx.message.guild.get_role(rolelist[x]))
+		except discord.errors.Forbidden:
+			return await ctx.send('I need permission to edit user\'s roles.')
 		try:
 			roleid = rolelist[str(ctx.message.author.activity.name)]
 			role = ctx.message.guild.get_role(roleid)
 			await ctx.message.author.add_roles(role)
+		except discord.errors.Forbidden:
+			return await ctx.send('I need permission to edit user\'s roles.')
 		except:
 			pass
 		await ctx.send('You have been updated.')
@@ -116,10 +130,14 @@ class Gamevoice(commands.Cog):
 		except:
 			return await ctx.send('Role not found.')
 		role = ctx.guild.get_role(id)
-		await role.delete()
+		try:
+			await role.delete()
+		except discord.errors.Forbidden:
+			return await ctx.send('I need permission to delete roles.')
 		del rolelist[r]
 		await self.config.guild(ctx.guild).rolelist.set(rolelist)
 		await ctx.send('Role deleted.')
+
 	async def update(self, beforeMem, afterMem):
 		"""Update a user's roles."""
 		if beforeMem.activity != afterMem.activity:

@@ -24,8 +24,8 @@ class Deepfry(commands.Cog):
 		"""Deepfries images."""
 		if ctx.message.attachments == []:
 			return await ctx.send('Please provide an attachment.')
-		if ctx.message.attachments[0].url[::-1].split(".")[0][::-1] not in self.filetypes:
-			return await ctx.send('"'+ctx.message.attachments[0].url[::-1].split(".")[0][::-1].title()+'" is not a supported filetype.')
+		if ctx.message.attachments[0].url.split(".")[-1] not in self.filetypes:
+			return await ctx.send('"'+ctx.message.attachments[0].url.split(".")[-1].title()+'" is not a supported filetype.')
 		async with aiohttp.ClientSession() as session:
 			async with session.get(ctx.message.attachments[0].url) as response:
 				r = await response.read()
@@ -61,8 +61,8 @@ class Deepfry(commands.Cog):
 		"""Demolishes images."""
 		if ctx.message.attachments == []:
 			return await ctx.send('Please provide an attachment.')
-		if ctx.message.attachments[0].url[::-1].split(".")[0][::-1] not in self.filetypes:
-			return await ctx.send('"'+ctx.message.attachments[0].url[::-1].split(".")[0][::-1].title()+'" is not a supported filetype.')
+		if ctx.message.attachments[0].url.split(".")[-1] not in self.filetypes:
+			return await ctx.send('"'+ctx.message.attachments[0].url.split(".")[-1].title()+'" is not a supported filetype.')
 		async with aiohttp.ClientSession() as session:
 			async with session.get(ctx.message.attachments[0].url) as response:
 				r = await response.read()
@@ -130,7 +130,7 @@ class Deepfry(commands.Cog):
 		"""Passively deepfries random images."""
 		if t.author.id != self.bot.user.id and isinstance(t.channel, discord.TextChannel) and t.attachments != []:
 			v = await self.config.guild(t.guild).chance()
-			if t.attachments[0].url[::-1].split(".")[0][::-1] in self.filetypes and False if True in [t.content.startswith(x) for x in await self.bot.get_prefix(t)] else True and v != 0:
+			if t.attachments[0].url.split(".")[-1] in self.filetypes and False if True in [t.content.startswith(x) for x in await self.bot.get_prefix(t)] else True and v != 0:
 				l = randint(1,v)
 				if l == 1:
 					async with aiohttp.ClientSession() as session:

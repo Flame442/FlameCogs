@@ -32,6 +32,7 @@ class Battleship(commands.Cog):
 		key2 = {0:0,1:0,2:0,3:0,4:0}
 		namekey = {0:'5',1:'4',2:'3',3:'3',4:'2'}
 		pid = [ctx.message.author]
+		pmsg = []
 
 		def bprint(player,bt): #creates a display of the board for printing
 			b = '  '
@@ -104,8 +105,7 @@ class Battleship(commands.Cog):
 			await ctx.send('Messaging '+name[x]+' for setup now.')
 			await pid[x].send(str(name[x]+', it is your turn to set up your ships.\nPlace ships by entering the top left coordinate and the direction of (r)ight or (d)own in xyd format.'))
 			for k in [5,4,3,3,2]: #each ship length
-				await pid[x].send(bprint(x,1))
-				stupid = await pid[x].send('Place your '+str(k)+' length ship.')
+				stupid = await pid[x].send(bprint(x,1)+'Place your '+str(k)+' length ship.')
 				while True:
 					try:
 						t = await self.bot.wait_for('message', timeout=120, check=lambda m:m.channel == stupid.channel and m.author.bot == False)
@@ -114,6 +114,8 @@ class Battleship(commands.Cog):
 						return await ctx.send(name[x]+' took too long, shutting down.')
 					if await place(x,k,t.content.lower()) == True:
 						break
+			m = await pid[x].send(bprint(x,1))
+			pmsg.append(m)
 		###############################################################
 		game = True
 		p = 1
@@ -123,7 +125,7 @@ class Battleship(commands.Cog):
 			i = 0
 			while i == 0:
 				try:
-					s = await self.bot.wait_for('message', timeout=120, check=lambda m: m.author == pid[p] and m.channel == channel)
+					s = await self.bot.wait_for('message', timeout=120, check=lambda m: m.author == pid[p] and m.channel == channel and len(m.content) == 2)
 				except asyncio.TimeoutError:
 					self.runningin.remove(ctx.channel.id)
 					return await ctx.send('You took too long, shutting down.')
@@ -135,14 +137,14 @@ class Battleship(commands.Cog):
 					continue
 				if board[pswap[p]][(y*10)+x] == 0:
 					board[pswap[p]][(y*10)+x] = 1
-					await pid[pswap[p]].send(bprint(pswap[p],1))
+					await pmsg[pswap[p]].edit(content=bprint(pswap[p],1))
 					await ctx.send(bprint(pswap[p],0)+'Miss!')
 					i = 1
 				elif board[pswap[p]][(y*10)+x] in [1,2]:
 					await ctx.send('You already shot there!')
 				elif board[pswap[p]][(y*10)+x] == 3:
 					board[pswap[p]][(y*10)+x] = 2
-					await pid[pswap[p]].send(bprint(pswap[p],1))
+					await pmsg[pswap[p]].edit(content=bprint(pswap[p],1))
 					await ctx.send(bprint(pswap[p],0)+'Hit!')
 					l = -1
 					for a in range(5):
