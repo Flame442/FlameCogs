@@ -114,7 +114,7 @@ class Battleship(commands.Cog):
 						return await ctx.send(name[x]+' took too long, shutting down.')
 					if await place(x,k,t.content.lower()) == True:
 						break
-			m = pid[x].send(bprint(x,1))
+			m = await pid[x].send(bprint(x,1))
 			pmsg.append(m)
 		###############################################################
 		game = True
