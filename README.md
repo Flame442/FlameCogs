@@ -141,7 +141,7 @@ This cog will let you play monopoly with up to 7 other people in your server.
 Begin a game of monopoly.   
 Use the optional paramater `savename` to load a saved game.
 
-**`[p]monopolyset <argument>`** 
+**`[p]monopolyset <argument>`**  
 Config options for monopoly.  
 This command is only usable by the guild owner and bot owner.
 
