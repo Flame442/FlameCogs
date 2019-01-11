@@ -19,7 +19,8 @@ class Monopoly(commands.Cog):
 			doMention = False,
 			startCash = 1500,
 			incomeValue = 200,
-			luxuryValue = 100
+			luxuryValue = 100,
+			doAuction = False
 		)
 	
 	@commands.guild_only()
@@ -100,6 +101,28 @@ class Monopoly(commands.Cog):
 			await ctx.send('Luxury Tax will now cost $'+str(value)+'.')
 	
 	@commands.guild_only()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def auction(self, ctx, value: bool=None):
+		"""
+		Set if properties should be auctioned when passed on.
+		Defaults to False.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).doAuction()
+			if v:
+				await ctx.send('Passed properties are being auctioned.')
+			else:
+				await ctx.send('Passed properties are not being auctioned.')
+		else:
+			await self.config.guild(ctx.guild).doAuction.set(value)
+			if value:
+				await ctx.send('Passed properties will be auctioned.')
+			else:
+				await ctx.send('Passed properties will not be auctioned.')
+	
+	@commands.guild_only()
 	@commands.command()
 	async def monopoly(self, ctx, savefile: str=None):
 		"""A fun game of monopoly for 2-8 people"""
@@ -162,7 +185,7 @@ class Monopoly(commands.Cog):
 			for a in range(2,num+1):
 				await ctx.send('Player '+str(a)+', say I')
 				try:
-					r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id not in id and m.author.bot == False and m.channel == channel)
+					r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id not in id and m.author.bot == False and m.channel == channel and m.content.lower() == 'i')
 				except asyncio.TimeoutError:
 					self.runningin.remove(ctx.channel.id)
 					return await ctx.send('You took too long to respond.')
@@ -981,12 +1004,18 @@ class Monopoly(commands.Cog):
 								await ctx.send(name[p]+' now owns '+tilename[tile[p]]+' and has $'+str(bal[p]))
 								a = 1
 							elif response == 'n': #pass on property
+								v = await self.config.guild(ctx.guild).doAuction()
+								if v:
+									await auction()
 								a = 1
 							else:
 								await ctx.send('Please select y or n')
 								continue
 					elif ownedby[tile[p]] == 0 and bal[p] < pricebuy[tile[p]]:
 						await ctx.send('You cannot afford '+tilename[tile[p]]+', you only have $'+str(bal[p])+' of $'+str(pricebuy[tile[p]])+'.')
+						v = await self.config.guild(ctx.guild).doAuction()
+						if v:
+							await auction()
 					elif ownedby[tile[p]] == p: #player is owner
 						await ctx.send('You own this property already.')
 					elif ismortgaged[tile[p]] == 1:
@@ -1025,11 +1054,17 @@ class Monopoly(commands.Cog):
 								a = 1
 							elif response == 'n': #pass on property
 								a = 1
+								v = await self.config.guild(ctx.guild).doAuction()
+								if v:
+									await auction()
 							else:
 								await ctx.send('Please select y or n')
 								continue
 					elif ownedby[tile[p]] == 0 and bal[p] < pricebuy[tile[p]]:
 						await ctx.send('You cannot afford '+tilename[tile[p]]+', you only have $'+str(bal[p])+' of $'+str(pricebuy[tile[p]])+'.')
+						v = await self.config.guild(ctx.guild).doAuction()
+						if v:
+							await auction()
 					elif ownedby[tile[p]] == p:
 						await ctx.send('You own this property already.')
 					elif ismortgaged[tile[p]] == 1:
@@ -1090,11 +1125,17 @@ class Monopoly(commands.Cog):
 								a = 1
 							elif response == 'n': #pass on property
 								a = 1
+								v = await self.config.guild(ctx.guild).doAuction()
+								if v:
+									await auction()
 							else:
 								await ctx.send('Please select y or n')
 								continue
 					elif ownedby[5] == 0 and bal[p] < pricebuy[5]:
 						await ctx.send('You cannot afford '+tilename[5]+', you only have $'+str(bal[p])+' of $'+str(pricebuy[5])+'.')
+						v = await self.config.guild(ctx.guild).doAuction()
+						if v:
+							await auction()
 					elif ownedby[5] == p:
 						await ctx.send('You own this property already.')
 					elif ismortgaged[5] == 1:
@@ -1148,11 +1189,17 @@ class Monopoly(commands.Cog):
 							a = 1
 						elif response == 'n': #pass on property
 							a = 1
+							v = await self.config.guild(ctx.guild).doAuction()
+							if v:
+								await auction()
 						else:
 							await ctx.send('Please select y or n')
 							continue
 				elif ownedby[tile[p]] == 0 and bal[p] < pricebuy[tile[p]]:
 					await ctx.send('You cannot afford '+tilename[tile[p]]+', you only have $'+str(bal[p])+' of $'+str(pricebuy[tile[p]])+'.')
+					v = await self.config.guild(ctx.guild).doAuction()
+					if v:
+						await auction()
 				elif ownedby[tile[p]] == p: #player is owner
 					await ctx.send('You own this property already.')
 				elif ismortgaged[tile[p]] == 1:
@@ -1205,11 +1252,17 @@ class Monopoly(commands.Cog):
 							a = 1
 						elif response == 'n': #pass on property
 							a = 2
+							v = await self.config.guild(ctx.guild).doAuction()
+							if v:
+								await auction()
 						else:
 							await ctx.send('Please select y or n')
 							continue
 				elif ownedby[tile[p]] == 0 and bal[p] < pricebuy[tile[p]]: #unowned can't afford
 					await ctx.send('You cannot afford '+tilename[tile[p]]+', you only have $'+str(bal[p])+' of $'+str(pricebuy[tile[p]])+'.')
+					v = await self.config.guild(ctx.guild).doAuction()
+					if v:
+						await auction()
 				elif ownedby[tile[p]] == p: #player is owner
 					await ctx.send('You own this property already.')
 				elif ismortgaged[tile[p]] == 1:
@@ -1273,6 +1326,35 @@ class Monopoly(commands.Cog):
 				if bal[p] < 0:
 					await debt() 
 
+			async def auction(): #auction a property
+				await ctx.send(tilename[tile[p]]+' is now up for auction!\nAnyone can bid by typing the value of their bid. After 15 seconds with no bids, the highest bid will win.')
+				highest = 0
+				highp = None
+				def fcheck(m):
+					try:
+						if m.author.id in id and bal[id.index(m.author.id)] >= int(m.content) and alive[id.index(m.author.id)] and highest < int(m.content):
+							return True
+						else:
+							return False
+					except:
+						return False
+				while True:
+					try:
+						msg = await self.bot.wait_for('message', check=lambda m : fcheck(m), timeout=15)
+					except asyncio.TimeoutError:
+						break
+					highest = int(msg.content)
+					highp = id.index(msg.author.id)
+					await ctx.send(name[highp]+' has the highest bid with $'+str(highest))
+				if highp is None:
+					await ctx.send('Nobody bid...')
+				else:
+					await ctx.send(name[highp]+' wins with a bid of $'+str(highest)+'!')
+					bal[highp] -= pricebuy[tile[p]]
+					ownedby[tile[p]] = p
+					await bprint()
+					await ctx.send(name[highp]+' now owns '+tilename[tile[p]]+' and has $'+str(bal[highp]))
+					
 			async def turn(): #choices on turn
 				global p
 				global tile
