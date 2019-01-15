@@ -21,6 +21,7 @@ class Monopoly(commands.Cog):
 			incomeValue = 200,
 			luxuryValue = 100,
 			doAuction = False
+			bailValue = 50
 		)
 	
 	@commands.guild_only()
@@ -121,6 +122,22 @@ class Monopoly(commands.Cog):
 				await ctx.send('Passed properties will be auctioned.')
 			else:
 				await ctx.send('Passed properties will not be auctioned.')
+				
+	@commands.guild_only()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def bail(self, ctx, value: bool=None):
+		"""
+		Set how much bail should cost.
+		Defaults to 50.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).bailValue()
+			await ctx.send('Bail currently costs $'+str(v)+'.')
+		else:
+			await self.config.guild(ctx.guild).bailValue.set(value)
+			await ctx.send('Bail will now cost $'+str(value)+'.')
 	
 	@commands.guild_only()
 	@commands.command()
@@ -625,6 +642,7 @@ class Monopoly(commands.Cog):
 						await ctx.send('Type r to roll or b to post bail.')
 				jr = 0
 				while jr == 0:
+					bailv = await self.config.guild(ctx.guild).bailValue()
 					if jailturn[p] == 4 and goojf[p] == 0:
 						choice = 'b'
 					else:
@@ -644,8 +662,8 @@ class Monopoly(commands.Cog):
 							jr = 1
 					elif choice == 'r' and jailturn[p] == 4:
 						await ctx.send('Select one of the options.')
-					elif choice == 'b' and bal[p] >= 50:
-						bal[p] -= 50
+					elif choice == 'b' and bal[p] >= bailv:
+						bal[p] -= bailv
 						await ctx.send('You posted bail. You now have $'+str(bal[p]))
 						jailturn[p] = -1
 						injail[p] = False
@@ -654,7 +672,7 @@ class Monopoly(commands.Cog):
 							wd = 1
 						await land()
 						jr = 1
-					elif choice == 'b' and bal[p] < 50:
+					elif choice == 'b' and bal[p] < bailv:
 						i = 0
 						if jailturn[p] == 4:
 							i = 1
@@ -667,7 +685,7 @@ class Monopoly(commands.Cog):
 							elif ask == 'n':
 								i = 2
 						while i == 1:
-							bal[p] -= 50
+							bal[p] -= bailv
 							await ctx.send('You posted bail. You now have $'+str(bal[p]))
 							jailturn[p] = -1
 							injail[p] = False
