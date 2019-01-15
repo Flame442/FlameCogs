@@ -20,7 +20,7 @@ class Monopoly(commands.Cog):
 			startCash = 1500,
 			incomeValue = 200,
 			luxuryValue = 100,
-			doAuction = False
+			doAuction = False,
 			bailValue = 50
 		)
 	
@@ -646,7 +646,7 @@ class Monopoly(commands.Cog):
 					if jailturn[p] == 4 and goojf[p] == 0:
 						choice = 'b'
 					else:
-						choice =await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+						choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 						choice = choice.content
 					if choice == 'r' and not jailturn[p] == 4:
 						await roll()
