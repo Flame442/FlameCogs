@@ -126,7 +126,7 @@ class Monopoly(commands.Cog):
 	@commands.guild_only()
 	@checks.guildowner()
 	@monopolyset.command()
-	async def bail(self, ctx, value: bool=None):
+	async def bail(self, ctx, value: int=None):
 		"""
 		Set how much bail should cost.
 		Defaults to 50.
@@ -177,8 +177,10 @@ class Monopoly(commands.Cog):
 				holdlist = ''
 				for x in hold:
 					holdlist += x+'\n'
+				self.runningin.remove(ctx.channel.id)
 				return await ctx.send('That file does not exist.\nAvailable save files:\n`'+holdlist.strip()+'`')
 			else:
+				self.runningin.remove(ctx.channel.id)
 				return await ctx.send('You have no save files.')
 		else:
 			id = [None, ctx.message.author.id]
