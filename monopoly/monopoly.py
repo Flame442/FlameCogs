@@ -21,7 +21,8 @@ class Monopoly(commands.Cog):
 			incomeValue = 200,
 			luxuryValue = 100,
 			doAuction = False,
-			bailValue = 50
+			bailValue = 50,
+			maxJailRolls = 3
 		)
 	
 	@commands.guild_only()
@@ -140,7 +141,23 @@ class Monopoly(commands.Cog):
 			await ctx.send('Bail will now cost $'+str(value)+'.')
 	
 	@commands.guild_only()
-	@commands.command()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def maxjailrolls(self, ctx, value: int=None):
+		"""
+		Set the maximum number of rolls in jail before bail has to be paid.
+		Defaults to 3.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).maxJailRolls()
+			await ctx.send('The maximum number of rolls in jail is '+str(v)+'.')
+		else:
+			await self.config.guild(ctx.guild).maxJailRolls.set(value)
+			await ctx.send('The maximum number of rolls in jail is now '+str(v)+'.')
+	
+	@commands.guild_only()
+	@commands.command()  
 	async def monopoly(self, ctx, savefile: str=None):
 		"""A fun game of monopoly for 2-8 people"""
 		if ctx.channel.id in self.runningin:
@@ -632,25 +649,26 @@ class Monopoly(commands.Cog):
 				if jailturn[p] == -1: #just entered jail
 					jailturn[p] = 0
 				jailturn[p] += 1
+				maxjailrolls = await self.config.guild(ctx.guild).maxJailRolls()
 				if goojf[p] > 0:
-					if jailturn[p] == 4:
-						await ctx.send('Your 3 turns in jail are up. Type b to post bail, or g to use your "Get Out of Jail Free" card.')
+					if jailturn[p] == maxjailrolls + 1:
+						await ctx.send('Your '+str(maxjailrolls)+' turns in jail are up. Type b to post bail, or g to use your "Get Out of Jail Free" card.')
 					else:
 						await ctx.send('Type r to roll, b to post bail, or g to use your "Get Out of Jail Free" card.')
 				else:
-					if jailturn[p] == 4:
-						await ctx.send('Your 3 turns in jail are up. You have to post bail.')
+					if jailturn[p] == maxjailrolls + 1:
+						await ctx.send('Your '+str(maxjailrolls)+' turns in jail are up. You have to post bail.')
 					else:
 						await ctx.send('Type r to roll or b to post bail.')
 				jr = 0
 				while jr == 0:
 					bailv = await self.config.guild(ctx.guild).bailValue()
-					if jailturn[p] == 4 and goojf[p] == 0:
+					if jailturn[p] == maxjailrolls + 1 and goojf[p] == 0:
 						choice = 'b'
 					else:
 						choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 						choice = choice.content
-					if choice == 'r' and not jailturn[p] == 4:
+					if choice == 'r' and not jailturn[p] == maxjailrolls + 1:
 						await roll()
 						if d1 == d2:
 							wd = 1
@@ -662,7 +680,7 @@ class Monopoly(commands.Cog):
 						else:
 							await ctx.send('Sorry, not doubles')
 							jr = 1
-					elif choice == 'r' and jailturn[p] == 4:
+					elif choice == 'r' and jailturn[p] == maxjailrolls + 1:
 						await ctx.send('Select one of the options.')
 					elif choice == 'b' and bal[p] >= bailv:
 						bal[p] -= bailv
@@ -676,7 +694,7 @@ class Monopoly(commands.Cog):
 						jr = 1
 					elif choice == 'b' and bal[p] < bailv:
 						i = 0
-						if jailturn[p] == 4:
+						if jailturn[p] == maxjailrolls + 1:
 							i = 1
 						while i == 0:
 							await ctx.send('Doing that will put you into debt. Are you sure you want to do that (y/n)?')
