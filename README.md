@@ -175,7 +175,7 @@ Defaults to `False`.
 This command is only usable by the guild owner and bot owner.  
 This value is server specific.
 
-**`[p]monopolyset bail [value]`**
+**`[p]monopolyset bail [value]`**  
 Set how much bail should cost.  
 Defaults to `50`.  
 This command is only usable by the guild owner and bot owner.  
