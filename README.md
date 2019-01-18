@@ -179,7 +179,13 @@ This value is server specific.
 Set how much bail should cost.  
 Defaults to `50`.  
 This command is only usable by the guild owner and bot owner.  
-This value is server specific.  
+This value is server specific.
+
+**`[p]monopolyset maxjailrolls [value]`**  
+Set the maximum number of rolls in jail before bail has to be paid.  
+Defaults to 3.  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
 
 # Planned changes
 
