@@ -189,7 +189,7 @@ This value is server specific.
 
 # Planned changes
 
-**[Monopoly]** Add config for various house rules (auctions, free parking, landing on go, etc)
+**[Monopoly]** Add config for various house rules (~~auctions~~, free parking, landing on go, etc)
 
 **[Battleship/Hangman/Monopoly]** Add optional betting to games
 
@@ -197,7 +197,7 @@ This value is server specific.
 
 # Contact
 
-Feel free to create an issue on this repository for any bugs you find.
+Feel free to create an issue on this repository or join [my discord](https://discord.gg/bYqCjvu) if you have any issues.
 
 # Credit
 
