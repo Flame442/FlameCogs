@@ -154,7 +154,7 @@ class Monopoly(commands.Cog):
 			await ctx.send('The maximum number of rolls in jail is '+str(v)+'.')
 		else:
 			await self.config.guild(ctx.guild).maxJailRolls.set(value)
-			await ctx.send('The maximum number of rolls in jail is now '+str(v)+'.')
+			await ctx.send('The maximum number of rolls in jail is now '+str(value)+'.')
 	
 	@commands.guild_only()
 	@commands.command()  
@@ -1388,7 +1388,7 @@ class Monopoly(commands.Cog):
 					await ctx.send('Nobody bid...')
 				else:
 					await ctx.send(name[highp]+' wins with a bid of $'+str(highest)+'!')
-					bal[highp] -= pricebuy[tile[p]]
+					bal[highp] -= highest
 					ownedby[tile[p]] = p
 					await bprint()
 					await ctx.send(name[highp]+' now owns '+tilename[tile[p]]+' and has $'+str(bal[highp]))
