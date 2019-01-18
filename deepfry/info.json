@@ -2,9 +2,9 @@
     "author" : ["Flame442 (Flame#2941)"],
     "install_msg" : "Thanks for installing deepfry. Use `[p]deepfry` or `[p]nuke`.",
     "name" : "Deepfry",
-    "short" : "Deepfry or nuke images",
+    "short" : "Deepfry or nuke images.",
     "requirements" : ["pillow"],
-    "description" : "Deepfry or nuke images passively and actively",
+    "description" : "Deepfry or nuke images passively and actively.",
     "permissions" : ["Send Messages", "Attach Files"],
     "tags" : ["Fun"],
     "min_python_version": [3, 6, 0]

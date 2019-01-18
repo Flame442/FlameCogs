@@ -141,7 +141,7 @@ This cog will let you play monopoly with up to 7 other people in your server.
 Begin a game of monopoly.   
 Use the optional paramater `savename` to load a saved game.
 
-**`[p]monopolyset <argument>`** 
+**`[p]monopolyset <argument>`**  
 Config options for monopoly.  
 This command is only usable by the guild owner and bot owner.
 
@@ -169,9 +169,27 @@ Defaults to `100`.
 This command is only usable by the guild owner and bot owner.  
 This value is server specific.
 
+**`[p]monopolyset auction [value]`**  
+Set if properties should be auctioned when passed on.
+Defaults to `False`.
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset bail [value]`**  
+Set how much bail should cost.  
+Defaults to `50`.  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset maxjailrolls [value]`**  
+Set the maximum number of rolls in jail before bail has to be paid.  
+Defaults to 3.  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
 # Planned changes
 
-**[Monopoly]** Add config for various house rules (auctions, free parking, landing on go, etc)
+**[Monopoly]** Add config for various house rules (~~auctions~~, free parking, landing on go, etc)
 
 **[Battleship/Hangman/Monopoly]** Add optional betting to games
 
@@ -179,7 +197,7 @@ This value is server specific.
 
 # Contact
 
-Feel free to create an issue on this repository for any bugs you find.
+Feel free to create an issue on this repository or join [my discord](https://discord.gg/bYqCjvu) if you have any issues.
 
 # Credit
 

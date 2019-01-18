@@ -85,7 +85,7 @@ class Hangman(commands.Cog):
 			doEdit = await self.config.guild(ctx.guild).doEdit()
 		f = open(fp)
 		wordlist = [line.strip().lower() for line in f]
-		word = wordlist[randint(0,len(wordlist))] #pick and format random word
+		word = wordlist[randint(0,len(wordlist)-1)] #pick and format random word
 		guessed = ''
 		fails = 0
 		end = 0
@@ -157,10 +157,9 @@ class Hangman(commands.Cog):
 	async def wordlist(self, ctx, value: str=None):
 		"""
 		Change the wordlist used.
-		Extra wordlists can be put in the data folder of this cog.
-		Wordlists are a text file with every new line being a new word.
-		Use default to restore the default wordlist.
-		Use list to list available wordlists.
+		Extra wordlists can be put in the data folder.
+		Wordlists are a txt file with every new line being a new word.
+		Use default to restore the default wordlist and list to see available wordlists.
 		This value is server specific.
 		"""
 		if value == None:
