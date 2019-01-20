@@ -3,5 +3,4 @@ from .hangman import Hangman
 
 def setup(bot):
 	n = Hangman(bot)
-	data_manager.load_bundled_data(n, __file__)
 	bot.add_cog(n)
