@@ -91,7 +91,7 @@ class Battleship(commands.Cog):
 			return True
 
 		#RUN CODE
-		check = lambda m: m.author != ctx.message.author and m.author.bot == False and m.channel == ctx.message.channel
+		check = lambda m: m.author != ctx.message.author and m.author.bot == False and m.channel == ctx.message.channel and m.content.lower() == 'i'
 		await ctx.send('Second player, say I.')
 		try:
 			r = await self.bot.wait_for('message', timeout=60, check=check)
