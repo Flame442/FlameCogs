@@ -55,8 +55,8 @@ class Deepfry(commands.Cog):
 		img = e.enhance(1.5)
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance((amount*99)+1)	
-		img.save(str(cog_data_path(self))+'\\temp.jpg')
-		await ctx.send(file=discord.File(str(cog_data_path(self))+'\\temp.jpg'))
+		img.save(str(cog_data_path(self))+'/temp.jpg')
+		await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.jpg'))
 		
 	@commands.command()
 	async def nuke(self, ctx):
@@ -99,8 +99,8 @@ class Deepfry(commands.Cog):
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance(100)
 		img = img.resize((w,h),Image.BILINEAR)
-		img.save(str(cog_data_path(self))+'\\temp.jpg', quality=1)
-		await ctx.send(file=discord.File(str(cog_data_path(self))+'\\temp.jpg'))
+		img.save(str(cog_data_path(self))+'/temp.jpg', quality=1)
+		await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.jpg'))
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -164,8 +164,8 @@ class Deepfry(commands.Cog):
 					img = e.enhance(1.5)
 					e = ImageEnhance.Sharpness(img)
 					img = e.enhance((self.f*99)+1)
-					img.save(str(cog_data_path(self))+'\\temp.jpg', quality=10)
-					await t.channel.send(file=discord.File(str(cog_data_path(self))+'\\temp.jpg'))
+					img.save(str(cog_data_path(self))+'/temp.jpg', quality=10)
+					await t.channel.send(file=discord.File(str(cog_data_path(self))+'/temp.jpg'))
 					self.f = 0
 				else:
 					self.f += 0.07
