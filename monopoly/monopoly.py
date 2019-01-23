@@ -176,12 +176,12 @@ class Monopoly(commands.Cog):
 				with open(str(cog_data_path(self))+'/'+savefile+'.txt') as f:
 					for line in f:
 						line = line.strip()
-						if not line or line.startswith("#"):
+						if not line or line.startswith('#'):
 							continue
 						try:
-							key, value = line.split("=") #split to variable and value
+							key, value = line.split('=') #split to variable and value
 						except ValueError:
-							await ctx.send("Bad line in save file "+savefile+':\n'+line)
+							await ctx.send('Bad line in save file '+savefile+':\n'+line)
 							continue
 						key, value = key.strip(), value.strip()
 						try:
@@ -189,7 +189,17 @@ class Monopoly(commands.Cog):
 						except ValueError:
 							value = eval(value)
 						cfgdict[key] = value #put in dictionary
-					injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn,p,num,numalive,id,name,tilename = cfgdict['injail'],cfgdict['tile'],cfgdict['bal'],cfgdict['ownedby'],cfgdict['numhouse'],cfgdict['ismortgaged'],cfgdict['goojf'],cfgdict['alive'],cfgdict['jailturn'],cfgdict['p'],cfgdict['num'],cfgdict['numalive'],cfgdict['id'],cfgdict['name'],cfgdict['tilename']
+					injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn,p,num,numalive,id,tilename = cfgdict['injail'],cfgdict['tile'],cfgdict['bal'],cfgdict['ownedby'],cfgdict['numhouse'],cfgdict['ismortgaged'],cfgdict['goojf'],cfgdict['alive'],cfgdict['jailturn'],cfgdict['p'],cfgdict['num'],cfgdict['numalive'],cfgdict['id'],cfgdict['tilename']
+					name = [None]
+					for x in id:
+						if type(x) is int:
+							try:
+								m = ctx.guild.get_member(x)
+								name.append(m.name)
+							except:
+								self.runningin.remove(ctx.channel.id)
+								raise
+								return await ctx.send('A member in that game could not be found. Aborting.')
 			elif hold != []:
 				holdlist = ''
 				for x in hold:
@@ -1256,7 +1266,7 @@ class Monopoly(commands.Cog):
 				pay = 0
 				for i in range(40):
 					if ownedby[i] == p:
-						if numhouse[i] == 0:
+						if numhouse[i] == 0 or numhouse[i] == -1:
 							pass
 						elif numhouse[i] == 5:
 							pay += h2
