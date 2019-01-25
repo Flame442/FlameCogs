@@ -173,15 +173,15 @@ class Monopoly(commands.Cog):
 			if savefile in hold:
 				cfgdict = {}
 				await ctx.send('Using save file '+savefile)
-				with open(str(cog_data_path(self))+'\\'+savefile+'.txt') as f:
+				with open(str(cog_data_path(self))+'/'+savefile+'.txt') as f:
 					for line in f:
 						line = line.strip()
-						if not line or line.startswith("#"):
+						if not line or line.startswith('#'):
 							continue
 						try:
-							key, value = line.split("=") #split to variable and value
+							key, value = line.split('=') #split to variable and value
 						except ValueError:
-							await ctx.send("Bad line in save file "+savefile+':\n'+line)
+							await ctx.send('Bad line in save file '+savefile+':\n'+line)
 							continue
 						key, value = key.strip(), value.strip()
 						try:
@@ -189,7 +189,17 @@ class Monopoly(commands.Cog):
 						except ValueError:
 							value = eval(value)
 						cfgdict[key] = value #put in dictionary
-					injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn,p,num,numalive,id,name,tilename = cfgdict['injail'],cfgdict['tile'],cfgdict['bal'],cfgdict['ownedby'],cfgdict['numhouse'],cfgdict['ismortgaged'],cfgdict['goojf'],cfgdict['alive'],cfgdict['jailturn'],cfgdict['p'],cfgdict['num'],cfgdict['numalive'],cfgdict['id'],cfgdict['name'],cfgdict['tilename']
+					injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn,p,num,numalive,id,tilename = cfgdict['injail'],cfgdict['tile'],cfgdict['bal'],cfgdict['ownedby'],cfgdict['numhouse'],cfgdict['ismortgaged'],cfgdict['goojf'],cfgdict['alive'],cfgdict['jailturn'],cfgdict['p'],cfgdict['num'],cfgdict['numalive'],cfgdict['id'],cfgdict['tilename']
+					name = [None]
+					for x in id:
+						if type(x) is int:
+							try:
+								m = ctx.guild.get_member(x)
+								name.append(m.name)
+							except:
+								self.runningin.remove(ctx.channel.id)
+								raise
+								return await ctx.send('A member in that game could not be found. Aborting.')
 			elif hold != []:
 				holdlist = ''
 				for x in hold:
@@ -354,8 +364,8 @@ class Monopoly(commands.Cog):
 								img = fill(img,(0,0,0,255),606,((100+((t-30)*50))+39)-(tt*12),614,((100+((t-30)*50))+49)-(tt*12))
 								img = fill(img,(0,255,0,255),607,((100+((t-30)*50))+40)-(tt*12),613,((100+((t-30)*50))+48)-(tt*12))
 				#END
-				img.save(str(cog_data_path(self))+'\\temp.png')
-				await ctx.send(file=discord.File(str(cog_data_path(self))+'\\temp.png'))
+				img.save(str(cog_data_path(self))+'/temp.png')
+				await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.png'))
 
 			def monopolytest(t,test): #tests if prop in monopoly or any properties in color group has houses
 				pga = [1, 6, 11, 16, 21, 26, 31, 37]
@@ -1256,7 +1266,7 @@ class Monopoly(commands.Cog):
 				pay = 0
 				for i in range(40):
 					if ownedby[i] == p:
-						if numhouse[i] == 0:
+						if numhouse[i] == 0 or numhouse[i] == -1:
 							pass
 						elif numhouse[i] == 5:
 							pay += h2
@@ -1445,7 +1455,7 @@ class Monopoly(commands.Cog):
 							elif choice == 's': #print game save message
 								await ctx.send('Save file name?')
 								savename = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
-								with open(str(cog_data_path(self))+'\\'+savename.content+'.txt','w') as f:
+								with open(str(cog_data_path(self))+'/'+savename.content+'.txt','w') as f:
 									f.write(autosave)
 								self.runningin.remove(ctx.channel.id)
 								global numalive

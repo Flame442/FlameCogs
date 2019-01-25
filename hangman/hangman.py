@@ -83,7 +83,11 @@ class Hangman(commands.Cog):
 		else: #server specific vars
 			fp = await self.config.guild(ctx.guild).fp()
 			doEdit = await self.config.guild(ctx.guild).doEdit()
-		f = open(fp)
+		try:
+			f = open(fp)
+		except FileNotFoundError:
+			await ctx.send('Your wordlist was not found, using default wordlist.')
+			f = open(str(bundled_data_path(self) / 'words.txt'))
 		wordlist = [line.strip().lower() for line in f]
 		word = wordlist[randint(0,len(wordlist)-1)] #pick and format random word
 		guessed = ''
@@ -167,7 +171,7 @@ class Hangman(commands.Cog):
 			if str(v) == str(bundled_data_path(self) / 'words.txt'):
 				await ctx.send('The wordlist is set to the default list.')
 			else:
-				await ctx.send('The wordlist is set to `'+str(v)[::-1].split('\\')[0][::-1][:-4]+'`.')
+				await ctx.send('The wordlist is set to `'+str(v)[str(v).find('Hangman')+8:-4]+'`.')
 		elif value.lower() == 'default':
 			set = str(bundled_data_path(self) / 'words.txt')
 			await self.config.guild(ctx.guild).fp.set(set)

@@ -12,26 +12,14 @@ class Deepfry(commands.Cog):
 	"""Deepfries memes."""
 	def __init__(self, bot):
 		self.bot = bot
-		self.f = 0
 		self.config = Config.get_conf(self, identifier=7345167900)
 		self.config.register_guild(
 			chance = 0
 		)
-		self.filetypes = ['png', 'jpg', 'jpeg']
-		
-	@commands.command(aliases=['df'])
-	async def deepfry(self, ctx, amount: float=0):
-		"""Deepfries images."""
-		if ctx.message.attachments == []:
-			return await ctx.send('Please provide an attachment.')
-		if ctx.message.attachments[0].url.split(".")[-1] not in self.filetypes:
-			return await ctx.send('"'+ctx.message.attachments[0].url.split(".")[-1].title()+'" is not a supported filetype.')
-		if ctx.message.attachments[0].size > 8388608:
-			return await ctx.send('That image is too large. Max image size is 8MB.')
-		async with aiohttp.ClientSession() as session:
-			async with session.get(ctx.message.attachments[0].url) as response:
-				r = await response.read()
-				img = Image.open(BytesIO(r))
+		self.imagetypes = ['png', 'jpg', 'jpeg']
+		self.videotypes = ['gif']
+	
+	def _fry(self, img):
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance(100)
 		e = ImageEnhance.Contrast(img)
@@ -48,29 +36,43 @@ class Deepfry(commands.Cog):
 		g = e.enhance(1.75)
 		e = ImageEnhance.Brightness(b)
 		b = e.enhance(.6)
-		e = ImageEnhance.Contrast(b)
-		img = e.enhance(2)
 		img = Image.merge("RGB", (r, g, b))
 		e = ImageEnhance.Brightness(img)
 		img = e.enhance(1.5)
-		e = ImageEnhance.Sharpness(img)
-		img = e.enhance((amount*99)+1)	
-		img.save(str(cog_data_path(self))+'\\temp.jpg')
-		await ctx.send(file=discord.File(str(cog_data_path(self))+'\\temp.jpg'))
+		return img
+	
+	def _videofry(self, img):
+		imgs = []
+		frame = 0
+		while img:
+			i = img.copy()
+			i = i.convert('RGB')
+			e = ImageEnhance.Sharpness(i)
+			i = e.enhance(100)
+			e = ImageEnhance.Contrast(i)
+			i = e.enhance(100)
+			e = ImageEnhance.Brightness(i)
+			i = e.enhance(.27)
+			r, g, b = i.split()
+			e = ImageEnhance.Brightness(r)
+			r = e.enhance(4)
+			e = ImageEnhance.Brightness(g)
+			g = e.enhance(1.75)
+			e = ImageEnhance.Brightness(b)
+			b = e.enhance(.6)
+			e = ImageEnhance.Contrast(b)
+			i = Image.merge("RGB", (r, g, b))
+			e = ImageEnhance.Brightness(i)
+			i = e.enhance(1.5)
+			imgs.append(i)
+			frame += 1
+			try:
+				img.seek(frame)
+			except EOFError:
+				break
+		return imgs
 		
-	@commands.command()
-	async def nuke(self, ctx):
-		"""Demolishes images."""
-		if ctx.message.attachments == []:
-			return await ctx.send('Please provide an attachment.')
-		if ctx.message.attachments[0].url.split(".")[-1] not in self.filetypes:
-			return await ctx.send('"'+ctx.message.attachments[0].url.split(".")[-1].title()+'" is not a supported filetype.')
-		if ctx.message.attachments[0].size > 8388608:
-			return await ctx.send('That image is too large. Max image size is 8MB.')
-		async with aiohttp.ClientSession() as session:
-			async with session.get(ctx.message.attachments[0].url) as response:
-				r = await response.read()
-				img = Image.open(BytesIO(r))
+	def _nuke(self, img):
 		w, h = img.size[0], img.size[1]
 		dx = ((w+200)//200)*2
 		dy = ((h+200)//200)*2
@@ -91,16 +93,108 @@ class Deepfry(commands.Cog):
 		g = e.enhance(1.75)
 		e = ImageEnhance.Brightness(b)
 		b = e.enhance(.6)
-		e = ImageEnhance.Contrast(b)
-		img = e.enhance(2)
 		img = Image.merge("RGB", (r, g, b))
 		e = ImageEnhance.Brightness(img)
 		img = e.enhance(1.5)
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance(100)
 		img = img.resize((w,h),Image.BILINEAR)
-		img.save(str(cog_data_path(self))+'\\temp.jpg', quality=1)
-		await ctx.send(file=discord.File(str(cog_data_path(self))+'\\temp.jpg'))
+		return img
+		
+	def _videonuke(self, img):
+		imgs = []
+		frame = 0
+		while img:
+			i = img.copy()
+			i = i.convert('RGB')
+			w, h = i.size[0], i.size[1]
+			dx = ((w+200)//200)*2
+			dy = ((h+200)//200)*2
+			i = i.resize((w//dx,h//dy))
+			e = ImageEnhance.Sharpness(i)
+			i = e.enhance(100)
+			e = ImageEnhance.Contrast(i)
+			i = e.enhance(100)
+			e = ImageEnhance.Brightness(i)
+			i = e.enhance(.27)
+			r, g, b = i.split()
+			e = ImageEnhance.Brightness(r)
+			r = e.enhance(4)
+			e = ImageEnhance.Brightness(g)
+			g = e.enhance(1.75)
+			e = ImageEnhance.Brightness(b)
+			b = e.enhance(.6)
+			i = Image.merge("RGB", (r, g, b))
+			e = ImageEnhance.Brightness(i)
+			i = e.enhance(1.5)
+			e = ImageEnhance.Sharpness(i)
+			i = e.enhance(100)
+			i = i.resize((w,h),Image.BILINEAR)
+			imgs.append(i)
+			frame += 1
+			try:
+				img.seek(frame)
+			except EOFError:
+				break
+		return imgs
+			
+	@commands.command(aliases=['df'])
+	async def deepfry(self, ctx):
+		"""Deepfries images."""
+		if ctx.message.attachments == []:
+			return await ctx.send('Please provide an attachment.')
+		if ctx.message.attachments[0].url.split(".")[-1] in self.imagetypes:
+			isgif = False
+		elif ctx.message.attachments[0].url.split(".")[-1] in self.videotypes:
+			isgif = True
+		else:
+			return await ctx.send('"'+ctx.message.attachments[0].url.split(".")[-1].title()+'" is not a supported filetype.')
+		if ctx.message.attachments[0].size > 8388608:
+			return await ctx.send('That image is too large. Max image size is 8MB.')
+		async with aiohttp.ClientSession() as session:
+			async with session.get(ctx.message.attachments[0].url) as response:
+				r = await response.read()
+				img = Image.open(BytesIO(r))
+		if isgif:
+			imgs = self._videofry(img)
+			imgs[0].save(str(cog_data_path(self))+'/temp.gif', save_all=True, append_images=imgs[1:], loop=0)
+			try:
+				await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.gif'))
+			except discord.errors.HTTPException:
+				return await ctx.send('That image is too large.')
+		else:
+			img = self._fry(img)
+			img.save(str(cog_data_path(self))+'/temp.jpg')
+			await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.jpg'))
+		
+	@commands.command()
+	async def nuke(self, ctx):
+		"""Demolishes images."""
+		if ctx.message.attachments == []:
+			return await ctx.send('Please provide an attachment.')
+		if ctx.message.attachments[0].url.split(".")[-1] in self.imagetypes:
+			isgif = False
+		elif ctx.message.attachments[0].url.split(".")[-1] in self.videotypes:
+			isgif = True
+		else:
+			return await ctx.send('"'+ctx.message.attachments[0].url.split(".")[-1].title()+'" is not a supported filetype.')
+		if ctx.message.attachments[0].size > 8388608:
+			return await ctx.send('That image is too large. Max image size is 8MB.')
+		async with aiohttp.ClientSession() as session:
+			async with session.get(ctx.message.attachments[0].url) as response:
+				r = await response.read()
+				img = Image.open(BytesIO(r))
+		if isgif:
+			imgs = self._videonuke(img)
+			imgs[0].save(str(cog_data_path(self))+'/temp.gif', save_all=True, append_images=imgs[1:], loop=0)
+			try:
+				await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.gif'))
+			except discord.errors.HTTPException:
+				return await ctx.send('That image is too large.')
+		else:
+			img = self._nuke(img)
+			img.save(str(cog_data_path(self))+'/temp.jpg', quality=1)
+			await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.jpg'))
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -134,38 +228,14 @@ class Deepfry(commands.Cog):
 		"""Passively deepfries random images."""
 		if t.author.id != self.bot.user.id and isinstance(t.channel, discord.TextChannel) and t.attachments != []:
 			v = await self.config.guild(t.guild).chance()
-			if t.attachments[0].url.split(".")[-1] in self.filetypes and False if True in [t.content.startswith(x) for x in await self.bot.get_prefix(t)] else True and v != 0 and t.attachments[0].size <= 8388608:
+			if t.attachments[0].url.split(".")[-1] in self.imagetypes and False if True in [t.content.startswith(x) for x in await self.bot.get_prefix(t)] else True and v != 0 and t.attachments[0].size <= 8388608:
 				l = randint(1,v)
 				if l == 1:
 					async with aiohttp.ClientSession() as session:
 						async with session.get(t.attachments[0].url) as response:
 							r = await response.read()
 							img = Image.open(BytesIO(r))
-					e = ImageEnhance.Sharpness(img)
-					img = e.enhance(100)
-					e = ImageEnhance.Contrast(img)
-					img = e.enhance(100)
-					e = ImageEnhance.Brightness(img)
-					img = e.enhance(.27)
-					try:
-						r, g, b, a = img.split()
-					except:
-						r, g, b = img.split()
-					e = ImageEnhance.Brightness(r)
-					r = e.enhance(4)
-					e = ImageEnhance.Brightness(g)
-					g = e.enhance(1.75)
-					e = ImageEnhance.Brightness(b)
-					b = e.enhance(.6)
-					e = ImageEnhance.Contrast(b)
-					img = e.enhance(2)
-					img = Image.merge("RGB", (r, g, b))
-					e = ImageEnhance.Brightness(img)
-					img = e.enhance(1.5)
-					e = ImageEnhance.Sharpness(img)
-					img = e.enhance((self.f*99)+1)
-					img.save(str(cog_data_path(self))+'\\temp.jpg', quality=10)
-					await t.channel.send(file=discord.File(str(cog_data_path(self))+'\\temp.jpg'))
-					self.f = 0
+					img = self._fry(img)
+					await t.channel.send(file=discord.File(str(cog_data_path(self))+'/temp.jpg'))
 				else:
-					self.f += 0.07
+					pass
