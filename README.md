@@ -53,9 +53,9 @@ Images have to be attatched to the command, links do NOT work!
 
 ### Usage
 
-**`[p]deepfry [amount]`**  
-Deepfries the attatched image by the `amount` provided.  
-Alias: `[p]df [amount]`
+**`[p]deepfry`**  
+Deepfries the attatched image.  
+Alias: `[p]df`
 
 **`[p]nuke`**  
 Nukes the attatched image
