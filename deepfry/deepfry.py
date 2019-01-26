@@ -289,6 +289,7 @@ class Deepfry(commands.Cog):
 				temp = BytesIO()
 				temp.filename = f"deepfried.{ext}"
 				r = await t.attachments[0].save(temp)
+				temp.seek(0)
 				img = Image.open(temp)
 				task = fuctools.partial(self._fry, img)
 				task = self.bot.loop.run_in_executor(None, task)
