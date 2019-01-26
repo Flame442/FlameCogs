@@ -282,7 +282,7 @@ class Deepfry(commands.Cog):
 			return
 		if v == 0:
 			return
-		if any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
+		if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
 			l = randint(1,v)
 			if l == 1:
 				ext = t.attachments[0].url.split(".")[-1]
