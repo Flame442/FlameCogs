@@ -188,7 +188,7 @@ class Deepfry(commands.Cog):
 				return
 			
 			try:
-				await ctx.send(file=discord.File(image, filename="deefried.gif"))
+				await ctx.send(file=discord.File(image))
 			except discord.errors.HTTPException:
 				return await ctx.send('That image is too large.')
 		else:
