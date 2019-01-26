@@ -269,16 +269,33 @@ class Deepfry(commands.Cog):
 		
 	async def run(self, t):
 		"""Passively deepfries random images."""
-		if t.author.id != self.bot.user.id and isinstance(t.channel, discord.TextChannel) and t.attachments != []:
-			v = await self.config.guild(t.guild).chance()
-			if t.attachments[0].url.split(".")[-1] in self.imagetypes and False if True in [t.content.startswith(x) for x in await self.bot.get_prefix(t)] else True and v != 0 and t.attachments[0].size <= 8388608:
-				l = randint(1,v)
-				if l == 1:
-					async with aiohttp.ClientSession() as session:
-						async with session.get(t.attachments[0].url) as response:
-							r = await response.read()
-							img = Image.open(BytesIO(r))
-					img = self._fry(img)
-					await t.channel.send(file=discord.File(str(cog_data_path(self))+'/temp.jpg'))
-				else:
-					pass
+		if t.author.bot:
+			return
+		if not t.attachments:
+			return
+		if t.guild is None:
+			return
+		v = await self.config.guild(t.guild).chance()
+		if t.attachments[0].url.split(".")[-1] not in self.imagetypes:
+			return
+		if t.attachements[0].size > MAX_SIZE:
+			return
+		if v == 0:
+			return
+		if any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
+			l = randint(1,v)
+			if l == 1:
+				ext = t.attachments[0].url.split(".")[-1]
+				temp = BytesIO()
+				temp.filename = f"deepfried.{ext}"
+				r = await t.attachments[0].save(temp)
+				img = Image.open(temp)
+				task = fuctools.partial(self._fry, img)
+				task = self.bot.loop.run_in_executor(None, task)
+				try:
+					image = await asyncio.wait_for(task, timeout=60)
+				except asyncio.TimeoutError:
+					return
+				await t.channel.send(file=discord.File(image))
+			else:
+				pass
