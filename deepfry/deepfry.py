@@ -7,9 +7,15 @@ from redbot.core import checks
 from PIL import Image, ImageEnhance
 from random import randint
 from io import BytesIO
+import functools
+import asyncio
+
+MAX_SIZE = 8 * 1000 * 1000
+
 
 class Deepfry(commands.Cog):
 	"""Deepfries memes."""
+
 	def __init__(self, bot):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167900)
@@ -39,7 +45,11 @@ class Deepfry(commands.Cog):
 		img = Image.merge("RGB", (r, g, b))
 		e = ImageEnhance.Brightness(img)
 		img = e.enhance(1.5)
-		return img
+		temp = BytesIO()
+		temp.name = "deepfried.png"
+		img.save(temp)
+		temp.seek(0)
+		return temp
 	
 	def _videofry(self, img):
 		imgs = []
@@ -70,7 +80,11 @@ class Deepfry(commands.Cog):
 				img.seek(frame)
 			except EOFError:
 				break
-		return imgs
+		temp = BytesIO()
+		temp.name = "deepfried.gif"
+		imgs[0].save(temp, format="GIF", save_all=True, append_images=imgs, loop=0)
+		temp.seek(0)
+		return temp
 		
 	def _nuke(self, img):
 		w, h = img.size[0], img.size[1]
@@ -99,7 +113,11 @@ class Deepfry(commands.Cog):
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance(100)
 		img = img.resize((w,h),Image.BILINEAR)
-		return img
+		temp = BytesIO()
+		temp.name = "nuke.jpg"
+		img.save(temp, quality=1)
+		temp.seek(0)
+		return temp
 		
 	def _videonuke(self, img):
 		imgs = []
@@ -136,9 +154,14 @@ class Deepfry(commands.Cog):
 				img.seek(frame)
 			except EOFError:
 				break
-		return imgs
+		temp = BytesIO()
+		temp.name = "nuke.gif"
+		imgs[0].save(temp, save_all=True, append_images=imgs[1:], loop=0)
+		temp.seek(0)
+		return temp
 			
 	@commands.command(aliases=['df'])
+	@commands.bot_has_permissions(attach_files=True)
 	async def deepfry(self, ctx):
 		"""Deepfries images."""
 		if ctx.message.attachments == []:
@@ -148,26 +171,37 @@ class Deepfry(commands.Cog):
 		elif ctx.message.attachments[0].url.split(".")[-1] in self.videotypes:
 			isgif = True
 		else:
-			return await ctx.send('"'+ctx.message.attachments[0].url.split(".")[-1].title()+'" is not a supported filetype.')
-		if ctx.message.attachments[0].size > 8388608:
+			ext = ctx.message.attachments[0].url.split(".")[-1].title()
+			return await ctx.send('"{}" is not a supported filetype.'.format(ext))
+		if ctx.message.attachments[0].size > MAX_SIZE:
 			return await ctx.send('That image is too large. Max image size is 8MB.')
-		async with aiohttp.ClientSession() as session:
-			async with session.get(ctx.message.attachments[0].url) as response:
-				r = await response.read()
-				img = Image.open(BytesIO(r))
+		temp_orig = BytesIO()
+		r = await ctx.message.attachments[0].save(temp_orig)
+		temp_orig.seek(0)
+		img = Image.open(temp_orig)
 		if isgif:
-			imgs = self._videofry(img)
-			imgs[0].save(str(cog_data_path(self))+'/temp.gif', save_all=True, append_images=imgs[1:], loop=0)
+			task = functools.partial(self._videofry, img)
+			task = self.bot.loop.run_in_executor(None, task)
 			try:
-				await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.gif'))
+				image = await asyncio.wait_for(task, timeout=60)
+			except asyncio.TimeoutError:
+				return
+			
+			try:
+				await ctx.send(file=discord.File(image))
 			except discord.errors.HTTPException:
 				return await ctx.send('That image is too large.')
 		else:
-			img = self._fry(img)
-			img.save(str(cog_data_path(self))+'/temp.jpg')
-			await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.jpg'))
+			task = functools.partial(self._fry, img)
+			task = self.bot.loop.run_in_executor(None, task)
+			try:
+				image = await asyncio.wait_for(task, timeout=60)
+			except asyncio.TimeoutError:
+				return
+			await ctx.send(file=discord.File(image))
 		
 	@commands.command()
+	@commands.bot_has_permissions(attach_files=True)
 	async def nuke(self, ctx):
 		"""Demolishes images."""
 		if ctx.message.attachments == []:
@@ -177,24 +211,33 @@ class Deepfry(commands.Cog):
 		elif ctx.message.attachments[0].url.split(".")[-1] in self.videotypes:
 			isgif = True
 		else:
-			return await ctx.send('"'+ctx.message.attachments[0].url.split(".")[-1].title()+'" is not a supported filetype.')
-		if ctx.message.attachments[0].size > 8388608:
+			ext = ctx.message.attachments[0].url.split(".")[-1].title()
+			return await ctx.send('"{}" is not a supported filetype.'.format(ext))
+		if ctx.message.attachments[0].size > MAX_SIZE:
 			return await ctx.send('That image is too large. Max image size is 8MB.')
-		async with aiohttp.ClientSession() as session:
-			async with session.get(ctx.message.attachments[0].url) as response:
-				r = await response.read()
-				img = Image.open(BytesIO(r))
+		temp_orig = BytesIO()
+		r = await ctx.message.attachments[0].save(temp_orig)
+		temp_orig.seek(0)
+		img = Image.open(temp_orig)
 		if isgif:
-			imgs = self._videonuke(img)
-			imgs[0].save(str(cog_data_path(self))+'/temp.gif', save_all=True, append_images=imgs[1:], loop=0)
+			task = functools.partial(self._videonuke, img)
+			task = self.bot.loop.run_in_executor(None, task)
 			try:
-				await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.gif'))
+				image = await asyncio.wait_for(task, timeout=60)
+			except asyncio.TimeoutError:
+				return
+			try:
+				await ctx.send(file=discord.File(image))
 			except discord.errors.HTTPException:
 				return await ctx.send('That image is too large.')
 		else:
-			img = self._nuke(img)
-			img.save(str(cog_data_path(self))+'/temp.jpg', quality=1)
-			await ctx.send(file=discord.File(str(cog_data_path(self))+'/temp.jpg'))
+			task = functools.partial(self._nuke, img)
+			task = self.bot.loop.run_in_executor(None, task)
+			try:
+				image = await asyncio.wait_for(task, timeout=60)
+			except asyncio.TimeoutError:
+				return
+			await ctx.send(file=discord.File(image))
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -226,16 +269,34 @@ class Deepfry(commands.Cog):
 		
 	async def run(self, t):
 		"""Passively deepfries random images."""
-		if t.author.id != self.bot.user.id and isinstance(t.channel, discord.TextChannel) and t.attachments != []:
-			v = await self.config.guild(t.guild).chance()
-			if t.attachments[0].url.split(".")[-1] in self.imagetypes and False if True in [t.content.startswith(x) for x in await self.bot.get_prefix(t)] else True and v != 0 and t.attachments[0].size <= 8388608:
-				l = randint(1,v)
-				if l == 1:
-					async with aiohttp.ClientSession() as session:
-						async with session.get(t.attachments[0].url) as response:
-							r = await response.read()
-							img = Image.open(BytesIO(r))
-					img = self._fry(img)
-					await t.channel.send(file=discord.File(str(cog_data_path(self))+'/temp.jpg'))
-				else:
-					pass
+		if t.author.bot:
+			return
+		if not t.attachments:
+			return
+		if t.guild is None:
+			return
+		v = await self.config.guild(t.guild).chance()
+		if t.attachments[0].url.split(".")[-1] not in self.imagetypes:
+			return
+		if t.attachements[0].size > MAX_SIZE:
+			return
+		if v == 0:
+			return
+		if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
+			l = randint(1,v)
+			if l == 1:
+				ext = t.attachments[0].url.split(".")[-1]
+				temp = BytesIO()
+				temp.filename = f"deepfried.{ext}"
+				r = await t.attachments[0].save(temp)
+				temp.seek(0)
+				img = Image.open(temp)
+				task = fuctools.partial(self._fry, img)
+				task = self.bot.loop.run_in_executor(None, task)
+				try:
+					image = await asyncio.wait_for(task, timeout=60)
+				except asyncio.TimeoutError:
+					return
+				await t.channel.send(file=discord.File(image))
+			else:
+				pass
