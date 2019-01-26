@@ -278,7 +278,7 @@ class Deepfry(commands.Cog):
 		v = await self.config.guild(t.guild).chance()
 		if t.attachments[0].url.split(".")[-1] not in self.imagetypes:
 			return
-		if t.attachements[0].size > MAX_SIZE:
+		if t.attachments[0].size > MAX_SIZE:
 			return
 		if v == 0:
 			return
