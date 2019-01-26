@@ -192,7 +192,7 @@ class Deepfry(commands.Cog):
 			except discord.errors.HTTPException:
 				return await ctx.send('That image is too large.')
 		else:
-			task = functools.partial(self._videofry, img)
+			task = functools.partial(self._fry, img)
 			task = self.bot.loop.run_in_executor(None, task)
 			try:
 				image = await asyncio.wait_for(task, timeout=60)
