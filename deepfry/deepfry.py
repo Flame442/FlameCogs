@@ -12,10 +12,8 @@ import asyncio
 
 MAX_SIZE = 8 * 1000 * 1000
 
-
 class Deepfry(commands.Cog):
 	"""Deepfries memes."""
-
 	def __init__(self, bot):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167900)
@@ -276,11 +274,11 @@ class Deepfry(commands.Cog):
 		if t.guild is None:
 			return
 		v = await self.config.guild(t.guild).chance()
+		if v == 0:
+			return
 		if t.attachments[0].url.split(".")[-1] not in self.imagetypes:
 			return
 		if t.attachments[0].size > MAX_SIZE:
-			return
-		if v == 0:
 			return
 		if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
 			l = randint(1,v)
@@ -291,7 +289,7 @@ class Deepfry(commands.Cog):
 				r = await t.attachments[0].save(temp)
 				temp.seek(0)
 				img = Image.open(temp)
-				task = fuctools.partial(self._fry, img)
+				task = functools.partial(self._fry, img)
 				task = self.bot.loop.run_in_executor(None, task)
 				try:
 					image = await asyncio.wait_for(task, timeout=60)
