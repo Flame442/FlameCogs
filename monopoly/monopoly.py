@@ -1217,7 +1217,7 @@ class Monopoly(commands.Cog):
 					bal[p] += 100
 					await ctx.send('You now have $'+str(bal[p]))
 				chancen += 1
-				if chancen > 16:
+				if chancen > 15:
 					shuffle(chanceorder)
 					chancen = 0
 
