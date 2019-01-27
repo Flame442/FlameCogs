@@ -767,8 +767,8 @@ class Monopoly(commands.Cog):
 										ownedby[i] = 0
 										numhouse[i] = 0
 										ismortgaged[i] = 0
-										global numalive
-										numalive -= 1
+								global numalive
+								numalive -= 1
 								alive[p] = False
 								await ctx.send(name[p]+' is now out of the game.')
 							elif choice == 'n':
@@ -1497,7 +1497,7 @@ class Monopoly(commands.Cog):
 				if p > num:
 					p = 1
 				if alive[p]:
-					autosave = ('name = '+str(name)+'\ntilename = '+str(tilename)+'\ninjail = '+str(injail)+'\ntile = '+str(tile)+'\nbal = '+str(bal)+'\np = '+str(p)+'\nownedby = '+str(ownedby)+'\nnumhouse = '+str(numhouse)+'\nismortgaged = '+str(ismortgaged)+'\ngoojf = '+str(goojf)+'\nalive = '+str(alive)+'\njailturn = '+str(jailturn)+'\nnum = '+str(num)+'\nnumalive = '+str(numalive)+'\nid = '+str(id))
+					autosave = ('\ntilename = '+str(tilename)+'\ninjail = '+str(injail)+'\ntile = '+str(tile)+'\nbal = '+str(bal)+'\np = '+str(p)+'\nownedby = '+str(ownedby)+'\nnumhouse = '+str(numhouse)+'\nismortgaged = '+str(ismortgaged)+'\ngoojf = '+str(goojf)+'\nalive = '+str(alive)+'\njailturn = '+str(jailturn)+'\nnum = '+str(num)+'\nnumalive = '+str(numalive)+'\nid = '+str(id))
 					await turn()
 				p += 1
 			if numalive == 1:
