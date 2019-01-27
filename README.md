@@ -170,8 +170,8 @@ This command is only usable by the guild owner and bot owner.
 This value is server specific.
 
 **`[p]monopolyset auction [value]`**  
-Set if properties should be auctioned when passed on.
-Defaults to `False`.
+Set if properties should be auctioned when passed on.  
+Defaults to `False`.  
 This command is only usable by the guild owner and bot owner.  
 This value is server specific.
 
