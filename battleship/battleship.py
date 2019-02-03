@@ -9,7 +9,7 @@ class BattleshipGame():
 	"""
 	A game of Battleship
 	Params:
-	ctx, bot, doMention, extraHit, p1, p2
+	ctx, bot, doMention, extraHit, p1, p2, cog
 	Create a game using BattleshipGame.create(params)
 	"""
 	def __init__(self, ctx, bot, doMention, extraHit, p1, p2, cog):
@@ -214,6 +214,7 @@ class Battleship(commands.Cog):
 	@checks.guildowner()
 	@commands.group()
 	async def battleshipset(self, ctx):
+		"""Config options for batteship."""
 		pass
 	
 	@commands.guild_only()
@@ -259,3 +260,6 @@ class Battleship(commands.Cog):
 				await ctx.send('Players will be mentioned when their turn begins.')
 			else:
 				await ctx.send('Players will not be mentioned when their turn begins.')
+	
+	def __unload(self):
+		[game.stop() for game in self.games]
