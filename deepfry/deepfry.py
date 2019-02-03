@@ -1,6 +1,5 @@
 import discord
 import aiohttp
-from redbot.core.data_manager import cog_data_path
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
