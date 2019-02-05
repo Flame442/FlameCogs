@@ -17,7 +17,9 @@ class Deepfry(commands.Cog):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167900)
 		self.config.register_guild(
-			chance = 0
+			fryChance = 0,
+			nukeChance = 0,
+			allowAllTypes = False
 		)
 		self.imagetypes = ['png', 'jpg', 'jpeg']
 		self.videotypes = ['gif']
@@ -39,11 +41,11 @@ class Deepfry(commands.Cog):
 		g = e.enhance(1.75)
 		e = ImageEnhance.Brightness(b)
 		b = e.enhance(.6)
-		img = Image.merge("RGB", (r, g, b))
+		img = Image.merge('RGB', (r, g, b))
 		e = ImageEnhance.Brightness(img)
 		img = e.enhance(1.5)
 		temp = BytesIO()
-		temp.name = "deepfried.png"
+		temp.name = 'deepfried.png'
 		img.save(temp)
 		temp.seek(0)
 		return temp
@@ -68,7 +70,7 @@ class Deepfry(commands.Cog):
 			e = ImageEnhance.Brightness(b)
 			b = e.enhance(.6)
 			e = ImageEnhance.Contrast(b)
-			i = Image.merge("RGB", (r, g, b))
+			i = Image.merge('RGB', (r, g, b))
 			e = ImageEnhance.Brightness(i)
 			i = e.enhance(1.5)
 			imgs.append(i)
@@ -78,8 +80,8 @@ class Deepfry(commands.Cog):
 			except EOFError:
 				break
 		temp = BytesIO()
-		temp.name = "deepfried.gif"
-		imgs[0].save(temp, format="GIF", save_all=True, append_images=imgs, loop=0)
+		temp.name = 'deepfried.gif'
+		imgs[0].save(temp, format='GIF', save_all=True, append_images=imgs, loop=0)
 		temp.seek(0)
 		return temp
 		
@@ -104,14 +106,14 @@ class Deepfry(commands.Cog):
 		g = e.enhance(1.75)
 		e = ImageEnhance.Brightness(b)
 		b = e.enhance(.6)
-		img = Image.merge("RGB", (r, g, b))
+		img = Image.merge('RGB', (r, g, b))
 		e = ImageEnhance.Brightness(img)
 		img = e.enhance(1.5)
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance(100)
 		img = img.resize((w,h),Image.BILINEAR)
 		temp = BytesIO()
-		temp.name = "nuke.jpg"
+		temp.name = 'nuke.jpg'
 		img.save(temp, quality=1)
 		temp.seek(0)
 		return temp
@@ -139,7 +141,7 @@ class Deepfry(commands.Cog):
 			g = e.enhance(1.75)
 			e = ImageEnhance.Brightness(b)
 			b = e.enhance(.6)
-			i = Image.merge("RGB", (r, g, b))
+			i = Image.merge('RGB', (r, g, b))
 			e = ImageEnhance.Brightness(i)
 			i = e.enhance(1.5)
 			e = ImageEnhance.Sharpness(i)
@@ -152,7 +154,7 @@ class Deepfry(commands.Cog):
 			except EOFError:
 				break
 		temp = BytesIO()
-		temp.name = "nuke.gif"
+		temp.name = 'nuke.gif'
 		imgs[0].save(temp, save_all=True, append_images=imgs[1:], loop=0)
 		temp.seek(0)
 		return temp
@@ -163,12 +165,13 @@ class Deepfry(commands.Cog):
 		"""Deepfries images."""
 		if ctx.message.attachments == []:
 			return await ctx.send('Please provide an attachment.')
+		v = await self.config.guild(ctx.message.guild).allowAllTypes()
 		if ctx.message.attachments[0].url.split(".")[-1] in self.imagetypes:
 			isgif = False
-		elif ctx.message.attachments[0].url.split(".")[-1] in self.videotypes:
+		elif ctx.message.attachments[0].url.split(".")[-1] in self.videotypes or v:
 			isgif = True
 		else:
-			ext = ctx.message.attachments[0].url.split(".")[-1].title()
+			ext = ctx.message.attachments[0].url.split('.')[-1].title()
 			return await ctx.send('"{}" is not a supported filetype.'.format(ext))
 		if ctx.message.attachments[0].size > MAX_SIZE:
 			return await ctx.send('That image is too large. Max image size is 8MB.')
@@ -203,12 +206,13 @@ class Deepfry(commands.Cog):
 		"""Demolishes images."""
 		if ctx.message.attachments == []:
 			return await ctx.send('Please provide an attachment.')
-		if ctx.message.attachments[0].url.split(".")[-1] in self.imagetypes:
+		v = await self.config.guild(ctx.message.guild).allowAllTypes()
+		if ctx.message.attachments[0].url.split('.')[-1] in self.imagetypes:
 			isgif = False
-		elif ctx.message.attachments[0].url.split(".")[-1] in self.videotypes:
+		elif ctx.message.attachments[0].url.split('.')[-1] in self.videotypes or v:
 			isgif = True
 		else:
-			ext = ctx.message.attachments[0].url.split(".")[-1].title()
+			ext = ctx.message.attachments[0].url.split('.')[-1].title()
 			return await ctx.send('"{}" is not a supported filetype.'.format(ext))
 		if ctx.message.attachments[0].size > MAX_SIZE:
 			return await ctx.send('That image is too large. Max image size is 8MB.')
@@ -238,8 +242,15 @@ class Deepfry(commands.Cog):
 	
 	@commands.guild_only()
 	@checks.guildowner()
-	@commands.command()
-	async def deepfryset(self, ctx, value: int=None):
+	@commands.group()
+	async def deepfryset(self, ctx):
+		"""Config options for deepfry."""
+		pass
+	
+	@commands.guild_only()
+	@checks.guildowner()
+	@deepfryset.command()	
+	async def frychance(self, ctx, value: int=None):
 		"""
 		Change the rate images are automatically deepfried.
 		Images will have a 1/<value> chance to be deepfried.
@@ -248,7 +259,7 @@ class Deepfry(commands.Cog):
 		This value is server specific.
 		"""
 		if value == None:
-			v = await self.config.guild(ctx.message.guild).chance()
+			v = await self.config.guild(ctx.message.guild).fryChance()
 			if v == 0:
 				await ctx.send('Autofrying is currently disabled.')
 			elif v == 1:
@@ -256,44 +267,121 @@ class Deepfry(commands.Cog):
 			else:
 				await ctx.send('1 out of every '+str(v)+' images are being fried.')
 		else:
-			await self.config.guild(ctx.guild).chance.set(value)
+			await self.config.guild(ctx.guild).fryChance.set(value)
 			if value == 0:
 				await ctx.send('Autofrying is now disabled.')
 			elif value == 1:
 				await ctx.send('All images will be fried.')
 			else:
 				await ctx.send('1 out of every '+str(value)+' images will be fried.')
-		
+	
+	@commands.guild_only()
+	@checks.guildowner()
+	@deepfryset.command()	
+	async def nukechance(self, ctx, value: int=None):
+		"""
+		Change the rate images are automatically nuked.
+		Images will have a 1/<value> chance to be nuked.
+		Higher values cause less often nukes.
+		Set to 0 to disable.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.message.guild).nukeChance()
+			if v == 0:
+				await ctx.send('Autonuking is currently disabled.')
+			elif v == 1:
+				await ctx.send('All images are being nuked.')
+			else:
+				await ctx.send('1 out of every '+str(v)+' images are being nuked.')
+		else:
+			await self.config.guild(ctx.guild).nukeChance.set(value)
+			if value == 0:
+				await ctx.send('Autonuking is now disabled.')
+			elif value == 1:
+				await ctx.send('All images will be nuked.')
+			else:
+				await ctx.send('1 out of every '+str(value)+' images will be nuked.')
+	
+	@commands.guild_only()
+	@checks.guildowner()
+	@deepfryset.command()	
+	async def allowalltypes(self, ctx, value: bool=None):
+		"""
+		Allow filetypes that have not been verified to be valid.
+		Can cause errors if enabled, use at your own risk.
+		Defaults to False.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).allowAllTypes()
+			if v == True:
+				await ctx.send('You are currently able to use unverified types.')
+			else:
+				await ctx.send('You are currently not able to use unverified types.')
+		else:
+			await self.config.guild(ctx.guild).allowAllTypes.set(value)
+			if value == True:
+				await ctx.send('You will now be able to use unverified types.\nThis mode can cause errors. Use at your own risk.')
+			else:
+				await ctx.send('You will no longer be able to use unverified types.')
+
 	async def run(self, t):
 		"""Passively deepfries random images."""
+		'''Checks'''
 		if t.author.bot:
 			return
 		if not t.attachments:
 			return
-		if t.guild is None:
-			return
-		v = await self.config.guild(t.guild).chance()
-		if v == 0:
-			return
-		if t.attachments[0].url.split(".")[-1] not in self.imagetypes:
-			return
 		if t.attachments[0].size > MAX_SIZE:
 			return
-		if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
-			l = randint(1,v)
-			if l == 1:
-				ext = t.attachments[0].url.split(".")[-1]
-				temp = BytesIO()
-				temp.filename = f"deepfried.{ext}"
-				r = await t.attachments[0].save(temp)
-				temp.seek(0)
-				img = Image.open(temp)
-				task = functools.partial(self._fry, img)
-				task = self.bot.loop.run_in_executor(None, task)
-				try:
-					image = await asyncio.wait_for(task, timeout=60)
-				except asyncio.TimeoutError:
-					return
-				await t.channel.send(file=discord.File(image))
-			else:
-				pass
+		if t.guild is None:
+			return
+		'''Guild settings'''
+		vfry = await self.config.guild(t.guild).fryChance()
+		vnuke = await self.config.guild(t.guild).nukeChance()
+		'''Nuke'''
+		if vnuke != 0:
+			if t.attachments[0].url.split('.')[-1] not in self.imagetypes:
+				return
+			if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
+				l = randint(1,vnuke)
+				if l == 1:
+					ext = t.attachments[0].url.split('.')[-1]
+					temp = BytesIO()
+					temp.filename = f'nuked.{ext}'
+					r = await t.attachments[0].save(temp)
+					temp.seek(0)
+					img = Image.open(temp)
+					task = functools.partial(self._nuke, img)
+					task = self.bot.loop.run_in_executor(None, task)
+					try:
+						image = await asyncio.wait_for(task, timeout=60)
+					except asyncio.TimeoutError:
+						return
+					await t.channel.send(file=discord.File(image))
+					return #prevent a nuke and a fry
+				else:
+					pass
+		'''Fry'''
+		if vfry != 0:
+			if t.attachments[0].url.split('.')[-1] not in self.imagetypes:
+				return
+			if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
+				l = randint(1,vfry)
+				if l == 1:
+					ext = t.attachments[0].url.split('.')[-1]
+					temp = BytesIO()
+					temp.filename = f'deepfried.{ext}'
+					r = await t.attachments[0].save(temp)
+					temp.seek(0)
+					img = Image.open(temp)
+					task = functools.partial(self._fry, img)
+					task = self.bot.loop.run_in_executor(None, task)
+					try:
+						image = await asyncio.wait_for(task, timeout=60)
+					except asyncio.TimeoutError:
+						return
+					await t.channel.send(file=discord.File(image))
+				else:
+					pass
