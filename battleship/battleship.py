@@ -164,7 +164,7 @@ class BattleshipGame():
 	
 	
 	def stop(self):
-		self.cog.games.remove([game for game in self.cog.games if game.ctx.channel == self.ctx.channel][0])
+		self.cog.games.remove(self)
 		self._task.cancel()
 
 class Battleship(commands.Cog):
