@@ -70,12 +70,32 @@ Alias: `[p]df`
 **`[p]nuke`**  
 Nukes the attatched image
 
-**`[p]deepfryset [value]`**  
+**`[p]deepfryset <argument>`**  
+Config options for deepfry.  
+This command is only usable by the guild owner and bot owner.
+
+**`[p]deepfryset frychance [value]`**  
 Change the rate images are automatically deepfried.  
 Images will have a 1/`[value]` chance to be deepfried.  
 Higher values cause less often fries.  
 Set to `0` to disable.  
 Defaults to `0` (off)  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]deepfryset nukechance [value]`**  
+Change the rate images are automatically nuked.  
+Images will have a 1/`[value]` chance to be nuked.  
+Higher values cause less often nukes.  
+Set to `0` to disable.  
+Defaults to `0` (off)  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]deepfryset allowalltypes [value]`**  
+Allow filetypes that have not been verified to be valid.  
+Can cause errors if enabled, **use at your own risk**.  
+Defaults to `False`.  
 This command is only usable by the guild owner and bot owner.  
 This value is server specific.
 
