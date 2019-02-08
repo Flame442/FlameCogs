@@ -245,7 +245,15 @@ class Deepfry(commands.Cog):
 	@commands.group()
 	async def deepfryset(self, ctx):
 		"""Config options for deepfry."""
-		pass
+		if ctx.invoked_subcommand is None:
+			allowAllTypes = await self.config.guild(ctx.guild).allowAllTypes()
+			fryChance = await self.config.guild(ctx.guild).fryChance()
+			nukeChance = await self.config.guild(ctx.guild).nukeChance()
+			msg = ''
+			msg += 'Allow all filetypes: ' + str(allowAllTypes) + '\n'
+			msg += 'Deepfry chance: ' + str(fryChance) + '\n'
+			msg += 'Nuke chance: ' + str(nukeChance)
+			await ctx.send('```py\n'+msg+'```')
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -253,6 +261,7 @@ class Deepfry(commands.Cog):
 	async def frychance(self, ctx, value: int=None):
 		"""
 		Change the rate images are automatically deepfried.
+		
 		Images will have a 1/<value> chance to be deepfried.
 		Higher values cause less often fries.
 		Set to 0 to disable.
@@ -281,6 +290,7 @@ class Deepfry(commands.Cog):
 	async def nukechance(self, ctx, value: int=None):
 		"""
 		Change the rate images are automatically nuked.
+		
 		Images will have a 1/<value> chance to be nuked.
 		Higher values cause less often nukes.
 		Set to 0 to disable.
@@ -309,6 +319,7 @@ class Deepfry(commands.Cog):
 	async def allowalltypes(self, ctx, value: bool=None):
 		"""
 		Allow filetypes that have not been verified to be valid.
+		
 		Can cause errors if enabled, use at your own risk.
 		Defaults to False.
 		This value is server specific.
