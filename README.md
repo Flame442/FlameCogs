@@ -40,8 +40,18 @@ This cog will let you play battleship against another member of your server.
 **`[p]battleship`**  
 Begin a game of battleship.
 
-**`[p]battleshipset [value]`**  
+**`[p]battleshipset <argument>`**  
+Config options for batteship.  
+This command is only usable by the guild owner and bot owner.
+
+**`[p]battleshipset extra [value]`**  
 Set if an extra shot should be given after a hit.  
+Defaults to `True`.  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]battleshipset mention [value]`**  
+Set if players should be mentioned when their turn begins.  
 Defaults to `True`.  
 This command is only usable by the guild owner and bot owner.  
 This value is server specific.
@@ -60,12 +70,32 @@ Alias: `[p]df`
 **`[p]nuke`**  
 Nukes the attatched image
 
-**`[p]deepfryset [value]`**  
+**`[p]deepfryset <argument>`**  
+Config options for deepfry.  
+This command is only usable by the guild owner and bot owner.
+
+**`[p]deepfryset frychance [value]`**  
 Change the rate images are automatically deepfried.  
 Images will have a 1/`[value]` chance to be deepfried.  
 Higher values cause less often fries.  
 Set to `0` to disable.  
 Defaults to `0` (off)  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]deepfryset nukechance [value]`**  
+Change the rate images are automatically nuked.  
+Images will have a 1/`[value]` chance to be nuked.  
+Higher values cause less often nukes.  
+Set to `0` to disable.  
+Defaults to `0` (off)  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]deepfryset allowalltypes [value]`**  
+Allow filetypes that have not been verified to be valid.  
+Can cause errors if enabled, **use at your own risk**.  
+Defaults to `False`.  
 This command is only usable by the guild owner and bot owner.  
 This value is server specific.
 
@@ -170,8 +200,8 @@ This command is only usable by the guild owner and bot owner.
 This value is server specific.
 
 **`[p]monopolyset auction [value]`**  
-Set if properties should be auctioned when passed on.
-Defaults to `False`.
+Set if properties should be auctioned when passed on.  
+Defaults to `False`.  
 This command is only usable by the guild owner and bot owner.  
 This value is server specific.
 
@@ -192,8 +222,6 @@ This value is server specific.
 **[Monopoly]** Add config for various house rules (~~auctions~~, free parking, landing on go, etc)
 
 **[Battleship/Hangman/Monopoly]** Add optional betting to games
-
-**[Battleship]** Add command to end game
 
 # Contact
 

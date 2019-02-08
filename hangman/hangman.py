@@ -161,6 +161,7 @@ class Hangman(commands.Cog):
 	async def wordlist(self, ctx, value: str=None):
 		"""
 		Change the wordlist used.
+		
 		Extra wordlists can be put in the data folder.
 		Wordlists are a txt file with every new line being a new word.
 		Use default to restore the default wordlist and list to see available wordlists.
@@ -202,6 +203,7 @@ class Hangman(commands.Cog):
 	async def edit(self, ctx, value: bool=None):
 		"""
 		Set if hangman messages should be one edited message or many individual messages.
+		
 		Defaults to True.
 		This value is server specific.
 		"""
