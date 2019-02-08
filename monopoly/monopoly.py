@@ -10,7 +10,7 @@ import asyncio, os
 
 
 class Monopoly(commands.Cog):
-	"""A fun game of monopoly for 2-8 people."""
+	"""Play monopoly with 2-8 people."""
 	def __init__(self, bot):
 		self.bot = bot
 		self.runningin = []
@@ -30,7 +30,23 @@ class Monopoly(commands.Cog):
 	@commands.group()
 	async def monopolyset(self, ctx):
 		"""Config options for monopoly."""
-		pass
+		if ctx.invoked_subcommand is None:
+			doMention = await self.config.guild(ctx.guild).doMention()
+			startCash = await self.config.guild(ctx.guild).startCash()
+			incomeValue = await self.config.guild(ctx.guild).incomeValue()
+			luxuryValue = await self.config.guild(ctx.guild).luxuryValue()
+			doAuction = await self.config.guild(ctx.guild).doAuction()
+			bailValue = await self.config.guild(ctx.guild).bailValue()
+			maxJailRolls = await self.config.guild(ctx.guild).maxJailRolls()
+			msg = ''
+			msg += 'Hold auctions: ' + str(doAuction) + '\n'
+			msg += 'Bail price: ' + str(bailValue) + '\n'
+			msg += 'Income tax: ' + str(incomeValue) + '\n'
+			msg += 'Luxury tax: ' + str(luxuryValue) + '\n'
+			msg += 'Max jail rolls: ' + str(maxJailRolls) + '\n'
+			msg += 'Mention on turn: ' + str(doMention) + '\n'
+			msg += 'Starting cash: ' + str(startCash)
+			await ctx.send('```py\n'+msg+'```')
 		
 	@commands.guild_only()
 	@checks.guildowner()
@@ -38,6 +54,7 @@ class Monopoly(commands.Cog):
 	async def mention(self, ctx, value: bool=None):
 		"""
 		Set if players should be mentioned when their turn begins.
+		
 		Defaults to False.
 		This value is server specific.
 		"""
@@ -60,6 +77,7 @@ class Monopoly(commands.Cog):
 	async def startingcash(self, ctx, value: int=None):
 		"""
 		Set how much money players should start the game with.
+		
 		Defaults to 1500.
 		This value is server specific.
 		"""
@@ -76,6 +94,7 @@ class Monopoly(commands.Cog):
 	async def income(self, ctx, value: int=None):
 		"""
 		Set how much Income Tax should cost.
+		
 		Defaults to 200.
 		This value is server specific.
 		"""
@@ -92,6 +111,7 @@ class Monopoly(commands.Cog):
 	async def luxury(self, ctx, value: int=None):
 		"""
 		Set how much Luxury Tax should cost.
+		
 		Defaults to 100.
 		This value is server specific.
 		"""
@@ -108,6 +128,7 @@ class Monopoly(commands.Cog):
 	async def auction(self, ctx, value: bool=None):
 		"""
 		Set if properties should be auctioned when passed on.
+		
 		Defaults to False.
 		This value is server specific.
 		"""
@@ -130,6 +151,7 @@ class Monopoly(commands.Cog):
 	async def bail(self, ctx, value: int=None):
 		"""
 		Set how much bail should cost.
+		
 		Defaults to 50.
 		This value is server specific.
 		"""
@@ -146,6 +168,7 @@ class Monopoly(commands.Cog):
 	async def maxjailrolls(self, ctx, value: int=None):
 		"""
 		Set the maximum number of rolls in jail before bail has to be paid.
+		
 		Defaults to 3.
 		This value is server specific.
 		"""
@@ -159,7 +182,11 @@ class Monopoly(commands.Cog):
 	@commands.guild_only()
 	@commands.command()  
 	async def monopoly(self, ctx, savefile: str=None):
-		"""A fun game of monopoly for 2-8 people"""
+		"""
+		Play monopoly with 2-8 people.
+		
+		Use the optional paramater "savefile" to load a saved game.
+		"""
 		if ctx.channel.id in self.runningin:
 			return await ctx.send('There is already a game running in this channel.')
 		self.runningin.append(ctx.channel.id)
