@@ -172,6 +172,7 @@ class Battleship(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.games = []
+		self.battleship = BattleshipGame
 		self.config = Config.get_conf(self, identifier=7345167901)
 		self.config.register_guild(
 			extraHit = True,
@@ -215,7 +216,13 @@ class Battleship(commands.Cog):
 	@commands.group()
 	async def battleshipset(self, ctx):
 		"""Config options for batteship."""
-		pass
+		if ctx.invoked_subcommand is None:
+			extraHit = await self.config.guild(ctx.guild).extraHit()
+			doMention = await self.config.guild(ctx.guild).doMention()
+			msg = ''
+			msg += 'Extra shot on hit: ' + str(extraHit) + '\n'
+			msg += 'Mention on turn: ' + str(doMention)
+			await ctx.send('```py\n'+msg+'```')
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -223,6 +230,7 @@ class Battleship(commands.Cog):
 	async def extra(self, ctx, value: bool=None):
 		"""
 		Set if an extra shot should be given after a hit.
+		
 		Defaults to True.
 		This value is server specific.
 		"""
@@ -245,6 +253,7 @@ class Battleship(commands.Cog):
 	async def mention(self, ctx, value: bool=None):
 		"""
 		Set if players should be mentioned when their turn begins.
+		
 		Defaults to False.
 		This value is server specific.
 		"""
