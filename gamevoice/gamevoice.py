@@ -20,10 +20,11 @@ class Gamevoice(commands.Cog):
 
 	@commands.guild_only()
 	@checks.guildowner()
-	@gamevoice.command(name='set')
-	async def gamevoice_set(self, ctx):
+	@gamevoice.command()
+	async def set(self, ctx):
 		"""
 		Create game specific voice channels.
+		
 		Sets the voice channel you are in to only work with the game you are playing.
 		Any activity will count, including Spotify, so make sure discord thinks you are doing the correct activity.
 		"""
@@ -57,10 +58,11 @@ class Gamevoice(commands.Cog):
 
 	@commands.guild_only()
 	@checks.guildowner()
-	@gamevoice.command(name='reset')
-	async def gamevoice_reset(self, ctx):
+	@gamevoice.command()
+	async def reset(self, ctx):
 		"""
 		Resets the voice channel you are in to defaults.
+		
 		Will remove ALL permissions, not just those set by the cog, making it completely open.
 		"""
 		if ctx.message.author.voice == None:
@@ -81,8 +83,8 @@ class Gamevoice(commands.Cog):
 		await ctx.send(str(ctx.message.author.voice.channel)+' is now unrestricted.')
 			
 	@commands.guild_only()
-	@gamevoice.command(name='recheck')
-	async def gamevoice_recheck(self, ctx):
+	@gamevoice.command()
+	async def recheck(self, ctx):
 		"""Force a recheck of your current game."""
 		rolelist = await self.config.guild(ctx.guild).rolelist()
 		try:
@@ -101,8 +103,8 @@ class Gamevoice(commands.Cog):
 		await ctx.send('You have been updated.')
 
 	@commands.guild_only()
-	@gamevoice.command(name='listroles')
-	async def gamevoice_listroles(self, ctx):
+	@gamevoice.command()
+	async def listroles(self, ctx):
 		"""Lists all the roles created for games."""
 		rolelist = await self.config.guild(ctx.guild).rolelist()
 		namelist = list(rolelist.keys())
@@ -116,10 +118,11 @@ class Gamevoice(commands.Cog):
 		
 	@commands.guild_only()
 	@checks.guildowner()
-	@gamevoice.command(name='deleterole', aliases=['delrole'])
-	async def gamevoice_deleterole(self, ctx, *, r: str):
+	@gamevoice.command(aliases=['delrole'])
+	async def deleterole(self, ctx, *, r: str):
 		"""
 		Delete a role from the server.
+		
 		Also removes that game's restrictions from all channels.
 		Case sensitive.
 		Use [p]gv listroles to see all roles.
