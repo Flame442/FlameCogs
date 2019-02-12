@@ -3,11 +3,11 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
 from redbot.core.data_manager import cog_data_path
-from typing import Optional
+from typing import Optional, Union
 from random import randint
 
 class WordStats(commands.Cog):
-	"""Tracks commonly written words."""
+	"""Tracks commonly used words."""
 	def __init__(self, bot):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167905)
@@ -22,12 +22,12 @@ class WordStats(commands.Cog):
 	
 	@commands.guild_only()
 	@commands.command()
-	async def wordstats(self, ctx, member: Optional[discord.Member]=None, amount: Optional[int]=30):
+	async def wordstats(self, ctx, member: Optional[discord.Member]=None, amount: Optional[Union[int, str]]=30):
 		"""
-		Prints the most commonly written words.
+		Prints the most commonly used words.
 		
 		Use the optional paramater "member" to see the stats of a member.
-		Use the optional paramater "amount" to change the number of words that are displayed.
+		Use the optional paramater "amount" to change the number of words that are displayed, or to check the stats of a specific word.
 		"""
 		if member == None:
 			mention = 'the server'
@@ -35,9 +35,13 @@ class WordStats(commands.Cog):
 		else:
 			mention = member.display_name
 			worddict = await self.config.member(member).worddict()
-		if amount == None:
-			amount = 30
 		order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
+		if isinstance(amount, str):
+			try:
+				ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
+				return await ctx.send(f'The word **{amount}** has been said by {mention} **{str(worddict[amount.lower()])}** times.\nIt is the **{ordinal(order.index(amount.lower())+1)}** most common word {mention} has said.')
+			except KeyError:
+				return await ctx.send(f'The word "{amount}" has not been said by {mention} yet.')
 		result = ''
 		smallresult = ''
 		n = 0
