@@ -100,8 +100,8 @@ class BattleshipGame():
 						t = await self.bot.wait_for('message', timeout=120, check=lambda m:m.channel == privateMessage.channel and m.author.bot == False)
 					except asyncio.TimeoutError:
 						await self.ctx.send(self.name[x]+' took too long, shutting down.')
-						self.stop()
-					if await self._place(x,k,t.content.lower()) == True:
+						return self.stop()
+					if await self._place(x,k,t.content.lower()):
 						break
 			m = await self.player[x].send(self._bprint(x,1))
 			self.pmsg.append(m)
