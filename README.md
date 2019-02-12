@@ -213,9 +213,36 @@ This value is server specific.
 
 **`[p]monopolyset maxjailrolls [value]`**  
 Set the maximum number of rolls in jail before bail has to be paid.  
-Defaults to 3.  
+Defaults to `3`.  
 This command is only usable by the guild owner and bot owner.  
 This value is server specific.
+
+## Wordstats
+
+This cog will track commonly used words by server and member.
+
+### Usage
+
+**`[p]wordstats [member] [amount]`**  
+Prints the most commonly used words.  
+Use the optional paramater `member` to see the stats of a member.  
+Use the optional paramater `amount` to change the number of words that are displayed, or to check the stats of a specific word.
+
+**`[p]wordstatsset <argument>`**  
+Config options for wordstats.  
+This command is only usable by the guild owner and bot owner.  
+
+**`[p]wordstatsset server [value]`**  
+Set if wordstats should record stats for the channel the command is used in.  
+Defaults to `True`.  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]wordstatsset channel [value]`**  
+Set if wordstats should record stats for the server the command is used in.  
+Defaults to `True`.  
+This command is only usable by the guild owner and bot owner.  
+This value is channel specific.
 
 # Planned changes
 
