@@ -39,9 +39,9 @@ class WordStats(commands.Cog):
 		if isinstance(amount, str):
 			try:
 				ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
-				return await ctx.send(f'The word **{amount}** has been said by {mention} **{str(worddict[amount.lower()])}** times.\nIt is the **{ordinal(order.index(amount.lower())+1)}** most common word {mention} has said.')
+				return await ctx.send(f'The word **{amount}** has been said by {mention} **{str(worddict[amount.lower()])}** times.\nIt is the **{ordinal(order.index(amount.lower())+1)+"** most common" if order.index(amount.lower()) != 0 else "most common**"} word {mention} has said.')
 			except KeyError:
-				return await ctx.send(f'The word "{amount}" has not been said by {mention} yet.')
+				return await ctx.send(f'The word **{amount}** has not been said by {mention} yet.')
 		result = ''
 		smallresult = ''
 		n = 0
@@ -57,7 +57,7 @@ class WordStats(commands.Cog):
 				mention = 'The server'
 			await ctx.send(f'{mention} has not said any words yet.')
 		else:
-			await ctx.send(f'Out of {num} words and {len(worddict)} unique words, the {n} most common words that {mention} has said are:\n```{smallresult.rstrip()}```')
+			await ctx.send(f'Out of **{num}** words and **{len(worddict)}** unique words, the **{str(n) + "** most common words" if n != 1 else "most common** word"} that {mention} has said {"are" if n != 1 else "is"}:\n```{smallresult.rstrip()}```')
 
 	@commands.guild_only()
 	@checks.guildowner()
