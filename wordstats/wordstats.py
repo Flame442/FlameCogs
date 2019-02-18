@@ -98,7 +98,7 @@ class WordStats(commands.Cog):
 				except:
 					name = f'<removed member {deletednum}>'
 					deletednum += 1
-				smallresult += f'{str(sumdict[memid])}{" ".join(["" for x in range(max - len(str(sumdict[memid]))+2)])}{mem.display_name}\n'
+				smallresult += f'{str(sumdict[memid])}{" ".join(["" for x in range(max - len(str(sumdict[memid]))+2)])}{name}\n'
 				n += 1
 			result += f'{str(sumdict[memid])} {str(memid)}\n'
 			num += int(sumdict[memid])
