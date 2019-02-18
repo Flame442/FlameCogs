@@ -41,7 +41,7 @@ class WordStats(commands.Cog):
 		if isinstance(amount, str):
 			try:
 				ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
-				return await ctx.send(f'The word **{amount}** has been said by {mention} **{str(worddict[amount.lower()])}** times.\nIt is the **{ordinal(order.index(amount.lower())+1)+"** most common" if order.index(amount.lower()) != 0 else "most common**"} word {mention} has said.')
+				return await ctx.send(f'The word **{amount}** has been said by {mention} **{str(worddict[amount.lower()])}** {"times" if worddict[amount.lower()] != 1 else "time"}.\nIt is the **{ordinal(order.index(amount.lower())+1)+"** most common" if order.index(amount.lower()) != 0 else "most common**"} word {mention} has said.')
 			except KeyError:
 				return await ctx.send(f'The word **{amount}** has not been said by {mention} yet.')
 		result = ''
