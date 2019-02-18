@@ -30,6 +30,7 @@ Name | Description
 [Gamevoice](../master/README.md#gamevoice) | Make voice channels require playing a specific game in order to join.
 [Hangman](../master/README.md#hangman) | Play hangman with the bot.
 [Monopoly](../master/README.md#monopoly) | Play monopoly with up to 7 other people in your server.
+[Wordstats](../master/README.md#wordstats) | Track commonly used words by server and member.
 
 ## Battleship
 
@@ -63,12 +64,14 @@ Images have to be attatched to the command, links do NOT work!
 
 ### Usage
 
-**`[p]deepfry`**  
+**`[p]deepfry [link]`**  
 Deepfries the attatched image.  
+Use the optional paramater `link` to use a **direct link** as the target.  
 Alias: `[p]df`
 
-**`[p]nuke`**  
-Nukes the attatched image
+**`[p]nuke [link]`**  
+Nukes the attatched image.  
+Use the optional paramater `link` to use a **direct link** as the target.
 
 **`[p]deepfryset <argument>`**  
 Config options for deepfry.  
@@ -226,7 +229,11 @@ This cog will track commonly used words by server and member.
 **`[p]wordstats [member] [amount]`**  
 Prints the most commonly used words.  
 Use the optional paramater `member` to see the stats of a member.  
-Use the optional paramater `amount` to change the number of words that are displayed, or to check the stats of a specific word.
+Use the optional paramater `amount` to change the number of words that are displayed, or to check the stats of a specific word (default `30`).
+
+**`[p]topchatters [amount]`**  
+Prints the members who have said the most words.  
+Use the optional paramater `amount` to change the number of members that are displayed (default `10`).
 
 **`[p]wordstatsset <argument>`**  
 Config options for wordstats.  
