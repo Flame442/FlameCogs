@@ -162,7 +162,11 @@ class Deepfry(commands.Cog):
 	@commands.command(aliases=['df'])
 	@commands.bot_has_permissions(attach_files=True)
 	async def deepfry(self, ctx, link: str=None):
-		"""Deepfries images."""
+		"""
+		Deepfries images.
+		
+		Use the optional paramater "link" to use a **direct link** as the target.
+		"""
 		if ctx.message.attachments == [] and not link:
 			return await ctx.send('Please provide an attachment.')
 		v = await self.config.guild(ctx.message.guild).allowAllTypes()
@@ -218,7 +222,11 @@ class Deepfry(commands.Cog):
 	@commands.command()
 	@commands.bot_has_permissions(attach_files=True)
 	async def nuke(self, ctx, link: str=None):
-		"""Demolishes images."""
+		"""
+		Demolishes images.
+		
+		Use the optional paramater "link" to use a **direct link** as the target.
+		"""
 		if ctx.message.attachments == [] and not link:
 			return await ctx.send('Please provide an attachment.')
 		v = await self.config.guild(ctx.message.guild).allowAllTypes()
