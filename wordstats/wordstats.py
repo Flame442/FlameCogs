@@ -48,9 +48,12 @@ class WordStats(commands.Cog):
 		smallresult = ''
 		n = 0
 		num = 0
+		max = False
 		for word in order:
+			if not max:
+				max = len(str(worddict[word]))
 			if n < amount:
-				smallresult += f'{str(worddict[word])} {str(word)}\n'
+				smallresult += f'{str(worddict[word])}{" ".join(["" for x in range(max-(len(str(worddict[word])))+2)])}{str(word)}\n'
 				n += 1
 			result += f'{str(worddict[word])} {str(word)}\n'
 			num += int(worddict[word])
@@ -84,15 +87,18 @@ class WordStats(commands.Cog):
 		n = 0
 		num = 0
 		deletednum = 1
+		max = False
 		for memid in order:
 			if n < amount:
+				if not max:
+					max = len(str(sumdict[memid]))
 				try:
 					mem = ctx.guild.get_member(memid)
 					name = mem.display_name
 				except:
 					name = f'<removed member {deletednum}>'
 					deletednum += 1
-				smallresult += f'{str(sumdict[memid])} {mem.display_name}\n'
+				smallresult += f'{str(sumdict[memid])}{" ".join(["" for x in range(max - len(str(sumdict[memid]))+2)])}{mem.display_name}\n'
 				n += 1
 			result += f'{str(sumdict[memid])} {str(memid)}\n'
 			num += int(sumdict[memid])
