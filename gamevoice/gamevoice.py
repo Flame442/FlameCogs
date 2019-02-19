@@ -103,6 +103,7 @@ class Gamevoice(commands.Cog):
 		await ctx.send('You have been updated.')
 
 	@commands.guild_only()
+	@checks.guildowner()
 	@gamevoice.command()
 	async def listroles(self, ctx):
 		"""Lists all the roles created for games."""
