@@ -6,6 +6,7 @@ from redbot.core.data_manager import cog_data_path
 from typing import Optional, Union
 from random import randint
 
+
 class WordStats(commands.Cog):
 	"""Tracks commonly used words."""
 	def __init__(self, bot):
@@ -78,8 +79,8 @@ class WordStats(commands.Cog):
 		sumdict = {}
 		for memid in data:
 			n = 0
-			for word in data[memid]:
-				n += len(data[memid][word])
+			for word in data[memid]['worddict']:
+				n += data[memid]['worddict'][word]
 			sumdict[memid] = n
 		order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
 		result = ''
