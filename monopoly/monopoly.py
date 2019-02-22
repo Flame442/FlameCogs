@@ -1505,7 +1505,7 @@ class Monopoly(commands.Cog):
 				while a < 20:
 					hold += '{:2d} {:5d} {:5d} {:3d} {:6d} {:4d} {:6d} {}'.format(a,pricebuy[a],ownedby[a],ismortgaged[a],mortgageprice[a],numhouse[a],houseprice[a],tilename[a])+'\n'
 					a += 1
-				await ctx.send('```'+hold.strip()+'```')
+				await ctx.send(f'```{hold.strip()}```')
 				hold = 'id price owner ism mprice numh hprice name\n'
 				while a < 40:
 					hold += '{:2d} {:5d} {:5d} {:3d} {:6d} {:4d} {:6d} {}'.format(a,pricebuy[a],ownedby[a],ismortgaged[a],mortgageprice[a],numhouse[a],houseprice[a],tilename[a])+'\n'
@@ -1528,8 +1528,14 @@ class Monopoly(commands.Cog):
 						await ctx.send(name[o]+' wins!')
 		except asyncio.TimeoutError:
 			self.runningin.remove(ctx.channel.id)
-			await ctx.send(f'You took too long, shutting down.\nSave info:\n```{autosave}```')
+			random = 'autosave' + str(randint(1000,9999))
+			with open(str(cog_data_path(self))+'/'+random+'.txt','w') as f:
+				f.write(autosave)
+			await ctx.send(f'You took too long, shutting down.\nYour game was saved to `{random}`.')
 		except:
 			self.runningin.remove(ctx.channel.id)
-			await ctx.send(f'A fatal error has occurred, shutting down.\nSave info:\n```{autosave}```')
+			random = 'autosave' + str(randint(1000,9999))
+			with open(str(cog_data_path(self))+'/'+random+'.txt','w') as f:
+				f.write(autosave)
+			await ctx.send(f'A fatal error has occurred, shutting down.\nYour game was saved to `{random}`.')
 			raise
