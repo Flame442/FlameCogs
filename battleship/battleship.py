@@ -7,10 +7,18 @@ import asyncio
 
 class BattleshipGame():
 	"""
-	A game of Battleship
+	A game of Battleship.
+	
 	Params:
-	ctx, bot, doMention, extraHit, p1, p2, cog
-	Create a game using BattleshipGame.create(params)
+	ctx = redbot.core.commands.context.Context, The context that should be used, used to send messages.
+	bot = redbot.core.bot.Red, The bot the game is running on, used to wait for messages.
+	doMention = bool, Should players be mentioned on the begining of their turn.
+	extraHit = bool, Should players get an extra shot on a hit.
+	p1 = discord.member.Member, The member object of player 1.
+	p2 = discord.member.Member, The member object of player 2.
+	cog = battleship.battleship.Battleship, The cog the game is running on, used to stop the game.
+	
+	Create a game using BattleshipGame.create(params).
 	"""
 	def __init__(self, ctx, bot, doMention, extraHit, p1, p2, cog):
 		self.ctx = ctx
@@ -28,22 +36,49 @@ class BattleshipGame():
 	
 	@classmethod
 	def create(cls, ctx, bot, doMention, extraHit, p1, p2, cog):
+		"""
+		Create a new BattleshipGame.
+		Returns the game (battleship.battleship.BattleshipGame).
+		
+		Params:
+		ctx = redbot.core.commands.context.Context, The context that should be used, used to send messages.
+		bot = redbot.core.bot.Red, The bot the game is running on, used to wait for messages.
+		doMention = bool, Should players be mentioned on the begining of their turn.
+		extraHit = bool, Should players get an extra shot on a hit.
+		p1 = discord.member.Member, The member object of player 1.
+		p2 = discord.member.Member, The member object of player 2.
+		cog = battleship.battleship.Battleship, The cog the game is running on, used to stop the game.
+		"""
 		game = cls(ctx, bot, doMention, extraHit, p1, p2, cog)
 		game._task = ctx.bot.loop.create_task(game.run())
 		return game
 	
 	def _bprint(self, player, bt):
-		b = '  '
-		for z in range(10): b += ['A','B','C','D','E','F','G','H','I','J'][z]+' '
-		b += '\n'
+		"""
+		Creates a visualization of the board.
+		Returns a str of the board.
+		
+		Params:
+		player = int, Which player's board to print.
+		bt = int, Should unhit ships be shown.
+		"""
+		b = '  ' + ' '.join(['A','B','C','D','E','F','G','H','I','J']) #header row
 		for y in range(10): #vertical positions
-			b += str(y)+' '
+			b += f'\n{str(y)} '
 			for x in range(10):
 				b += [{0:'· ',1:'O ',2:'X ',3:'· '},{0:'· ',1:'O ',2:'X ',3:'# '}][bt][self.board[player][(y*10)+x]] #horizontal positions
-			b += '\n'
-		return '```'+b+'```'
+		return f'```{b}```'
 	
-	async def _place(self, player, length, value): #create a ship for player of length at position value
+	async def _place(self, player, length, value):
+		"""
+		Add a ship to the board.
+		Returns True when the ship is successfully placed and returns False and sends a message when the ship cannot be placed.
+		
+		Params:
+		player = int, Which player's board to place to.
+		length = int, Length of the ship to place.
+		value = str, The XYD to place ship at.
+		"""
 		hold = {}
 		try:
 			x = self.letnum[value[0]]
@@ -90,31 +125,35 @@ class BattleshipGame():
 		return True
 	
 	async def run(self):
+		"""
+		Runs the actuall game.
+		Should only be called by create().
+		"""
 		for x in range(2): #each player
-			await self.ctx.send('Messaging '+self.name[x]+' for setup now.')
-			await self.player[x].send(str(self.name[x]+', it is your turn to set up your ships.\nPlace ships by entering the top left coordinate and the direction of (r)ight or (d)own in xyd format.'))
+			await self.ctx.send(f'Messaging {self.name[x]} for setup now.')
+			await self.player[x].send(f'{self.name[x]}, it is your turn to set up your ships.\nPlace ships by entering the top left coordinate and the direction of (r)ight or (d)own in xyd format.')
 			for k in [5,4,3,3,2]: #each ship length
-				privateMessage = await self.player[x].send(self._bprint(x,1)+'Place your '+str(k)+' length ship.')
+				privateMessage = await self.player[x].send(f'{self._bprint(x,1)}Place your {str(k)} length ship.')
 				while True:
 					try:
 						t = await self.bot.wait_for('message', timeout=120, check=lambda m:m.channel == privateMessage.channel and m.author.bot == False)
 					except asyncio.TimeoutError:
-						await self.ctx.send(self.name[x]+' took too long, shutting down.')
-						self.stop()
-					if await self._place(x,k,t.content.lower()) == True:
+						await self.ctx.send(f'{self.name[x]} took too long, shutting down.')
+						return self.stop()
+					if await self._place(x,k,t.content.lower()): #only break if _place was successful
 						break
 			m = await self.player[x].send(self._bprint(x,1))
-			self.pmsg.append(m)
+			self.pmsg.append(m) #save this message for editing later
 		game = True
-		pswap = {1:0,0:1}
+		pswap = {1:0,0:1} #helper to swap player
 		channel = self.ctx.channel
 		while game:
-			self.p = pswap[self.p]
-			if self.dm:
+			self.p = pswap[self.p] #swap players
+			if self.dm: #should player be mentioned
 				mention = self.player[self.p].mention
 			else:
 				mention = self.name[self.p]
-			await self.ctx.send(mention+'\'s turn!\n'+self._bprint(pswap[self.p],0)+self.name[self.p]+', take your shot.')
+			await self.ctx.send(f'{mention}\'s turn!\n{self._bprint(pswap[self.p],0)}{self.name[self.p]}, take your shot.')
 			i = 0
 			while i == 0:
 				try:
@@ -131,14 +170,14 @@ class BattleshipGame():
 				if self.board[pswap[self.p]][(y*10)+x] == 0:
 					self.board[pswap[self.p]][(y*10)+x] = 1
 					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p],1))
-					await self.ctx.send(self._bprint(pswap[self.p],0)+'Miss!')
+					await self.ctx.send(f'{self._bprint(pswap[self.p],0)}Miss!')
 					i = 1
 				elif self.board[pswap[self.p]][(y*10)+x] in [1,2]:
 					await self.ctx.send('You already shot there!')
 				elif self.board[pswap[self.p]][(y*10)+x] == 3:
 					self.board[pswap[self.p]][(y*10)+x] = 2
 					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p],1))
-					await self.ctx.send(self._bprint(pswap[self.p],0)+'Hit!')
+					await self.ctx.send(f'{self._bprint(pswap[self.p],0)}Hit!')
 					'''dead ship'''
 					for a in range(5):
 						if ((y*10)+x) in self.key[pswap[self.p]][a]:
@@ -149,10 +188,10 @@ class BattleshipGame():
 									l = 1
 									break
 							if l == 0: #if ship destroyed
-								await self.ctx.send(self.name[pswap[self.p]]+'\'s '+str([5,4,3,3,2][a])+' length ship was destroyed!')
+								await self.ctx.send(f'{self.name[pswap[self.p]]}\'s {str([5,4,3,3,2][a])} length ship was destroyed!')
 					'''dead player'''
 					if 3 not in self.board[pswap[self.p]]:
-						await self.ctx.send(self.name[self.p]+' wins!')
+						await self.ctx.send(f'{self.name[self.p]} wins!')
 						game = False
 					if game:
 						if self.eh:
@@ -164,6 +203,7 @@ class BattleshipGame():
 	
 	
 	def stop(self):
+		"""Stop and cleanup the game."""
 		self.cog.games.remove(self)
 		self._task.cancel()
 
@@ -193,7 +233,7 @@ class Battleship(commands.Cog):
 			r = await self.bot.wait_for('message', timeout=60, check=check)
 		except asyncio.TimeoutError:
 			return await ctx.send('You took too long, shutting down.')
-		await ctx.send('A game of battleship will be played between '+ctx.author.display_name+' and '+r.author.display_name+'.')
+		await ctx.send(f'A game of battleship will be played between {ctx.author.display_name} and {r.author.display_name}.')
 		game = BattleshipGame.create(ctx, self.bot, dm, eh, ctx.author, r.author, self)
 		self.games.append(game)
 	
@@ -219,10 +259,11 @@ class Battleship(commands.Cog):
 		if ctx.invoked_subcommand is None:
 			extraHit = await self.config.guild(ctx.guild).extraHit()
 			doMention = await self.config.guild(ctx.guild).doMention()
-			msg = ''
-			msg += 'Extra shot on hit: ' + str(extraHit) + '\n'
-			msg += 'Mention on turn: ' + str(doMention)
-			await ctx.send('```py\n'+msg+'```')
+			msg = (
+				'Extra shot on hit: ' + str(extraHit) + '\n'
+				'Mention on turn: ' + str(doMention)
+				)
+			await ctx.send(f'```py\n{msg}```')
 	
 	@commands.guild_only()
 	@checks.guildowner()

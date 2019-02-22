@@ -161,24 +161,43 @@ class Deepfry(commands.Cog):
 			
 	@commands.command(aliases=['df'])
 	@commands.bot_has_permissions(attach_files=True)
-	async def deepfry(self, ctx):
-		"""Deepfries images."""
-		if ctx.message.attachments == []:
+	async def deepfry(self, ctx, link: str=None):
+		"""
+		Deepfries images.
+		
+		Use the optional paramater "link" to use a **direct link** as the target.
+		"""
+		if ctx.message.attachments == [] and not link:
 			return await ctx.send('Please provide an attachment.')
 		v = await self.config.guild(ctx.message.guild).allowAllTypes()
-		if ctx.message.attachments[0].url.split(".")[-1] in self.imagetypes:
-			isgif = False
-		elif ctx.message.attachments[0].url.split(".")[-1] in self.videotypes or v:
-			isgif = True
+		if link: #linked image	
+			if link.split('.')[-1] in self.imagetypes:
+				isgif = False
+			elif link.split('.')[-1] in self.videotypes or v:
+				isgif = True
+			else:
+				ext = link.split('.')[-1].title()
+				return await ctx.send(f'"{ext}" is not a supported filetype or you did not provide a direct link.')
+		else: #attatched image
+			if ctx.message.attachments[0].url.split('.')[-1] in self.imagetypes:
+				isgif = False
+			elif ctx.message.attachments[0].url.split('.')[-1] in self.videotypes:
+				isgif = True
+			else:
+				ext = ctx.message.attachments[0].url.split('.')[-1].title()
+				return await ctx.send(f'"{ext}" is not a supported filetype.')
+			if ctx.message.attachments[0].size > MAX_SIZE: #only usable with attatchments
+				return await ctx.send('That image is too large. Max image size is 8MB.')
+		if link:
+			async with aiohttp.ClientSession() as session:
+				async with session.get(link) as response:
+					r = await response.read()
+					img = Image.open(BytesIO(r))
 		else:
-			ext = ctx.message.attachments[0].url.split('.')[-1].title()
-			return await ctx.send('"{}" is not a supported filetype.'.format(ext))
-		if ctx.message.attachments[0].size > MAX_SIZE:
-			return await ctx.send('That image is too large. Max image size is 8MB.')
-		temp_orig = BytesIO()
-		r = await ctx.message.attachments[0].save(temp_orig)
-		temp_orig.seek(0)
-		img = Image.open(temp_orig)
+			temp_orig = BytesIO()
+			r = await ctx.message.attachments[0].save(temp_orig)
+			temp_orig.seek(0)
+			img = Image.open(temp_orig)
 		if isgif:
 			task = functools.partial(self._videofry, img)
 			task = self.bot.loop.run_in_executor(None, task)
@@ -202,24 +221,43 @@ class Deepfry(commands.Cog):
 		
 	@commands.command()
 	@commands.bot_has_permissions(attach_files=True)
-	async def nuke(self, ctx):
-		"""Demolishes images."""
-		if ctx.message.attachments == []:
+	async def nuke(self, ctx, link: str=None):
+		"""
+		Demolishes images.
+		
+		Use the optional paramater "link" to use a **direct link** as the target.
+		"""
+		if ctx.message.attachments == [] and not link:
 			return await ctx.send('Please provide an attachment.')
 		v = await self.config.guild(ctx.message.guild).allowAllTypes()
-		if ctx.message.attachments[0].url.split('.')[-1] in self.imagetypes:
-			isgif = False
-		elif ctx.message.attachments[0].url.split('.')[-1] in self.videotypes or v:
-			isgif = True
+		if link: #linked image	
+			if link.split('.')[-1] in self.imagetypes:
+				isgif = False
+			elif link.split('.')[-1] in self.videotypes or v:
+				isgif = True
+			else:
+				ext = link.split('.')[-1].title()
+				return await ctx.send(f'"{ext}" is not a supported filetype or you did not provide a direct link.')
+		else: #attatched image
+			if ctx.message.attachments[0].url.split('.')[-1] in self.imagetypes:
+				isgif = False
+			elif ctx.message.attachments[0].url.split('.')[-1] in self.videotypes:
+				isgif = True
+			else:
+				ext = ctx.message.attachments[0].url.split('.')[-1].title()
+				return await ctx.send(f'"{ext}" is not a supported filetype.')
+			if ctx.message.attachments[0].size > MAX_SIZE: #only usable with attatchments
+				return await ctx.send('That image is too large. Max image size is 8MB.')
+		if link:
+			async with aiohttp.ClientSession() as session:
+				async with session.get(link) as response:
+					r = await response.read()
+					img = Image.open(BytesIO(r))
 		else:
-			ext = ctx.message.attachments[0].url.split('.')[-1].title()
-			return await ctx.send('"{}" is not a supported filetype.'.format(ext))
-		if ctx.message.attachments[0].size > MAX_SIZE:
-			return await ctx.send('That image is too large. Max image size is 8MB.')
-		temp_orig = BytesIO()
-		r = await ctx.message.attachments[0].save(temp_orig)
-		temp_orig.seek(0)
-		img = Image.open(temp_orig)
+			temp_orig = BytesIO()
+			r = await ctx.message.attachments[0].save(temp_orig)
+			temp_orig.seek(0)
+			img = Image.open(temp_orig)
 		if isgif:
 			task = functools.partial(self._videonuke, img)
 			task = self.bot.loop.run_in_executor(None, task)
@@ -246,14 +284,13 @@ class Deepfry(commands.Cog):
 	async def deepfryset(self, ctx):
 		"""Config options for deepfry."""
 		if ctx.invoked_subcommand is None:
-			allowAllTypes = await self.config.guild(ctx.guild).allowAllTypes()
-			fryChance = await self.config.guild(ctx.guild).fryChance()
-			nukeChance = await self.config.guild(ctx.guild).nukeChance()
-			msg = ''
-			msg += 'Allow all filetypes: ' + str(allowAllTypes) + '\n'
-			msg += 'Deepfry chance: ' + str(fryChance) + '\n'
-			msg += 'Nuke chance: ' + str(nukeChance)
-			await ctx.send('```py\n'+msg+'```')
+			cfg = await self.config.guild(ctx.guild).all()
+			msg = (
+				'Allow all filetypes: ' + str(cfg['allowAllTypes']) + '\n'
+				'Deepfry chance: ' + str(cfg['fryChance']) + '\n'
+				'Nuke chance: ' + str(cfg['nukeChance'])
+				)
+			await ctx.send(f'```py\n{msg}```')
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -274,7 +311,7 @@ class Deepfry(commands.Cog):
 			elif v == 1:
 				await ctx.send('All images are being fried.')
 			else:
-				await ctx.send('1 out of every '+str(v)+' images are being fried.')
+				await ctx.send(f'1 out of every {str(v)} images are being fried.')
 		else:
 			await self.config.guild(ctx.guild).fryChance.set(value)
 			if value == 0:
@@ -282,7 +319,7 @@ class Deepfry(commands.Cog):
 			elif value == 1:
 				await ctx.send('All images will be fried.')
 			else:
-				await ctx.send('1 out of every '+str(value)+' images will be fried.')
+				await ctx.send(f'1 out of every {str(value)} images will be fried.')
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -303,7 +340,7 @@ class Deepfry(commands.Cog):
 			elif v == 1:
 				await ctx.send('All images are being nuked.')
 			else:
-				await ctx.send('1 out of every '+str(v)+' images are being nuked.')
+				await ctx.send(f'1 out of every {str(v)} images are being nuked.')
 		else:
 			await self.config.guild(ctx.guild).nukeChance.set(value)
 			if value == 0:
@@ -311,7 +348,7 @@ class Deepfry(commands.Cog):
 			elif value == 1:
 				await ctx.send('All images will be nuked.')
 			else:
-				await ctx.send('1 out of every '+str(value)+' images will be nuked.')
+				await ctx.send(f'1 out of every {str(value)} images will be nuked.')
 	
 	@commands.guild_only()
 	@checks.guildowner()
