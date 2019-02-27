@@ -212,13 +212,13 @@ class Battleship(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.games = []
-		self.battleship = BattleshipGame
+		self.bs = BattleshipGame
 		self.config = Config.get_conf(self, identifier=7345167901)
 		self.config.register_guild(
 			extraHit = True,
 			doMention = False
 		)
-		
+	
 	@commands.guild_only()
 	@commands.command()
 	async def battleship(self, ctx):
