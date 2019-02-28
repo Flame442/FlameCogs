@@ -1,5 +1,9 @@
 # FlameCogs
 
+[![Discord server](https://discordapp.com/api/guilds/535921134152187919/embed.png)](https://discord.gg/bYqCjvu)
+[![Red cogs](https://img.shields.io/badge/Red--DiscordBot-cogs-red.svg)](https://github.com/Cog-Creators/Red-DiscordBot/tree/V3/develop)
+[![discord.py](https://img.shields.io/badge/discord-py-blue.svg)](https://github.com/Rapptz/discord.py)
+
 Cogs for a [Red Discord Bot](https://github.com/Cog-Creators/Red-DiscordBot)  
 These cogs are a collection of random stuff I make.
 
