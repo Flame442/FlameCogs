@@ -224,6 +224,18 @@ Defaults to `3`.
 This command is only usable by the guild owner and bot owner.  
 This value is server specific.
 
+**`[p]monopolyset go [value]`**  
+Set the base value of passing go.  
+Defaults to `200`.  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset doublego [value]`**  
+Set if landing on go should double the amount of money given.  
+Defaults to `False`.  
+This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
 ## Wordstats
 
 This cog will track commonly used words by server and member.
