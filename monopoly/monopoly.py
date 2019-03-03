@@ -183,7 +183,7 @@ class Monopoly(commands.Cog):
 	@monopolyset.command()
 	async def doublego(self, ctx, value: bool=None):
 		"""
-		Set landing on go should double the amount of money given.
+		Set if landing on go should double the amount of money given.
 		
 		Defaults to False.
 		This value is server specific.
