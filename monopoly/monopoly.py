@@ -22,7 +22,9 @@ class Monopoly(commands.Cog):
 			luxuryValue = 100,
 			doAuction = False,
 			bailValue = 50,
-			maxJailRolls = 3
+			maxJailRolls = 3,
+			doDoubleGo = False,
+			goValue = 200
 		)
 	
 	@commands.guild_only()
@@ -35,6 +37,8 @@ class Monopoly(commands.Cog):
 			msg = (
 				'Hold auctions: ' + str(cfg['doAuction']) + '\n'
 				'Bail price: ' + str(cfg['bailValue']) + '\n'
+				'Double go: ' + str(cfg['doDoubleGo']) + '\n'
+				'Go reward: ' + str(cfg['goValue']) + '\n'
 				'Income tax: ' + str(cfg['incomeValue']) + '\n'
 				'Luxury tax: ' + str(cfg['luxuryValue']) + '\n'
 				'Max jail rolls: ' + str(cfg['maxJailRolls']) + '\n'
@@ -173,6 +177,46 @@ class Monopoly(commands.Cog):
 		else:
 			await self.config.guild(ctx.guild).maxJailRolls.set(value)
 			await ctx.send(f'The maximum number of rolls in jail is now {str(value)}.')
+			
+	@commands.guild_only()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def doublego(self, ctx, value: bool=None):
+		"""
+		Set landing on go should double the amount of money given.
+		
+		Defaults to False.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).doDoubleGo()
+			if v:
+				await ctx.send('Go value is doubled when landed on.')
+			else:
+				await ctx.send('Go value is not doubled when landed on.')
+		else:
+			await self.config.guild(ctx.guild).doDoubleGo.set(value)
+			if value:
+				await ctx.send('Go value will now be doubled when landed on.')
+			else:
+				await ctx.send('Go value will no longer be doubled when landed on.')
+				
+	@commands.guild_only()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def go(self, ctx, value: int=None):
+		"""
+		Set the base value of passing go.
+		
+		Defaults to 200.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).goValue()
+			await ctx.send(f'You currently get ${str(v)} from passing go.')
+		else:
+			await self.config.guild(ctx.guild).goValue.set(value)
+			await ctx.send(f'You will now get ${str(value)} from passing go.')
 	
 	@commands.guild_only()
 	@commands.command()  
@@ -973,7 +1017,12 @@ class Monopoly(commands.Cog):
 				await ctx.send('Your card reads:\n'+ccname[ccorder[ccn]])
 				if ccorder[ccn] == 0:
 					tile[p] = 0
-					bal[p] += 200
+					doDoubleGo = await self.config.guild(ctx.guild).doDoubleGo()
+					goValue = await self.config.guild(ctx.guild).goValue()
+					if doDoubleGo:
+						bal[p] += goValue * 2
+					else:
+						bal[p] += goValue
 					await bprint()
 					await ctx.send(f'You now have ${str(bal[p])}.')
 				elif ccorder[ccn] == 1:
@@ -1033,18 +1082,25 @@ class Monopoly(commands.Cog):
 				await ctx.send(f'Your card reads:\n{chancename[chanceorder[chancen]]}.')
 				if chanceorder[chancen] == 0:
 					tile[p] = 0
-					bal[p] += 200
+					doDoubleGo = await self.config.guild(ctx.guild).doDoubleGo()
+					goValue = await self.config.guild(ctx.guild).goValue()
+					if doDoubleGo:
+						bal[p] += goValue * 2
+					else:
+						bal[p] += goValue
 					await bprint()
 					await ctx.send(f'You now have ${str(bal[p])}.')
 				elif chanceorder[chancen] == 1:
 					if tile[p] > 24:
-						bal[p] += 200
+						goValue = await self.config.guild(ctx.guild).goValue()
+						bal[p] += goValue
 						await ctx.send(f'You passed go, you now have ${str(bal[p])}.')
 					tile[p] = 24 
 					await cchanceland()
 				elif chanceorder[chancen] == 2:
 					if tile[p] > 11:
-						bal[p] += 200
+						goValue = await self.config.guild(ctx.guild).goValue()
+						bal[p] += goValue
 						await ctx.send(f'You passed go, you now have ${str(bal[p])}.')
 					tile[p] = 11
 					await cchanceland()
@@ -1054,7 +1110,8 @@ class Monopoly(commands.Cog):
 					elif 12 < tile[p] <= 28:
 						tile[p] = 28
 					else:
-						bal[p] += 200
+						goValue = await self.config.guild(ctx.guild).goValue()
+						bal[p] += goValue
 						await ctx.send(f'You passed go, you now have ${str(bal[p])}.')
 						tile[p] = 12 
 					await bprint()
@@ -1103,7 +1160,8 @@ class Monopoly(commands.Cog):
 					elif tile[p] <= 35:
 						tile[p] = 35
 					else:
-						bal[p] += 200
+						goValue = await self.config.guild(ctx.guild).goValue()
+						bal[p] += goValue
 						await ctx.send(f'You passed go, you now have ${str(bal[p])}.')
 						tile[p] = 5
 					await bprint()
@@ -1175,7 +1233,8 @@ class Monopoly(commands.Cog):
 					await ctx.send(f'You now have ${str(bal[p])}.')
 				elif chanceorder[chancen] == 11:
 					if tile[p] > 5:
-						bal[p] += 200
+						goValue = await self.config.guild(ctx.guild).goValue()
+						bal[p] += goValue
 						await ctx.send(f'You passed go, you now have ${str(bal[p])}.')
 					tile[p] = 5
 					await bprint()
@@ -1299,8 +1358,13 @@ class Monopoly(commands.Cog):
 				tile[p] += d1 + d2
 				if tile[p] >= 40: #going past go
 					tile[p] -= 40
-					bal[p] += 200
-					await ctx.send(f'You passed go! You now have ${str(bal[p])}.')
+					doDoubleGo = await self.config.guild(ctx.guild).doDoubleGo()
+					goValue = await self.config.guild(ctx.guild).goValue()
+					if tile[p] == 0 and doDoubleGo:
+						bal[p] += goValue * 2
+					else:
+						bal[p] += goValue
+					await ctx.send(f'You {"landed on" if tile[p] == 0 else "passed"} go! You now have ${str(bal[p])}.')
 				await landnd()
 
 			async def landnd(): #affecting properties
