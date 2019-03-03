@@ -271,7 +271,7 @@ class Monopoly(commands.Cog):
 				for x in hold:
 					holdlist += x+'\n'
 				self.runningin.remove(ctx.channel.id)
-				return await ctx.send(f'That file does not exist.\nAvailable save files:\n`{holdlist.strip()}`')
+				return await ctx.send(f'That file does not exist.\nAvailable save files:\n```\n{holdlist}```')
 			else:
 				self.runningin.remove(ctx.channel.id)
 				return await ctx.send('You have no save files.')
@@ -605,30 +605,30 @@ class Monopoly(commands.Cog):
 						else:
 							continue
 				a = 1
-				hold = 'Confirm with y or quit with n\n\nYou will give:\n```'
+				holda = ''
+				holdb = ''
 				while a < pti:
 					if ptotrade[tradeidp[a]] == 1: #print selected properties
-						hold += tilename[tradeidp[a]]+'\n'
+						holda += tilename[tradeidp[a]]+'\n'
 					a += 1
 				if monp != 0:
-					hold += f'${str(monp)}\n'
+					holda += f'${str(monp)}\n'
 				if jp == 1:
-					hold += '1 get out of jail free card'
+					holda += '1 get out of jail free card'
 				elif jp > 1:
-					hold += f'{str(jp)} get out of jail free cards'
-				hold += '```\nYou will get:\n```'
+					holda += f'{str(jp)} get out of jail free cards'
 				a = 1
 				while a < nti:
 					if ntotrade[tradeidn[a]] == 1:
-						hold += tilename[tradeidn[a]]+'\n'
+						holdb += tilename[tradeidn[a]]+'\n'
 					a += 1
 				if monn != 0:
-					hold += f'${str(monn)}\n'
+					holdb += f'${str(monn)}\n'
 				if jn == 1:
-					hold += '1 get out of jail free card'
+					holdb += '1 get out of jail free card'
 				elif jn > 1:
-					hold += f'{str(jn)} get out of jail free cards'
-				await ctx.send(f'{hold}```')
+					holdb += f'{str(jn)} get out of jail free cards'
+				await ctx.send(f'Confirm with y or quit with n\n\nYou will give:\n```{holda}```\nYou will get:\n```{holdb}```')
 				while i == 3:
 					a = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 					a = a.content 
@@ -646,30 +646,7 @@ class Monopoly(commands.Cog):
 					else:
 						mention = name[tradep]
 					a = 1
-					hold = f'{mention},\n{name[p]} would like to trade with you. Here is their offer.\nAccept with y or deny with n.\n\nYou will get:\n```'
-					while a < pti:
-						if ptotrade[tradeidp[a]] == 1:
-							hold += f'{tilename[tradeidp[a]]}\n'
-						a += 1
-					if monp != 0:
-						hold += f'${str(monp)}\n'
-					if jp == 1:
-						hold += '1 get out of jail free card'
-					elif jp > 1:
-						hold += f'{str(jp)} get out of jail free cards'
-					hold += '```\nYou will give:\n```'
-					a = 1
-					while a < nti:
-						if ntotrade[tradeidn[a]] == 1:
-							hold += f'{tilename[tradeidn[a]]}\n'
-						a += 1
-					if monn != 0:
-						hold += f'${str(monn)}\n'
-					if jn == 1:
-						hold += '1 get out of jail free card'
-					elif jn > 1:
-						hold += f'{str(jn)} get out of jail free cards'
-					await ctx.send(f'{hold}```')
+					await ctx.send(f'{mention}, {name[p]} would like to trade with you. Here is their offer.\nAccept with y or deny with n.\n\nYou will give:\n```{holdb}```\nYou will get:\n```{holda}```')
 					while i == 4:
 						a = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[tradep] and m.channel == channel)
 						a = a.content
