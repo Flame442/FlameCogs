@@ -406,13 +406,12 @@ class Monopoly(commands.Cog):
 				return False
 
 			async def trade(): #trades between players, messy as frick...
-				await ctx.send('Select the player you want to trade with.')
 				a,monp,monn,jp,jn = 1,0,0,0,0
 				tradeidp = [0 for x in range(29)]
 				tradeidn = [0 for x in range(29)]
 				ptotrade = [0 for x in range(40)]
 				ntotrade = [0 for x in range(40)]
-				hold = ''
+				hold = 'Select the player you want to trade with.\n'
 				while a < 9:
 					if a <= num:
 						if a == p or not alive[a]: #can't trade with yourself or dead players
@@ -533,7 +532,7 @@ class Monopoly(commands.Cog):
 							pass
 					except ValueError:
 						if t == 'm':
-							await ctx.send(f'How much money? You have ${str(bal[tradep])}.')
+							await ctx.send(f'How much money? They have ${str(bal[tradep])}.')
 							monn = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 							try:
 								monn = int(monn.content)
@@ -548,7 +547,7 @@ class Monopoly(commands.Cog):
 							i = 3
 							continue
 						elif t == 'j':
-							await ctx.send(f'How many? You have {str(goojf[tradep])}.')
+							await ctx.send(f'How many? They have {str(goojf[tradep])}.')
 							jn = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 							try:
 								jn = int(jn.content)
@@ -561,31 +560,31 @@ class Monopoly(commands.Cog):
 								jn = 0
 						else:
 							continue
-				await ctx.send('Confirm with y or quit with n\n\nYou will give:')
 				a = 1
-				hold = ''
+				hold = 'Confirm with y or quit with n\n\nYou will give:\n```'
 				while a < pti:
 					if ptotrade[tradeidp[a]] == 1: #print selected properties
 						hold += tilename[tradeidp[a]]+'\n'
 					a += 1
-				hold += f'${str(monp)}\n'
+				if monp != 0:
+					hold += f'${str(monp)}\n'
 				if jp == 1:
 					hold += '1 get out of jail free card'
-				elif jp != 0:
+				elif jp > 1:
 					hold += f'{str(jp)} get out of jail free cards'
-				await ctx.send(f'```{hold.strip()}```\nYou will get:')
-				hold = ''
+				hold += '```\nYou will get:\n```'
 				a = 1
 				while a < nti:
 					if ntotrade[tradeidn[a]] == 1:
 						hold += tilename[tradeidn[a]]+'\n'
 					a += 1
-				hold += f'${str(monn)}\n'
+				if monn != 0:
+					hold += f'${str(monn)}\n'
 				if jn == 1:
 					hold += '1 get out of jail free card'
-				elif jn != 0:
+				elif jn > 1:
 					hold += f'{str(jn)} get out of jail free cards'
-				await ctx.send(f'```{hold.strip()}```')
+				await ctx.send(f'{hold}```')
 				while i == 3:
 					a = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 					a = a.content 
@@ -602,31 +601,31 @@ class Monopoly(commands.Cog):
 						mention = mem.mention
 					else:
 						mention = name[tradep]
-					await ctx.send(f'{mention},\n{name[p]} would like to trade with you. Here is their offer.\nAccept with y or deny with n.\n\nYou will get:')
 					a = 1
-					hold = ''
+					hold = f'{mention},\n{name[p]} would like to trade with you. Here is their offer.\nAccept with y or deny with n.\n\nYou will get:\n```'
 					while a < pti:
 						if ptotrade[tradeidp[a]] == 1:
 							hold += f'{tilename[tradeidp[a]]}\n'
 						a += 1
-					hold += f'${str(monp)}\n'
+					if monp != 0:
+						hold += f'${str(monp)}\n'
 					if jp == 1:
 						hold += '1 get out of jail free card'
-					elif jp != 0:
+					elif jp > 1:
 						hold += f'{str(jp)} get out of jail free cards'
-					await ctx.send(f'```{hold.strip()}```\nYou will give:')
+					hold += '```\nYou will give:\n```'
 					a = 1
-					hold = ''
 					while a < nti:
 						if ntotrade[tradeidn[a]] == 1:
 							hold += f'{tilename[tradeidn[a]]}\n'
 						a += 1
-					hold += f'${str(monn)}\n'
+					if monn != 0:
+						hold += f'${str(monn)}\n'
 					if jn == 1:
 						hold += '1 get out of jail free card'
-					elif jn != 1:
+					elif jn > 1:
 						hold += f'{str(jn)} get out of jail free cards'
-					await ctx.send(f'```{hold.strip()}```')
+					await ctx.send(f'{hold}```')
 					while i == 4:
 						a = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[tradep] and m.channel == channel)
 						a = a.content
