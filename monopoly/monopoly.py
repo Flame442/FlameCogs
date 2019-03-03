@@ -1487,7 +1487,7 @@ class Monopoly(commands.Cog):
 					while wd == 1 and alive[p]:
 						r = 0
 						while r == 0:
-							await ctx.send('Type r to roll, t to trade, h to manage houses, m to mortgage, or s to save.')
+							await ctx.send(f'Type r to roll, t to trade, h to manage houses{", m to mortgage, or s to save." if nod == 0 else ", or m to mortgage."}')
 							choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel and m.content in ['r', '?', 't', 'm', 'h', 's'])
 							choice = choice.content
 							if choice == 'r': #normal turn, roll dice
@@ -1513,15 +1513,16 @@ class Monopoly(commands.Cog):
 								await mortgage()
 							elif choice == 'h': #manage houses
 								await house()
-							elif choice == 's': #print game save message
+							elif choice == 's' and nod == 0: #print game save message
 								await ctx.send('Save file name?')
 								savename = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
-								with open(str(cog_data_path(self))+'/'+savename.content+'.txt','w') as f:
+								savename = savename.content.replace(' ', '')
+								with open(str(cog_data_path(self))+'/'+savename+'.txt','w') as f:
 									f.write(autosave)
 								self.runningin.remove(ctx.channel.id)
 								global numalive
 								numalive = 0
-								return await ctx.send('Saved.')
+								return await ctx.send(f'Game saved to savefile `{savename}`. Exiting.')
 									
 				r = 1
 				while r == 1 and alive[p]:
