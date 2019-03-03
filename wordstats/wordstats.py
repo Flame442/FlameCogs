@@ -87,7 +87,6 @@ class WordStats(commands.Cog):
 		smallresult = ''
 		n = 0
 		num = 0
-		deletednum = 1
 		max = False
 		for memid in order:
 			if n < amount:
@@ -97,8 +96,7 @@ class WordStats(commands.Cog):
 					mem = ctx.guild.get_member(memid)
 					name = mem.display_name
 				except:
-					name = f'<removed member {deletednum}>'
-					deletednum += 1
+					name = f'<removed member {memid}>'
 				smallresult += f'{str(sumdict[memid])}{" ".join(["" for x in range(max - len(str(sumdict[memid]))+2)])}{name}\n'
 				n += 1
 			result += f'{str(sumdict[memid])} {str(memid)}\n'
