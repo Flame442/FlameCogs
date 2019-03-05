@@ -9,7 +9,9 @@ from io import BytesIO
 import functools
 import asyncio
 
+
 MAX_SIZE = 8 * 1000 * 1000
+
 
 class Deepfry(commands.Cog):
 	"""Deepfries memes."""
@@ -192,7 +194,10 @@ class Deepfry(commands.Cog):
 			async with aiohttp.ClientSession() as session:
 				async with session.get(link) as response:
 					r = await response.read()
-					img = Image.open(BytesIO(r))
+					try:
+						img = Image.open(BytesIO(r))
+					except:
+						return await ctx.send('An image could not be found. Make sure you provide a direct link.')
 		else:
 			temp_orig = BytesIO()
 			r = await ctx.message.attachments[0].save(temp_orig)
@@ -252,7 +257,10 @@ class Deepfry(commands.Cog):
 			async with aiohttp.ClientSession() as session:
 				async with session.get(link) as response:
 					r = await response.read()
-					img = Image.open(BytesIO(r))
+					try:
+						img = Image.open(BytesIO(r))
+					except:
+						return await ctx.send('An image could not be found. Make sure you provide a direct link.')
 		else:
 			temp_orig = BytesIO()
 			r = await ctx.message.attachments[0].save(temp_orig)

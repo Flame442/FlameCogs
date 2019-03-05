@@ -22,7 +22,9 @@ class Monopoly(commands.Cog):
 			luxuryValue = 100,
 			doAuction = False,
 			bailValue = 50,
-			maxJailRolls = 3
+			maxJailRolls = 3,
+			doDoubleGo = False,
+			goValue = 200
 		)
 	
 	@commands.guild_only()
@@ -35,6 +37,8 @@ class Monopoly(commands.Cog):
 			msg = (
 				'Hold auctions: ' + str(cfg['doAuction']) + '\n'
 				'Bail price: ' + str(cfg['bailValue']) + '\n'
+				'Double go: ' + str(cfg['doDoubleGo']) + '\n'
+				'Go reward: ' + str(cfg['goValue']) + '\n'
 				'Income tax: ' + str(cfg['incomeValue']) + '\n'
 				'Luxury tax: ' + str(cfg['luxuryValue']) + '\n'
 				'Max jail rolls: ' + str(cfg['maxJailRolls']) + '\n'
@@ -173,6 +177,46 @@ class Monopoly(commands.Cog):
 		else:
 			await self.config.guild(ctx.guild).maxJailRolls.set(value)
 			await ctx.send(f'The maximum number of rolls in jail is now {str(value)}.')
+			
+	@commands.guild_only()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def doublego(self, ctx, value: bool=None):
+		"""
+		Set if landing on go should double the amount of money given.
+		
+		Defaults to False.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).doDoubleGo()
+			if v:
+				await ctx.send('Go value is doubled when landed on.')
+			else:
+				await ctx.send('Go value is not doubled when landed on.')
+		else:
+			await self.config.guild(ctx.guild).doDoubleGo.set(value)
+			if value:
+				await ctx.send('Go value will now be doubled when landed on.')
+			else:
+				await ctx.send('Go value will no longer be doubled when landed on.')
+				
+	@commands.guild_only()
+	@checks.guildowner()
+	@monopolyset.command()
+	async def go(self, ctx, value: int=None):
+		"""
+		Set the base value of passing go.
+		
+		Defaults to 200.
+		This value is server specific.
+		"""
+		if value == None:
+			v = await self.config.guild(ctx.guild).goValue()
+			await ctx.send(f'You currently get ${str(v)} from passing go.')
+		else:
+			await self.config.guild(ctx.guild).goValue.set(value)
+			await ctx.send(f'You will now get ${str(value)} from passing go.')
 	
 	@commands.guild_only()
 	@commands.command()  
@@ -227,7 +271,7 @@ class Monopoly(commands.Cog):
 				for x in hold:
 					holdlist += x+'\n'
 				self.runningin.remove(ctx.channel.id)
-				return await ctx.send(f'That file does not exist.\nAvailable save files:\n`{holdlist.strip()}`')
+				return await ctx.send(f'That file does not exist.\nAvailable save files:\n```\n{holdlist}```')
 			else:
 				self.runningin.remove(ctx.channel.id)
 				return await ctx.send('You have no save files.')
@@ -406,13 +450,12 @@ class Monopoly(commands.Cog):
 				return False
 
 			async def trade(): #trades between players, messy as frick...
-				await ctx.send('Select the player you want to trade with.')
 				a,monp,monn,jp,jn = 1,0,0,0,0
 				tradeidp = [0 for x in range(29)]
 				tradeidn = [0 for x in range(29)]
 				ptotrade = [0 for x in range(40)]
 				ntotrade = [0 for x in range(40)]
-				hold = ''
+				hold = 'Select the player you want to trade with.\n'
 				while a < 9:
 					if a <= num:
 						if a == p or not alive[a]: #can't trade with yourself or dead players
@@ -533,7 +576,7 @@ class Monopoly(commands.Cog):
 							pass
 					except ValueError:
 						if t == 'm':
-							await ctx.send(f'How much money? You have ${str(bal[tradep])}.')
+							await ctx.send(f'How much money? They have ${str(bal[tradep])}.')
 							monn = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 							try:
 								monn = int(monn.content)
@@ -548,7 +591,7 @@ class Monopoly(commands.Cog):
 							i = 3
 							continue
 						elif t == 'j':
-							await ctx.send(f'How many? You have {str(goojf[tradep])}.')
+							await ctx.send(f'How many? They have {str(goojf[tradep])}.')
 							jn = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 							try:
 								jn = int(jn.content)
@@ -561,31 +604,31 @@ class Monopoly(commands.Cog):
 								jn = 0
 						else:
 							continue
-				await ctx.send('Confirm with y or quit with n\n\nYou will give:')
 				a = 1
-				hold = ''
+				holda = ''
+				holdb = ''
 				while a < pti:
 					if ptotrade[tradeidp[a]] == 1: #print selected properties
-						hold += tilename[tradeidp[a]]+'\n'
+						holda += tilename[tradeidp[a]]+'\n'
 					a += 1
-				hold += f'${str(monp)}\n'
+				if monp != 0:
+					holda += f'${str(monp)}\n'
 				if jp == 1:
-					hold += '1 get out of jail free card'
-				elif jp != 0:
-					hold += f'{str(jp)} get out of jail free cards'
-				await ctx.send(f'```{hold.strip()}```\nYou will get:')
-				hold = ''
+					holda += '1 get out of jail free card'
+				elif jp > 1:
+					holda += f'{str(jp)} get out of jail free cards'
 				a = 1
 				while a < nti:
 					if ntotrade[tradeidn[a]] == 1:
-						hold += tilename[tradeidn[a]]+'\n'
+						holdb += tilename[tradeidn[a]]+'\n'
 					a += 1
-				hold += f'${str(monn)}\n'
+				if monn != 0:
+					holdb += f'${str(monn)}\n'
 				if jn == 1:
-					hold += '1 get out of jail free card'
-				elif jn != 0:
-					hold += f'{str(jn)} get out of jail free cards'
-				await ctx.send(f'```{hold.strip()}```')
+					holdb += '1 get out of jail free card'
+				elif jn > 1:
+					holdb += f'{str(jn)} get out of jail free cards'
+				await ctx.send(f'Confirm with y or quit with n\n\nYou will give:\n```{holda}```\nYou will get:\n```{holdb}```')
 				while i == 3:
 					a = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
 					a = a.content 
@@ -602,31 +645,8 @@ class Monopoly(commands.Cog):
 						mention = mem.mention
 					else:
 						mention = name[tradep]
-					await ctx.send(f'{mention},\n{name[p]} would like to trade with you. Here is their offer.\nAccept with y or deny with n.\n\nYou will get:')
 					a = 1
-					hold = ''
-					while a < pti:
-						if ptotrade[tradeidp[a]] == 1:
-							hold += f'{tilename[tradeidp[a]]}\n'
-						a += 1
-					hold += f'${str(monp)}\n'
-					if jp == 1:
-						hold += '1 get out of jail free card'
-					elif jp != 0:
-						hold += f'{str(jp)} get out of jail free cards'
-					await ctx.send(f'```{hold.strip()}```\nYou will give:')
-					a = 1
-					hold = ''
-					while a < nti:
-						if ntotrade[tradeidn[a]] == 1:
-							hold += f'{tilename[tradeidn[a]]}\n'
-						a += 1
-					hold += f'${str(monn)}\n'
-					if jn == 1:
-						hold += '1 get out of jail free card'
-					elif jn != 1:
-						hold += f'{str(jn)} get out of jail free cards'
-					await ctx.send(f'```{hold.strip()}```')
+					await ctx.send(f'{mention}, {name[p]} would like to trade with you. Here is their offer.\nAccept with y or deny with n.\n\nYou will give:\n```{holdb}```\nYou will get:\n```{holda}```')
 					while i == 4:
 						a = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[tradep] and m.channel == channel)
 						a = a.content
@@ -974,7 +994,12 @@ class Monopoly(commands.Cog):
 				await ctx.send('Your card reads:\n'+ccname[ccorder[ccn]])
 				if ccorder[ccn] == 0:
 					tile[p] = 0
-					bal[p] += 200
+					doDoubleGo = await self.config.guild(ctx.guild).doDoubleGo()
+					goValue = await self.config.guild(ctx.guild).goValue()
+					if doDoubleGo:
+						bal[p] += goValue * 2
+					else:
+						bal[p] += goValue
 					await bprint()
 					await ctx.send(f'You now have ${str(bal[p])}.')
 				elif ccorder[ccn] == 1:
@@ -1034,18 +1059,25 @@ class Monopoly(commands.Cog):
 				await ctx.send(f'Your card reads:\n{chancename[chanceorder[chancen]]}.')
 				if chanceorder[chancen] == 0:
 					tile[p] = 0
-					bal[p] += 200
+					doDoubleGo = await self.config.guild(ctx.guild).doDoubleGo()
+					goValue = await self.config.guild(ctx.guild).goValue()
+					if doDoubleGo:
+						bal[p] += goValue * 2
+					else:
+						bal[p] += goValue
 					await bprint()
 					await ctx.send(f'You now have ${str(bal[p])}.')
 				elif chanceorder[chancen] == 1:
 					if tile[p] > 24:
-						bal[p] += 200
+						goValue = await self.config.guild(ctx.guild).goValue()
+						bal[p] += goValue
 						await ctx.send(f'You passed go, you now have ${str(bal[p])}.')
 					tile[p] = 24 
 					await cchanceland()
 				elif chanceorder[chancen] == 2:
 					if tile[p] > 11:
-						bal[p] += 200
+						goValue = await self.config.guild(ctx.guild).goValue()
+						bal[p] += goValue
 						await ctx.send(f'You passed go, you now have ${str(bal[p])}.')
 					tile[p] = 11
 					await cchanceland()
@@ -1055,7 +1087,8 @@ class Monopoly(commands.Cog):
 					elif 12 < tile[p] <= 28:
 						tile[p] = 28
 					else:
-						bal[p] += 200
+						goValue = await self.config.guild(ctx.guild).goValue()
+						bal[p] += goValue
 						await ctx.send(f'You passed go, you now have ${str(bal[p])}.')
 						tile[p] = 12 
 					await bprint()
@@ -1104,7 +1137,8 @@ class Monopoly(commands.Cog):
 					elif tile[p] <= 35:
 						tile[p] = 35
 					else:
-						bal[p] += 200
+						goValue = await self.config.guild(ctx.guild).goValue()
+						bal[p] += goValue
 						await ctx.send(f'You passed go, you now have ${str(bal[p])}.')
 						tile[p] = 5
 					await bprint()
@@ -1176,7 +1210,8 @@ class Monopoly(commands.Cog):
 					await ctx.send(f'You now have ${str(bal[p])}.')
 				elif chanceorder[chancen] == 11:
 					if tile[p] > 5:
-						bal[p] += 200
+						goValue = await self.config.guild(ctx.guild).goValue()
+						bal[p] += goValue
 						await ctx.send(f'You passed go, you now have ${str(bal[p])}.')
 					tile[p] = 5
 					await bprint()
@@ -1300,8 +1335,13 @@ class Monopoly(commands.Cog):
 				tile[p] += d1 + d2
 				if tile[p] >= 40: #going past go
 					tile[p] -= 40
-					bal[p] += 200
-					await ctx.send(f'You passed go! You now have ${str(bal[p])}.')
+					doDoubleGo = await self.config.guild(ctx.guild).doDoubleGo()
+					goValue = await self.config.guild(ctx.guild).goValue()
+					if tile[p] == 0 and doDoubleGo:
+						bal[p] += goValue * 2
+					else:
+						bal[p] += goValue
+					await ctx.send(f'You {"landed on" if tile[p] == 0 else "passed"} go! You now have ${str(bal[p])}.')
 				await landnd()
 
 			async def landnd(): #affecting properties
@@ -1447,7 +1487,7 @@ class Monopoly(commands.Cog):
 					while wd == 1 and alive[p]:
 						r = 0
 						while r == 0:
-							await ctx.send('Type r to roll, t to trade, h to manage houses, m to mortgage, or s to save.')
+							await ctx.send(f'Type r to roll, t to trade, h to manage houses{", m to mortgage, or s to save." if nod == 0 else ", or m to mortgage."}')
 							choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel and m.content in ['r', '?', 't', 'm', 'h', 's'])
 							choice = choice.content
 							if choice == 'r': #normal turn, roll dice
@@ -1473,15 +1513,16 @@ class Monopoly(commands.Cog):
 								await mortgage()
 							elif choice == 'h': #manage houses
 								await house()
-							elif choice == 's': #print game save message
+							elif choice == 's' and nod == 0: #print game save message
 								await ctx.send('Save file name?')
 								savename = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
-								with open(str(cog_data_path(self))+'/'+savename.content+'.txt','w') as f:
+								savename = savename.content.replace(' ', '')
+								with open(str(cog_data_path(self))+'/'+savename+'.txt','w') as f:
 									f.write(autosave)
 								self.runningin.remove(ctx.channel.id)
 								global numalive
 								numalive = 0
-								return await ctx.send('Saved.')
+								return await ctx.send(f'Game saved to savefile `{savename}`. Exiting.')
 									
 				r = 1
 				while r == 1 and alive[p]:
@@ -1505,7 +1546,7 @@ class Monopoly(commands.Cog):
 				while a < 20:
 					hold += '{:2d} {:5d} {:5d} {:3d} {:6d} {:4d} {:6d} {}'.format(a,pricebuy[a],ownedby[a],ismortgaged[a],mortgageprice[a],numhouse[a],houseprice[a],tilename[a])+'\n'
 					a += 1
-				await ctx.send('```'+hold.strip()+'```')
+				await ctx.send(f'```{hold.strip()}```')
 				hold = 'id price owner ism mprice numh hprice name\n'
 				while a < 40:
 					hold += '{:2d} {:5d} {:5d} {:3d} {:6d} {:4d} {:6d} {}'.format(a,pricebuy[a],ownedby[a],ismortgaged[a],mortgageprice[a],numhouse[a],houseprice[a],tilename[a])+'\n'
@@ -1528,8 +1569,14 @@ class Monopoly(commands.Cog):
 						await ctx.send(name[o]+' wins!')
 		except asyncio.TimeoutError:
 			self.runningin.remove(ctx.channel.id)
-			await ctx.send(f'You took too long, shutting down.\nSave info:\n```{autosave}```')
+			random = 'autosave' + str(randint(1000,9999))
+			with open(str(cog_data_path(self))+'/'+random+'.txt','w') as f:
+				f.write(autosave)
+			await ctx.send(f'You took too long, shutting down.\nYour game was saved to `{random}`.')
 		except:
 			self.runningin.remove(ctx.channel.id)
-			await ctx.send(f'A fatal error has occurred, shutting down.\nSave info:\n```{autosave}```')
+			random = 'autosave' + str(randint(1000,9999))
+			with open(str(cog_data_path(self))+'/'+random+'.txt','w') as f:
+				f.write(autosave)
+			await ctx.send(f'A fatal error has occurred, shutting down.\nYour game was saved to `{random}`.')
 			raise
