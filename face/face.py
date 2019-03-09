@@ -189,5 +189,5 @@ class Face(commands.Cog):
 						await ctx.send('The message could not be sent. Do I have permission to send embeds?')
 			else:
 				embedlist.append(embed)
-		if doMakeMenu:
+		if embedlist != []:
 			await menu(ctx, embedlist, DEFAULT_CONTROLS)
