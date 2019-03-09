@@ -1,0 +1,10 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing face. Make sure to setup the cog with `[p]faceset`",
+    "name" : "Face",
+    "short" : "Find and describe the faces in an image.",
+    "requirements" : ["pillow"],
+    "description" : "Find and describe the faces in an image.",
+    "tags" : ["Fun"],
+    "min_python_version": [3, 6, 0]
+}
