@@ -117,7 +117,10 @@ class Face(commands.Cog):
 		except TypeError:
 			pass
 		await ctx.send(f'Found {len(faces)} {"face" if len(faces) == 1 else "faces"}.\n\n')
-		doMakeMenu = await self.config.guild(ctx.guild).doMakeMenu()
+		if ctx.guild:
+			doMakeMenu = await self.config.guild(ctx.guild).doMakeMenu()
+		else:
+			doMakeMenu = True
 		faceNumber = 0
 		embedlist = []
 		for face in faces:
@@ -188,4 +191,3 @@ class Face(commands.Cog):
 				embedlist.append(embed)
 		if doMakeMenu:
 			await menu(ctx, embedlist, DEFAULT_CONTROLS)
-			
