@@ -31,6 +31,7 @@ Name | Description
 --- | ---
 [Battleship](../master/README.md#battleship) | Play battleship against another member of your server.
 [Deepfry](../master/README.md#deepfry) | Deepfry and nuke images.
+[Face](../master/README.md#face) | Find and describe the faces in an image.
 [Gamevoice](../master/README.md#gamevoice) | Make voice channels require playing a specific game in order to join.
 [Hangman](../master/README.md#hangman) | Play hangman with the bot.
 [Monopoly](../master/README.md#monopoly) | Play monopoly with up to 7 other people in your server.
@@ -104,6 +105,35 @@ Allow filetypes that have not been verified to be valid.
 Can cause errors if enabled, **use at your own risk**.  
 Defaults to `False`.  
 This command is only usable by the guild owner and bot owner.  
+This value is server specific.
+
+## Face
+
+This cog will find faces in images and give information about them such as predicted age, hair color, and emotions.  
+This cog requires an API key from Microsoft Azure Face API. Setup instructions can be found [here!](../master/face/setup.md)
+
+### Usage
+
+**`[p]face [link]`**  
+Finds and describes faces in the attatched image.  
+Use the optional paramater `link` to use a **direct link** as the target.
+
+**`[p]faceset <argument>`**  
+Config options for face.  
+This command is only usable by the guild owner and bot owner.
+
+**`[p]faceset key <key>`**  
+Set the API key.  
+This value is global.
+
+**`[p]faceset url <key>`**  
+Set the API URL.  
+This value is global.
+
+**`[p]faceset menu [value]`**  
+Set if results should be made into a menu.  
+If in a menu, cropped images of each face will not display, but there will be less spam.  
+Defaults to `True`.  
 This value is server specific.
 
 ## Gamevoice
@@ -279,4 +309,4 @@ Feel free to create an issue on this repository or join [my discord](https://dis
 
 # Credit
 
-Thanks to the [creators of Redbot](https://github.com/Cog-Creators/Red-DiscordBot/graphs/contributors) for creating the base these cogs run on, the helpful support staff at the [Redbot discord](https://discord.gg/red), Aikaterna for taking the time to QA this repo, TrustyJAID for helping with deepfry, and [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman.
+Thanks to the [creators of Redbot](https://github.com/Cog-Creators/Red-DiscordBot/graphs/contributors) for creating the base these cogs run on, the helpful support staff at the [Redbot discord](https://discord.gg/red), Aikaterna for taking the time to QA this repo, TrustyJAID for helping with deepfry, [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman, and iComputer7#0007 for the idea to make face.
