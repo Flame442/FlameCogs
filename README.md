@@ -65,7 +65,6 @@ This value is server specific.
 ## Deepfry
 
 This cog lets you deepfry and nuke images. It has a configurable chance to deepfry any image posted automatically and users can choose to deepfry or nuke images.  
-Images have to be attatched to the command, links do NOT work!
 
 ### Usage
 
