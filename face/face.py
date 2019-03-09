@@ -32,7 +32,7 @@ class Face(commands.Cog):
 		"""
 		Set the API key for face.
 		
-		Please follow the guide at <link> for instructions.
+		Please follow the guide at https://github.com/Flame442/FlameCogs/blob/master/face/setup.md for instructions.
 		"""
 		await self.config.api_key.set(key)
 		await ctx.send('API key set!')
@@ -46,13 +46,13 @@ class Face(commands.Cog):
 		"""
 		Set the API url for face.
 		
-		Please follow the guide at <link> for instructions.
+		Please follow the guide at https://github.com/Flame442/FlameCogs/blob/master/face/setup.md for instructions.
 		"""
 		if url.startswith('https://') and url.endswith('.api.cognitive.microsoft.com/face/v1.0'):
 			await self.config.api_url.set(url + '/detect')
 			await ctx.send('API URL set!')
 		else:
-			await ctx.send('That doesn\'t look like a valid url. Make sure you are following the guide at <link>.')
+			await ctx.send('That doesn\'t look like a valid url. Make sure you are following the guide at <https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.')
 	
 	@commands.guild_only()
 	@faceset.command()
