@@ -3,7 +3,7 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
 from io import BytesIO
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageDraw, ImageFont
 import aiohttp
 import json
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
@@ -77,6 +77,7 @@ class Face(commands.Cog):
 			else:
 				await ctx.send('Results will now be displayed in multiple messages.')
 
+	@commands.bot_has_permissions(embed_links=True)
 	@commands.command()
 	async def face(self, ctx, face_url: str=None):
 		"""Find and describe the faces in an image."""
@@ -99,7 +100,7 @@ class Face(commands.Cog):
 				temp_orig = BytesIO()
 				r = await ctx.message.attachments[0].save(temp_orig)
 				temp_orig.seek(0)
-				img = Image.open(temp_orig)
+				img = Image.open(temp_orig).convert('RGBA')
 			except:
 				return await ctx.send('You need to supply an image.')
 		async with aiohttp.ClientSession() as session:
@@ -109,7 +110,7 @@ class Face(commands.Cog):
 				try:
 					async with session.get(face_url) as response:
 						r = await response.read()
-						img = Image.open(BytesIO(r))
+						img = Image.open(BytesIO(r)).convert('RGBA')
 				except:
 					img = None
 		try:
@@ -123,6 +124,8 @@ class Face(commands.Cog):
 			doMakeMenu = True
 		faceNumber = 0
 		embedlist = []
+		if img:
+			draw = ImageDraw.Draw(img)
 		for face in faces:
 			faceNumber += 1
 			faceRectangle = face['faceRectangle'] #dict of top, left, width, height
@@ -143,16 +146,20 @@ class Face(commands.Cog):
 				description=f'{round(age)} year old {gender}',
 				color=await ctx.embed_color()
 				)
-			if img:
-				faceimg = img.crop((faceRectangle['left'],faceRectangle['top'],faceRectangle['left']+faceRectangle['width'],faceRectangle['top']+faceRectangle['height']))
-				temp = BytesIO()
-				temp.name = 'face.png'
-				faceimg.save(temp)
-				temp.seek(0)
-				file = discord.File(temp, 'face.png')
-				embed.set_image(url='attachment://face.png')
+			if doMakeMenu and img:
+				draw.rectangle((faceRectangle['left'],faceRectangle['top'],faceRectangle['left']+faceRectangle['width'],faceRectangle['top']+faceRectangle['height']),outline='red')
+				draw.text((faceRectangle['left'], faceRectangle['top']), str(faceNumber))
 			else:
-				file = None
+				if img:
+					faceimg = img.crop((faceRectangle['left'],faceRectangle['top'],faceRectangle['left']+faceRectangle['width'],faceRectangle['top']+faceRectangle['height']))
+					temp = BytesIO()
+					temp.name = 'face.png'
+					faceimg.save(temp)
+					temp.seek(0)
+					file = discord.File(temp, 'face.png')
+					embed.set_image(url='attachment://face.png')
+				else:
+					file = None
 			glassesformat = {'NoGlasses': 'No Glasses', 'ReadingGlasses': 'Reading Glasses', 'Sunglasses': 'Sunglasses', 'SwimmingGoggles': 'Swimming Goggles'}
 			embed.add_field(name='Eye Makeup', value=f'{"Yes" if makeup["eyeMakeup"] else "No"}')
 			embed.add_field(name='Lip Makeup', value=f'{"Yes" if makeup["lipMakeup"] else "No"}')
@@ -178,16 +185,15 @@ class Face(commands.Cog):
 				embed.add_field(name='Other', value=f'{round(hairColor["other"] * 100)}%')
 			if not doMakeMenu:
 				if file:
-					try:
-						await ctx.send(embed=embed, files=[file])
-					except:
-						await ctx.send('The message could not be sent. Do I have permission to send embeds?')
+					await ctx.send(embed=embed, files=[file])
 				else:
-					try:
-						await ctx.send(embed=embed)
-					except:
-						await ctx.send('The message could not be sent. Do I have permission to send embeds?')
+					await ctx.send(embed=embed)
 			else:
 				embedlist.append(embed)
 		if embedlist != []:
+			temp = BytesIO()
+			temp.name = 'faces.png'
+			img.save(temp)
+			temp.seek(0)
+			await ctx.send(file=discord.File(temp))
 			await menu(ctx, embedlist, DEFAULT_CONTROLS)
