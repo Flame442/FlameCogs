@@ -114,7 +114,7 @@ class Face(commands.Cog):
 				except:
 					img = None
 		try:
-			return await ctx.send(faces['error']['message'])
+			return await ctx.send(f'API Error: {faces["error"]["message"]}')
 		except TypeError:
 			pass
 		await ctx.send(f'Found {len(faces)} {"face" if len(faces) == 1 else "faces"}.\n\n')
@@ -185,7 +185,10 @@ class Face(commands.Cog):
 				embed.add_field(name='Other', value=f'{round(hairColor["other"] * 100)}%')
 			if not doMakeMenu:
 				if file:
-					await ctx.send(embed=embed, files=[file])
+					try:
+						await ctx.send(embed=embed, files=[file])
+					except discord.errors.HTTPException:
+						await ctx.send(embed=embed)
 				else:
 					await ctx.send(embed=embed)
 			else:
@@ -195,5 +198,8 @@ class Face(commands.Cog):
 			temp.name = 'faces.png'
 			img.save(temp)
 			temp.seek(0)
-			await ctx.send(file=discord.File(temp))
+			try:
+				await ctx.send(file=discord.File(temp))
+			except discord.errors.HTTPException:
+				pass
 			await menu(ctx, embedlist, DEFAULT_CONTROLS)
