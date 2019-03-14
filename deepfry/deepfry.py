@@ -173,17 +173,17 @@ class Deepfry(commands.Cog):
 			return await ctx.send('Please provide an attachment.')
 		v = await self.config.guild(ctx.message.guild).allowAllTypes()
 		if link: #linked image	
-			if link.split('.')[-1] in self.imagetypes:
+			if link.split('.')[-1].lower() in self.imagetypes:
 				isgif = False
-			elif link.split('.')[-1] in self.videotypes or v:
+			elif link.split('.')[-1].lower() in self.videotypes or v:
 				isgif = True
 			else:
 				ext = link.split('.')[-1].title()
 				return await ctx.send(f'"{ext}" is not a supported filetype or you did not provide a direct link.')
 		else: #attatched image
-			if ctx.message.attachments[0].url.split('.')[-1] in self.imagetypes:
+			if ctx.message.attachments[0].url.split('.')[-1].lower() in self.imagetypes:
 				isgif = False
-			elif ctx.message.attachments[0].url.split('.')[-1] in self.videotypes:
+			elif ctx.message.attachments[0].url.split('.')[-1].lower() in self.videotypes:
 				isgif = True
 			else:
 				ext = ctx.message.attachments[0].url.split('.')[-1].title()
@@ -236,17 +236,17 @@ class Deepfry(commands.Cog):
 			return await ctx.send('Please provide an attachment.')
 		v = await self.config.guild(ctx.message.guild).allowAllTypes()
 		if link: #linked image	
-			if link.split('.')[-1] in self.imagetypes:
+			if link.split('.')[-1].lower() in self.imagetypes:
 				isgif = False
-			elif link.split('.')[-1] in self.videotypes or v:
+			elif link.split('.')[-1].lower() in self.videotypes or v:
 				isgif = True
 			else:
 				ext = link.split('.')[-1].title()
 				return await ctx.send(f'"{ext}" is not a supported filetype or you did not provide a direct link.')
 		else: #attatched image
-			if ctx.message.attachments[0].url.split('.')[-1] in self.imagetypes:
+			if ctx.message.attachments[0].url.split('.')[-1].lower() in self.imagetypes:
 				isgif = False
-			elif ctx.message.attachments[0].url.split('.')[-1] in self.videotypes:
+			elif ctx.message.attachments[0].url.split('.')[-1].lower() in self.videotypes:
 				isgif = True
 			else:
 				ext = ctx.message.attachments[0].url.split('.')[-1].title()
@@ -398,7 +398,7 @@ class Deepfry(commands.Cog):
 		vnuke = await self.config.guild(t.guild).nukeChance()
 		'''Nuke'''
 		if vnuke != 0:
-			if t.attachments[0].url.split('.')[-1] not in self.imagetypes:
+			if t.attachments[0].url.split('.')[-1].lower() not in self.imagetypes:
 				return
 			if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
 				l = randint(1,vnuke)
@@ -421,7 +421,7 @@ class Deepfry(commands.Cog):
 					pass
 		'''Fry'''
 		if vfry != 0:
-			if t.attachments[0].url.split('.')[-1] not in self.imagetypes:
+			if t.attachments[0].url.split('.')[-1].lower() not in self.imagetypes:
 				return
 			if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
 				l = randint(1,vfry)
