@@ -13,6 +13,9 @@ import asyncio
 MAX_SIZE = 8 * 1000 * 1000
 
 
+class ImageFindError(Exception):
+	pass
+
 class Deepfry(commands.Cog):
 	"""Deepfries memes."""
 	def __init__(self, bot):
@@ -160,7 +163,42 @@ class Deepfry(commands.Cog):
 		imgs[0].save(temp, save_all=True, append_images=imgs[1:], loop=0)
 		temp.seek(0)
 		return temp
-			
+	
+	async def _get_image(self, ctx, link):
+		if not ctx.message.attachments and not link:
+			raise ImageFindError('Please provide an attachment.')
+		v = await self.config.guild(ctx.message.guild).allowAllTypes()
+		if link: #linked image	
+			if link.split('.')[-1].lower() in self.imagetypes:
+				isgif = False
+			elif link.split('.')[-1].lower() in self.videotypes or v:
+				isgif = True
+			else:
+				ext = link.split('.')[-1].title()
+				raise ImageFindError(f'"{ext}" is not a supported filetype or you did not provide a direct link.')
+			async with aiohttp.ClientSession() as session:
+				async with session.get(link) as response:
+					r = await response.read()
+					try:
+						img = Image.open(BytesIO(r))
+					except:
+						raise ImageFindError('An image could not be found. Make sure you provide a direct link.')
+		else: #attatched image
+			if ctx.message.attachments[0].url.split('.')[-1].lower() in self.imagetypes:
+				isgif = False
+			elif ctx.message.attachments[0].url.split('.')[-1].lower() in self.videotypes:
+				isgif = True
+			else:
+				ext = ctx.message.attachments[0].url.split('.')[-1].title()
+				raise ImageFindError(f'"{ext}" is not a supported filetype.')
+			if ctx.message.attachments[0].size > MAX_SIZE: #only usable with attatchments
+				raise ImageFindError('That image is too large. Max image size is 8MB.')
+			temp_orig = BytesIO()
+			r = await ctx.message.attachments[0].save(temp_orig)
+			temp_orig.seek(0)
+			img = Image.open(temp_orig)
+		return (img, isgif)
+	
 	@commands.command(aliases=['df'])
 	@commands.bot_has_permissions(attach_files=True)
 	async def deepfry(self, ctx, link: str=None):
@@ -169,61 +207,24 @@ class Deepfry(commands.Cog):
 		
 		Use the optional paramater "link" to use a **direct link** as the target.
 		"""
-		if ctx.message.attachments == [] and not link:
-			return await ctx.send('Please provide an attachment.')
-		v = await self.config.guild(ctx.message.guild).allowAllTypes()
-		if link: #linked image	
-			if link.split('.')[-1].lower() in self.imagetypes:
-				isgif = False
-			elif link.split('.')[-1].lower() in self.videotypes or v:
-				isgif = True
-			else:
-				ext = link.split('.')[-1].title()
-				return await ctx.send(f'"{ext}" is not a supported filetype or you did not provide a direct link.')
-		else: #attatched image
-			if ctx.message.attachments[0].url.split('.')[-1].lower() in self.imagetypes:
-				isgif = False
-			elif ctx.message.attachments[0].url.split('.')[-1].lower() in self.videotypes:
-				isgif = True
-			else:
-				ext = ctx.message.attachments[0].url.split('.')[-1].title()
-				return await ctx.send(f'"{ext}" is not a supported filetype.')
-			if ctx.message.attachments[0].size > MAX_SIZE: #only usable with attatchments
-				return await ctx.send('That image is too large. Max image size is 8MB.')
-		if link:
-			async with aiohttp.ClientSession() as session:
-				async with session.get(link) as response:
-					r = await response.read()
-					try:
-						img = Image.open(BytesIO(r))
-					except:
-						return await ctx.send('An image could not be found. Make sure you provide a direct link.')
-		else:
-			temp_orig = BytesIO()
-			r = await ctx.message.attachments[0].save(temp_orig)
-			temp_orig.seek(0)
-			img = Image.open(temp_orig)
+		try:
+			img, isgif = await self._get_image(ctx, link)
+		except ImageFindError as e:	
+			return await ctx.send(e)
 		if isgif:
 			task = functools.partial(self._videofry, img)
-			task = self.bot.loop.run_in_executor(None, task)
-			try:
-				image = await asyncio.wait_for(task, timeout=60)
-			except asyncio.TimeoutError:
-				return
-			
-			try:
-				await ctx.send(file=discord.File(image))
-			except discord.errors.HTTPException:
-				return await ctx.send('That image is too large.')
 		else:
 			task = functools.partial(self._fry, img)
-			task = self.bot.loop.run_in_executor(None, task)
-			try:
-				image = await asyncio.wait_for(task, timeout=60)
-			except asyncio.TimeoutError:
-				return
+		task = self.bot.loop.run_in_executor(None, task)
+		try:
+			image = await asyncio.wait_for(task, timeout=60)
+		except asyncio.TimeoutError:
+			return
+		try:
 			await ctx.send(file=discord.File(image))
-		
+		except discord.errors.HTTPException:
+			return await ctx.send('That image is too large.')
+
 	@commands.command()
 	@commands.bot_has_permissions(attach_files=True)
 	async def nuke(self, ctx, link: str=None):
@@ -232,59 +233,23 @@ class Deepfry(commands.Cog):
 		
 		Use the optional paramater "link" to use a **direct link** as the target.
 		"""
-		if ctx.message.attachments == [] and not link:
-			return await ctx.send('Please provide an attachment.')
-		v = await self.config.guild(ctx.message.guild).allowAllTypes()
-		if link: #linked image	
-			if link.split('.')[-1].lower() in self.imagetypes:
-				isgif = False
-			elif link.split('.')[-1].lower() in self.videotypes or v:
-				isgif = True
-			else:
-				ext = link.split('.')[-1].title()
-				return await ctx.send(f'"{ext}" is not a supported filetype or you did not provide a direct link.')
-		else: #attatched image
-			if ctx.message.attachments[0].url.split('.')[-1].lower() in self.imagetypes:
-				isgif = False
-			elif ctx.message.attachments[0].url.split('.')[-1].lower() in self.videotypes:
-				isgif = True
-			else:
-				ext = ctx.message.attachments[0].url.split('.')[-1].title()
-				return await ctx.send(f'"{ext}" is not a supported filetype.')
-			if ctx.message.attachments[0].size > MAX_SIZE: #only usable with attatchments
-				return await ctx.send('That image is too large. Max image size is 8MB.')
-		if link:
-			async with aiohttp.ClientSession() as session:
-				async with session.get(link) as response:
-					r = await response.read()
-					try:
-						img = Image.open(BytesIO(r))
-					except:
-						return await ctx.send('An image could not be found. Make sure you provide a direct link.')
-		else:
-			temp_orig = BytesIO()
-			r = await ctx.message.attachments[0].save(temp_orig)
-			temp_orig.seek(0)
-			img = Image.open(temp_orig)
+		try:
+			img, isgif = await self._get_image(ctx, link)
+		except ImageFindError as e:	
+			return await ctx.send(e)
 		if isgif:
 			task = functools.partial(self._videonuke, img)
-			task = self.bot.loop.run_in_executor(None, task)
-			try:
-				image = await asyncio.wait_for(task, timeout=60)
-			except asyncio.TimeoutError:
-				return
-			try:
-				await ctx.send(file=discord.File(image))
-			except discord.errors.HTTPException:
-				return await ctx.send('That image is too large.')
 		else:
-			task = functools.partial(self._nuke, img)
-			task = self.bot.loop.run_in_executor(None, task)
-			try:
-				image = await asyncio.wait_for(task, timeout=60)
-			except asyncio.TimeoutError:
-				return
+			task = functools.partial(self._nuke, img)	
+		task = self.bot.loop.run_in_executor(None, task)
+		try:
+			image = await asyncio.wait_for(task, timeout=60)
+		except asyncio.TimeoutError:
+			return
+		try:
 			await ctx.send(file=discord.File(image))
+		except discord.errors.HTTPException:
+			return await ctx.send('That image is too large.')
 	
 	@commands.guild_only()
 	@checks.guildowner()
