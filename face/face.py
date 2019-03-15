@@ -94,6 +94,16 @@ class Face(commands.Cog):
 			'returnFaceAttributes': 'age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise'
 		}
 		img = None
+		if not ctx.message.attachments and not face_url:
+			async for msg in ctx.channel.history(limit=10):
+				for a in msg.attachments:
+					if a.url.split('.')[-1].lower() in ['png', 'jpg', 'jpeg']:
+						face_url = a.url
+						break
+				if face_url:
+					break
+			if not face_url:
+				return await ctx.send('You need to supply an image.')
 		if not face_url:
 			try:
 				face_url = ctx.message.attachments[0].url
