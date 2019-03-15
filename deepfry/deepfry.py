@@ -165,9 +165,17 @@ class Deepfry(commands.Cog):
 		return temp
 	
 	async def _get_image(self, ctx, link):
-		if not ctx.message.attachments and not link:
-			raise ImageFindError('Please provide an attachment.')
 		v = await self.config.guild(ctx.message.guild).allowAllTypes()
+		if not ctx.message.attachments and not link:
+			async for msg in ctx.channel.history(limit=10):
+				for a in msg.attachments:
+					if a.url.split('.')[-1].lower() in self.imagetypes or a.url.split('.')[-1].lower() in self.videotypes or v:
+						link = a.url
+						break
+				if link:
+					break
+			if not link:
+				raise ImageFindError('Please provide an attachment.')
 		if link: #linked image	
 			if link.split('.')[-1].lower() in self.imagetypes:
 				isgif = False
