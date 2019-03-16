@@ -3,14 +3,20 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
 from redbot.core.data_manager import cog_data_path
-from typing import Optional, Union
+from redbot.core.config import Group
+from copy import deepcopy
+from typing import Optional, Union, Dict
 from random import randint
+import time
 
 
 class WordStats(commands.Cog):
 	"""Tracks commonly used words."""
 	def __init__(self, bot):
 		self.bot = bot
+		self.members_to_update = {}
+		self.guilds_to_update = {}
+		self.last_save = time.time()
 		self.config = Config.get_conf(self, identifier=7345167905)
 		self.config.register_guild(
 			worddict = {},
@@ -30,6 +36,7 @@ class WordStats(commands.Cog):
 		Use the optional paramater "member" to see the stats of a member.
 		Use the optional paramater "amount" to change the number of words that are displayed, or to check the stats of a specific word.
 		"""
+		await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
 		if amount == 0:
 			return await ctx.send('At least one word needs to be displayed.')
 		if member == None:
@@ -76,6 +83,7 @@ class WordStats(commands.Cog):
 		
 		Use the optional paramater "amount" to change the number of members that are displayed.
 		"""
+		await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
 		if amount == 0:
 			return await ctx.send('At least one member needs to be displayed.')
 		data = await self.config.all_members(ctx.guild)
@@ -126,19 +134,22 @@ class WordStats(commands.Cog):
 		Defaults to True.
 		This value is server specific.
 		"""
+		if ctx.guild not in self.guilds_to_update:
+			self.guilds_to_update[ctx.guild] = await self.config.guild(ctx.guild).all()
 		if value == None:
-			v = await self.config.guild(ctx.guild).enableGuild()
+			v = self.guilds_to_update[ctx.guild]['enableGuild']
 			if v:
 				await ctx.send('Stats are being recorded in this server.')
 			else:
 				await ctx.send('Stats are not being recorded in this server.')
 		else:
-			await self.config.guild(ctx.guild).enableGuild.set(value)
+			self.guilds_to_update[ctx.guild]['enableGuild'] = value
+			await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
 			if value:
 				await ctx.send('Stats will now be recorded in this server.')
 			else:
 				await ctx.send('Stats will no longer be recorded in this server.')
-				
+			
 	@commands.guild_only()
 	@checks.guildowner()
 	@wordstatsset.command()
@@ -149,29 +160,60 @@ class WordStats(commands.Cog):
 		Defaults to True.
 		This value is channel specific.
 		"""
+		if ctx.guild not in self.guilds_to_update:
+			self.guilds_to_update[ctx.guild] = await self.config.guild(ctx.guild).all()
+		v = self.guilds_to_update[ctx.guild]['disabledChannels']
 		if value == None:
-			v = await self.config.guild(ctx.guild).disabledChannels()
 			if ctx.channel.id not in v:
 				await ctx.send('Stats are being recorded in this channel.')
 			else:
 				await ctx.send('Stats are not being recorded in this channel.')
 		else:
-			v = await self.config.guild(ctx.guild).disabledChannels()
 			if value:
 				if ctx.channel.id not in v:
 					await ctx.send('Stats are already being recorded in this channel.')
 				else:
 					v.remove(ctx.channel.id)
-					await self.config.guild(ctx.guild).disabledChannels.set(v)
+					self.guilds_to_update[ctx.guild]['disabledChannels'] = v
+					await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
 					await ctx.send('Stats will now be recorded in this channel.')
 			else:
 				if ctx.channel.id in v:
 					await ctx.send('Stats are already not being recorded in this channel.')
 				else:
 					v.append(ctx.channel.id)
-					await self.config.guild(ctx.guild).disabledChannels.set(v)
+					self.guilds_to_update[ctx.guild]['disabledChannels'] = v
+					await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
 					await ctx.send('Stats will no longer be recorded in this channel.')
 			
+	async def update_data(self, members: Dict[discord.Member, dict], guilds: Dict[discord.Guild, dict]):
+		"""Thanks to Sinbad for this dark magic."""
+		base_group = Group(
+			identifiers=(), 
+			defaults={}, 
+			driver=self.config.driver,
+			force_registration=self.config.force_registration,
+		)
+
+		def nested_update(d, keys, value):
+			partial = d
+			for i in keys[:-1]:
+				if i not in partial:
+					partial.update({i: {}})
+				partial = partial[i]
+			partial[keys[-1]] = value
+
+		async with base_group() as data:
+			for member, member_data in members.items():
+				keys = (self.config.MEMBER, str(member.guild.id), str(member.id))
+				value = deepcopy(member_data)
+				nested_update(data, keys, value)
+			for guild, guild_data in guilds.items():
+				keys = (self.config.GUILD, str(guild.id))
+				value = deepcopy(guild_data)
+				nested_update(data, keys, value)
+		self.last_save = time.time()
+	
 	async def on_message(self, msg):
 		"""Passively records all message contents."""
 		if not msg.author.bot and isinstance(msg.channel, discord.TextChannel):
@@ -182,8 +224,12 @@ class WordStats(commands.Cog):
 				if True in [msg.content.startswith(x) for x in p]:
 					return
 				words = str(re.sub(r'[^a-zA-Z ]', '', msg.content.lower())).split(' ')
-				guilddict = await self.config.guild(msg.guild).worddict()
-				memdict = await self.config.member(msg.author).worddict()
+				if msg.guild not in self.guilds_to_update:
+					self.guilds_to_update[msg.guild] = await self.config.guild(msg.guild).all()
+				guilddict = self.guilds_to_update[msg.guild]['worddict']
+				if msg.author not in self.members_to_update:
+					self.members_to_update[msg.author] = await self.config.member(msg.author).all()
+				memdict = self.members_to_update[msg.author]['worddict']
 				for word in words:
 					if not word:
 						continue
@@ -195,5 +241,7 @@ class WordStats(commands.Cog):
 						memdict[word] += 1
 					except KeyError:
 						memdict[word] = 1
-				await self.config.guild(msg.guild).worddict.set(guilddict)
-				await self.config.member(msg.author).worddict.set(memdict)
+				self.guilds_to_update[msg.guild]['worddict'] = guilddict
+				self.members_to_update[msg.author]['worddict'] = memdict
+				if time.time() - self.last_save >= 600: #10 minutes per save
+					await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
