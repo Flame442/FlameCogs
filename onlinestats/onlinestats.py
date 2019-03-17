@@ -7,6 +7,7 @@ class OnlineStats(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
+	@commands.guild_only()
 	@commands.command(aliases=['onlinestats'])
 	async def onlinestatus(self, ctx):
 		"""Print how many people are using each type of device."""
@@ -22,6 +23,7 @@ class OnlineStats(commands.Cog):
 			)
 		await ctx.send('```py\n'+a+'```')
 
+	@commands.guild_only()
 	@commands.command()
 	async def onlineinfo(self, ctx, user: discord.Member=None):
 		"""Show what devices a user is using."""
