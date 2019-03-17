@@ -37,7 +37,7 @@ class WordStats(commands.Cog):
 		Use the optional paramater "amount" to change the number of words that are displayed, or to check the stats of a specific word.
 		"""
 		await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
-		if amount == 0:
+		if amount <= 0:
 			return await ctx.send('At least one word needs to be displayed.')
 		if member == None:
 			mention = 'the server'
@@ -84,7 +84,7 @@ class WordStats(commands.Cog):
 		Use the optional paramater "amount" to change the number of members that are displayed.
 		"""
 		await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
-		if amount == 0:
+		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
 		data = await self.config.all_members(ctx.guild)
 		sumdict = {}
@@ -188,6 +188,7 @@ class WordStats(commands.Cog):
 			
 	async def update_data(self, members: Dict[discord.Member, dict], guilds: Dict[discord.Guild, dict]):
 		"""Thanks to Sinbad for this dark magic."""
+		self.last_save = time.time()
 		base_group = Group(
 			identifiers=(), 
 			defaults={}, 
@@ -212,7 +213,6 @@ class WordStats(commands.Cog):
 				keys = (self.config.GUILD, str(guild.id))
 				value = deepcopy(guild_data)
 				nested_update(data, keys, value)
-		self.last_save = time.time()
 	
 	async def on_message(self, msg):
 		"""Passively records all message contents."""
@@ -233,13 +233,13 @@ class WordStats(commands.Cog):
 				for word in words:
 					if not word:
 						continue
-					try:
+					if word in guilddict:
 						guilddict[word] += 1
-					except KeyError:
+					else:
 						guilddict[word] = 1
-					try:
+					if word in memdict:
 						memdict[word] += 1
-					except KeyError:
+					else:
 						memdict[word] = 1
 				self.guilds_to_update[msg.guild]['worddict'] = guilddict
 				self.members_to_update[msg.author]['worddict'] = memdict
