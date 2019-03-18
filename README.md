@@ -124,16 +124,19 @@ This command is only usable by the server owner and bot owner.
 
 **`[p]faceset key <key>`**  
 Set the API key.  
+This command is only usable by the bot owner.  
 This value is global.
 
 **`[p]faceset url <key>`**  
 Set the API URL.  
+This command is only usable by the bot owner.  
 This value is global.
 
 **`[p]faceset menu [value]`**  
 Set if results should be made into a menu.  
-If in a menu, cropped images of each face will not display, but there will be less spam.  
+If in a menu, one large image with faces marked will be sent instead of cropped images of each face.  
 Defaults to `True`.  
+This command is only usable by the server owner.  
 This value is server specific.
 
 ## Gamevoice
@@ -312,7 +315,7 @@ This value is channel specific.
 
 # Planned changes
 
-**[Monopoly]** Add config for various house rules (~~auctions~~, free parking, landing on go, etc)
+**[Monopoly]** Add config for various house rules (~~auctions~~, free parking, ~~landing on go~~, etc)
 
 **[Battleship/Hangman/Monopoly]** Add optional betting to games
 
@@ -322,4 +325,4 @@ Feel free to create an issue on this repository or join [my discord](https://dis
 
 # Credit
 
-Thanks to the [creators of Redbot](https://github.com/Cog-Creators/Red-DiscordBot/graphs/contributors) for creating the base these cogs run on, the helpful support staff at the [Redbot discord](https://discord.gg/red), Aikaterna for taking the time to QA this repo, TrustyJAID for helping with deepfry, [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman, and iComputer7#0007 for the idea to make face.
+Thanks to the [creators of Redbot](https://github.com/Cog-Creators/Red-DiscordBot/graphs/contributors) for creating the base these cogs run on, the helpful support staff at the [Redbot discord](https://discord.gg/red), [Aikaterna](https://github.com/aikaterna) for taking the time to QA this repo, [TrustyJAID](https://github.com/TrustyJAID) for helping with deepfry, [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman, and iComputer7#0007 for the inspiration for face.
