@@ -23,10 +23,11 @@ class Face(commands.Cog):
 		)
 	
 	@commands.group()
-	@checks.is_owner()
+	@checks.guildowner()
 	async def faceset(self, ctx):
 		pass
 	
+	@checks.is_owner()
 	@faceset.command()
 	async def key(self, ctx, key: str):
 		"""
@@ -40,7 +41,8 @@ class Face(commands.Cog):
 			await ctx.message.delete()
 		except discord.Forbidden:
 			await ctx.send('The command message could not be deleted. It is highly recomended you remove it to protect your key.')
-			
+	
+	@checks.is_owner()
 	@faceset.command()
 	async def url(self, ctx, url: str):
 		"""
@@ -54,13 +56,14 @@ class Face(commands.Cog):
 		else:
 			await ctx.send('That doesn\'t look like a valid url. Make sure you are following the guide at <https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.')
 	
+	@checks.guildowner()
 	@commands.guild_only()
 	@faceset.command()
 	async def menu(self, ctx, value: bool=None):
 		"""
 		Set if results should be made into a menu.
 		
-		If in a menu, cropped images of each face will not display, but there will be less spam.
+		If in a menu, one large image with faces marked will be sent instead of cropped images of each face.
 		Defaults to True.
 		This value is server specific.
 		"""
