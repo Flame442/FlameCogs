@@ -131,7 +131,7 @@ class Deepfry(commands.Cog):
 			w, h = i.size[0], i.size[1]
 			dx = ((w+200)//200)*2
 			dy = ((h+200)//200)*2
-			i = i.resize((w//dx,h//dy))
+			i = i.resize(((w+1)//dx,(h+1)//dy))
 			e = ImageEnhance.Sharpness(i)
 			i = e.enhance(100)
 			e = ImageEnhance.Contrast(i)
