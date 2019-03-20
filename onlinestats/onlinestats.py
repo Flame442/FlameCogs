@@ -25,16 +25,37 @@ class OnlineStats(commands.Cog):
 
 	@commands.guild_only()
 	@commands.command()
-	async def onlineinfo(self, ctx, user: discord.Member=None):
+	async def onlineinfo(self, ctx, *, user: discord.Member=None):
 		"""Show what devices a user is using."""
 		if user is None:
 			user = ctx.author
 		d = str(user.desktop_status)
 		m = str(user.mobile_status)
 		w = str(user.web_status)
-		status = {'online':'\N{GREEN BOOK}','idle':'\N{ORANGE BOOK}','dnd':'\N{CLOSED BOOK}','offline':'\N{NOTEBOOK}'}
-		msg = user.display_name + '\'s devices:\n'
-		msg += status[d] + ' Desktop\n'
-		msg += status[m] + ' Mobile\n'
-		msg += status[w] + ' Web'
-		await ctx.send(msg)
+		status = {
+			'online': '\N{GREEN BOOK}',
+			'idle': '\N{ORANGE BOOK}',
+			'dnd': '\N{CLOSED BOOK}',
+			'offline': '\N{NOTEBOOK}'
+		}
+		msg = (
+			f'{user.display_name}\'s devices:\n'
+			f'{status[d]} Desktop\n'
+			f'{status[m]} Mobile\n'
+			f'{status[w]} Web'
+		)
+		
+		embed = discord.Embed(
+				title=f'**{user.display_name}\'s devices:**',
+				description=(
+					f'{status[d]} Desktop\n'
+					f'{status[m]} Mobile\n'
+					f'{status[w]} Web'
+				),
+				color=await ctx.embed_color()
+				)
+		embed.set_thumbnail(url=user.avatar_url)
+		try:
+			await ctx.send(embed=embed)
+		except:
+			await ctx.send(msg)
