@@ -36,9 +36,12 @@ class WordStats(commands.Cog):
 		Use the optional paramater "member" to see the stats of a member.
 		Use the optional paramater "amount" to change the number of words that are displayed, or to check the stats of a specific word.
 		"""
+		try:
+			if amount <= 0:
+				return await ctx.send('At least one word needs to be displayed.')
+		except TypeError:
+			pass
 		await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
-		if amount <= 0:
-			return await ctx.send('At least one word needs to be displayed.')
 		if member == None:
 			mention = 'the server'
 			worddict = await self.config.guild(ctx.guild).worddict()
@@ -83,9 +86,9 @@ class WordStats(commands.Cog):
 		
 		Use the optional paramater "amount" to change the number of members that are displayed.
 		"""
-		await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
+		await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
 		data = await self.config.all_members(ctx.guild)
 		sumdict = {}
 		for memid in data:
