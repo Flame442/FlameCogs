@@ -7,6 +7,7 @@ from redbot.core import checks
 from random import randint
 import asyncio, os
 
+
 class Hangman(commands.Cog):
 	"""Play hangman with the bot."""
 	def __init__(self, bot):
@@ -16,68 +17,87 @@ class Hangman(commands.Cog):
 			fp = str(bundled_data_path(self) / 'words.txt'),
 			doEdit = True
 		)
-		self.man = ['\
-    ___    \n\
-   |   |   \n\
-   |   O   \n\
-   |       \n\
-   |       \n\
-   |       \n\
-   |       \n\
-  ','\
-    ___    \n\
-   |   |   \n\
-   |   O   \n\
-   |   |   \n\
-   |   |   \n\
-   |       \n\
-   |       \n\
-  ','\
-    ___    \n\
-   |   |   \n\
-   |   O   \n\
-   |  \|   \n\
-   |   |   \n\
-   |       \n\
-   |       \n\
-  ','\
-    ___    \n\
-   |   |   \n\
-   |   O   \n\
-   |  \|/  \n\
-   |   |   \n\
-   |       \n\
-   |       \n\
-   ','\
-    ___    \n\
-   |   |   \n\
-   |   O   \n\
-   |  \|/  \n\
-   |   |   \n\
-   |  /    \n\
-   |       \n\
-   ','\
-    ___    \n\
-   |   |   \n\
-   |   O   \n\
-   |  \|/  \n\
-   |   |   \n\
-   |  / \  \n\
-   |       \n\
-   ','\
-    ___    \n\
-   |   |   \n\
-   |   X   \n\
-   |  \|/  \n\
-   |   |   \n\
-   |  / \  \n\
-   |       \n\
-   ']
+		self.man = [
+			(
+				'    ___    \n'
+				'   |   |   \n'
+				'   |   O   \n'
+				'   |       \n'
+				'   |       \n'
+				'   |       \n'
+				'   |       \n'
+			), (
+				'    ___    \n'
+				'   |   |   \n'
+				'   |   O   \n'
+				'   |   |   \n'
+				'   |   |   \n'
+				'   |       \n'
+				'   |       \n'
+			), (
+				'    ___    \n'
+				'   |   |   \n'
+				'   |   O   \n'
+				'   |  \\|   \n'
+				'   |   |   \n'
+				'   |       \n'
+				'   |       \n'
+			), (
+				'    ___    \n'
+				'   |   |   \n'
+				'   |   O   \n'
+				'   |  \\|/  \n'
+				'   |   |   \n'
+				'   |       \n'
+				'   |       \n'
+			), (
+				'    ___    \n'
+				'   |   |   \n'
+				'   |   O   \n'
+				'   |  \\|/  \n'
+				'   |   |   \n'
+				'   |  /    \n'
+				'   |       \n'
+			), (
+				'    ___    \n'
+				'   |   |   \n'
+				'   |   O   \n'
+				'   |  \\|/  \n'
+				'   |   |   \n'
+				'   |  / \\  \n'
+				'   |       \n'
+			), (
+				'    ___    \n'
+				'   |   |   \n'
+				'   |   X   \n'
+				'   |  \\|/  \n'
+				'   |   |   \n'
+				'   |  / \\  \n'
+				'   |       \n'
+			)
+		]
+
+	@staticmethod
+	def _get_message(word, guessed):
+		p = ''
+		for l in word:
+			if l not in 'abcdefghijklmnopqrstuvwxyz': #auto print non letter characters
+				p += l+' '
+			elif l in guessed: #print already guessed characters
+				p += l+' '
+			else:
+				p += '_ ' 
+		p += '    ('
+		for l in guessed:
+			if l not in word:
+				p += l
+		p += ')'
+		return p
 
 	@commands.command()
 	async def hangman(self, ctx):
 		"""Play hangman with the bot."""
-		if ctx.guild == None: #default vars in pms
+		if ctx.guild is None: #default vars in pms
 			fp = str(bundled_data_path(self) / 'words.txt')
 			doEdit = False #cant delete messages in pms
 		else: #server specific vars
@@ -96,34 +116,29 @@ class Hangman(commands.Cog):
 		err = 0
 		boardmsg = None
 		while end == 0:
-			p = ''
-			for l in word:
-				if l not in 'abcdefghijklmnopqrstuvwxyz': #auto print non letter characters
-					p += l+' '
-				elif l in guessed: #print already guessed characters
-					p += l+' '
-				else:
-					p += '_ ' 
-			p += '    ('
-			for l in guessed:
-				if l not in word:
-					p += l
-			p += ')'
-			p = '```'+self.man[fails]+'\n'+p+'```'
+			p = self._get_message(word, guessed)
+			p = f'```{self.man[fails]}\n{p}```'
 			if err == 1:
 				p += 'You already guessed that letter.\n'
-			check = lambda m: m.channel == ctx.message.channel and m.author == ctx.message.author and len(m.content) == 1 and m.content.lower() in 'abcdefghijklmnopqrstuvwxyz'
-			if boardmsg == None or doEdit == False:
+			check = lambda m: (
+				m.channel == ctx.message.channel 
+				and m.author == ctx.message.author 
+				and len(m.content) == 1 
+				and m.content.lower() in 'abcdefghijklmnopqrstuvwxyz'
+			)
+			if boardmsg is None or not doEdit:
 				boardmsg = await ctx.send(p+'Guess:')
 			else:
 				await boardmsg.edit(content=str(p+'Guess:'))
 			try:
 				umsg = await self.bot.wait_for('message', check=check, timeout=60)
-			except:
-				return await ctx.send('Canceling selection. You took too long.\nThe word was '+word+'.')
+			except asyncio.TimeoutError:
+				return await ctx.send(
+					f'Canceling selection. You took too long.\nThe word was {word}.'
+				)
 			t = umsg.content.lower()
 			if doEdit:
-				asyncio.sleep(.5)
+				await asyncio.sleep(.2)
 				try:
 					await umsg.delete()
 				except discord.errors.Forbidden:
@@ -135,17 +150,27 @@ class Hangman(commands.Cog):
 				if t not in word:
 					fails += 1
 					if fails == 6: #too many fails
+						p = self._get_message(word, guessed)
 						if doEdit:
-							await boardmsg.edit(content=str('```'+self.man[6]+'```Game Over\nThe word was '+word+'.'))
+							await boardmsg.edit(content=str(
+								f'```{self.man[6]}\n{p}```Game Over\nThe word was {word}.'
+							))
 						else:
-							await ctx.send(str('```'+self.man[6]+'```Game Over\nThe word was '+word+'.'))
+							await ctx.send(str(
+								f'```{self.man[6]}\n{p}```Game Over\nThe word was {word}.'
+							))
 						end = 1
 				guessed += t
 				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
+					p = self._get_message(word, guessed)
 					if doEdit:
-						await boardmsg.edit(content=str('```'+self.man[fails]+'```You win!\nThe word was '+word+'.'))
+						await boardmsg.edit(content=str(
+							f'```{self.man[fails]}\n{p}```You win!\nThe word was {word}.'
+						))
 					else:
-						await ctx.send(str('```'+self.man[fails]+'```You win!\nThe word was '+word+'.'))
+						await ctx.send(str(
+							f'```{self.man[fails]}\n{p}```You win!\nThe word was {word}.'
+						))
 					end = 1
 	
 	@commands.guild_only()
@@ -167,15 +192,15 @@ class Hangman(commands.Cog):
 		Use default to restore the default wordlist and list to see available wordlists.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).fp()
 			if str(v) == str(bundled_data_path(self) / 'words.txt'):
 				await ctx.send('The wordlist is set to the default list.')
 			else:
-				await ctx.send('The wordlist is set to `'+str(v)[str(v).find('Hangman')+8:-4]+'`.')
+				await ctx.send(f'The wordlist is set to `{str(v)[str(v).find("Hangman")+8:-4]}`.')
 		elif value.lower() == 'default':
-			set = str(bundled_data_path(self) / 'words.txt')
-			await self.config.guild(ctx.guild).fp.set(set)
+			fp = str(bundled_data_path(self) / 'words.txt')
+			await self.config.guild(ctx.guild).fp.set(fp)
 			await ctx.send('The wordlist is now the default list.')
 		else:
 			y = []
@@ -188,12 +213,12 @@ class Hangman(commands.Cog):
 				z = ''
 				for x in y:
 					z += x+'\n'
-				await ctx.send('Available wordlists:\n`'+z+'`')
+				await ctx.send(f'Available wordlists:\n`{z}`')
 			else:
 				if value in y:
-					set = str(cog_data_path(self) / str(value+'.txt'))
-					await self.config.guild(ctx.guild).fp.set(set)
-					await ctx.send('The wordlist is now set to `'+value+'`.')
+					fp = str(cog_data_path(self) / str(value+'.txt'))
+					await self.config.guild(ctx.guild).fp.set(fp)
+					await ctx.send(f'The wordlist is now set to `{value}`.')
 				else:
 					await ctx.send('Wordlist not found.')
 	
@@ -207,7 +232,7 @@ class Hangman(commands.Cog):
 		Defaults to True.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).doEdit()
 			if v:
 				await ctx.send('Games are currently being played on a single, edited message.')
