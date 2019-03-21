@@ -25,6 +25,7 @@ class Face(commands.Cog):
 	@commands.group()
 	@checks.guildowner()
 	async def faceset(self, ctx):
+		"""Config options for face."""
 		pass
 	
 	@checks.is_owner()
@@ -40,7 +41,10 @@ class Face(commands.Cog):
 		try:
 			await ctx.message.delete()
 		except discord.Forbidden:
-			await ctx.send('The command message could not be deleted. It is highly recomended you remove it to protect your key.')
+			await ctx.send(
+				'The command message could not be deleted.'
+				'It is highly recomended you remove it to protect your key.'
+			)
 	
 	@checks.is_owner()
 	@faceset.command()
@@ -54,7 +58,11 @@ class Face(commands.Cog):
 			await self.config.api_url.set(url + '/detect')
 			await ctx.send('API URL set!')
 		else:
-			await ctx.send('That doesn\'t look like a valid url. Make sure you are following the guide at <https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.')
+			await ctx.send(
+				'That doesn\'t look like a valid url. '
+				'Make sure you are following the guide at '
+				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.'
+			)
 	
 	@checks.guildowner()
 	@commands.guild_only()
@@ -67,7 +75,7 @@ class Face(commands.Cog):
 		Defaults to True.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).doMakeMenu()
 			if v:
 				await ctx.send('Results are being displayed in a menu.')
@@ -94,7 +102,10 @@ class Face(commands.Cog):
 		params = {
 			'returnFaceId': 'false',
 			'returnFaceLandmarks': 'false',
-			'returnFaceAttributes': 'age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise'
+			'returnFaceAttributes': (
+				'age,gender,headPose,smile,facialHair,glasses,emotion,'
+				'hair,makeup,occlusion,accessories,blur,exposure,noise'
+			)
 		}
 		img = None
 		if not ctx.message.attachments and not face_url:
@@ -114,17 +125,22 @@ class Face(commands.Cog):
 				r = await ctx.message.attachments[0].save(temp_orig)
 				temp_orig.seek(0)
 				img = Image.open(temp_orig).convert('RGBA')
-			except:
+			except Exception: #ANY failure to find an image needs to cancel
 				return await ctx.send('You need to supply an image.')
 		async with aiohttp.ClientSession() as session:
-			async with session.post(api_url, params=params, headers=headers, json={'url': face_url}) as response:
+			async with session.post(
+					api_url,
+					params=params,
+					headers=headers,
+					json={'url': face_url}
+				) as response:
 				faces = await response.json(content_type=None)
 			if not img:
 				try:
 					async with session.get(face_url) as response:
 						r = await response.read()
 						img = Image.open(BytesIO(r)).convert('RGBA')
-				except:
+				except Exception: #ANY failure to find an image can pass silently
 					img = None
 		try:
 			return await ctx.send(f'API Error: {faces["error"]["message"]}')
@@ -160,11 +176,24 @@ class Face(commands.Cog):
 				color=await ctx.embed_color()
 				)
 			if doMakeMenu and img:
-				draw.rectangle((faceRectangle['left'],faceRectangle['top'],faceRectangle['left']+faceRectangle['width'],faceRectangle['top']+faceRectangle['height']),outline='red')
+				draw.rectangle(
+					(
+						faceRectangle['left'],
+						faceRectangle['top'],
+						faceRectangle['left']+faceRectangle['width'],
+						faceRectangle['top']+faceRectangle['height']
+					),
+					outline='red'
+				)
 				draw.text((faceRectangle['left'], faceRectangle['top']), str(faceNumber))
 			else:
 				if img:
-					faceimg = img.crop((faceRectangle['left'],faceRectangle['top'],faceRectangle['left']+faceRectangle['width'],faceRectangle['top']+faceRectangle['height']))
+					faceimg = img.crop((
+						faceRectangle['left'],
+						faceRectangle['top'],
+						faceRectangle['left']+faceRectangle['width'],
+						faceRectangle['top']+faceRectangle['height']
+					))
 					temp = BytesIO()
 					temp.name = 'face.png'
 					faceimg.save(temp)
@@ -173,7 +202,12 @@ class Face(commands.Cog):
 					embed.set_image(url='attachment://face.png')
 				else:
 					file = None
-			glassesformat = {'NoGlasses': 'No Glasses', 'ReadingGlasses': 'Reading Glasses', 'Sunglasses': 'Sunglasses', 'SwimmingGoggles': 'Swimming Goggles'}
+			glassesformat = {
+				'NoGlasses': 'No Glasses',
+				'ReadingGlasses': 'Reading Glasses',
+				'Sunglasses': 'Sunglasses',
+				'SwimmingGoggles': 'Swimming Goggles'
+			}
 			embed.add_field(name='Eye Makeup', value=f'{"Yes" if makeup["eyeMakeup"] else "No"}')
 			embed.add_field(name='Lip Makeup', value=f'{"Yes" if makeup["lipMakeup"] else "No"}')
 			embed.add_field(name='Glasses', value=f'{glassesformat[glasses]}')
