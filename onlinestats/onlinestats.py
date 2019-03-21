@@ -11,17 +11,38 @@ class OnlineStats(commands.Cog):
 	@commands.command(aliases=['onlinestats'])
 	async def onlinestatus(self, ctx):
 		"""Print how many people are using each type of device."""
-		a = ( 
-			"offline all: " + str(len([m for m in ctx.guild.members if m.desktop_status == discord.Status.offline and m.web_status == discord.Status.offline and  m.mobile_status == discord.Status.offline])) + "\n"
-			"desktop only: " + str(len([m for m in ctx.guild.members if m.desktop_status != discord.Status.offline and m.web_status == discord.Status.offline and  m.mobile_status == discord.Status.offline])) + "\n"
-			"web only: " + str(len([m for m in ctx.guild.members if m.desktop_status == discord.Status.offline and m.web_status != discord.Status.offline and  m.mobile_status == discord.Status.offline])) + "\n"
-			"mobile only: " + str(len([m for m in ctx.guild.members if m.desktop_status == discord.Status.offline and m.web_status == discord.Status.offline and  m.mobile_status != discord.Status.offline])) + "\n"
-			"desktop web: " + str(len([m for m in ctx.guild.members if m.desktop_status != discord.Status.offline and m.web_status != discord.Status.offline and  m.mobile_status == discord.Status.offline])) + "\n"
-			"web mobile: " + str(len([m for m in ctx.guild.members if m.desktop_status == discord.Status.offline and m.web_status != discord.Status.offline and  m.mobile_status != discord.Status.offline])) + "\n"
-			"desktop mobile: " + str(len([m for m in ctx.guild.members if m.desktop_status != discord.Status.offline and m.web_status == discord.Status.offline and  m.mobile_status != discord.Status.offline])) + "\n"
-			"online all: " + str(len([m for m in ctx.guild.members if m.desktop_status != discord.Status.offline and m.web_status != discord.Status.offline and  m.mobile_status != discord.Status.offline]))
+		device = {
+			(True, True, True): 0,
+			(False, True, True): 1,
+			(True, False, True): 2,
+			(True, True, False): 3,
+			(False, False, True): 4,
+			(True, False, False): 5,
+			(False, True, False): 6,
+			(False, False, False): 7
+		}
+		store = [0, 0, 0, 0, 0, 0, 0, 0]
+		for m in ctx.guild.members:
+			value = (
+				m.desktop_status == discord.Status.offline,
+				m.web_status == discord.Status.offline,
+				m.mobile_status == discord.Status.offline
 			)
-		await ctx.send('```py\n'+a+'```')
+			store[device[value]] += 1
+		messages = [
+			'offline all: ',
+			'\ndesktop only: ',
+			'\nweb only: ',
+			'\nmobile only: ',
+			'\ndesktop web: ',
+			'\nweb mobile: ',
+			'\ndesktop mobile: ',
+			'\nonline all: '
+		]
+		msg = ''
+		for n in range(8):
+			msg += messages[n] + str(store[n])
+		await ctx.send('```py\n'+msg+'```')
 
 	@commands.guild_only()
 	@commands.command()
@@ -57,5 +78,5 @@ class OnlineStats(commands.Cog):
 		embed.set_thumbnail(url=user.avatar_url)
 		try:
 			await ctx.send(embed=embed)
-		except:
+		except discord.errors.Forbidden:
 			await ctx.send(msg)
