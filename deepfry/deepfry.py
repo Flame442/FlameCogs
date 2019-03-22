@@ -164,7 +164,10 @@ class Deepfry(commands.Cog):
 		return temp
 	
 	async def _get_image(self, ctx, link):
-		v = await self.config.guild(ctx.message.guild).allowAllTypes()
+		if ctx.guild:
+			v = await self.config.guild(ctx.message.guild).allowAllTypes()
+		else:
+			v = False
 		if not ctx.message.attachments and not link:
 			async for msg in ctx.channel.history(limit=10):
 				for a in msg.attachments:
