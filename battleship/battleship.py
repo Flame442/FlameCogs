@@ -32,7 +32,7 @@ class BattleshipGame():
 		self.board = [[0 for x in range(100)], [0 for x in range(100)]]
 		self.letnum = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8, 'j': 9}
 		self.pmsg = []
-		self.key = [[],[]]
+		self.key = [[], []]
 	
 	@classmethod
 	def create(cls, ctx, bot, doMention, extraHit, p1, p2, cog):
@@ -41,7 +41,7 @@ class BattleshipGame():
 		Returns the game (battleship.battleship.BattleshipGame).
 		
 		Params:
-		ctx = redbot.core.commands.context.Context, The context that should be used, used to send messages.
+		ctx = redbot.core.commands.context.Context, The context that should be used to send messages.
 		bot = redbot.core.bot.Red, The bot the game is running on, used to wait for messages.
 		doMention = bool, Should players be mentioned on the begining of their turn.
 		extraHit = bool, Should players get an extra shot on a hit.
@@ -62,17 +62,19 @@ class BattleshipGame():
 		player = int, Which player's board to print.
 		bt = int, Should unhit ships be shown.
 		"""
-		b = '  ' + ' '.join(['A','B','C','D','E','F','G','H','I','J']) #header row
+		outputchars = [{0:'· ', 1:'O ', 2:'X ', 3:'· '}, {0:'· ', 1:'O ', 2:'X ', 3:'# '}]
+		b = '  ' + ' '.join(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']) #header row
 		for y in range(10): #vertical positions
 			b += f'\n{str(y)} '
 			for x in range(10):
-				b += [{0:'· ',1:'O ',2:'X ',3:'· '},{0:'· ',1:'O ',2:'X ',3:'# '}][bt][self.board[player][(y*10)+x]] #horizontal positions
+				b += outputchars[bt][self.board[player][(y*10)+x]] #horizontal positions
 		return f'```{b}```'
 	
 	async def _place(self, player, length, value):
 		"""
 		Add a ship to the board.
-		Returns True when the ship is successfully placed and returns False and sends a message when the ship cannot be placed.
+		Returns True when the ship is successfully placed.
+		Returns False and sends a message when the ship cannot be placed.
 		
 		Params:
 		player = int, Which player's board to place to.
@@ -82,17 +84,17 @@ class BattleshipGame():
 		hold = {}
 		try:
 			x = self.letnum[value[0]]
-		except:
+		except (KeyError, IndexError):
 			await self.player[player].send('Invalid input, x cord must be a letter from A-J.')
 			return False
 		try:
 			y = int(value[1])
-		except:
+		except (ValueError, IndexError):
 			await self.player[player].send('Invalid input, y cord must be a number from 0-9.')
 			return False
 		try:
 			d = value[2]
-		except:
+		except IndexError:
 			await self.player[player].send('Invalid input, d cord must be a direction of d or r.')
 			return False
 		try:
@@ -118,7 +120,7 @@ class BattleshipGame():
 			else:
 				await self.player[player].send('Invalid input, d cord must be a direction of d or r.')
 				return False
-		except:
+		except IndexError:
 			await self.player[player].send('Invalid input, too far down.')
 			return False
 		self.key[player].append(hold)
@@ -131,21 +133,34 @@ class BattleshipGame():
 		"""
 		for x in range(2): #each player
 			await self.ctx.send(f'Messaging {self.name[x]} for setup now.')
-			await self.player[x].send(f'{self.name[x]}, it is your turn to set up your ships.\nPlace ships by entering the top left coordinate and the direction of (r)ight or (d)own in xyd format.')
-			for k in [5,4,3,3,2]: #each ship length
-				privateMessage = await self.player[x].send(f'{self._bprint(x,1)}Place your {str(k)} length ship.')
+			await self.player[x].send(
+				f'{self.name[x]}, it is your turn to set up your ships.\n'
+				'Place ships by entering the top left coordinate '
+				'and the direction of (r)ight or (d)own in xyd format.'
+			)
+			for k in [5, 4, 3, 3, 2]: #each ship length
+				privateMessage = await self.player[x].send(
+					f'{self._bprint(x,1)}Place your {str(k)} length ship.'
+				)
 				while True:
 					try:
-						t = await self.bot.wait_for('message', timeout=120, check=lambda m:m.channel == privateMessage.channel and m.author.bot == False)
+						t = await self.bot.wait_for(
+							'message',
+							timeout=120,
+							check=lambda m: (
+								m.channel == privateMessage.channel 
+								and not m.author.bot
+							)
+						)
 					except asyncio.TimeoutError:
 						await self.ctx.send(f'{self.name[x]} took too long, shutting down.')
 						return self.stop()
-					if await self._place(x,k,t.content.lower()): #only break if _place was successful
+					if await self._place(x, k, t.content.lower()): #only break if _place succeeded
 						break
-			m = await self.player[x].send(self._bprint(x,1))
+			m = await self.player[x].send(self._bprint(x, 1))
 			self.pmsg.append(m) #save this message for editing later
 		game = True
-		pswap = {1:0,0:1} #helper to swap player
+		pswap = {1:0, 0:1} #helper to swap player
 		channel = self.ctx.channel
 		while game:
 			self.p = pswap[self.p] #swap players
@@ -153,34 +168,46 @@ class BattleshipGame():
 				mention = self.player[self.p].mention
 			else:
 				mention = self.name[self.p]
-			await self.ctx.send(f'{mention}\'s turn!\n{self._bprint(pswap[self.p],0)}{self.name[self.p]}, take your shot.')
+			await self.ctx.send(
+				f'{mention}\'s turn!\n'
+				f'{self._bprint(pswap[self.p], 0)}'
+				f'{self.name[self.p]}, take your shot.'
+			)
 			i = 0
 			while i == 0:
 				try:
-					s = await self.bot.wait_for('message', timeout=120, check=lambda m: m.author == self.player[self.p] and m.channel == channel and len(m.content) == 2)
+					s = await self.bot.wait_for(
+						'message',
+						timeout=120,
+						check=lambda m: (
+							m.author == self.player[self.p] 
+							and m.channel == channel 
+							and len(m.content) == 2
+						)
+					)
 				except asyncio.TimeoutError:
 					await self.ctx.send('You took too long, shutting down.')
 					self.stop()
 				try: #makes sure input is valid
 					x = self.letnum[s.content[0].lower()]
 					y = int(s.content[1])
-					self.board[pswap[self.p]][(y*10)+x]
-				except:
+					assert self.board[pswap[self.p]][(y*10)+x]
+				except (ValueError, KeyError, IndexError):
 					continue
 				if self.board[pswap[self.p]][(y*10)+x] == 0:
 					self.board[pswap[self.p]][(y*10)+x] = 1
-					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p],1))
-					await self.ctx.send(f'{self._bprint(pswap[self.p],0)}Miss!')
+					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p], 1))
+					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}Miss!')
 					i = 1
-				elif self.board[pswap[self.p]][(y*10)+x] in [1,2]:
+				elif self.board[pswap[self.p]][(y*10)+x] in [1, 2]:
 					await self.ctx.send('You already shot there!')
 				elif self.board[pswap[self.p]][(y*10)+x] == 3:
 					self.board[pswap[self.p]][(y*10)+x] = 2
-					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p],1))
-					await self.ctx.send(f'{self._bprint(pswap[self.p],0)}Hit!')
-					'''dead ship'''
+					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p], 1))
+					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}Hit!')
+					#DEAD SHIP
 					for a in range(5):
-						if ((y*10)+x) in self.key[pswap[self.p]][a]:
+						if (y*10)+x in self.key[pswap[self.p]][a]:
 							self.key[pswap[self.p]][a][(y*10)+x] = 1
 							l = 0
 							for b in self.key[pswap[self.p]][a]:
@@ -188,8 +215,11 @@ class BattleshipGame():
 									l = 1
 									break
 							if l == 0: #if ship destroyed
-								await self.ctx.send(f'{self.name[pswap[self.p]]}\'s {str([5,4,3,3,2][a])} length ship was destroyed!')
-					'''dead player'''
+								await self.ctx.send(
+									f'{self.name[pswap[self.p]]}\'s {str([5, 4, 3, 3, 2][a])} '
+									'length ship was destroyed!'
+								)
+					#DEAD PLAYER
 					if 3 not in self.board[pswap[self.p]]:
 						await self.ctx.send(f'{self.name[self.p]} wins!')
 						game = False
@@ -227,13 +257,21 @@ class Battleship(commands.Cog):
 			return await ctx.send('A game is already running in this channel.')
 		dm = await self.config.guild(ctx.guild).doMention()
 		eh = await self.config.guild(ctx.guild).extraHit()
-		check = lambda m: m.author != ctx.message.author and m.author.bot == False and m.channel == ctx.message.channel and m.content.lower() == 'i'
+		check = lambda m: (
+			m.author != ctx.message.author 
+			and not m.author.bot 
+			and m.channel == ctx.message.channel 
+			and m.content.lower() == 'i'
+		)
 		await ctx.send('Second player, say I.')
 		try:
 			r = await self.bot.wait_for('message', timeout=60, check=check)
 		except asyncio.TimeoutError:
 			return await ctx.send('You took too long, shutting down.')
-		await ctx.send(f'A game of battleship will be played between {ctx.author.display_name} and {r.author.display_name}.')
+		await ctx.send(
+			'A game of battleship will be played between '
+			f'{ctx.author.display_name} and {r.author.display_name}.'
+		)
 		game = BattleshipGame.create(ctx, self.bot, dm, eh, ctx.author, r.author, self)
 		self.games.append(game)
 	
@@ -275,15 +313,15 @@ class Battleship(commands.Cog):
 		Defaults to True.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).extraHit()
-			if v == True:
+			if v:
 				await ctx.send('You are currently able to shoot again after a hit.')
 			else:
 				await ctx.send('You are currently not able to shoot again after a hit.')
 		else:
 			await self.config.guild(ctx.guild).extraHit.set(value)
-			if value == True:
+			if value:
 				await ctx.send('You will now be able to shoot again after a hit.')
 			else:
 				await ctx.send('You will no longer be able to shoot again after a hit.')
@@ -298,7 +336,7 @@ class Battleship(commands.Cog):
 		Defaults to False.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).doMention()
 			if v:
 				await ctx.send('Players are being mentioned when their turn begins.')
@@ -312,4 +350,4 @@ class Battleship(commands.Cog):
 				await ctx.send('Players will not be mentioned when their turn begins.')
 	
 	def __unload(self):
-		[game.stop() for game in self.games]
+		return [game.stop() for game in self.games]

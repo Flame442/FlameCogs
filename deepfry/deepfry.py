@@ -13,6 +13,10 @@ import asyncio
 MAX_SIZE = 8 * 1000 * 1000
 
 
+class ImageFindError(Exception):
+	"""Generic error for the _get_image function."""
+	pass
+
 class Deepfry(commands.Cog):
 	"""Deepfries memes."""
 	def __init__(self, bot):
@@ -26,17 +30,15 @@ class Deepfry(commands.Cog):
 		self.imagetypes = ['png', 'jpg', 'jpeg']
 		self.videotypes = ['gif']
 	
-	def _fry(self, img):
+	@staticmethod
+	def _fry(img):
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance(100)
 		e = ImageEnhance.Contrast(img)
 		img = e.enhance(100)
 		e = ImageEnhance.Brightness(img)
 		img = e.enhance(.27)
-		try:
-			r, g, b, a = img.split()
-		except:
-			r, g, b = img.split()
+		r, b, g, a = (*img.split(), None) if len(img.split()) == 3 else img.split()
 		e = ImageEnhance.Brightness(r)
 		r = e.enhance(4)
 		e = ImageEnhance.Brightness(g)
@@ -52,7 +54,8 @@ class Deepfry(commands.Cog):
 		temp.seek(0)
 		return temp
 	
-	def _videofry(self, img):
+	@staticmethod
+	def _videofry(img):
 		imgs = []
 		frame = 0
 		while img:
@@ -86,22 +89,20 @@ class Deepfry(commands.Cog):
 		imgs[0].save(temp, format='GIF', save_all=True, append_images=imgs, loop=0)
 		temp.seek(0)
 		return temp
-		
-	def _nuke(self, img):
+	
+	@staticmethod
+	def _nuke(img):
 		w, h = img.size[0], img.size[1]
 		dx = ((w+200)//200)*2
 		dy = ((h+200)//200)*2
-		img = img.resize((w//dx,h//dy))
+		img = img.resize(((w+1)//dx,(h+1)//dy))
 		e = ImageEnhance.Sharpness(img)
 		img = e.enhance(100)
 		e = ImageEnhance.Contrast(img)
 		img = e.enhance(100)
 		e = ImageEnhance.Brightness(img)
 		img = e.enhance(.27)
-		try:
-			r, g, b, a = img.split()
-		except:
-			r, g, b = img.split()
+		r, b, g, a = (*img.split(), None) if len(img.split()) == 3 else img.split()
 		e = ImageEnhance.Brightness(r)
 		r = e.enhance(4)
 		e = ImageEnhance.Brightness(g)
@@ -119,8 +120,9 @@ class Deepfry(commands.Cog):
 		img.save(temp, quality=1)
 		temp.seek(0)
 		return temp
-		
-	def _videonuke(self, img):
+	
+	@staticmethod
+	def _videonuke(img):
 		imgs = []
 		frame = 0
 		while img:
@@ -129,7 +131,7 @@ class Deepfry(commands.Cog):
 			w, h = i.size[0], i.size[1]
 			dx = ((w+200)//200)*2
 			dy = ((h+200)//200)*2
-			i = i.resize((w//dx,h//dy))
+			i = i.resize(((w+1)//dx,(h+1)//dy))
 			e = ImageEnhance.Sharpness(i)
 			i = e.enhance(100)
 			e = ImageEnhance.Contrast(i)
@@ -160,7 +162,58 @@ class Deepfry(commands.Cog):
 		imgs[0].save(temp, save_all=True, append_images=imgs[1:], loop=0)
 		temp.seek(0)
 		return temp
-			
+	
+	async def _get_image(self, ctx, link):
+		v = await self.config.guild(ctx.message.guild).allowAllTypes()
+		if not ctx.message.attachments and not link:
+			async for msg in ctx.channel.history(limit=10):
+				for a in msg.attachments:
+					if (
+						a.url.split('.')[-1].lower() in self.imagetypes 
+						or a.url.split('.')[-1].lower() in self.videotypes 
+						or v
+					):
+						link = a.url
+						break
+				if link:
+					break
+			if not link:
+				raise ImageFindError('Please provide an attachment.')
+		if link: #linked image	
+			if link.split('.')[-1].lower() in self.imagetypes:
+				isgif = False
+			elif link.split('.')[-1].lower() in self.videotypes or v:
+				isgif = True
+			else:
+				ext = link.split('.')[-1].title()
+				raise ImageFindError(
+					f'"{ext}" is not a supported filetype or you did not provide a direct link.'
+				)
+			async with aiohttp.ClientSession() as session:
+				async with session.get(link) as response:
+					r = await response.read()
+					try:
+						img = Image.open(BytesIO(r))
+					except:
+						raise ImageFindError(
+							'An image could not be found. Make sure you provide a direct link.'
+						)
+		else: #attatched image
+			if ctx.message.attachments[0].url.split('.')[-1].lower() in self.imagetypes:
+				isgif = False
+			elif ctx.message.attachments[0].url.split('.')[-1].lower() in self.videotypes:
+				isgif = True
+			else:
+				ext = ctx.message.attachments[0].url.split('.')[-1].title()
+				raise ImageFindError(f'"{ext}" is not a supported filetype.')
+			if ctx.message.attachments[0].size > MAX_SIZE: #only usable with attatchments
+				raise ImageFindError('That image is too large. Max image size is 8MB.')
+			temp_orig = BytesIO()
+			await ctx.message.attachments[0].save(temp_orig)
+			temp_orig.seek(0)
+			img = Image.open(temp_orig)
+		return (img, isgif)
+	
 	@commands.command(aliases=['df'])
 	@commands.bot_has_permissions(attach_files=True)
 	async def deepfry(self, ctx, link: str=None):
@@ -169,61 +222,24 @@ class Deepfry(commands.Cog):
 		
 		Use the optional paramater "link" to use a **direct link** as the target.
 		"""
-		if ctx.message.attachments == [] and not link:
-			return await ctx.send('Please provide an attachment.')
-		v = await self.config.guild(ctx.message.guild).allowAllTypes()
-		if link: #linked image	
-			if link.split('.')[-1] in self.imagetypes:
-				isgif = False
-			elif link.split('.')[-1] in self.videotypes or v:
-				isgif = True
-			else:
-				ext = link.split('.')[-1].title()
-				return await ctx.send(f'"{ext}" is not a supported filetype or you did not provide a direct link.')
-		else: #attatched image
-			if ctx.message.attachments[0].url.split('.')[-1] in self.imagetypes:
-				isgif = False
-			elif ctx.message.attachments[0].url.split('.')[-1] in self.videotypes:
-				isgif = True
-			else:
-				ext = ctx.message.attachments[0].url.split('.')[-1].title()
-				return await ctx.send(f'"{ext}" is not a supported filetype.')
-			if ctx.message.attachments[0].size > MAX_SIZE: #only usable with attatchments
-				return await ctx.send('That image is too large. Max image size is 8MB.')
-		if link:
-			async with aiohttp.ClientSession() as session:
-				async with session.get(link) as response:
-					r = await response.read()
-					try:
-						img = Image.open(BytesIO(r))
-					except:
-						return await ctx.send('An image could not be found. Make sure you provide a direct link.')
-		else:
-			temp_orig = BytesIO()
-			r = await ctx.message.attachments[0].save(temp_orig)
-			temp_orig.seek(0)
-			img = Image.open(temp_orig)
+		try:
+			img, isgif = await self._get_image(ctx, link)
+		except ImageFindError as e:	
+			return await ctx.send(e)
 		if isgif:
 			task = functools.partial(self._videofry, img)
-			task = self.bot.loop.run_in_executor(None, task)
-			try:
-				image = await asyncio.wait_for(task, timeout=60)
-			except asyncio.TimeoutError:
-				return
-			
-			try:
-				await ctx.send(file=discord.File(image))
-			except discord.errors.HTTPException:
-				return await ctx.send('That image is too large.')
 		else:
 			task = functools.partial(self._fry, img)
-			task = self.bot.loop.run_in_executor(None, task)
-			try:
-				image = await asyncio.wait_for(task, timeout=60)
-			except asyncio.TimeoutError:
-				return
+		task = self.bot.loop.run_in_executor(None, task)
+		try:
+			image = await asyncio.wait_for(task, timeout=60)
+		except asyncio.TimeoutError:
+			return
+		try:
 			await ctx.send(file=discord.File(image))
-		
+		except discord.errors.HTTPException:
+			return await ctx.send('That image is too large.')
+
 	@commands.command()
 	@commands.bot_has_permissions(attach_files=True)
 	async def nuke(self, ctx, link: str=None):
@@ -232,59 +248,23 @@ class Deepfry(commands.Cog):
 		
 		Use the optional paramater "link" to use a **direct link** as the target.
 		"""
-		if ctx.message.attachments == [] and not link:
-			return await ctx.send('Please provide an attachment.')
-		v = await self.config.guild(ctx.message.guild).allowAllTypes()
-		if link: #linked image	
-			if link.split('.')[-1] in self.imagetypes:
-				isgif = False
-			elif link.split('.')[-1] in self.videotypes or v:
-				isgif = True
-			else:
-				ext = link.split('.')[-1].title()
-				return await ctx.send(f'"{ext}" is not a supported filetype or you did not provide a direct link.')
-		else: #attatched image
-			if ctx.message.attachments[0].url.split('.')[-1] in self.imagetypes:
-				isgif = False
-			elif ctx.message.attachments[0].url.split('.')[-1] in self.videotypes:
-				isgif = True
-			else:
-				ext = ctx.message.attachments[0].url.split('.')[-1].title()
-				return await ctx.send(f'"{ext}" is not a supported filetype.')
-			if ctx.message.attachments[0].size > MAX_SIZE: #only usable with attatchments
-				return await ctx.send('That image is too large. Max image size is 8MB.')
-		if link:
-			async with aiohttp.ClientSession() as session:
-				async with session.get(link) as response:
-					r = await response.read()
-					try:
-						img = Image.open(BytesIO(r))
-					except:
-						return await ctx.send('An image could not be found. Make sure you provide a direct link.')
-		else:
-			temp_orig = BytesIO()
-			r = await ctx.message.attachments[0].save(temp_orig)
-			temp_orig.seek(0)
-			img = Image.open(temp_orig)
+		try:
+			img, isgif = await self._get_image(ctx, link)
+		except ImageFindError as e:	
+			return await ctx.send(e)
 		if isgif:
 			task = functools.partial(self._videonuke, img)
-			task = self.bot.loop.run_in_executor(None, task)
-			try:
-				image = await asyncio.wait_for(task, timeout=60)
-			except asyncio.TimeoutError:
-				return
-			try:
-				await ctx.send(file=discord.File(image))
-			except discord.errors.HTTPException:
-				return await ctx.send('That image is too large.')
 		else:
-			task = functools.partial(self._nuke, img)
-			task = self.bot.loop.run_in_executor(None, task)
-			try:
-				image = await asyncio.wait_for(task, timeout=60)
-			except asyncio.TimeoutError:
-				return
+			task = functools.partial(self._nuke, img)	
+		task = self.bot.loop.run_in_executor(None, task)
+		try:
+			image = await asyncio.wait_for(task, timeout=60)
+		except asyncio.TimeoutError:
+			return
+		try:
 			await ctx.send(file=discord.File(image))
+		except discord.errors.HTTPException:
+			return await ctx.send('That image is too large.')
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -312,7 +292,7 @@ class Deepfry(commands.Cog):
 		Set to 0 to disable.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.message.guild).fryChance()
 			if v == 0:
 				await ctx.send('Autofrying is currently disabled.')
@@ -341,7 +321,7 @@ class Deepfry(commands.Cog):
 		Set to 0 to disable.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.message.guild).nukeChance()
 			if v == 0:
 				await ctx.send('Autonuking is currently disabled.')
@@ -369,22 +349,25 @@ class Deepfry(commands.Cog):
 		Defaults to False.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).allowAllTypes()
-			if v == True:
+			if v:
 				await ctx.send('You are currently able to use unverified types.')
 			else:
 				await ctx.send('You are currently not able to use unverified types.')
 		else:
 			await self.config.guild(ctx.guild).allowAllTypes.set(value)
-			if value == True:
-				await ctx.send('You will now be able to use unverified types.\nThis mode can cause errors. Use at your own risk.')
+			if value:
+				await ctx.send(
+					'You will now be able to use unverified types.\n'
+					'This mode can cause errors. Use at your own risk.'
+				)
 			else:
 				await ctx.send('You will no longer be able to use unverified types.')
 
 	async def run(self, t):
 		"""Passively deepfries random images."""
-		'''Checks'''
+		#CHECKS
 		if t.author.bot:
 			return
 		if not t.attachments:
@@ -393,12 +376,12 @@ class Deepfry(commands.Cog):
 			return
 		if t.guild is None:
 			return
-		'''Guild settings'''
+		#GUILD SETTINGS
 		vfry = await self.config.guild(t.guild).fryChance()
 		vnuke = await self.config.guild(t.guild).nukeChance()
-		'''Nuke'''
+		#NUKE
 		if vnuke != 0:
-			if t.attachments[0].url.split('.')[-1] not in self.imagetypes:
+			if t.attachments[0].url.split('.')[-1].lower() not in self.imagetypes:
 				return
 			if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
 				l = randint(1,vnuke)
@@ -406,7 +389,7 @@ class Deepfry(commands.Cog):
 					ext = t.attachments[0].url.split('.')[-1]
 					temp = BytesIO()
 					temp.filename = f'nuked.{ext}'
-					r = await t.attachments[0].save(temp)
+					await t.attachments[0].save(temp)
 					temp.seek(0)
 					img = Image.open(temp)
 					task = functools.partial(self._nuke, img)
@@ -417,11 +400,9 @@ class Deepfry(commands.Cog):
 						return
 					await t.channel.send(file=discord.File(image))
 					return #prevent a nuke and a fry
-				else:
-					pass
-		'''Fry'''
+		#FRY
 		if vfry != 0:
-			if t.attachments[0].url.split('.')[-1] not in self.imagetypes:
+			if t.attachments[0].url.split('.')[-1].lower() not in self.imagetypes:
 				return
 			if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
 				l = randint(1,vfry)
@@ -429,7 +410,7 @@ class Deepfry(commands.Cog):
 					ext = t.attachments[0].url.split('.')[-1]
 					temp = BytesIO()
 					temp.filename = f'deepfried.{ext}'
-					r = await t.attachments[0].save(temp)
+					await t.attachments[0].save(temp)
 					temp.seek(0)
 					img = Image.open(temp)
 					task = functools.partial(self._fry, img)
@@ -439,5 +420,3 @@ class Deepfry(commands.Cog):
 					except asyncio.TimeoutError:
 						return
 					await t.channel.send(file=discord.File(image))
-				else:
-					pass

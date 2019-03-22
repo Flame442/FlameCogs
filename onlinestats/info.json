@@ -1,0 +1,10 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing onlinestats. Commands are `[p]onlinestats` and `[p]onlineinfo`.",
+    "name" : "OnlineStats",
+    "short" : "Information about what devices people are using to run discord.",
+    "requirements" : [],
+    "description" : "Information about what devices people are using to run discord.",
+    "tags" : [],
+    "min_python_version": [3, 6, 0]
+}

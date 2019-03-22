@@ -3,7 +3,7 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
 from io import BytesIO
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageDraw, ImageFont
 import aiohttp
 import json
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
@@ -23,10 +23,12 @@ class Face(commands.Cog):
 		)
 	
 	@commands.group()
-	@checks.is_owner()
+	@checks.guildowner()
 	async def faceset(self, ctx):
+		"""Config options for face."""
 		pass
 	
+	@checks.is_owner()
 	@faceset.command()
 	async def key(self, ctx, key: str):
 		"""
@@ -39,8 +41,12 @@ class Face(commands.Cog):
 		try:
 			await ctx.message.delete()
 		except discord.Forbidden:
-			await ctx.send('The command message could not be deleted. It is highly recomended you remove it to protect your key.')
-			
+			await ctx.send(
+				'The command message could not be deleted.'
+				'It is highly recomended you remove it to protect your key.'
+			)
+	
+	@checks.is_owner()
 	@faceset.command()
 	async def url(self, ctx, url: str):
 		"""
@@ -52,19 +58,24 @@ class Face(commands.Cog):
 			await self.config.api_url.set(url + '/detect')
 			await ctx.send('API URL set!')
 		else:
-			await ctx.send('That doesn\'t look like a valid url. Make sure you are following the guide at <https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.')
+			await ctx.send(
+				'That doesn\'t look like a valid url. '
+				'Make sure you are following the guide at '
+				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.'
+			)
 	
+	@checks.guildowner()
 	@commands.guild_only()
 	@faceset.command()
 	async def menu(self, ctx, value: bool=None):
 		"""
 		Set if results should be made into a menu.
 		
-		If in a menu, cropped images of each face will not display, but there will be less spam.
+		If in a menu, one large image with faces marked will be sent instead of cropped images of each face.
 		Defaults to True.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).doMakeMenu()
 			if v:
 				await ctx.send('Results are being displayed in a menu.')
@@ -77,6 +88,7 @@ class Face(commands.Cog):
 			else:
 				await ctx.send('Results will now be displayed in multiple messages.')
 
+	@commands.bot_has_permissions(embed_links=True)
 	@commands.command()
 	async def face(self, ctx, face_url: str=None):
 		"""Find and describe the faces in an image."""
@@ -90,30 +102,48 @@ class Face(commands.Cog):
 		params = {
 			'returnFaceId': 'false',
 			'returnFaceLandmarks': 'false',
-			'returnFaceAttributes': 'age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise'
+			'returnFaceAttributes': (
+				'age,gender,headPose,smile,facialHair,glasses,emotion,'
+				'hair,makeup,occlusion,accessories,blur,exposure,noise'
+			)
 		}
 		img = None
+		if not ctx.message.attachments and not face_url:
+			async for msg in ctx.channel.history(limit=10):
+				for a in msg.attachments:
+					if a.url.split('.')[-1].lower() in ['png', 'jpg', 'jpeg']:
+						face_url = a.url
+						break
+				if face_url:
+					break
+			if not face_url:
+				return await ctx.send('You need to supply an image.')
 		if not face_url:
 			try:
 				face_url = ctx.message.attachments[0].url
 				temp_orig = BytesIO()
 				r = await ctx.message.attachments[0].save(temp_orig)
 				temp_orig.seek(0)
-				img = Image.open(temp_orig)
-			except:
+				img = Image.open(temp_orig).convert('RGBA')
+			except Exception: #ANY failure to find an image needs to cancel
 				return await ctx.send('You need to supply an image.')
 		async with aiohttp.ClientSession() as session:
-			async with session.post(api_url, params=params, headers=headers, json={'url': face_url}) as response:
+			async with session.post(
+					api_url,
+					params=params,
+					headers=headers,
+					json={'url': face_url}
+				) as response:
 				faces = await response.json(content_type=None)
 			if not img:
 				try:
 					async with session.get(face_url) as response:
 						r = await response.read()
-						img = Image.open(BytesIO(r))
-				except:
+						img = Image.open(BytesIO(r)).convert('RGBA')
+				except Exception: #ANY failure to find an image can pass silently
 					img = None
 		try:
-			return await ctx.send(faces['error']['message'])
+			return await ctx.send(f'API Error: {faces["error"]["message"]}')
 		except TypeError:
 			pass
 		await ctx.send(f'Found {len(faces)} {"face" if len(faces) == 1 else "faces"}.\n\n')
@@ -123,6 +153,8 @@ class Face(commands.Cog):
 			doMakeMenu = True
 		faceNumber = 0
 		embedlist = []
+		if img:
+			draw = ImageDraw.Draw(img)
 		for face in faces:
 			faceNumber += 1
 			faceRectangle = face['faceRectangle'] #dict of top, left, width, height
@@ -143,17 +175,39 @@ class Face(commands.Cog):
 				description=f'{round(age)} year old {gender}',
 				color=await ctx.embed_color()
 				)
-			if img:
-				faceimg = img.crop((faceRectangle['left'],faceRectangle['top'],faceRectangle['left']+faceRectangle['width'],faceRectangle['top']+faceRectangle['height']))
-				temp = BytesIO()
-				temp.name = 'face.png'
-				faceimg.save(temp)
-				temp.seek(0)
-				file = discord.File(temp, 'face.png')
-				embed.set_image(url='attachment://face.png')
+			if doMakeMenu and img:
+				draw.rectangle(
+					(
+						faceRectangle['left'],
+						faceRectangle['top'],
+						faceRectangle['left']+faceRectangle['width'],
+						faceRectangle['top']+faceRectangle['height']
+					),
+					outline='red'
+				)
+				draw.text((faceRectangle['left'], faceRectangle['top']), str(faceNumber))
 			else:
-				file = None
-			glassesformat = {'NoGlasses': 'No Glasses', 'ReadingGlasses': 'Reading Glasses', 'Sunglasses': 'Sunglasses', 'SwimmingGoggles': 'Swimming Goggles'}
+				if img:
+					faceimg = img.crop((
+						faceRectangle['left'],
+						faceRectangle['top'],
+						faceRectangle['left']+faceRectangle['width'],
+						faceRectangle['top']+faceRectangle['height']
+					))
+					temp = BytesIO()
+					temp.name = 'face.png'
+					faceimg.save(temp)
+					temp.seek(0)
+					file = discord.File(temp, 'face.png')
+					embed.set_image(url='attachment://face.png')
+				else:
+					file = None
+			glassesformat = {
+				'NoGlasses': 'No Glasses',
+				'ReadingGlasses': 'Reading Glasses',
+				'Sunglasses': 'Sunglasses',
+				'SwimmingGoggles': 'Swimming Goggles'
+			}
 			embed.add_field(name='Eye Makeup', value=f'{"Yes" if makeup["eyeMakeup"] else "No"}')
 			embed.add_field(name='Lip Makeup', value=f'{"Yes" if makeup["lipMakeup"] else "No"}')
 			embed.add_field(name='Glasses', value=f'{glassesformat[glasses]}')
@@ -180,14 +234,19 @@ class Face(commands.Cog):
 				if file:
 					try:
 						await ctx.send(embed=embed, files=[file])
-					except:
-						await ctx.send('The message could not be sent. Do I have permission to send embeds?')
-				else:
-					try:
+					except discord.errors.HTTPException:
 						await ctx.send(embed=embed)
-					except:
-						await ctx.send('The message could not be sent. Do I have permission to send embeds?')
+				else:
+					await ctx.send(embed=embed)
 			else:
 				embedlist.append(embed)
 		if embedlist != []:
+			temp = BytesIO()
+			temp.name = 'faces.png'
+			img.save(temp)
+			temp.seek(0)
+			try:
+				await ctx.send(file=discord.File(temp))
+			except discord.errors.HTTPException:
+				pass
 			await menu(ctx, embedlist, DEFAULT_CONTROLS)
