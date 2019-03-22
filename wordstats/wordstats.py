@@ -29,7 +29,12 @@ class WordStats(commands.Cog):
 	
 	@commands.guild_only()
 	@commands.command()
-	async def wordstats(self, ctx, member: Optional[discord.Member]=None, amount: Optional[Union[int, str]]=30):
+	async def wordstats(
+		self,
+		ctx,
+		member: Optional[discord.Member]=None,
+		amount: Optional[Union[int, str]]=30
+	):
 		"""
 		Prints the most commonly used words.
 		
@@ -42,7 +47,7 @@ class WordStats(commands.Cog):
 		except TypeError:
 			pass
 		await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
-		if member == None:
+		if member is None:
 			mention = 'the server'
 			worddict = await self.config.guild(ctx.guild).worddict()
 		else:
@@ -52,19 +57,32 @@ class WordStats(commands.Cog):
 		if isinstance(amount, str):
 			try:
 				ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
-				return await ctx.send(f'The word **{amount}** has been said by {mention} **{str(worddict[amount.lower()])}** {"times" if worddict[amount.lower()] != 1 else "time"}.\nIt is the **{ordinal(order.index(amount.lower())+1)+"** most common" if order.index(amount.lower()) != 0 else "most common**"} word {mention} has said.')
+				if order.index(amount.lower()) != 0:
+					mc = ordinal(order.index(amount.lower())+1)+'** most common'
+				else:
+					mc = 'most common**'
+				return await ctx.send(
+					f'The word **{amount}** has been said by {mention} '
+					f'**{str(worddict[amount.lower()])}** '
+					f'{"times" if worddict[amount.lower()] != 1 else "time"}.\n'
+					f'It is the **{mc} word {mention} has said.'
+				)
 			except KeyError:
 				return await ctx.send(f'The word **{amount}** has not been said by {mention} yet.')
 		result = ''
 		smallresult = ''
 		n = 0
 		num = 0
-		max = False
+		maxlen = False
 		for word in order:
-			if not max:
-				max = len(str(worddict[word]))
+			if not maxlen:
+				maxlen = len(str(worddict[word]))
 			if n < amount:
-				smallresult += f'{str(worddict[word])}{" ".join(["" for x in range(max-(len(str(worddict[word])))+2)])}{str(word)}\n'
+				smallresult += (
+					f'{str(worddict[word])}'
+					f'{" ".join(["" for x in range(maxlen-(len(str(worddict[word])))+2)])}'
+					f'{str(word)}\n'
+				)
 				n += 1
 			result += f'{str(worddict[word])} {str(word)}\n'
 			num += int(worddict[word])
@@ -74,7 +92,12 @@ class WordStats(commands.Cog):
 			await ctx.send(f'{mention} has not said any words yet.')
 		else:
 			try:
-				await ctx.send(f'Out of **{num}** words and **{len(worddict)}** unique words, the **{str(n) + "** most common words" if n != 1 else "most common** word"} that {mention} has said {"are" if n != 1 else "is"}:\n```{smallresult.rstrip()}```')
+				await ctx.send(
+					f'Out of **{num}** words and **{len(worddict)}** unique words, '
+					f'the **{str(n) + "** most common words" if n != 1 else "most common** word"} '
+					f'that {mention} has said {"are" if n != 1 else "is"}:\n'
+					f'```{smallresult.rstrip()}```'
+				)
 			except discord.errors.HTTPException:
 				await ctx.send('Message too long to send.')
 	
@@ -101,22 +124,30 @@ class WordStats(commands.Cog):
 		smallresult = ''
 		n = 0
 		num = 0
-		max = False
+		maxlen = False
 		for memid in order:
 			if n < amount:
-				if not max:
-					max = len(str(sumdict[memid]))
+				if not maxlen:
+					maxlen = len(str(sumdict[memid]))
 				try:
 					mem = ctx.guild.get_member(memid)
 					name = mem.display_name
-				except:
+				except AttributeError:
 					name = f'<removed member {memid}>'
-				smallresult += f'{str(sumdict[memid])}{" ".join(["" for x in range(max - len(str(sumdict[memid]))+2)])}{name}\n'
+				smallresult += (
+					f'{str(sumdict[memid])}'
+					f'{" ".join(["" for x in range(maxlen-len(str(sumdict[memid]))+2)])}'
+					f'{name}\n'
+				)
 				n += 1
 			result += f'{str(sumdict[memid])} {str(memid)}\n'
 			num += int(sumdict[memid])
 		try:
-			await ctx.send(f'Out of **{num}** words, the {"**" + str(n) + "** " if n != 1 else ""}{"members" if n != 1 else "member"} who {"have" if n != 1 else "has"} said the most words {"are" if n != 1 else "is"}:\n```{smallresult}```')
+			await ctx.send(
+				f'Out of **{num}** words, the {"**" + str(n) + "** " if n != 1 else ""}'
+				f'{"members" if n != 1 else "member"} who {"have" if n != 1 else "has"} '
+				f'said the most words {"are" if n != 1 else "is"}:\n```{smallresult}```'
+			)
 		except discord.errors.HTTPException:
 			await ctx.send('Message too long to send.')
 	
@@ -139,7 +170,7 @@ class WordStats(commands.Cog):
 		"""
 		if ctx.guild not in self.guilds_to_update:
 			self.guilds_to_update[ctx.guild] = await self.config.guild(ctx.guild).all()
-		if value == None:
+		if value is None:
 			v = self.guilds_to_update[ctx.guild]['enableGuild']
 			if v:
 				await ctx.send('Stats are being recorded in this server.')
@@ -166,7 +197,7 @@ class WordStats(commands.Cog):
 		if ctx.guild not in self.guilds_to_update:
 			self.guilds_to_update[ctx.guild] = await self.config.guild(ctx.guild).all()
 		v = self.guilds_to_update[ctx.guild]['disabledChannels']
-		if value == None:
+		if value is None:
 			if ctx.channel.id not in v:
 				await ctx.send('Stats are being recorded in this channel.')
 			else:
@@ -178,7 +209,10 @@ class WordStats(commands.Cog):
 				else:
 					v.remove(ctx.channel.id)
 					self.guilds_to_update[ctx.guild]['disabledChannels'] = v
-					await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
+					await self.update_data(
+						members=self.members_to_update,
+						guilds=self.guilds_to_update
+					)
 					await ctx.send('Stats will now be recorded in this channel.')
 			else:
 				if ctx.channel.id in v:
@@ -186,10 +220,17 @@ class WordStats(commands.Cog):
 				else:
 					v.append(ctx.channel.id)
 					self.guilds_to_update[ctx.guild]['disabledChannels'] = v
-					await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
+					await self.update_data(
+						members=self.members_to_update,
+						guilds=self.guilds_to_update
+					)
 					await ctx.send('Stats will no longer be recorded in this channel.')
 			
-	async def update_data(self, members: Dict[discord.Member, dict], guilds: Dict[discord.Guild, dict]):
+	async def update_data(
+		self,
+		members: Dict[discord.Member, dict],
+		guilds: Dict[discord.Guild, dict]
+	):
 		"""Thanks to Sinbad for this dark magic."""
 		self.last_save = time.time()
 		base_group = Group(
@@ -224,7 +265,7 @@ class WordStats(commands.Cog):
 			disabledChannels = await self.config.guild(msg.guild).disabledChannels()
 			if enableGuild and not msg.channel.id in disabledChannels:
 				p = await self.bot.get_prefix(msg)
-				if True in [msg.content.startswith(x) for x in p]:
+				if any([msg.content.startswith(x) for x in p]):
 					return
 				words = str(re.sub(r'[^a-zA-Z ]', '', msg.content.lower())).split(' ')
 				if msg.guild not in self.guilds_to_update:
@@ -247,4 +288,7 @@ class WordStats(commands.Cog):
 				self.guilds_to_update[msg.guild]['worddict'] = guilddict
 				self.members_to_update[msg.author]['worddict'] = memdict
 				if time.time() - self.last_save >= 600: #10 minutes per save
-					await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
+					await self.update_data(
+						members=self.members_to_update,
+						guilds=self.guilds_to_update
+					)
