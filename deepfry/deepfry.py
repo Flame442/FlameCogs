@@ -379,47 +379,52 @@ class Deepfry(commands.Cog):
 			return
 		if t.guild is None:
 			return
+		if any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
+			return
+		ext = t.attachments[0].url.split('.')[-1]
+		if ext in self.imagetypes:
+			isgif = False
+		if ext in self.videotypes:
+			isgif = True
 		#GUILD SETTINGS
 		vfry = await self.config.guild(t.guild).fryChance()
 		vnuke = await self.config.guild(t.guild).nukeChance()
 		#NUKE
 		if vnuke != 0:
-			if t.attachments[0].url.split('.')[-1].lower() not in self.imagetypes:
-				return
-			if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
-				l = randint(1,vnuke)
-				if l == 1:
-					ext = t.attachments[0].url.split('.')[-1]
-					temp = BytesIO()
-					temp.filename = f'nuked.{ext}'
-					await t.attachments[0].save(temp)
-					temp.seek(0)
-					img = Image.open(temp)
+			l = randint(1,vnuke)
+			if l == 1:
+				temp = BytesIO()
+				temp.filename = f'nuked.{ext}'
+				await t.attachments[0].save(temp)
+				temp.seek(0)
+				img = Image.open(temp)
+				if isgif:
+					task = functools.partial(self._videonuke, img)
+				else:
 					task = functools.partial(self._nuke, img)
-					task = self.bot.loop.run_in_executor(None, task)
-					try:
-						image = await asyncio.wait_for(task, timeout=60)
-					except asyncio.TimeoutError:
-						return
-					await t.channel.send(file=discord.File(image))
-					return #prevent a nuke and a fry
+				task = self.bot.loop.run_in_executor(None, task)
+				try:
+					image = await asyncio.wait_for(task, timeout=60)
+				except asyncio.TimeoutError:
+					return
+				await t.channel.send(file=discord.File(image))
+				return #prevent a nuke and a fry
 		#FRY
 		if vfry != 0:
-			if t.attachments[0].url.split('.')[-1].lower() not in self.imagetypes:
-				return
-			if not any([t.content.startswith(x) for x in await self.bot.get_prefix(t)]):
-				l = randint(1,vfry)
-				if l == 1:
-					ext = t.attachments[0].url.split('.')[-1]
-					temp = BytesIO()
-					temp.filename = f'deepfried.{ext}'
-					await t.attachments[0].save(temp)
-					temp.seek(0)
-					img = Image.open(temp)
+			l = randint(1,vfry)
+			if l == 1:
+				temp = BytesIO()
+				temp.filename = f'deepfried.{ext}'
+				await t.attachments[0].save(temp)
+				temp.seek(0)
+				img = Image.open(temp)
+				if isgif:
+					task = functools.partial(self._videofry, img)
+				else:
 					task = functools.partial(self._fry, img)
-					task = self.bot.loop.run_in_executor(None, task)
-					try:
-						image = await asyncio.wait_for(task, timeout=60)
-					except asyncio.TimeoutError:
-						return
-					await t.channel.send(file=discord.File(image))
+				task = self.bot.loop.run_in_executor(None, task)
+				try:
+					image = await asyncio.wait_for(task, timeout=60)
+				except asyncio.TimeoutError:
+					return
+				await t.channel.send(file=discord.File(image))
