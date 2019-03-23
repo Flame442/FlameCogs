@@ -46,14 +46,15 @@ class WordStats(commands.Cog):
 				return await ctx.send('At least one word needs to be displayed.')
 		except TypeError:
 			pass
-		await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
-		if member is None:
-			mention = 'the server'
-			worddict = await self.config.guild(ctx.guild).worddict()
-		else:
-			mention = member.display_name
-			worddict = await self.config.member(member).worddict()
-		order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
+		async with ctx.typing():
+			await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
+			if member is None:
+				mention = 'the server'
+				worddict = await self.config.guild(ctx.guild).worddict()
+			else:
+				mention = member.display_name
+				worddict = await self.config.member(member).worddict()
+			order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
 		if isinstance(amount, str):
 			try:
 				ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
@@ -67,8 +68,10 @@ class WordStats(commands.Cog):
 					f'{"times" if worddict[amount.lower()] != 1 else "time"}.\n'
 					f'It is the **{mc} word {mention} has said.'
 				)
-			except KeyError:
-				return await ctx.send(f'The word **{amount}** has not been said by {mention} yet.')
+			except ValueError:
+				return await ctx.send(
+					f'The word **{amount}** has not been said by {mention} yet.'
+				)
 		result = ''
 		smallresult = ''
 		n = 0
@@ -111,15 +114,16 @@ class WordStats(commands.Cog):
 		"""
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
-		await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
-		data = await self.config.all_members(ctx.guild)
-		sumdict = {}
-		for memid in data:
-			n = 0
-			for word in data[memid]['worddict']:
-				n += data[memid]['worddict'][word]
-			sumdict[memid] = n
-		order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
+		async with ctx.typing():
+			await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
+			data = await self.config.all_members(ctx.guild)
+			sumdict = {}
+			for memid in data:
+				n = 0
+				for word in data[memid]['worddict']:
+					n += data[memid]['worddict'][word]
+				sumdict[memid] = n
+			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
 		result = ''
 		smallresult = ''
 		n = 0
