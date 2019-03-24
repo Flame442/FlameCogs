@@ -94,10 +94,18 @@ class Face(commands.Cog):
 		"""Find and describe the faces in an image."""
 		api_key = await self.config.api_key()
 		if not api_key:
-			return await ctx.send('You need to set an API key!')
+			return await ctx.send(
+				'You need to set an API key!\n'
+				'Follow this guide for instructions on how to get one:\n'
+				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>'
+			)
 		api_url = await self.config.api_url()
 		if not api_url:
-			return await ctx.send('You need to set an API URL!')
+			return await ctx.send(
+				'You need to set an API URL!\n'
+				'Follow this guide for instructions on how to get one:\n'
+				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>'
+			)
 		headers = {'Ocp-Apim-Subscription-Key': api_key} 
 		params = {
 			'returnFaceId': 'false',
