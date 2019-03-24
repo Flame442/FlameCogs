@@ -127,25 +127,26 @@ class Face(commands.Cog):
 				img = Image.open(temp_orig).convert('RGBA')
 			except Exception: #ANY failure to find an image needs to cancel
 				return await ctx.send('You need to supply an image.')
-		async with aiohttp.ClientSession() as session:
-			async with session.post(
-					api_url,
-					params=params,
-					headers=headers,
-					json={'url': face_url}
-				) as response:
-				faces = await response.json(content_type=None)
-			if not img:
-				try:
-					async with session.get(face_url) as response:
-						r = await response.read()
-						img = Image.open(BytesIO(r)).convert('RGBA')
-				except Exception: #ANY failure to find an image can pass silently
-					img = None
-		try:
-			return await ctx.send(f'API Error: {faces["error"]["message"]}')
-		except TypeError:
-			pass
+		async with ctx.typing():
+			async with aiohttp.ClientSession() as session:
+				async with session.post(
+						api_url,
+						params=params,
+						headers=headers,
+						json={'url': face_url}
+					) as response:
+					faces = await response.json(content_type=None)
+				if not img:
+					try:
+						async with session.get(face_url) as response:
+							r = await response.read()
+							img = Image.open(BytesIO(r)).convert('RGBA')
+					except Exception: #ANY failure to find an image can pass silently
+						img = None
+			try:
+				return await ctx.send(f'API Error: {faces["error"]["message"]}')
+			except TypeError:
+				pass
 		await ctx.send(f'Found {len(faces)} {"face" if len(faces) == 1 else "faces"}.\n\n')
 		if ctx.guild:
 			doMakeMenu = await self.config.guild(ctx.guild).doMakeMenu()
