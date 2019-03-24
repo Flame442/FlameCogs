@@ -261,6 +261,8 @@ class WordStats(commands.Cog):
 				keys = (self.config.GUILD, str(guild.id))
 				value = deepcopy(guild_data)
 				nested_update(data, keys, value)
+		self.members_to_update = {}
+		self.guilds_to_update = {}
 	
 	async def on_message(self, msg):
 		"""Passively records all message contents."""
