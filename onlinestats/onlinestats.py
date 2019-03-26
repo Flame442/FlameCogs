@@ -29,20 +29,17 @@ class OnlineStats(commands.Cog):
 				m.mobile_status == discord.Status.offline
 			)
 			store[device[value]] += 1
-		messages = [
-			'offline all: ',
-			'\ndesktop only: ',
-			'\nweb only: ',
-			'\nmobile only: ',
-			'\ndesktop web: ',
-			'\nweb mobile: ',
-			'\ndesktop mobile: ',
-			'\nonline all: '
-		]
-		msg = ''
-		for n in range(8):
-			msg += messages[n] + str(store[n])
-		await ctx.send('```py\n'+msg+'```')
+		msg = (
+			f'offline all: {str(store[0])}'
+			f'\ndesktop only: {str(store[1])}'
+			f'\nweb only: {str(store[2])}'
+			f'\nmobile only: {str(store[3])}'
+			f'\ndesktop web: {str(store[4])}'
+			f'\nweb mobile: {str(store[5])}'
+			f'\ndesktop mobile: {str(store[6])}'
+			f'\nonline all: {str(store[7])}'
+		)
+		await ctx.send(f'```py\n{msg}```')
 
 	@commands.guild_only()
 	@commands.command()
@@ -65,7 +62,7 @@ class OnlineStats(commands.Cog):
 			f'{status[m]} Mobile\n'
 			f'{status[w]} Web'
 		)
-		
+
 		embed = discord.Embed(
 				title=f'**{user.display_name}\'s devices:**',
 				description=(
