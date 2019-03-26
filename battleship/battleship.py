@@ -191,7 +191,7 @@ class BattleshipGame():
 				try: #makes sure input is valid
 					x = self.letnum[s.content[0].lower()]
 					y = int(s.content[1])
-					assert self.board[pswap[self.p]][(y*10)+x]
+					self.board[pswap[self.p]][(y*10)+x]
 				except (ValueError, KeyError, IndexError):
 					continue
 				if self.board[pswap[self.p]][(y*10)+x] == 0:
@@ -230,8 +230,7 @@ class BattleshipGame():
 							i = 1
 					else:
 						self.stop()
-	
-	
+
 	def stop(self):
 		"""Stop and cleanup the game."""
 		self.cog.games.remove(self)
