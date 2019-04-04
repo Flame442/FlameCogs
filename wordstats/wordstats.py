@@ -8,6 +8,7 @@ from copy import deepcopy
 from typing import Optional, Union, Dict
 from random import randint
 import time
+import asyncio
 
 
 class WordStats(commands.Cog):
@@ -253,14 +254,23 @@ class WordStats(commands.Cog):
 			partial[keys[-1]] = value
 
 		async with base_group() as data:
-			for member, member_data in members.items():
+			# this is a workaround for needing to switch contexts safely
+			# to prevent heartbeat issues
+			member_iterator = enumerate(list(members.items()), 1)
+			guild_iterator = enumerate(list(guilds.items()), 1)
+			for index, (member, member_data) in member_iterator:
 				keys = (self.config.MEMBER, str(member.guild.id), str(member.id))
 				value = deepcopy(member_data)
 				nested_update(data, keys, value)
-			for guild, guild_data in guilds.items():
+				if index % 10:
+					await asyncio.sleep(0)
+			for index, (guild, guild_data) in guild_iterator:
 				keys = (self.config.GUILD, str(guild.id))
 				value = deepcopy(guild_data)
 				nested_update(data, keys, value)
+				if index % 10:
+					await asyncio.sleep(0)
+
 		self.members_to_update = {}
 		self.guilds_to_update = {}
 	
