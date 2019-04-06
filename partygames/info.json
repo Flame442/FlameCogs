@@ -1,0 +1,10 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing partygames. Use `[p]help partygames` for more info.",
+    "name" : "PartyGames",
+    "short" : "Chat games focused on coming up with words from 3 letters.",
+    "requirements" : [],
+    "description" : "Chat games focused on coming up with words from 3 letters.",
+    "tags" : [],
+    "min_python_version": [3, 6, 0]
+}
