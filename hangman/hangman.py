@@ -150,6 +150,7 @@ class Hangman(commands.Cog):
 				if t not in word:
 					fails += 1
 					if fails == 6: #too many fails
+						guessed += t
 						p = self._get_message(word, guessed)
 						if doEdit:
 							await boardmsg.edit(content=str(

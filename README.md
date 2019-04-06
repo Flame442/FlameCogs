@@ -36,6 +36,7 @@ Name | Description
 [Hangman](../master/README.md#hangman) | Play hangman with the bot.
 [Monopoly](../master/README.md#monopoly) | Play monopoly with up to 7 other people in your server.
 [Onlinestats](../master/README.md#onlinestats) | Information about what devices people are using to run discord.
+[Partygames](../master/README.md#partygames) | Chat games focused on coming up with words from 3 letters.
 [Wordstats](../master/README.md#wordstats) | Track commonly used words by server and member.
 
 ## Battleship
@@ -282,6 +283,50 @@ Alias: `[p]onlinestats`
 **`[p]onlineinfo`**  
 Shows what devices a user is using.
 
+## Partygames
+
+This cog has chat games focused on coming up with words from 3 letters.
+
+### Usage
+
+**`[p]partygames <argument>`**  
+Alias `[p]pg <argument>`
+
+**`[p]partygames bombparty [hp]`**  
+Start a game of bombparty.  
+Each player will be asked to come up with a word that contains the given characters.  
+If they are unable to do so, they will lose a life.  
+Words cannot be reused.  
+The last person to have lives left wins.  
+Use the optional paramater `hp` to set the number of lives each person starts with.
+
+**`[p]partygames fast [maxpoints]`**  
+Race to type a word the fastest.  
+The first person to type a word that contains the given characters gets a point.  
+Words cannot be reused.  
+The first person to get `maxpoints` points wins.  
+Use the optional paramater `maxpoints` to set the number of points required to win.
+
+**`[p]partygames long [maxpoints]`**  
+Type the longest word.  
+The person to type the longest word that contains the given characters gets a point.  
+Words cannot be reused.  
+The first person to get `maxpoints` points wins.  
+Use the optional paramater `maxpoints` to set the number of points required to win.
+
+**`[p]partygames most [maxpoints]`**  
+Type the most words.  
+The person to type the most words that contain the given characters gets a point.  
+Words cannot be reused.  
+The first person to get `maxpoints` points wins.  
+Use the optional paramater `maxpoints` to set the number of points required to win.
+
+**`[p]partygames mix [maxpoints]`**  
+Play a mixture of all 4 games.  
+Words cannot be reused.  
+The first person to get `maxpoints` points wins.  
+Use the optional paramater `maxpoints` to set the number of points required to win.
+
 ## Wordstats
 
 This cog will track commonly used words by server and member.
@@ -325,4 +370,15 @@ Feel free to create an issue on this repository or join [my discord](https://dis
 
 # Credit
 
-Thanks to the [creators of Redbot](https://github.com/Cog-Creators/Red-DiscordBot/graphs/contributors) for creating the base these cogs run on, the helpful support staff at the [Redbot discord](https://discord.gg/red), [Aikaterna](https://github.com/aikaterna) for taking the time to QA this repo, [TrustyJAID](https://github.com/TrustyJAID) for helping with deepfry, [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman, and iComputer7#0007 for the inspiration for face.
+Thanks to:  
+The [creators of Redbot](https://github.com/Cog-Creators/Red-DiscordBot/graphs/contributors) for creating the base these cogs run on,  
+The helpful support staff at the [Redbot discord](https://discord.gg/red),  
+[Aikaterna](https://github.com/aikaterna) for taking the time to QA this repo,  
+[Hasbro](hasbro.com) for creating the games that Battleship and Monopoly are based off of,  
+[TrustyJAID](https://github.com/TrustyJAID) for helping with Deepfry,  
+[Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman,  
+iComputer7#0007 for the inspiration for Face,  
+[Microsoft Azure](https://azure.microsoft.com/en-us/) for the API that Face uses,  
+[Sparklin Labs](http://bombparty.sparklinlabs.com/) for creating the game that Partygames is based off of,  
+[/u/YoungsterGlenn](https://www.reddit.com/r/BombParty/comments/3lehxq/a_nearly_exhaustive_subset_of_the_bombparty/) for the wordlist used by Partygames,  
+And [Sinbad](https://github.com/mikeshardmind) for helping with Wordstats.

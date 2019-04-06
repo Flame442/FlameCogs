@@ -57,7 +57,7 @@ class Monopoly(commands.Cog):
 		Defaults to False.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).doMention()
 			if v:
 				await ctx.send('Players are being mentioned when their turn begins.')
@@ -80,7 +80,7 @@ class Monopoly(commands.Cog):
 		Defaults to 1500.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).startCash()
 			await ctx.send(f'Players are starting with ${str(v)}.')
 		else:
@@ -97,7 +97,7 @@ class Monopoly(commands.Cog):
 		Defaults to 200.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).incomeValue()
 			await ctx.send(f'Income Tax currently costs ${str(v)}.')
 		else:
@@ -114,7 +114,7 @@ class Monopoly(commands.Cog):
 		Defaults to 100.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).luxuryValue()
 			await ctx.send(f'Luxury Tax currently costs ${str(v)}.')
 		else:
@@ -131,7 +131,7 @@ class Monopoly(commands.Cog):
 		Defaults to False.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).doAuction()
 			if v:
 				await ctx.send('Passed properties are being auctioned.')
@@ -154,7 +154,7 @@ class Monopoly(commands.Cog):
 		Defaults to 50.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).bailValue()
 			await ctx.send(f'Bail currently costs ${str(v)}.')
 		else:
@@ -171,7 +171,7 @@ class Monopoly(commands.Cog):
 		Defaults to 3.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).maxJailRolls()
 			await ctx.send(f'The maximum number of rolls in jail is {str(v)}.')
 		else:
@@ -188,7 +188,7 @@ class Monopoly(commands.Cog):
 		Defaults to False.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).doDoubleGo()
 			if v:
 				await ctx.send('Go value is doubled when landed on.')
@@ -211,7 +211,7 @@ class Monopoly(commands.Cog):
 		Defaults to 200.
 		This value is server specific.
 		"""
-		if value == None:
+		if value is None:
 			v = await self.config.guild(ctx.guild).goValue()
 			await ctx.send(f'You currently get ${str(v)} from passing go.')
 		else:
@@ -231,7 +231,7 @@ class Monopoly(commands.Cog):
 		self.runningin.append(ctx.channel.id)
 		channel = ctx.message.channel
 		global injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn,p,num,numalive,id,name
-		if savefile != None:
+		if savefile is not None:
 			hold = []
 			for x in os.listdir(cog_data_path(self)):
 				if x[-4:] == '.txt':
@@ -255,7 +255,12 @@ class Monopoly(commands.Cog):
 						except ValueError:
 							value = eval(value)
 						cfgdict[key] = value #put in dictionary
-					injail,tile,bal,ownedby,numhouse,ismortgaged,goojf,alive,jailturn,p,num,numalive,id,tilename = cfgdict['injail'],cfgdict['tile'],cfgdict['bal'],cfgdict['ownedby'],cfgdict['numhouse'],cfgdict['ismortgaged'],cfgdict['goojf'],cfgdict['alive'],cfgdict['jailturn'],cfgdict['p'],cfgdict['num'],cfgdict['numalive'],cfgdict['id'],cfgdict['tilename']
+					injail, tile, bal = cfgdict['injail'], cfgdict['tile'], cfgdict['bal']
+					ownedby, numhouse = cfgdict['ownedby'], cfgdict['numhouse']
+					ismortgaged, goojf = cfgdict['ismortgaged'], cfgdict['goojf']
+					alive, jailturn = cfgdict['alive'], cfgdict['jailturn']
+					p, num, numalive = cfgdict['p'], cfgdict['num'], cfgdict['numalive']
+					id, tilename = cfgdict['id'], cfgdict['tilename']
 					name = [None]
 					for x in id:
 						if type(x) is int:
@@ -264,14 +269,17 @@ class Monopoly(commands.Cog):
 								name.append(m.name)
 							except:
 								self.runningin.remove(ctx.channel.id)
-								raise
-								return await ctx.send('A member in that game could not be found. Aborting.')
+								return await ctx.send(
+									'A member in that game could not be found. Aborting.'
+								)
 			elif hold != []:
 				holdlist = ''
 				for x in hold:
 					holdlist += x+'\n'
 				self.runningin.remove(ctx.channel.id)
-				return await ctx.send(f'That file does not exist.\nAvailable save files:\n```\n{holdlist}```')
+				return await ctx.send(
+					f'That file does not exist.\nAvailable save files:\n```\n{holdlist}```'
+				)
 			else:
 				self.runningin.remove(ctx.channel.id)
 				return await ctx.send('You have no save files.')
@@ -282,7 +290,11 @@ class Monopoly(commands.Cog):
 			i = 0
 			while i == 0:
 				try:
-					num = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[1] and m.channel == channel)
+					num = await self.bot.wait_for(
+						'message',
+						timeout=60,
+						check=lambda m: m.author.id == id[1] and m.channel == channel
+					)
 					num = int(num.content)
 					if num < 2 or num > 8: #2-8 player game
 						await ctx.send('Please select a number between 2 and 8.')
@@ -297,7 +309,16 @@ class Monopoly(commands.Cog):
 			for a in range(2,num+1):
 				await ctx.send(f'Player {str(a)}, say I')
 				try:
-					r = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id not in id and m.author.bot == False and m.channel == channel and m.content.lower() == 'i')
+					r = await self.bot.wait_for(
+						'message',
+						timeout=60,
+						check=lambda m: (
+							m.author.id not in id
+							and not m.author.bot
+							and m.channel == channel
+							and m.content.lower() == 'i'
+						)
+					)
 				except asyncio.TimeoutError:
 					self.runningin.remove(ctx.channel.id)
 					return await ctx.send('You took too long to respond.')
@@ -437,14 +458,26 @@ class Monopoly(commands.Cog):
 				pga = [1, 6, 11, 16, 21, 26, 31, 37]
 				pgb = [3, 8, 13, 18, 23, 27, 32, 39] #3 properties in each color
 				pgc = [3, 9, 14, 19, 24, 29, 34, 39]
-				if test == 'm':
+				if test == 'm': #if the tested property is one of the 3 currently selected, all three are owned by the same person and not unowned, return True
 					for i in range(8):
-						if bool(bool(t == pga[i] or t == pgb[i] or t == pgc[i]) and bool(ownedby[pga[i]] == ownedby[pgb[i]] == ownedby[pgc[i]]) and bool(ownedby[pga[i]] != 0)): #if the tested property is one of the 3 currently selected, all three are owned by the same person and not unowned, return True
+						if (
+							t in (pga[i], pgb[i], pgc[i])
+							and ownedby[pga[i]] == ownedby[pgb[i]] == ownedby[pgc[i]]
+							and ownedby[pga[i]] != 0
+						): 
 							return True
 					return False
-				elif test == 'h':
+				if test == 'h': #if at least one of the properties in the color group has houses, return True
 					for i in range(8):
-						if bool(bool(t == pga[i] or t == pgb[i] or t == pgc[i]) and bool(bool(numhouse[pga[i]] != 0) or bool(numhouse[pgb[i]] != 0) or bool(numhouse[pgc[i]]) != 0) and bool(ownedby[pga[i]] != 0)): #if at least one of the properties in the color group has houses, return True
+						if (
+							t in (pga[i], pgb[i], pgc[i])
+							and bool(
+								numhouse[pga[i]] != 0
+								or numhouse[pgb[i]] != 0
+								or bool(numhouse[pgc[i]]) != 0
+							)
+							and ownedby[pga[i]] != 0
+						):
 							return True
 					return False
 				return False
@@ -469,11 +502,15 @@ class Monopoly(commands.Cog):
 						break
 				await ctx.send(f'```{hold.strip()}```')
 				i = 0
-				while i != 1:
-					tradep = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel) #select the number of the player to trade
+				while i != 1: #select the number of the player to trade
+					tradep = await self.bot.wait_for(
+						'message',
+						timeout=60,
+						check=lambda m: m.author.id == id[p] and m.channel == channel
+					)
 					try:
 						tradep = int(tradep.content)
-						if 1 <= tradep <= num and tradep != p and alive[tradep] == True: #make sure the number is a player, is not the person starting the trade, and is alive
+						if 1 <= tradep <= num and tradep != p and alive[tradep]: #make sure the number is a player, is not the person starting the trade, and is alive
 							i = 1
 						else:
 							await ctx.send('Select one of the options.')
@@ -500,8 +537,20 @@ class Monopoly(commands.Cog):
 						hold += '1 get out of jail free card'
 					elif jp != 0:
 						hold += f'{str(jp)} get out of jail free cards'
-					await ctx.send(f'```{hold.strip()}```\nType the number of the properties you want to give, "m" to give money, "j" to give get out of jail free cards, and "d" when you are done.')
-					t = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+					await ctx.send(
+						f'```{hold.strip()}```\n'
+						'Type the number of the properties you want to give, '
+						'"m" to give money, "j" to give get out of jail free cards, '
+						'and "d" when you are done.'
+					)
+					t = await self.bot.wait_for(
+						'message',
+						timeout=60,
+						check=lambda m: (
+							m.author.id == id[p]
+							and m.channel == channel
+						)
+					)
 					t = t.content
 					try: #swap select/deselect property if valid number
 						if 0 < int(t) < pti and ptotrade[tradeidp[int(t)]] == 0:
@@ -515,7 +564,11 @@ class Monopoly(commands.Cog):
 					except ValueError: #not a number
 						if t == 'm': #money select screen
 							await ctx.send(f'How much money? You have ${str(bal[p])}.')
-							monp = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							monp = await self.bot.wait_for(
+								'message',
+								timeout=60,
+								check=lambda m: m.author.id == id[p] and m.channel == channel
+							)
 							try:
 								monp = int(monp.content)
 								if monp > bal[p]: #can't be greater than owned money
@@ -530,7 +583,11 @@ class Monopoly(commands.Cog):
 							continue
 						elif t == 'j':
 							await ctx.send(f'How many? You have {str(goojf[p])}.')
-							jp = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							jp = await self.bot.wait_for(
+								'message',
+								timeout=60,
+								check=lambda m: m.author.id == id[p] and m.channel == channel
+							)
 							try:
 								jp = int(jp.content)
 								if jp > goojf[p]: #can't be greater than owned goojf
@@ -561,9 +618,18 @@ class Monopoly(commands.Cog):
 					if jn == 1:
 						hold += '1 get out of jail free card'
 					elif jn != 0:
-						hold == f'{str(jn)} get out of jail free cards'
-					await ctx.send(f'```{hold.strip()}```\nType the number of the properties you want to take, "m" to take money, "j" to take get out of jail free cards, and "d" when you are done')
-					t = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+						hold += f'{str(jn)} get out of jail free cards'
+					await ctx.send(
+						f'```{hold.strip()}```\n'
+						'Type the number of the properties you want to take, '
+						'"m" to take money, "j" to take get out of jail free cards, '
+						'and "d" when you are done'
+					)
+					t = await self.bot.wait_for(
+						'message',
+						timeout=60,
+						check=lambda m: m.author.id == id[p] and m.channel == channel
+					)
 					t = t.content
 					try:
 						if 0 < int(t) < nti and ntotrade[tradeidn[int(t)]] == 0:
@@ -577,7 +643,11 @@ class Monopoly(commands.Cog):
 					except ValueError:
 						if t == 'm':
 							await ctx.send(f'How much money? They have ${str(bal[tradep])}.')
-							monn = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							monn = await self.bot.wait_for(
+								'message',
+								timeout=60,
+								check=lambda m: m.author.id == id[p] and m.channel == channel
+							)
 							try:
 								monn = int(monn.content)
 								if monn > bal[tradep]:
@@ -592,7 +662,11 @@ class Monopoly(commands.Cog):
 							continue
 						elif t == 'j':
 							await ctx.send(f'How many? They have {str(goojf[tradep])}.')
-							jn = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							jn = await self.bot.wait_for(
+								'message',
+								timeout=60,
+								check=lambda m: m.author.id == id[p] and m.channel == channel
+							)
 							try:
 								jn = int(jn.content)
 								if jn > goojf[tradep]:
@@ -628,9 +702,16 @@ class Monopoly(commands.Cog):
 					holdb += '1 get out of jail free card'
 				elif jn > 1:
 					holdb += f'{str(jn)} get out of jail free cards'
-				await ctx.send(f'Confirm with y or quit with n\n\nYou will give:\n```{holda}```\nYou will get:\n```{holdb}```')
+				await ctx.send(
+					f'Confirm with y or quit with n\n\n'
+					f'You will give:\n```{holda}```\nYou will get:\n```{holdb}```'
+				)
 				while i == 3:
-					a = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+					a = await self.bot.wait_for(
+						'message',
+						timeout=60,
+						check=lambda m: m.author.id == id[p] and m.channel == channel
+					)
 					a = a.content 
 					if str(a) == 'y':
 						i = 4 
@@ -646,9 +727,17 @@ class Monopoly(commands.Cog):
 					else:
 						mention = name[tradep]
 					a = 1
-					await ctx.send(f'{mention}, {name[p]} would like to trade with you. Here is their offer.\nAccept with y or deny with n.\n\nYou will give:\n```{holdb}```\nYou will get:\n```{holda}```')
+					await ctx.send(
+						f'{mention}, {name[p]} would like to trade with you. '
+						'Here is their offer.\nAccept with y or deny with n.\n\n'
+						f'You will give:\n```{holdb}```\nYou will get:\n```{holda}```'
+					)
 					while i == 4:
-						a = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[tradep] and m.channel == channel)
+						a = await self.bot.wait_for(
+							'message',
+							timeout=60,
+							check=lambda m: m.author.id == id[tradep] and m.channel == channel
+						)
 						a = a.content
 						if str(a) == 'y':
 							i = 5
@@ -690,9 +779,13 @@ class Monopoly(commands.Cog):
 				d1 = randint(1,6)
 				d2 = randint(1,6)
 				if d1 == d2:
-					await ctx.send(f'{name[p]} rolled a **{str(d1)}** and a **{str(d2)}**, Doubles!')
+					await ctx.send(
+						f'{name[p]} rolled a **{str(d1)}** and a **{str(d2)}**, Doubles!'
+					)
 				else:
-					await ctx.send(f'{name[p]} rolled a **{str(d1)}** and a **{str(d2)}**')
+					await ctx.send(
+						f'{name[p]} rolled a **{str(d1)}** and a **{str(d2)}**.'
+					)
 
 			async def jail(): #turn code when in jail
 				global wd, d1, d2
@@ -703,12 +796,21 @@ class Monopoly(commands.Cog):
 				maxjailrolls = await self.config.guild(ctx.guild).maxJailRolls()
 				if goojf[p] > 0:
 					if jailturn[p] == maxjailrolls + 1:
-						await ctx.send(f'Your {str(maxjailrolls)} turns in jail are up. Type b to post bail, or g to use your "Get Out of Jail Free" card.')
+						await ctx.send(
+							f'Your {str(maxjailrolls)} turns in jail are up. '
+							'Type b to post bail, or g to use your "Get Out of Jail Free" card.'
+						)
 					else:
-						await ctx.send('Type r to roll, b to post bail, or g to use your "Get Out of Jail Free" card.')
+						await ctx.send(
+							'Type r to roll, b to post bail, '
+							'or g to use your "Get Out of Jail Free" card.'
+						)
 				else:
 					if jailturn[p] == maxjailrolls + 1:
-						await ctx.send(f'Your {str(maxjailrolls)} turns in jail are up. You have to post bail.')
+						await ctx.send(
+							f'Your {str(maxjailrolls)} turns in jail are up. '
+							'You have to post bail.'
+						)
 					else:
 						await ctx.send('Type r to roll or b to post bail.')
 				jr = 0
@@ -717,7 +819,11 @@ class Monopoly(commands.Cog):
 					if jailturn[p] == maxjailrolls + 1 and goojf[p] == 0:
 						choice = 'b'
 					else:
-						choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+						choice = await self.bot.wait_for(
+							'message',
+							timeout=60,
+							check=lambda m: m.author.id == id[p] and m.channel == channel
+						)
 						choice = choice.content
 					if choice == 'r' and not jailturn[p] == maxjailrolls + 1:
 						await roll()
@@ -748,8 +854,15 @@ class Monopoly(commands.Cog):
 						if jailturn[p] == maxjailrolls + 1:
 							i = 1
 						while i == 0:
-							await ctx.send('Doing that will put you into debt. Are you sure you want to do that (y/n)?')
-							ask = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							await ctx.send(
+								'Doing that will put you into debt. '
+								'Are you sure you want to do that (y/n)?'
+							)
+							ask = await self.bot.wait_for(
+								'message',
+								timeout=60,
+								check=lambda m: m.author.id == id[p] and m.channel == channel
+							)
 							ask = ask.content
 							if ask == 'y':
 								i = 1
@@ -785,9 +898,17 @@ class Monopoly(commands.Cog):
 				doprint = True
 				while bal[p] < 0 and alive[p]:
 					if doprint:
-						await ctx.send(f'You are in debt. You have ${str(bal[p])}.\nSelect an option to get out of debt:\nt: Trade\nm: Mortgage\nh: Sell Houses\ng: Give up')
+						await ctx.send(
+							f'You are in debt. You have ${str(bal[p])}.\n'
+							'Select an option to get out of debt:\n'
+							't: Trade\nm: Mortgage\nh: Sell Houses\ng: Give up'
+						)
 					doprint = True
-					choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+					choice = await self.bot.wait_for(
+						'message',
+						timeout=60,
+						check=lambda m: m.author.id == id[p] and m.channel == channel
+					)
 					choice = choice.content
 					if choice == 't':
 						await trade()
@@ -799,7 +920,11 @@ class Monopoly(commands.Cog):
 						a = 0
 						while a == 0:
 							await ctx.send('Are you sure? (y/n)')
-							choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							choice = await self.bot.wait_for(
+								'message',
+								timeout=60,
+								check=lambda m: m.author.id == id[p] and m.channel == channel
+							)
 							choice = choice.content
 							if choice == 'y':
 								a = 1
@@ -822,7 +947,7 @@ class Monopoly(commands.Cog):
 					await ctx.send(f'You are now out of debt. You now have ${str(bal[p])}.')
 
 			async def mortgage(): #mortgage properties
-				mid = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+				mid = [0] * 29
 				mi = 1
 				for a in range(40):
 					if ownedby[a] == p and numhouse[a] <= 0:
@@ -835,24 +960,46 @@ class Monopoly(commands.Cog):
 						a = 1
 						hold = 'id isM price name\n'
 						while a < mi:
-							if monopolytest(a,'h') == False: #cannot morgage a property in a color group with houses because houses can only be built on full monopolies
+							if not monopolytest(a,'h'): #cannot morgage a property in a color group with houses because houses can only be built on full monopolies
 								if ismortgaged[mid[a]] == 1:
-									hold += '{:2}   + {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
+									hold += '{:2}   + {:5d} {}\n'.format(
+										a, mortgageprice[mid[a]], tilename[mid[a]]
+									)
 								else:
-									hold += '{:2}     {:5d} {}'.format(a,mortgageprice[mid[a]],tilename[mid[a]])+'\n'
+									hold += '{:2}     {:5d} {}\n'.format(
+										a, mortgageprice[mid[a]], tilename[mid[a]]
+									)
 							a += 1
-						await ctx.send(f'Select the number of the property you want to mortgage or type "d" to exit.\n```{hold.strip()}```')
+						await ctx.send(
+							'Select the number of the property you want to mortgage '
+							f'or type "d" to exit.\n```{hold.strip()}```'
+						)
 					doprint = True
-					t = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+					t = await self.bot.wait_for(
+						'message',
+						timeout=60,
+						check=lambda m: m.author.id == id[p] and m.channel == channel
+					)
 					t = t.content
 					try:
 						t = int(t)
 						if 0 < t < mi:
 							if ismortgaged[mid[t]] == 0:
-								await ctx.send(f'Mortgage {tilename[mid[t]]} for ${str(mortgageprice[mid[t]])}? (y/n) You have ${str(bal[p])}.')
+								await ctx.send(
+									f'Mortgage {tilename[mid[t]]} for '
+									f'${str(mortgageprice[mid[t]])}? (y/n) '
+									f'You have ${str(bal[p])}.'
+								)
 								a = 0
 								while a == 0:
-									responce = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+									responce = await self.bot.wait_for(
+										'message',
+										timeout=60,
+										check=lambda m: (
+											m.author.id == id[p]
+											and m.channel == channel
+										)
+									)
 									responce = responce.content
 									if responce == 'y':
 										bal[p] += mortgageprice[mid[t]]
@@ -865,10 +1012,22 @@ class Monopoly(commands.Cog):
 										await ctx.send('Select y or n.')
 							else:
 								if bal[p] >= tenmortgageprice[mid[t]]:
-									await ctx.send(f'Unmortgage {tilename[mid[t]]} for ${str(tenmortgageprice[mid[t]])}? (y/n) You have ${str(bal[p])}. (${str(mortgageprice[mid[t]])} + 10% interest)')
+									await ctx.send(
+										f'Unmortgage {tilename[mid[t]]} '
+										f'for ${str(tenmortgageprice[mid[t]])}? (y/n) '
+										f'You have ${str(bal[p])}. '
+										f'(${str(mortgageprice[mid[t]])} + 10% interest)'
+									)
 									a = 0
 									while a == 0:
-										responce = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+										responce = await self.bot.wait_for(
+											'message',
+											timeout=60,
+											check=lambda m: (
+												m.author.id == id[p]
+												and m.channel == channel
+											)
+										)
 										responce = responce.content
 										if responce == 'y':
 											ismortgaged[mid[t]] = 0
@@ -880,7 +1039,11 @@ class Monopoly(commands.Cog):
 										else:
 											await ctx.send('Select y or n.')
 								else:
-									await ctx.send(f'You cannot afford the ${str(tenmortgageprice[mid[t]])} it would take to unmortgage that. You only have ${str(bal[p])}.')
+									await ctx.send(
+										f'You cannot afford the ${str(tenmortgageprice[mid[t]])} '
+										'it would take to unmortgage that. '
+										f'You only have ${str(bal[p])}.'
+									)
 						else:
 							await ctx.send('Select one of the options.')
 					except ValueError:
@@ -910,12 +1073,21 @@ class Monopoly(commands.Cog):
 					a = 1
 					hold = 'id numh price name\n'
 					while a < hi:
-						hold += '{:2} {:4} {:5d} {}'.format(a,numhouse[hid[a]],houseprice[hid[a]],color[hid[a]])+'\n'
+						hold += '{:2} {:4} {:5d} {}\n'.format(
+							a, numhouse[hid[a]], houseprice[hid[a]], color[hid[a]]
+						)
 						a += 1
-					await ctx.send(f'Select the number of the color group or type "d" to exit.\n```{hold.strip()}\nYou have ${str(bal[p])}```')
+					await ctx.send(
+						'Select the number of the color group or type "d" to exit.\n'
+						f'```{hold.strip()}\nYou have ${str(bal[p])}```'
+					)
 					i = 0
 					while i == 0:
-						t = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+						t = await self.bot.wait_for(
+							'message',
+							timeout=60,
+							check=lambda m: m.author.id == id[p] and m.channel == channel
+						)
 						t = t.content               # t            : Color group number identifier
 						try:                        # tt           : Number of houses to change to
 							t = int(t)              # ttt          : y/n to confirm
@@ -930,7 +1102,11 @@ class Monopoly(commands.Cog):
 								continue
 					while i == 1:
 						await ctx.send('Enter a new house amount or "c" to cancel.')
-						tt = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+						tt = await self.bot.wait_for(
+							'message',
+							timeout=60,
+							check=lambda m: m.author.id == id[p] and m.channel == channel
+						)
 						tt = tt.content
 						try:
 							tt = int(tt)
@@ -950,9 +1126,16 @@ class Monopoly(commands.Cog):
 						if tt < numhouse[hid[t]]: #losing houses
 							for x in hdic[hid[t]]:
 								amount += (numhouse[hid[t]]-tt)*(houseprice[hid[t]]//2)
-							await ctx.send(f'Are you sure you want to sell {str(numhouse[hid[t]]-tt)} houses on {color[hid[t]]}? You will get ${str(amount)}.')
+							await ctx.send(
+								f'Are you sure you want to sell {str(numhouse[hid[t]]-tt)} '
+								f'houses on {color[hid[t]]}? You will get ${str(amount)}.'
+							)
 							while i == 2:
-								ttt = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+								ttt = await self.bot.wait_for(
+									'message',
+									timeout=60,
+									check=lambda m: m.author.id == id[p] and m.channel == channel
+								)
 								ttt = ttt.content
 								if ttt == 'y':
 									for x in hdic[hid[t]]:
@@ -968,12 +1151,24 @@ class Monopoly(commands.Cog):
 							for x in hdic[hid[t]]:
 								amount += (tt-numhouse[hid[t]])*(houseprice[hid[t]])
 							if bal[p] < amount:
-								await ctx.send(f'You do not have enough money. You need ${str(amount-bal[p])} more.')
+								await ctx.send(
+									'You do not have enough money. '
+									f'You need ${str(amount-bal[p])} more.'
+								)
 								i = 3
 							else:
-								await ctx.send(f'Are you sure you want to buy {str(tt-numhouse[hid[t]])} houses on {color[hid[t]]}? You will lose ${str(amount)}.')
+								await ctx.send(
+									f'Are you sure you want to buy {str(tt-numhouse[hid[t]])} '
+									f'houses on {color[hid[t]]}? You will lose ${str(amount)}.'
+								)
 								while i == 2:
-									ttt = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+									ttt = await self.bot.wait_for('message',
+										timeout=60,
+										check=lambda m: (
+											m.author.id == id[p]
+											and m.channel == channel
+										)
+									)
 									ttt = ttt.content
 									if ttt == 'y':
 										for x in hdic[hid[t]]:
@@ -1016,7 +1211,9 @@ class Monopoly(commands.Cog):
 					if goojf[p] == 1:
 						await ctx.send('You now have 1 get out of jail free card.')
 					else:
-						await ctx.send(f'You now have {str(goojf[p])} get out of jail free cards.')
+						await ctx.send(
+							f'You now have {str(goojf[p])} get out of jail free cards.'
+						)
 				elif ccorder[ccn] == 5:
 					tile[p] = 10
 					injail[p] = True
@@ -1094,16 +1291,26 @@ class Monopoly(commands.Cog):
 					await bprint()
 					await ctx.send(f'You are now at {tilename[tile[p]]}.')
 					if ownedby[tile[p]] == 0 and bal[p] >= pricebuy[tile[p]]:
-						await ctx.send(f'Would you like to buy {tilename[tile[p]]} for ${str(pricebuy[tile[p]])}? (y/n) You have ${str(bal[p])}.')
+						await ctx.send(
+							f'Would you like to buy {tilename[tile[p]]} '
+							f'for ${str(pricebuy[tile[p]])}? (y/n) You have ${str(bal[p])}.'
+						)
 						a = 0
 						while a == 0:
-							response = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							response = await self.bot.wait_for(
+								'message',
+								timeout=60,
+								check=lambda m: m.author.id == id[p] and m.channel == channel
+							)
 							response = response.content
 							if response == 'y': #buy property
 								bal[p] -= pricebuy[tile[p]]
 								ownedby[tile[p]] = p
 								await bprint()
-								await ctx.send(f'{name[p]} now owns {tilename[tile[p]]} and has ${str(bal[p])}.')
+								await ctx.send(
+									f'{name[p]} now owns {tilename[tile[p]]} '
+									f'and has ${str(bal[p])}.'
+								)
 								a = 1
 							elif response == 'n': #pass on property
 								v = await self.config.guild(ctx.guild).doAuction()
@@ -1114,7 +1321,10 @@ class Monopoly(commands.Cog):
 								await ctx.send('Please select y or n.')
 								continue
 					elif ownedby[tile[p]] == 0 and bal[p] < pricebuy[tile[p]]:
-						await ctx.send(f'You cannot afford {tilename[tile[p]]}, you only have ${str(bal[p])} of ${str(pricebuy[tile[p]])}.')
+						await ctx.send(
+							f'You cannot afford {tilename[tile[p]]}, '
+							f'you only have ${str(bal[p])} of ${str(pricebuy[tile[p]])}.'
+						)
 						v = await self.config.guild(ctx.guild).doAuction()
 						if v:
 							await auction()
@@ -1126,7 +1336,11 @@ class Monopoly(commands.Cog):
 						await roll()
 						bal[p] -= ((d1 + d2)*10)
 						bal[ownedby[tile[p]]] += ((d1 + d2)*10)
-						await ctx.send(f'You paid ${str((d1 + d2)*10)} of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. {name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.')
+						await ctx.send(
+							f'You paid ${str((d1 + d2)*10)} of rent to {name[ownedby[tile[p]]]}. '
+							f'You now have ${str(bal[p])}. '
+							f'{name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.'
+						)
 				elif chanceorder[chancen] == 4:
 					if tile[p] <= 5:
 						tile[p] = 5
@@ -1144,16 +1358,24 @@ class Monopoly(commands.Cog):
 					await bprint()
 					await ctx.send(f'You are now at {tilename[tile[p]]}.')
 					if ownedby[tile[p]] == 0 and bal[p] >= pricebuy[tile[p]]:
-						await ctx.send(f'Would you like to buy {tilename[5]} for ${str(pricebuy[5])}? (y/n) You have ${str(bal[p])}.')
+						await ctx.send(
+							f'Would you like to buy {tilename[5]} for ${str(pricebuy[5])}? '
+							f'(y/n) You have ${str(bal[p])}.')
 						a = 0
 						while a == 0:
-							response = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							response = await self.bot.wait_for(
+								'message',
+								timeout=60,
+								check=lambda m: m.author.id == id[p] and m.channel == channel
+							)
 							response = response.content
 							if response == 'y': #buy property
 								bal[p] -= pricebuy[tile[p]]
 								ownedby[tile[p]] = p
 								await bprint()
-								await ctx.send(f'{name[p]} now owns {tilename[5]} and has ${str(bal[p])}.')
+								await ctx.send(
+									f'{name[p]} now owns {tilename[5]} and has ${str(bal[p])}.'
+								)
 								a = 1
 							elif response == 'n': #pass on property
 								a = 1
@@ -1164,7 +1386,10 @@ class Monopoly(commands.Cog):
 								await ctx.send('Please select y or n.')
 								continue
 					elif ownedby[tile[p]] == 0 and bal[p] < pricebuy[tile[p]]:
-						await ctx.send(f'You cannot afford {tilename[tile[p]]}, you only have ${str(bal[p])} of ${str(pricebuy[tile[p]])}.')
+						await ctx.send(
+							f'You cannot afford {tilename[tile[p]]}, '
+							f'you only have ${str(bal[p])} of ${str(pricebuy[tile[p]])}.'
+						)
 						v = await self.config.guild(ctx.guild).doAuction()
 						if v:
 							await auction()
@@ -1184,7 +1409,11 @@ class Monopoly(commands.Cog):
 							rr += 1
 						bal[p] -= rrprice[rr]*2
 						bal[ownedby[tile[p]]] += rrprice[rr]*2
-						await ctx.send(f'You paid ${str(rrprice[rr]*2)} of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. {name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.')
+						await ctx.send(
+							f'You paid ${str(rrprice[rr]*2)} of rent to '
+							f'{name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. '
+							f'{name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.'
+						)
 				elif chanceorder[chancen] == 5:
 					bal[p] += 50
 					await ctx.send(f'You now have ${str(bal[p])}.')
@@ -1193,7 +1422,9 @@ class Monopoly(commands.Cog):
 					if goojf[p] == 1:
 						await ctx.send('You now have 1 get out of jail free card.')
 					else:
-						await ctx.send(f'You now have {str(goojf[p])} get out of jail free cards.')
+						await ctx.send(
+							f'You now have {str(goojf[p])} get out of jail free cards.'
+						)
 				elif chanceorder[chancen] == 7:
 					tile[p] -= 3
 					await landnd()
@@ -1216,16 +1447,25 @@ class Monopoly(commands.Cog):
 					tile[p] = 5
 					await bprint()
 					if ownedby[5] == 0 and bal[p] >= pricebuy[5]:
-						await ctx.send(f'Would you like to buy {tilename[5]} for ${str(pricebuy[5])}? (y/n) You have ${str(bal[p])}.')
+						await ctx.send(
+							f'Would you like to buy {tilename[5]} for ${str(pricebuy[5])}? '
+							f'(y/n) You have ${str(bal[p])}.'
+						)
 						a = 0
 						while a == 0:
-							response = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+							response = await self.bot.wait_for(
+								'message',
+								timeout=60,
+								check=lambda m: m.author.id == id[p] and m.channel == channel
+							)
 							response = response.content
 							if response == 'y': #buy property
 								bal[p] -= pricebuy[5]
 								ownedby[5] = p
 								await bprint()
-								await ctx.send(f'{name[p]} now owns {tilename[5]} and has ${str(bal[p])}.')
+								await ctx.send(
+									f'{name[p]} now owns {tilename[5]} and has ${str(bal[p])}.'
+								)
 								a = 1
 							elif response == 'n': #pass on property
 								a = 1
@@ -1236,7 +1476,10 @@ class Monopoly(commands.Cog):
 								await ctx.send('Please select y or n.')
 								continue
 					elif ownedby[5] == 0 and bal[p] < pricebuy[5]:
-						await ctx.send(f'You cannot afford {tilename[5]}, you only have ${str(bal[p])} of ${str(pricebuy[5])}.')
+						await ctx.send(
+							f'You cannot afford {tilename[5]}, '
+							f'you only have ${str(bal[p])} of ${str(pricebuy[5])}.'
+						)
 						v = await self.config.guild(ctx.guild).doAuction()
 						if v:
 							await auction()
@@ -1256,7 +1499,11 @@ class Monopoly(commands.Cog):
 							rr += 1
 						bal[p] -= rrprice[rr]
 						bal[ownedby[5]] += rrprice[rr]
-						await ctx.send(f'You paid ${str(rrprice[rr])} of rent to {name[ownedby[5]]}. You now have ${str(bal[p])}. {name[ownedby[5]]} now has ${str(bal[ownedby[5]])}.')
+						await ctx.send(
+							f'You paid ${str(rrprice[rr])} of rent to {name[ownedby[5]]}. '
+							f'You now have ${str(bal[p])}. '
+							f'{name[ownedby[5]]} now has ${str(bal[ownedby[5]])}.'
+						)
 				elif chanceorder[chancen] == 12:
 					tile[p] = 39
 					await cchanceland()
@@ -1280,16 +1527,26 @@ class Monopoly(commands.Cog):
 			async def cchanceland(): #reduced land() code for cchance moves
 				await bprint()
 				if ownedby[tile[p]] == 0 and bal[p] >= pricebuy[tile[p]]:
-					await ctx.send(f'Would you like to buy {tilename[tile[p]]} for ${str(pricebuy[tile[p]])}? (y/n) You have ${str(bal[p])}.')
+					await ctx.send(
+						f'Would you like to buy {tilename[tile[p]]} '
+						f'for ${str(pricebuy[tile[p]])}? (y/n) You have ${str(bal[p])}.'
+					)
 					a = 0
 					while a == 0:
-						response = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+						response = await self.bot.wait_for(
+							'message',
+							timeout=60,
+							check=lambda m: m.author.id == id[p] and m.channel == channel
+						)
 						response = response.content
 						if response == 'y': #buy property
 							bal[p] -= pricebuy[tile[p]]
 							ownedby[tile[p]] = p
 							await bprint()
-							await ctx.send(f'{name[p]} now owns {tilename[tile[p]]} and has ${str(bal[p])}.')
+							await ctx.send(
+								f'{name[p]} now owns {tilename[tile[p]]} '
+								f'and has ${str(bal[p])}.'
+							)
 							a = 1
 						elif response == 'n': #pass on property
 							a = 1
@@ -1300,7 +1557,10 @@ class Monopoly(commands.Cog):
 							await ctx.send('Please select y or n.')
 							continue
 				elif ownedby[tile[p]] == 0 and bal[p] < pricebuy[tile[p]]:
-					await ctx.send(f'You cannot afford {tilename[tile[p]]}, you only have ${str(bal[p])} of ${str(pricebuy[tile[p]])}.')
+					await ctx.send(
+						f'You cannot afford {tilename[tile[p]]}, '
+						f'you only have ${str(bal[p])} of ${str(pricebuy[tile[p]])}.'
+					)
 					v = await self.config.guild(ctx.guild).doAuction()
 					if v:
 						await auction()
@@ -1312,11 +1572,19 @@ class Monopoly(commands.Cog):
 					if monopolytest(tile[p], 'm') and numhouse[tile[p]] == 0:
 						bal[p] -= 2*(rentprice[tile[p]*6+numhouse[tile[p]]])
 						bal[ownedby[tile[p]]] += 2*(rentprice[tile[p]*6+numhouse[tile[p]]])
-						await ctx.send(f'You paid ${str(2*(rentprice[tile[p]*6+numhouse[tile[p]]]))} of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. {name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.')
+						await ctx.send(
+							f'You paid ${str(2*(rentprice[tile[p]*6+numhouse[tile[p]]]))} '
+							f'of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. '
+							f'{name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.'
+						)
 					else:
 						bal[p] -= rentprice[tile[p]*6+numhouse[tile[p]]]
 						bal[ownedby[tile[p]]] += rentprice[tile[p]*6+numhouse[tile[p]]]
-						await ctx.send(f'You paid ${str(rentprice[tile[p]*6+numhouse[tile[p]]])} of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. {name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.')
+						await ctx.send(
+							f'You paid ${str(rentprice[tile[p]*6+numhouse[tile[p]]])} '
+							f'of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. '
+							f'{name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.'
+						)
 
 			async def housepay(h1, h2): #pay for houses and hotels in cchance cards
 				pay = 0
@@ -1341,23 +1609,35 @@ class Monopoly(commands.Cog):
 						bal[p] += goValue * 2
 					else:
 						bal[p] += goValue
-					await ctx.send(f'You {"landed on" if tile[p] == 0 else "passed"} go! You now have ${str(bal[p])}.')
+					await ctx.send(
+						f'You {"landed on" if tile[p] == 0 else "passed"} go! '
+						f'You now have ${str(bal[p])}.'
+					)
 				await landnd()
 
 			async def landnd(): #affecting properties
 				await bprint()
 				await ctx.send(f'{name[p]} landed at {tilename[tile[p]]}.')
 				if ownedby[tile[p]] == 0 and bal[p] >= pricebuy[tile[p]]: #unowned and can afford
-					await ctx.send(f'Would you like to buy {tilename[tile[p]]} for ${str(pricebuy[tile[p]])}? (y/n) You have ${str(bal[p])}.')
+					await ctx.send(
+						f'Would you like to buy {tilename[tile[p]]} '
+						f'for ${str(pricebuy[tile[p]])}? (y/n) You have ${str(bal[p])}.'
+					)
 					a = 0
 					while a == 0:
-						response = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+						response = await self.bot.wait_for(
+							'message',
+							timeout=60,
+							check=lambda m: m.author.id == id[p] and m.channel == channel
+						)
 						response = response.content
 						if response == 'y': #buy property
 							bal[p] -= pricebuy[tile[p]]
 							ownedby[tile[p]] = p
 							await bprint()
-							await ctx.send(f'{name[p]} now owns {tilename[tile[p]]} and has ${str(bal[p])}.')
+							await ctx.send(
+								f'{name[p]} now owns {tilename[tile[p]]} and has ${str(bal[p])}.'
+							)
 							a = 1
 						elif response == 'n': #pass on property
 							a = 2
@@ -1368,7 +1648,10 @@ class Monopoly(commands.Cog):
 							await ctx.send('Please select y or n.')
 							continue
 				elif ownedby[tile[p]] == 0 and bal[p] < pricebuy[tile[p]]: #unowned can't afford
-					await ctx.send(f'You cannot afford {tilename[tile[p]]}, you only have ${str(bal[p])} of ${str(pricebuy[tile[p]])}.')
+					await ctx.send(
+						f'You cannot afford {tilename[tile[p]]}, '
+						f'you only have ${str(bal[p])} of ${str(pricebuy[tile[p]])}.'
+					)
 					v = await self.config.guild(ctx.guild).doAuction()
 					if v:
 						await auction()
@@ -1381,11 +1664,21 @@ class Monopoly(commands.Cog):
 						if ownedby[12] == ownedby[28]: #own both
 							bal[p] -= ((d1 + d2)*10)
 							bal[ownedby[tile[p]]] += ((d1 + d2)*10)
-							await ctx.send(f'You paid ${str((d1 + d2)*10)} of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. {name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.')
+							await ctx.send(
+								f'You paid ${str((d1 + d2)*10)} of rent to '
+								f'{name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. '
+								f'{name[ownedby[tile[p]]]} now has '
+								f'${str(bal[ownedby[tile[p]]])}.'
+							)
 						else: #own only one
 							bal[p] -= ((d1 + d2)*4)
 							bal[ownedby[tile[p]]] += ((d1 + d2)*4)
-							await ctx.send(f'You paid ${str((d1 + d2)*4)} of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. {name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.') 
+							await ctx.send(
+								f'You paid ${str((d1 + d2)*4)} of rent to '
+								f'{name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. '
+								f'{name[ownedby[tile[p]]]} now has '
+								f'${str(bal[ownedby[tile[p]]])}.'
+							) 
 					elif tile[p] in (5, 15, 25, 35):
 						rr = 0
 						if ownedby[5] == ownedby[tile[p]]:
@@ -1398,16 +1691,31 @@ class Monopoly(commands.Cog):
 							rr += 1
 						bal[p] -= rrprice[rr]
 						bal[ownedby[tile[p]]] += rrprice[rr]
-						await ctx.send(f'You paid ${str(rrprice[rr])} of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. {name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.')
+						await ctx.send(
+							f'You paid ${str(rrprice[rr])} of rent to '
+							f'{name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. '
+							f'{name[ownedby[tile[p]]]} now has '
+							f'${str(bal[ownedby[tile[p]]])}.'
+						)
 				elif ownedby[tile[p]] > 0: #pay rent
 					if monopolytest(tile[p], 'm') and numhouse[tile[p]] == 0:
 						bal[p] -= 2*(rentprice[tile[p]*6+numhouse[tile[p]]])
 						bal[ownedby[tile[p]]] += 2*(rentprice[tile[p]*6+numhouse[tile[p]]])
-						await ctx.send(f'You paid ${str(2*(rentprice[tile[p]*6+numhouse[tile[p]]]))} of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. {name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.')
+						await ctx.send(
+							f'You paid ${str(2*(rentprice[tile[p]*6+numhouse[tile[p]]]))} '
+							f'of rent to {name[ownedby[tile[p]]]}. '
+							f'You now have ${str(bal[p])}. '
+							f'{name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.'
+						)
 					else:
 						bal[p] -= rentprice[tile[p]*6+numhouse[tile[p]]]
 						bal[ownedby[tile[p]]] += rentprice[tile[p]*6+numhouse[tile[p]]]
-						await ctx.send(f'You paid ${str(rentprice[tile[p]*6+numhouse[tile[p]]])} of rent to {name[ownedby[tile[p]]]}. You now have ${str(bal[p])}. {name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.')
+						await ctx.send(
+							f'You paid ${str(rentprice[tile[p]*6+numhouse[tile[p]]])} '
+							f'of rent to {name[ownedby[tile[p]]]}. '
+							f'You now have ${str(bal[p])}. '
+							f'{name[ownedby[tile[p]]]} now has ${str(bal[ownedby[tile[p]]])}.'
+						)
 				elif ownedby[tile[p]] == -1: #other spaces
 					if tile[p] in (0, 20):
 						pass
@@ -1427,29 +1735,42 @@ class Monopoly(commands.Cog):
 					elif tile[p] == 4:
 						v = await self.config.guild(ctx.guild).incomeValue()
 						bal[p] -= v
-						await ctx.send(f'You paid ${str(v)} of Income Tax. You now have ${str(bal[p])}.')
+						await ctx.send(
+							f'You paid ${str(v)} of Income Tax. You now have ${str(bal[p])}.'
+						)
 					elif tile[p] == 38:
 						v = await self.config.guild(ctx.guild).luxuryValue()
 						bal[p] -= v
-						await ctx.send(f'You paid ${str(v)} of Luxury Tax. You now have ${str(bal[p])}.')
+						await ctx.send(
+							f'You paid ${str(v)} of Luxury Tax. You now have ${str(bal[p])}.'
+						)
 				if bal[p] < 0:
 					await debt() 
 
 			async def auction(): #auction a property
-				await ctx.send(f'{tilename[tile[p]]} is now up for auction!\nAnyone can bid by typing the value of their bid. After 15 seconds with no bids, the highest bid will win.')
+				await ctx.send(
+					f'{tilename[tile[p]]} is now up for auction!\n'
+					f'Anyone can bid by typing the value of their bid. '
+					f'After 15 seconds with no bids, the highest bid will win.'
+				)
 				highest = 0
 				highp = None
 				def fcheck(m):
 					try:
-						if m.author.id in id and bal[id.index(m.author.id)] >= int(m.content) and alive[id.index(m.author.id)] and highest < int(m.content):
-							return True
-						else:
-							return False
+						return bool(
+							m.author.id in id
+							and bal[id.index(m.author.id)] >= int(m.content)
+							and alive[id.index(m.author.id)]
+							and highest < int(m.content)
+						)
 					except:
 						return False
 				while True:
 					try:
-						msg = await self.bot.wait_for('message', check=lambda m : fcheck(m), timeout=15)
+						msg = await self.bot.wait_for(
+							'message',
+							check=lambda m : fcheck(m), timeout=15
+						)
 					except asyncio.TimeoutError:
 						break
 					highest = int(msg.content)
@@ -1462,7 +1783,9 @@ class Monopoly(commands.Cog):
 					bal[highp] -= highest
 					ownedby[tile[p]] = p
 					await bprint()
-					await ctx.send(f'{name[highp]} now owns {tilename[tile[p]]} and has ${str(bal[highp])}.')
+					await ctx.send(
+						f'{name[highp]} now owns {tilename[tile[p]]} and has ${str(bal[highp])}.'
+					)
 					
 			async def turn(): #choices on turn
 				global p
@@ -1487,8 +1810,19 @@ class Monopoly(commands.Cog):
 					while wd == 1 and alive[p]:
 						r = 0
 						while r == 0:
-							await ctx.send(f'Type r to roll, t to trade, h to manage houses{", m to mortgage, or s to save." if nod == 0 else ", or m to mortgage."}')
-							choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel and m.content in ['r', '?', 't', 'm', 'h', 's'])
+							await ctx.send(
+								'Type r to roll, t to trade, h to manage houses'
+								f'{", m to mortgage, or s to save." if nod == 0 else ", or m to mortgage."}'
+							)
+							choice = await self.bot.wait_for(
+								'message',
+								timeout=60,
+								check=lambda m: (
+									m.author.id == id[p]
+									and m.channel == channel
+									and m.content in ['r', '?', 't', 'm', 'h', 's']
+								)
+							)
 							choice = choice.content
 							if choice == 'r': #normal turn, roll dice
 								global d1,d2
@@ -1498,7 +1832,9 @@ class Monopoly(commands.Cog):
 								else:
 									wd = 0
 								if nod == 3:
-									await ctx.send('You rolled doubles 3 times in a row, you are now in jail!')
+									await ctx.send(
+										'You rolled doubles 3 times in a row, you are now in jail!'
+									)
 									tile[p] = 10
 									injail[p] = True
 									wd = 0
@@ -1515,19 +1851,31 @@ class Monopoly(commands.Cog):
 								await house()
 							elif choice == 's' and nod == 0: #print game save message
 								await ctx.send('Save file name?')
-								savename = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+								savename = await self.bot.wait_for(
+									'message',
+									timeout=60,
+									check=lambda m: m.author.id == id[p] and m.channel == channel
+								)
 								savename = savename.content.replace(' ', '')
 								with open(str(cog_data_path(self))+'/'+savename+'.txt','w') as f:
 									f.write(autosave)
 								self.runningin.remove(ctx.channel.id)
 								global numalive
 								numalive = 0
-								return await ctx.send(f'Game saved to savefile `{savename}`. Exiting.')
+								return await ctx.send(
+									f'Game saved to savefile `{savename}`. Exiting.'
+								)
 									
 				r = 1
 				while r == 1 and alive[p]:
-					await ctx.send('Type t to trade, m to mortgage, h to manage houses, or d when done.')
-					choice = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author.id == id[p] and m.channel == channel)
+					await ctx.send(
+						'Type t to trade, m to mortgage, h to manage houses, or d when done.'
+					)
+					choice = await self.bot.wait_for(
+						'message',
+						timeout=60,
+						check=lambda m: m.author.id == id[p] and m.channel == channel
+					)
 					choice = choice.content
 					if choice == 't':
 						await trade()
@@ -1544,12 +1892,30 @@ class Monopoly(commands.Cog):
 				a = 0
 				hold = 'id price owner ism mprice numh hprice name\n'
 				while a < 20:
-					hold += '{:2d} {:5d} {:5d} {:3d} {:6d} {:4d} {:6d} {}'.format(a,pricebuy[a],ownedby[a],ismortgaged[a],mortgageprice[a],numhouse[a],houseprice[a],tilename[a])+'\n'
+					hold += '{:2d} {:5d} {:5d} {:3d} {:6d} {:4d} {:6d} {}\n'.format(
+						a,
+						pricebuy[a],
+						ownedby[a],
+						ismortgaged[a],
+						mortgageprice[a],
+						numhouse[a],
+						houseprice[a],
+						tilename[a]
+					)
 					a += 1
 				await ctx.send(f'```{hold.strip()}```')
 				hold = 'id price owner ism mprice numh hprice name\n'
 				while a < 40:
-					hold += '{:2d} {:5d} {:5d} {:3d} {:6d} {:4d} {:6d} {}'.format(a,pricebuy[a],ownedby[a],ismortgaged[a],mortgageprice[a],numhouse[a],houseprice[a],tilename[a])+'\n'
+					hold += '{:2d} {:5d} {:5d} {:3d} {:6d} {:4d} {:6d} {}\n'.format(
+						a,
+						pricebuy[a],
+						ownedby[a],
+						ismortgaged[a],
+						mortgageprice[a],
+						numhouse[a],
+						houseprice[a],
+						tilename[a]
+					)
 					a += 1
 				hold += str(bal[1:])
 				await ctx.send(f'```{hold.strip()}```')
@@ -1559,7 +1925,22 @@ class Monopoly(commands.Cog):
 				if p > num:
 					p = 1
 				if alive[p]:
-					autosave = (f'\ntilename = {str(tilename)}\ninjail = {str(injail)}\ntile = {str(tile)}\nbal = {str(bal)}\np = {str(p)}\nownedby = {str(ownedby)}\nnumhouse = {str(numhouse)}\nismortgaged = {str(ismortgaged)}\ngoojf = {str(goojf)}\nalive = {str(alive)}\njailturn = {str(jailturn)}\nnum = {str(num)}\nnumalive = {str(numalive)}\nid = {str(id)}')
+					autosave = (
+						f'\ntilename = {str(tilename)}\n'
+						f'injail = {str(injail)}\n'
+						f'tile = {str(tile)}\n'
+						f'bal = {str(bal)}\n'
+						f'p = {str(p)}\n'
+						f'ownedby = {str(ownedby)}\n'
+						f'numhouse = {str(numhouse)}\n'
+						f'ismortgaged = {str(ismortgaged)}\n'
+						f'goojf = {str(goojf)}\n'
+						f'alive = {str(alive)}\n'
+						f'jailturn = {str(jailturn)}\n'
+						f'num = {str(num)}\n'
+						f'numalive = {str(numalive)}\n'
+						f'id = {str(id)}'
+					)
 					await turn()
 				p += 1
 			if numalive == 1:
@@ -1572,11 +1953,18 @@ class Monopoly(commands.Cog):
 			random = 'autosave' + str(randint(1000,9999))
 			with open(str(cog_data_path(self))+'/'+random+'.txt','w') as f:
 				f.write(autosave)
-			await ctx.send(f'You took too long, shutting down.\nYour game was saved to `{random}`.')
+			await ctx.send(
+				f'You took too long, shutting down.\nYour game was saved to `{random}`.'
+			)
 		except:
 			self.runningin.remove(ctx.channel.id)
 			random = 'autosave' + str(randint(1000,9999))
 			with open(str(cog_data_path(self))+'/'+random+'.txt','w') as f:
 				f.write(autosave)
-			await ctx.send(f'A fatal error has occurred, shutting down.\nYour game was saved to `{random}`.')
+			await ctx.send(
+				'A fatal error has occurred, shutting down.\n'
+				'Please have the bot owner copy the error from console or from `[p]traceback` '
+				'and post it in the support channel of <https://discord.gg/bYqCjvu>.\n'
+				f'Your game was saved to `{random}`.'
+			)
 			raise
