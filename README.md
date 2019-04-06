@@ -380,4 +380,5 @@ The helpful support staff at the [Redbot discord](https://discord.gg/red),
 iComputer7#0007 for the inspiration for Face,  
 [Microsoft Azure](https://azure.microsoft.com/en-us/) for the API that Face uses,  
 [Sparklin Labs](http://bombparty.sparklinlabs.com/) for creating the game that Partygames is based off of,  
+[/u/YoungsterGlenn](https://www.reddit.com/r/BombParty/comments/3lehxq/a_nearly_exhaustive_subset_of_the_bombparty/) for the wordlist used by Partygames,  
 And [Sinbad](https://github.com/mikeshardmind) for helping with Wordstats.
