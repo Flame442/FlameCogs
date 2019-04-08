@@ -19,6 +19,7 @@ class GameRoles(commands.Cog):
 		"""Group command for game roles."""
 		pass
 	
+	@checks.guildowner()
 	@gameroles.command()
 	async def addrole(self, ctx, role: discord.Role):
 		"""
@@ -41,6 +42,7 @@ class GameRoles(commands.Cog):
 			f'Use `{ctx.prefix}gameroles addactivity` to add activities.'
 		)
 	
+	@checks.guildowner()
 	@gameroles.command()
 	async def delrole(self, ctx, role: discord.Role):
 		"""
@@ -56,6 +58,7 @@ class GameRoles(commands.Cog):
 		await self.config.guild(ctx.guild).roledict.set(roledict)
 		await ctx.send(f'`{role.name}` is no longer managed by gameroles!')
 	
+	@checks.guildowner()
 	@gameroles.command()
 	async def addactivity(self, ctx, role: discord.Role, activity: str):
 		"""
@@ -73,7 +76,8 @@ class GameRoles(commands.Cog):
 		roledict[rid].append(activity)
 		await self.config.guild(ctx.guild).roledict.set(roledict)
 		await ctx.send(f'`{role.name}` is now triggered by `{activity}`!')
-
+	
+	@checks.guildowner()
 	@gameroles.command()
 	async def delactivity(self, ctx, role: discord.Role, activity: str):
 		"""
@@ -92,6 +96,7 @@ class GameRoles(commands.Cog):
 		await self.config.guild(ctx.guild).roledict.set(roledict)
 		await ctx.send(f'`{role.name}` is no longer triggered by `{activity}`!')
 	
+	@checks.guildowner()
 	@gameroles.command()
 	async def listactivities(self, ctx, role: discord.Role):
 		"""
@@ -110,7 +115,8 @@ class GameRoles(commands.Cog):
 			f'Activities that currently trigger `{role.name}`:\n'
 			f'```{activities}```'
 		)
-
+	
+	@checks.guildowner()
 	@gameroles.command()
 	async def currentactivity(self, ctx):
 		"""Get your current activity."""
