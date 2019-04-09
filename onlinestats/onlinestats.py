@@ -56,24 +56,22 @@ class OnlineStats(commands.Cog):
 			'dnd': '\N{CLOSED BOOK}',
 			'offline': '\N{NOTEBOOK}'
 		}
-		msg = (
-			f'{user.display_name}\'s devices:\n'
-			f'{status[d]} Desktop\n'
-			f'{status[m]} Mobile\n'
-			f'{status[w]} Web'
-		)
-
 		embed = discord.Embed(
-				title=f'**{user.display_name}\'s devices:**',
-				description=(
-					f'{status[d]} Desktop\n'
-					f'{status[m]} Mobile\n'
-					f'{status[w]} Web'
-				),
-				color=await ctx.embed_color()
-				)
+			title=f'**{user.display_name}\'s devices:**',
+			description=(
+				f'{status[d]} Desktop\n'
+				f'{status[m]} Mobile\n'
+				f'{status[w]} Web'
+			),
+			color=await ctx.embed_color()
+		)
 		embed.set_thumbnail(url=user.avatar_url)
 		try:
 			await ctx.send(embed=embed)
 		except discord.errors.Forbidden:
-			await ctx.send(msg)
+			await ctx.send(
+				f'{user.display_name}\'s devices:\n'
+				f'{status[d]} Desktop\n'
+				f'{status[m]} Mobile\n'
+				f'{status[w]} Web'
+			)
