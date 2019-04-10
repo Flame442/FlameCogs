@@ -52,7 +52,7 @@ Click "Create new" under "Pricing group" and create a group,then select that gro
 
 Click "Create" at the bottom.
 
-# Step 7
+## Step 7
 
 On the left side of the page, click "Resource Groups" then select the group you just made.  
 Select the resource you just made.  
@@ -61,8 +61,59 @@ Select the resource you just made.
 Select "Overview" from the list on the left.  
 ![Step7b](https://i.imgur.com/mvlOuVU.png)
 
-# Step 8
+## Step 8
 
 Copy the link under "Endpoint". Give that link to the bot using `[p]faceset url <link>`.  
 Copy one of your keys under "Manage keys". Give that key to the bot using `[p]faceset key <key>`.
 ![Step8](https://i.imgur.com/37kdPGZ.png)
+
+## Step 9
+
+After completing step 8, you should be able to use Face. However, this tier of service will only last for a month.  
+**After a month, you will recieve an email like this one:**
+
+![Step9a](https://i.imgur.com/yjkHbCs.png)
+
+At this point, you need to upgrade to a pay as you go plan.  
+Do not be scared by the name, face is one of Microsoft's **Always Free\*** APIs :  
+
+![Step9b](https://i.imgur.com/dILz6wP.png)
+
+\**as in, you do not need to pay a monthly fee just to use it*
+
+As long as you do not surpass 30,000 calls per month (~42 calls per hour), you will not be charged.  
+It is pretty hard to reach that number on small bots, but larger bots with lots of servers could reasonably reach that number.  
+**I will take no responsibility if you reach 30,000 calls and are charged as a result.**  
+
+## Step 10
+
+It is time to upgrade to a "pay as you go" subscription.  
+Go to https://portal.azure.com/ and sign in.  
+Select "All recources" from the left pannel.  
+Select the previously set up resource.  
+Select "Quick Start".  
+Click "Subscriptions".
+
+![Step10a](https://i.imgur.com/PLsq7Qm.png)
+
+Click the "Upgrade" hyperlink.  
+
+## Step 11
+
+If prompted to sign in, do so.  
+Select the "Pay-As-You-Go" option.  
+
+![Step11a](https://i.imgur.com/8Sb9sRn.png)
+
+Under "Payment Method", select an exisiting payment method or make a new one, then select the blue "Next" button.  
+
+This screen will appear:  
+
+![Step11b](https://i.imgur.com/278WwUg.png)
+
+**It is very important that you select "No technical support or I'm already covered through Microsoft Premier Support."**  
+**If you do not select this option, you will be billed $29 per month.**  
+Once you have selected "No technical support", click the blue "Next" button at the bottom.  
+Agree to the terms by clicking the check box, then click the blue "Sign Up" button.  
+
+After a little bit, your service will be restored with the same API keys and you can continue using it indefinitely.  
