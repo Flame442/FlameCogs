@@ -115,7 +115,7 @@ class GameRoles(commands.Cog):
 			f'Activities that currently trigger `{role.name}`:\n'
 			f'```{activities}```'
 		)
-	
+
 	@checks.guildowner()
 	@gameroles.command()
 	async def currentactivity(self, ctx):
@@ -125,7 +125,29 @@ class GameRoles(commands.Cog):
 		else:
 			activity = ctx.message.author.activity.name
 		await ctx.send(f'```{activity}```')
-	
+
+	@gameroles.command()
+	async def recheck(self, ctx):
+		"""Force a recheck of your current activities."""
+		roledict = await self.config.guild(ctx.guild).roledict()
+		torem = [role for role in ctx.author.roles if str(role.id) in roledict]
+		if torem != []:
+			try:
+				await ctx.author.remove_roles(*torem)
+			except discord.errors.Forbidden:
+				pass
+		toadd = []
+		for role in [rid for rid in roledict if ctx.author.activity.name in roledict[rid]]:
+			role = ctx.guild.get_role(int(role))
+			if role is not None:
+				toadd.append(role)
+		if toadd != []:
+			try:
+				await ctx.author.add_roles(*toadd)
+			except discord.errors.Forbidden:
+				pass
+		await ctx.tick()
+
 	async def on_member_update(self, beforeMem, afterMem):
 		"""Updates a member's roles."""
 		if beforeMem.activity == afterMem.activity:
