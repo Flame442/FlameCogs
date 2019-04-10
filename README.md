@@ -181,6 +181,9 @@ This command is only usable by the server owner and bot owner.
 Get your current activity.  
 This command is only usable by the server owner and bot owner.
 
+**`[p]gameroles recheck`**  
+Force a recheck of your current activities.  
+
 ## Hangman
 
 This cog will play hangman with you.
