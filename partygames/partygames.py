@@ -4,6 +4,7 @@ from redbot.core.data_manager import bundled_data_path
 from redbot.core import checks
 import random
 import asyncio
+import json
 
 
 CHARS = {
@@ -54,8 +55,8 @@ class PartyGames(commands.Cog):
 		if locale not in CHARS:
 			await ctx.send('Your locale is not available. Using `en-US`.')
 			locale = 'en-US'
-		with open(bundled_data_path(self) / f'{locale}.txt') as f:
-			worddict = [line.strip().lower() for line in f]
+		with open(bundled_data_path(self) / f'{locale}.json') as f:
+			worddict = json.load(f)
 		return worddict, locale
 
 	@staticmethod
