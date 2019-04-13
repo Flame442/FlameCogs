@@ -9,20 +9,44 @@ import json
 
 CHARS = {
 	'en-US': [
-		'STR', 'REF', 'WEA', 'ZAP', 'ANG',
-		'DIS', 'INT', 'MIL', 'LAG', 'CRA',
-		'WHI', 'IDE', 'LOV', 'FOR', 'INK',
-		'BER', 'ATT', 'CAL', 'SAV', 'OVE',
-		'CRO', 'DRA', 'LOW', 'IOD', 'BRO',
-		'INO', 'BRE', 'REV', 'LUB', 'SCA',
-		'FLA', 'HUN', 'SOF', 'RAF', 'COM',
-		'IMI', 'GAG', 'CLA', 'WOR', 'BLA',
-		'SCH', 'ABS', 'PAL', 'PUR', 'SHL',
-		'INC', 'MIS', 'DIG', 'SPL', 'SHI',
-		'PRO', 'ROA', 'SYR', 'INS', 'COK',
-		'KIL', 'JET', 'RES', 'UNP', 'PAT',
-		'DEP', 'ADJ', 'LIT', 'SAT', 'HAN', 
-		'BET', 'TIC'
+		'WEA', 'BRE', 'IST', 'CRA', 'STA',
+		'SPL', 'REF', 'MIL', 'FOR', 'GAG',
+		'TIC', 'ILL', 'RAF', 'BLA', 'JET',
+		'CLA', 'CON', 'SIN', 'INK', 'SAT',
+		'MIN', 'SCH', 'BER', 'ISE', 'IDE',
+		'LAT', 'IMI', 'ZAP', 'ENT', 'WHI',
+		'TRI', 'OVE', 'SAV', 'HAN', 'PUR',
+		'LIN', 'LOG', 'CAT', 'INS', 'STI',
+		'RIS', 'COM', 'INC', 'ELL', 'MEN',
+		'TIN', 'SOF', 'KIL', 'BRO', 'ADJ',
+		'PRO', 'BET', 'SHI', 'ORI', 'HUN',
+		'LOW', 'LUB', 'ANG', 'SCA', 'RED',
+		'DEP', 'PER', 'INT', 'ROA', 'RES',
+		'TRA', 'WOR', 'SYR', 'MAT', 'MIS',
+		'DIS', 'STR', 'COK', 'GRA', 'INE',
+		'UNP', 'ATT', 'DIG', 'IOD', 'CAL',
+		'LOV', 'ATE', 'LAG', 'INO', 'CRO',
+		'PAL', 'PAT', 'ICA', 'ABS', 'DRA',
+		'RAN', 'LIT', 'RAT', 'TRO', 'FLA',
+		'REV', 'VER'
+	],
+	'fr-FR': [
+		'ENT', 'ONS', 'ASS', 'RAI', 'ION',
+		'SSE', 'RON', 'SSI', 'IEN', 'AIS',
+		'AIE', 'AIT', 'TER', 'ERI', 'ONN',
+		'ANT', 'ERO', 'RAS', 'ISS', 'SER',
+		'TES', 'REN', 'ONT', 'RIE', 'CON',
+		'SES', 'LER', 'SIO', 'SEN', 'NER',
+		'RIO', 'SIE', 'MES', 'ÈRE', 'QUE',
+		'ISE', 'RER', 'CHA', 'TIO', 'NTE',
+		'LIS', 'IER', 'ÉES', 'TRA', 'ATI',
+		'NNE', 'RES', 'OUR', 'SSA', 'ÂTE',
+		'ERE', 'ISA', 'ÂME', 'RIS', 'TAS',
+		'LAS', 'SAI', 'CHE', 'RAN', 'IQU',
+		'ALI', 'DÉC', 'SAS', 'TAI', 'UER',
+		'INE', 'EME', 'LAI', 'NAS', 'PAR',
+		'INT', 'AGE', 'BOU', 'PER', 'ESS',
+		'EUR', 'PRO', 'LLA'
 	]
 }
 
@@ -49,15 +73,15 @@ class PartyGames(commands.Cog):
 			players.append(user)
 		return [p for p in players if not p.bot]
 
-	async def _get_worddict(self, ctx):
-		"""Get the proper worddict for the current locale."""
+	async def _get_wordlist(self, ctx):
+		"""Get the proper wordlist for the current locale."""
 		locale = await ctx.bot.db.locale()
 		if locale not in CHARS:
 			await ctx.send('Your locale is not available. Using `en-US`.')
 			locale = 'en-US'
 		with open(bundled_data_path(self) / f'{locale}.json') as f:
-			worddict = json.load(f)
-		return worddict, locale
+			wordlist = json.load(f)
+		return wordlist, locale
 
 	@staticmethod
 	def _get_name_string(ctx, uid: int, domention: bool):
@@ -89,7 +113,7 @@ class PartyGames(commands.Cog):
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
 			return await ctx.send('Not enough players to play.')
-		worddict, locale = await self._get_worddict(ctx)
+		wordlist, locale = await self._get_wordlist(ctx)
 		health = {p.id: hp for p in players}
 		game = True
 		used = []
@@ -107,7 +131,7 @@ class PartyGames(commands.Cog):
 							m.channel == ctx.channel
 							and m.author.id == p.id
 							and c.lower() in m.content.lower()
-							and m.content.lower() in worddict
+							and m.content.lower() in wordlist
 							and not m.content.lower() in used
 						)
 					)
@@ -145,13 +169,13 @@ class PartyGames(commands.Cog):
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
 			return await ctx.send('Not enough players to play.')
-		worddict, locale = await self._get_worddict(ctx)
+		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
 		used = []
 		afk = 0
 		while game:
-			score, used, mem = await self._fast(ctx, score, used, players, worddict, locale)
+			score, used, mem = await self._fast(ctx, score, used, players, wordlist, locale)
 			if mem is None:
 				afk += 1
 				if afk == 3:
@@ -172,7 +196,7 @@ class PartyGames(commands.Cog):
 					game = False
 			await asyncio.sleep(3)
 	
-	async def _fast(self, ctx, score, used, players, worddict, locale):
+	async def _fast(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
 		await ctx.send(
 			f'Be the first person to type a word containing: **{c}**'
@@ -185,7 +209,7 @@ class PartyGames(commands.Cog):
 					m.channel == ctx.channel
 					and m.author.id in score
 					and c.lower() in m.content.lower()
-					and m.content.lower() in worddict
+					and m.content.lower() in wordlist
 					and not m.content.lower() in used
 				)
 			)
@@ -213,13 +237,13 @@ class PartyGames(commands.Cog):
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
 			return await ctx.send('Not enough players to play.')
-		worddict, locale = await self._get_worddict(ctx)
+		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
 		used = []
 		afk = 0
 		while game:
-			score, used, mem = await self._long(ctx, score, used, players, worddict, locale)
+			score, used, mem = await self._long(ctx, score, used, players, wordlist, locale)
 			if mem is None:
 				afk += 1
 				if afk == 3:
@@ -240,7 +264,7 @@ class PartyGames(commands.Cog):
 					game = False
 			await asyncio.sleep(3)
 		
-	async def _long(self, ctx, score, used, players, worddict, locale):
+	async def _long(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
 		await ctx.send(f'Type the longest word containing: **{c}**')
 		self.waiting[ctx.channel.id] = {
@@ -250,7 +274,7 @@ class PartyGames(commands.Cog):
 			'used': used,
 			'best': '',
 			'bestmem': None,
-			'worddict': worddict
+			'wordlist': wordlist
 		}
 		await asyncio.sleep(15)
 		resultdict = self.waiting[ctx.channel.id]
@@ -277,13 +301,13 @@ class PartyGames(commands.Cog):
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
 			return await ctx.send('Not enough players to play.')
-		worddict, locale = await self._get_worddict(ctx)
+		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
 		used = []
 		afk = 0
 		while game:
-			score, used, mem = await self._most(ctx, score, used, players, worddict, locale)
+			score, used, mem = await self._most(ctx, score, used, players, wordlist, locale)
 			if mem is None:
 				afk += 1
 				if afk == 3:
@@ -307,7 +331,7 @@ class PartyGames(commands.Cog):
 					game = False
 			await asyncio.sleep(3)
 		
-	async def _most(self, ctx, score, used, players, worddict, locale):
+	async def _most(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
 		await ctx.send(f'Type the most words containing: **{c}**')
 		self.waiting[ctx.channel.id] = {
@@ -315,7 +339,7 @@ class PartyGames(commands.Cog):
 			'pdict': {p.id: [] for p in players},
 			'chars': c,
 			'used': used,
-			'worddict': worddict
+			'wordlist': wordlist
 		}
 		await asyncio.sleep(15)
 		resultdict = self.waiting[ctx.channel.id]
@@ -361,7 +385,7 @@ class PartyGames(commands.Cog):
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
 			return await ctx.send('Not enough players to play.')
-		worddict, locale = await self._get_worddict(ctx)
+		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
 		used = []
@@ -380,7 +404,7 @@ class PartyGames(commands.Cog):
 								m.channel == ctx.channel
 								and m.author.id == p.id
 								and c.lower() in m.content.lower()
-								and m.content.lower() in worddict
+								and m.content.lower() in wordlist
 								and not m.content.lower() in used
 							)
 						)
@@ -404,7 +428,7 @@ class PartyGames(commands.Cog):
 					await asyncio.sleep(3)
 			else:
 				func = [self._fast, self._long, self._most][g]
-				score, used, mem = await func(ctx, score, used, players, worddict, locale)
+				score, used, mem = await func(ctx, score, used, players, wordlist, locale)
 				if mem is None:
 					afk += 1
 					if afk == 3:
@@ -438,7 +462,7 @@ class PartyGames(commands.Cog):
 				if message.author.id in self.waiting[message.channel.id]['plist']:
 					if (
 						self.waiting[message.channel.id]['chars'].lower() in message.content.lower()
-						and message.content.lower() in self.waiting[message.channel.id]['worddict']
+						and message.content.lower() in self.waiting[message.channel.id]['wordlist']
 						and not message.content.lower() in self.waiting[message.channel.id]['used']
 						and len(message.content) > len(self.waiting[message.channel.id]['best'])
 					):
@@ -449,7 +473,7 @@ class PartyGames(commands.Cog):
 				if message.author.id in self.waiting[message.channel.id]['pdict']:
 					if (
 						self.waiting[message.channel.id]['chars'].lower() in message.content.lower()
-						and message.content.lower() in self.waiting[message.channel.id]['worddict']
+						and message.content.lower() in self.waiting[message.channel.id]['wordlist']
 						and not message.content.lower() in self.waiting[message.channel.id]['used']
 					):
 						self.waiting[message.channel.id]['used'].append(message.content.lower())
