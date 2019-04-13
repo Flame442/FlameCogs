@@ -38,7 +38,7 @@ class Hangman(commands.Cog):
 				'    ___    \n'
 				'   |   |   \n'
 				'   |   O   \n'
-				'   |  \\|   \n'
+				'   |  \\|  \n'
 				'   |   |   \n'
 				'   |       \n'
 				'   |       \n'
@@ -46,7 +46,7 @@ class Hangman(commands.Cog):
 				'    ___    \n'
 				'   |   |   \n'
 				'   |   O   \n'
-				'   |  \\|/  \n'
+				'   |  \\|/ \n'
 				'   |   |   \n'
 				'   |       \n'
 				'   |       \n'
@@ -54,7 +54,7 @@ class Hangman(commands.Cog):
 				'    ___    \n'
 				'   |   |   \n'
 				'   |   O   \n'
-				'   |  \\|/  \n'
+				'   |  \\|/ \n'
 				'   |   |   \n'
 				'   |  /    \n'
 				'   |       \n'
@@ -62,35 +62,36 @@ class Hangman(commands.Cog):
 				'    ___    \n'
 				'   |   |   \n'
 				'   |   O   \n'
-				'   |  \\|/  \n'
+				'   |  \\|/ \n'
 				'   |   |   \n'
-				'   |  / \\  \n'
+				'   |  / \\ \n'
 				'   |       \n'
 			), (
 				'    ___    \n'
 				'   |   |   \n'
 				'   |   X   \n'
-				'   |  \\|/  \n'
+				'   |  \\|/ \n'
 				'   |   |   \n'
-				'   |  / \\  \n'
+				'   |  / \\ \n'
 				'   |       \n'
 			)
 		]
 
 	@staticmethod
 	def _get_message(word, guessed):
+		"""Returns a string of the guessing text."""
 		p = ''
 		for l in word:
 			if l not in 'abcdefghijklmnopqrstuvwxyz': #auto print non letter characters
-				p += l+' '
+				p += l + ' '
 			elif l in guessed: #print already guessed characters
-				p += l+' '
+				p += l + ' '
 			else:
 				p += '_ ' 
 		p += '    ('
 		for l in guessed:
 			if l not in word:
-				p += l
+				p += l #add the incorrect guessed letters
 		p += ')'
 		return p
 
@@ -112,20 +113,20 @@ class Hangman(commands.Cog):
 		word = wordlist[randint(0,len(wordlist)-1)] #pick and format random word
 		guessed = ''
 		fails = 0
-		end = 0
+		game = True
 		err = 0
 		boardmsg = None
-		while end == 0:
+		check = lambda m: (
+			m.channel == ctx.message.channel 
+			and m.author == ctx.message.author 
+			and len(m.content) == 1 
+			and m.content.lower() in 'abcdefghijklmnopqrstuvwxyz'
+		)
+		while game:
 			p = self._get_message(word, guessed)
 			p = f'```{self.man[fails]}\n{p}```'
 			if err == 1:
 				p += 'You already guessed that letter.\n'
-			check = lambda m: (
-				m.channel == ctx.message.channel 
-				and m.author == ctx.message.author 
-				and len(m.content) == 1 
-				and m.content.lower() in 'abcdefghijklmnopqrstuvwxyz'
-			)
 			if boardmsg is None or not doEdit:
 				boardmsg = await ctx.send(p+'Guess:')
 			else:
@@ -152,27 +153,21 @@ class Hangman(commands.Cog):
 					if fails == 6: #too many fails
 						guessed += t
 						p = self._get_message(word, guessed)
+						p = f'```{self.man[6]}\n{p}```Game Over\nThe word was {word}.'
 						if doEdit:
-							await boardmsg.edit(content=str(
-								f'```{self.man[6]}\n{p}```Game Over\nThe word was {word}.'
-							))
+							await boardmsg.edit(content=p)
 						else:
-							await ctx.send(str(
-								f'```{self.man[6]}\n{p}```Game Over\nThe word was {word}.'
-							))
-						end = 1
+							await ctx.send(p)
+						game = False
 				guessed += t
 				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
 					p = self._get_message(word, guessed)
+					p = f'```{self.man[fails]}\n{p}```You win!\nThe word was {word}.'
 					if doEdit:
-						await boardmsg.edit(content=str(
-							f'```{self.man[fails]}\n{p}```You win!\nThe word was {word}.'
-						))
+						await boardmsg.edit(content=p)
 					else:
-						await ctx.send(str(
-							f'```{self.man[fails]}\n{p}```You win!\nThe word was {word}.'
-						))
-					end = 1
+						await ctx.send(p)
+					game = False
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -181,51 +176,55 @@ class Hangman(commands.Cog):
 		"""Config options for hangman."""
 		pass
 	
-	@commands.guild_only()
-	@checks.guildowner()
-	@hangmanset.command(name='wordlist')
-	async def wordlist(self, ctx, value: str=None):
+	@hangmanset.group(invoke_without_command=True)
+	async def wordlist(self, ctx, value: str):
 		"""
 		Change the wordlist used.
 		
 		Extra wordlists can be put in the data folder.
-		Wordlists are a txt file with every new line being a new word.
-		Use default to restore the default wordlist and list to see available wordlists.
+		Wordlists are a .txt file with every new line being a new word.
 		This value is server specific.
 		"""
-		if value is None:
-			v = await self.config.guild(ctx.guild).fp()
-			if str(v) == str(bundled_data_path(self) / 'words.txt'):
-				await ctx.send('The wordlist is set to the default list.')
-			else:
-				await ctx.send(f'The wordlist is set to `{str(v)[str(v).find("Hangman")+8:-4]}`.')
-		elif value.lower() == 'default':
-			fp = str(bundled_data_path(self) / 'words.txt')
+		wordlists = []
+		for x in os.listdir(cog_data_path(self)):
+			if x[-4:] == '.txt':
+				wordlists.append(x[:-4])
+		if value in wordlists:
+			fp = str(cog_data_path(self) / str(value+'.txt'))
 			await self.config.guild(ctx.guild).fp.set(fp)
-			await ctx.send('The wordlist is now the default list.')
+			await ctx.send(f'The wordlist is now set to `{value}`.')
 		else:
-			y = []
-			for x in os.listdir(cog_data_path(self)):
-				if x[-4:] == '.txt':
-					y.append(x[:-4])
-			if y == []:
-				await ctx.send('You do not have any wordlists.')
-			elif value.lower() == 'list':
-				z = ''
-				for x in y:
-					z += x+'\n'
-				await ctx.send(f'Available wordlists:\n`{z}`')
-			else:
-				if value in y:
-					fp = str(cog_data_path(self) / str(value+'.txt'))
-					await self.config.guild(ctx.guild).fp.set(fp)
-					await ctx.send(f'The wordlist is now set to `{value}`.')
-				else:
-					await ctx.send('Wordlist not found.')
+			await ctx.send(f'Wordlist `{value}` not found.')
 	
-	@commands.guild_only()
-	@checks.guildowner()
-	@hangmanset.command(name='edit')
+	@wordlist.command()
+	async def default(self, ctx):
+		"""Set the wordlist to the default list."""
+		fp = str(bundled_data_path(self) / 'words.txt')
+		await self.config.guild(ctx.guild).fp.set(fp)
+		await ctx.send('The wordlist is now the default list.')
+
+	@wordlist.command()
+	async def list(self, ctx):
+		"""List available wordlists."""
+		wordlists = []
+		for x in os.listdir(cog_data_path(self)):
+			if x[-4:] == '.txt':
+				wordlists.append(x[:-4])
+		if wordlists == []:
+			return await ctx.send('You do not have any wordlists.')
+		msg = '\n'.join(wordlists).strip()
+		await ctx.send(f'Available wordlists:\n`{msg}`')
+
+	@wordlist.command()
+	async def current(self, ctx):
+		"""Show the current wordlist."""
+		v = await self.config.guild(ctx.guild).fp()
+		if str(v) == str(bundled_data_path(self) / 'words.txt'):
+			await ctx.send('The wordlist is set to the default list.')
+		else:
+			await ctx.send(f'The wordlist is set to `{str(v)[str(v).find("Hangman")+8:-4]}`.')
+	
+	@hangmanset.command()
 	async def edit(self, ctx, value: bool=None):
 		"""
 		Set if hangman messages should be one edited message or many individual messages.
