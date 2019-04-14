@@ -336,6 +336,12 @@ Words cannot be reused.
 The first person to get `maxpoints` points wins.  
 Use the optional paramater `maxpoints` to set the number of points required to win.
 
+**`[p]partygames locale <locale>`**  
+Override the bot's locale for partygames.  
+Use `reset` to remove the override.  
+This command is only usable by the bot owner.  
+This value is global.
+
 ## Wordstats
 
 This cog will track commonly used words by server and member.
