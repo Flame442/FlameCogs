@@ -458,8 +458,14 @@ class PartyGames(commands.Cog):
 						game = False
 			await asyncio.sleep(3)
 	
+	@checks.guildowner()
+	@commands.group(aliases=['pgset'])
+	async def partygamesset(self, ctx):
+		"""Config options for partygames."""
+		pass
+	
 	@checks.is_owner()
-	@partygames.group(invoke_without_command=True)
+	@partygamesset.group(invoke_without_command=True)
 	async def locale(self, ctx, locale: str):
 		"""Override the bot's locale for partygames."""
 		if locale not in CHARS:
