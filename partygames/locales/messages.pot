@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-04-14 00:25-0400\n"
+"POT-Creation-Date: 2019-04-14 01:22-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,34 +15,34 @@ msgstr ""
 "Generated-By: redgettext 2.2\n"
 
 
-#: partygames.py:58
+#: partygames.py:59
 #, docstring
 msgid "Chat games focused on coming up with words from 3 letters."
 msgstr ""
 
-#: partygames.py:65
+#: partygames.py:70
 #, docstring
 msgid "Group command for party games."
 msgstr ""
 
-#: partygames.py:71
+#: partygames.py:76
 msgid "React to this message to join. The game will start in 15 seconds."
 msgstr ""
 
-#: partygames.py:86
+#: partygames.py:93
 msgid "Your locale is not available. Using `en-US`."
 msgstr ""
 
-#: partygames.py:98
+#: partygames.py:105
 msgid "<removed member {uid}>"
 msgstr ""
 
-#: partygames.py:103
+#: partygames.py:110
 msgid ""
 "Number of points:\n"
 msgstr ""
 
-#: partygames.py:111
+#: partygames.py:118
 #, docstring
 msgid ""
 "\n"
@@ -55,33 +55,33 @@ msgid ""
 "\t\t"
 msgstr ""
 
-#: partygames.py:121 partygames.py:181 partygames.py:246 partygames.py:307
-#: partygames.py:388
+#: partygames.py:128 partygames.py:188 partygames.py:253 partygames.py:314
+#: partygames.py:395
 msgid "Not enough players to play."
 msgstr ""
 
-#: partygames.py:132
+#: partygames.py:139
 msgid "{p}, type a word containing: **{char}**"
 msgstr ""
 
-#: partygames.py:149
+#: partygames.py:156
 msgid "Time's up! -1 HP ({health} remaining)"
 msgstr ""
 
-#: partygames.py:152
+#: partygames.py:159
 msgid "{p} is eliminated!"
 msgstr ""
 
-#: partygames.py:155
+#: partygames.py:162
 msgid "{p} wins!"
 msgstr ""
 
-#: partygames.py:162
+#: partygames.py:169
 msgid ""
 "Current lives remaining:\n"
 msgstr ""
 
-#: partygames.py:172
+#: partygames.py:179
 #, docstring
 msgid ""
 "\n"
@@ -93,32 +93,32 @@ msgid ""
 "\t\t"
 msgstr ""
 
-#: partygames.py:192 partygames.py:257 partygames.py:318 partygames.py:436
+#: partygames.py:199 partygames.py:264 partygames.py:325 partygames.py:443
 msgid ""
 "No one wants to play :(\n"
 "{board}"
 msgstr ""
 
-#: partygames.py:197 partygames.py:262 partygames.py:323 partygames.py:441
+#: partygames.py:204 partygames.py:269 partygames.py:330 partygames.py:448
 msgid "No one was able to come up with a word!"
 msgstr ""
 
-#: partygames.py:201 partygames.py:266 partygames.py:330 partygames.py:424
-#: partygames.py:448
+#: partygames.py:208 partygames.py:273 partygames.py:337 partygames.py:431
+#: partygames.py:455
 msgid ""
 "{mem} wins!\n"
 "{board}"
 msgstr ""
 
-#: partygames.py:210
+#: partygames.py:217
 msgid "Be the first person to type a word containing: **{char}**"
 msgstr ""
 
-#: partygames.py:229 partygames.py:290 partygames.py:369 partygames.py:420
+#: partygames.py:236 partygames.py:297 partygames.py:376 partygames.py:427
 msgid "{mem} gets a point! ({score} total)"
 msgstr ""
 
-#: partygames.py:237
+#: partygames.py:244
 #, docstring
 msgid ""
 "\n"
@@ -130,11 +130,11 @@ msgid ""
 "\t\t"
 msgstr ""
 
-#: partygames.py:274
+#: partygames.py:281
 msgid "Type the longest word containing: **{char}**"
 msgstr ""
 
-#: partygames.py:298
+#: partygames.py:305
 #, docstring
 msgid ""
 "\n"
@@ -146,20 +146,20 @@ msgid ""
 "\t\t"
 msgstr ""
 
-#: partygames.py:326 partygames.py:444
+#: partygames.py:333 partygames.py:451
 msgid "There was a tie! Nobody gets points..."
 msgstr ""
 
-#: partygames.py:338
+#: partygames.py:345
 msgid "Type the most words containing: **{char}**"
 msgstr ""
 
-#: partygames.py:362
+#: partygames.py:369
 msgid ""
 "Number of words found:\n"
 msgstr ""
 
-#: partygames.py:380
+#: partygames.py:387
 #, docstring
 msgid ""
 "\n"
@@ -170,11 +170,33 @@ msgid ""
 "\t\t"
 msgstr ""
 
-#: partygames.py:399
+#: partygames.py:406
 msgid "{mem}, type a word containing: **{char}**"
 msgstr ""
 
-#: partygames.py:415
+#: partygames.py:422
 msgid "Time's up! No points for you..."
+msgstr ""
+
+#: partygames.py:464
+#, docstring
+msgid "Override the bot's locale for partygames."
+msgstr ""
+
+#: partygames.py:466
+msgid "That locale is not valid or is not supported."
+msgstr ""
+
+#: partygames.py:468
+msgid "Locale override is now set to `{locale}`."
+msgstr ""
+
+#: partygames.py:472
+#, docstring
+msgid "Reset partygames to use the bot's locale."
+msgstr ""
+
+#: partygames.py:474
+msgid "Locale override removed."
 msgstr ""
 
