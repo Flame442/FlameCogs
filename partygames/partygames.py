@@ -156,7 +156,7 @@ class PartyGames(commands.Cog):
 						_('Time\'s up! -1 HP ({health} remaining)').format(health=health[p.id])
 					)
 					if health[p.id] == 0:
-						await ctx.send(_('{p} is eliminated!').format(f=p.mention))
+						await ctx.send(_('{p} is eliminated!').format(p=p.mention))
 						players.remove(p)
 						if len(players) == 1:
 							await ctx.send(_('{p} wins!').format(p=players[0].mention))
@@ -405,7 +405,7 @@ class PartyGames(commands.Cog):
 					c = random.choice(CHARS[locale])
 					await ctx.send(_(
 						'{mem}, type a word containing: **{char}**'
-					).format(mem=p.mention, chars=c))
+					).format(mem=p.mention, char=c))
 					try:
 						word = await self.bot.wait_for(
 							'message',
