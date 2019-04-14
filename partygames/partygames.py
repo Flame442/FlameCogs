@@ -60,8 +60,12 @@ class PartyGames(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=145519400223506432)
-		self.config.register_global(
-			locale = None
+		self.config.register_guild(
+			locale = None,
+			timeBomb = 7,
+			timeFast = 15,
+			timeLong = 15,
+			timeMost = 15
 		)
 		self.waiting = {}
 
@@ -86,7 +90,7 @@ class PartyGames(commands.Cog):
 
 	async def _get_wordlist(self, ctx):
 		"""Get the proper wordlist for the current locale."""
-		locale = await self.config.locale()
+		locale = await self.config.guild(ctx.guild).locale()
 		if locale is None:
 			locale = await ctx.bot.db.locale()
 		if locale not in CHARS:
@@ -141,7 +145,7 @@ class PartyGames(commands.Cog):
 				try:
 					word = await self.bot.wait_for(
 						'message',
-						timeout=7,
+						timeout=await self.config.guild(ctx.guild).timeBomb(),
 						check=lambda m: (
 							m.channel == ctx.channel
 							and m.author.id == p.id
@@ -219,7 +223,7 @@ class PartyGames(commands.Cog):
 		try:
 			word = await self.bot.wait_for(
 				'message',
-				timeout=15,
+				timeout=await self.config.guild(ctx.guild).timeFast(),
 				check=lambda m: (
 					m.channel == ctx.channel
 					and m.author.id in score
@@ -278,6 +282,7 @@ class PartyGames(commands.Cog):
 		
 	async def _long(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
+		timeLong = await self.config.guild(ctx.guild).timeLong()
 		await ctx.send(_('Type the longest word containing: **{char}**').format(char=c))
 		self.waiting[ctx.channel.id] = {
 			'type': 'long',
@@ -288,7 +293,7 @@ class PartyGames(commands.Cog):
 			'bestmem': None,
 			'wordlist': wordlist
 		}
-		await asyncio.sleep(15)
+		await asyncio.sleep(timeLong)
 		resultdict = self.waiting[ctx.channel.id]
 		del self.waiting[ctx.channel.id]
 		if resultdict['best'] == '':
@@ -343,6 +348,7 @@ class PartyGames(commands.Cog):
 	async def _most(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
 		await ctx.send(_('Type the most words containing: **{char}**').format(char=c))
+		timeMost = await self.config.guild(ctx.guild).timeMost()
 		self.waiting[ctx.channel.id] = {
 			'type': 'most',
 			'pdict': {p.id: [] for p in players},
@@ -350,7 +356,7 @@ class PartyGames(commands.Cog):
 			'used': used,
 			'wordlist': wordlist
 		}
-		await asyncio.sleep(15)
+		await asyncio.sleep(timeMost)
 		resultdict = self.waiting[ctx.channel.id]
 		del self.waiting[ctx.channel.id]
 		used = resultdict['used']
@@ -409,7 +415,7 @@ class PartyGames(commands.Cog):
 					try:
 						word = await self.bot.wait_for(
 							'message',
-							timeout=7,
+							timeout=await self.config.guild(ctx.guild).timeBomb(),
 							check=lambda m: (
 								m.channel == ctx.channel
 								and m.author.id == p.id
@@ -464,20 +470,92 @@ class PartyGames(commands.Cog):
 		"""Config options for partygames."""
 		pass
 	
-	@checks.is_owner()
 	@partygamesset.group(invoke_without_command=True)
 	async def locale(self, ctx, locale: str):
-		"""Override the bot's locale for partygames."""
+		"""
+		Override the bot's locale for partygames.
+		
+		Defaults to None.
+		This value is server specific.
+		"""
 		if locale not in CHARS:
 			return await ctx.send(_('That locale is not valid or is not supported.'))
-		await self.config.locale.set(locale)
+		await self.config.guild(ctx.guild).locale.set(locale)
 		await ctx.send(_('Locale override is now set to `{locale}`.').format(locale=locale))
 	
 	@locale.command()
-	async def reset(self, ctx):
-		"""Reset partygames to use the bot's locale."""
-		await self.config.locale.set(None)
+	async def remove(self, ctx):
+		"""Remove the locale override and use the bot's locale."""
+		await self.config.guild(ctx.guild).locale.set(None)
 		await ctx.send(_('Locale override removed.'))
+	
+	@partygamesset.command()
+	async def bombtime(self, ctx, value: int=None):
+		"""
+		Set the timeout of bombparty.
+		
+		Defaults to 7.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).timeBomb()
+			await ctx.send(_('The timeout is currently set to {v}.').format(v=v))
+		else:
+			if value <= 0:
+				return await ctx.send(_('That value is too low.'))
+			await self.config.guild(ctx.guild).timeBomb.set(value)
+			await ctx.send(_('The timeout is now set to {value}.').format(value=value))
+	
+	@partygamesset.command()
+	async def fasttime(self, ctx, value: int=None):
+		"""
+		Set the timeout of fast.
+		
+		Defaults to 15.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).timeFast()
+			await ctx.send(_('The timeout is currently set to {v}.').format(v=v))
+		else:
+			if value <= 0:
+				return await ctx.send(_('That value is too low.'))
+			await self.config.guild(ctx.guild).timeFast.set(value)
+			await ctx.send(_('The timeout is now set to {value}.').format(value=value))
+	
+	@partygamesset.command()
+	async def longtime(self, ctx, value: int=None):
+		"""
+		Set the timeout of long.
+		
+		Defaults to 15.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).timeLong()
+			await ctx.send(_('The timeout is currently set to {v}.').format(v=v))
+		else:
+			if value <= 0:
+				return await ctx.send(_('That value is too low.'))
+			await self.config.guild(ctx.guild).timeLong.set(value)
+			await ctx.send(_('The timeout is now set to {value}.').format(value=value))
+	
+	@partygamesset.command()
+	async def mosttime(self, ctx, value: int=None):
+		"""
+		Set the timeout of most.
+		
+		Defaults to 15.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).timeMost()
+			await ctx.send(_('The timeout is currently set to {v}.').format(v=v))
+		else:
+			if value <= 0:
+				return await ctx.send(_('That value is too low.'))
+			await self.config.guild(ctx.guild).timeMost.set(value)
+			await ctx.send(_('The timeout is now set to {value}.').format(value=value))
 	
 	async def on_message(self, message):
 		if message.author.bot:
