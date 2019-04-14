@@ -2,6 +2,7 @@ import discord
 from redbot.core import commands
 from redbot.core.data_manager import bundled_data_path
 from redbot.core import checks
+from redbot.core.i18n import Translator, cog_i18n
 import random
 import asyncio
 import json
@@ -50,6 +51,9 @@ CHARS = {
 	]
 }
 
+_ = Translator('PartyGames', __file__)
+
+@cog_i18n(_)
 class PartyGames(commands.Cog):
 	"""Chat games focused on coming up with words from 3 letters."""
 	def __init__(self, bot):
@@ -63,7 +67,9 @@ class PartyGames(commands.Cog):
 
 	async def _get_players(self, ctx):
 		"""Helper function to set up a game."""
-		msg = await ctx.send('React to this message to join. The game will start in 15 seconds.')
+		msg = await ctx.send(
+			_('React to this message to join. The game will start in 15 seconds.')
+		)
 		await msg.add_reaction('\N{WHITE HEAVY CHECK MARK}')
 		await asyncio.sleep(15)
 		msg = await ctx.channel.get_message(msg.id) #get the latest version of the message
@@ -77,7 +83,7 @@ class PartyGames(commands.Cog):
 		"""Get the proper wordlist for the current locale."""
 		locale = await ctx.bot.db.locale()
 		if locale not in CHARS:
-			await ctx.send('Your locale is not available. Using `en-US`.')
+			await ctx.send(_('Your locale is not available. Using `en-US`.'))
 			locale = 'en-US'
 		with open(bundled_data_path(self) / f'{locale}.json') as f:
 			wordlist = json.load(f)
@@ -89,12 +95,12 @@ class PartyGames(commands.Cog):
 		member = ctx.guild.get_member(uid)
 		if member:
 			return member.mention if domention else member.display_name
-		return f'<removed member {uid}>'
+		return _('<removed member {uid}>').format(uid=uid)
 
 	def _make_leaderboard(self, ctx, scores):
 		"""Returns a printable version of the dictionary."""
 		order = list(reversed(sorted(scores, key=lambda m: scores[m])))
-		msg = 'Number of points:\n'
+		msg = _('Number of points:\n')
 		for uid in order:
 			name = self._get_name_string(ctx, uid, False)
 			msg += f'{scores[uid]} {name}\n'
@@ -112,7 +118,7 @@ class PartyGames(commands.Cog):
 		"""
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
-			return await ctx.send('Not enough players to play.')
+			return await ctx.send(_('Not enough players to play.'))
 		wordlist, locale = await self._get_wordlist(ctx)
 		health = {p.id: hp for p in players}
 		game = True
@@ -122,7 +128,9 @@ class PartyGames(commands.Cog):
 				if health[p.id] == 0:
 					continue
 				c = random.choice(CHARS[locale])
-				await ctx.send(f'{p.mention}, type a word containing: **{c}**')
+				await ctx.send(
+					_('{p}, type a word containing: **{char}**').format(p=p.mention, char=c)
+				)
 				try:
 					word = await self.bot.wait_for(
 						'message',
@@ -137,19 +145,21 @@ class PartyGames(commands.Cog):
 					)
 				except asyncio.TimeoutError:
 					health[p.id] -= 1
-					await ctx.send(f'Time\'s up! -1 HP ({health[p.id]} remaining)')
+					await ctx.send(
+						_('Time\'s up! -1 HP ({health} remaining)').format(health=health[p.id])
+					)
 					if health[p.id] == 0:
-						await ctx.send(f'{p.mention} is eliminated!')
+						await ctx.send(_('{p} is eliminated!').format(f=p.mention))
 						players.remove(p)
 						if len(players) == 1:
-							await ctx.send(f'{players[0].mention} wins!')
+							await ctx.send(_('{p} wins!').format(p=players[0].mention))
 							game = False
 							break
 				else:
 					await word.add_reaction('\N{WHITE HEAVY CHECK MARK}')
 					used.append(word.content.lower())
 				await asyncio.sleep(3)
-			msg = 'Current lives remaining:\n'
+			msg = _('Current lives remaining:\n')
 			order = list(reversed(sorted(health, key=lambda m: health[m])))
 			for uid in order:
 				name = self._get_name_string(ctx, uid, False)
@@ -168,7 +178,7 @@ class PartyGames(commands.Cog):
 		"""
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
-			return await ctx.send('Not enough players to play.')
+			return await ctx.send(_('Not enough players to play.'))
 		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
@@ -179,27 +189,25 @@ class PartyGames(commands.Cog):
 			if mem is None:
 				afk += 1
 				if afk == 3:
-					await ctx.send(
-						'No one wants to play :(\n'
-						f'{self._make_leaderboard(ctx, score)}'
-					)
+					await ctx.send(_(
+						'No one wants to play :(\n{board}'
+					).format(board=self._make_leaderboard(ctx, score)))
 					game = False
 				else:
-					await ctx.send('No one was able to come up with a word!')
+					await ctx.send(_('No one was able to come up with a word!'))
 			else:
 				afk = 0
 				if score[mem.id] >= maxpoints:
-					await ctx.send(
-						f'{mem.mention} wins!\n'
-						f'{self._make_leaderboard(ctx, score)}'
-					)
+					await ctx.send(_(
+						'{mem} wins!\n{board}'
+					).format(mem=mem.mention, board=self._make_leaderboard(ctx, score)))
 					game = False
 			await asyncio.sleep(3)
 	
 	async def _fast(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
 		await ctx.send(
-			f'Be the first person to type a word containing: **{c}**'
+			_('Be the first person to type a word containing: **{char}**').format(char=c)
 		)
 		try:
 			word = await self.bot.wait_for(
@@ -218,10 +226,9 @@ class PartyGames(commands.Cog):
 		else:
 			await word.add_reaction('\N{WHITE HEAVY CHECK MARK}')
 			score[word.author.id] += 1
-			await ctx.send(
-				f'{word.author.mention} gets a point! '
-				f'({score[word.author.id]} total)'
-			)
+			await ctx.send(_(
+				'{mem} gets a point! ({score} total)'
+			).format(mem=word.author.mention, score=score[word.author.id]))
 			used.append(word.content.lower())
 			return score, used, word.author
 			
@@ -236,7 +243,7 @@ class PartyGames(commands.Cog):
 		"""
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
-			return await ctx.send('Not enough players to play.')
+			return await ctx.send(_('Not enough players to play.'))
 		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
@@ -247,26 +254,24 @@ class PartyGames(commands.Cog):
 			if mem is None:
 				afk += 1
 				if afk == 3:
-					await ctx.send(
-						'No one wants to play :(\n'
-						f'{self._make_leaderboard(ctx, score)}'
-					)
+					await ctx.send(_(
+						'No one wants to play :(\n{board}'
+					).format(board=self._make_leaderboard(ctx, score)))
 					game = False
 				else:
-					await ctx.send('No one was able to come up with a word!')
+					await ctx.send(_('No one was able to come up with a word!'))
 			else:
 				afk = 0
 				if score[mem.id] >= maxpoints:
-					await ctx.send(
-						f'{mem.mention} wins!\n'
-						f'{self._make_leaderboard(ctx, score)}'
-					)
+					await ctx.send(_(
+						'{mem} wins!\n{board}'
+					).format(mem=mem.mention, board=self._make_leaderboard(ctx, score)))
 					game = False
 			await asyncio.sleep(3)
 		
 	async def _long(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
-		await ctx.send(f'Type the longest word containing: **{c}**')
+		await ctx.send(_('Type the longest word containing: **{char}**').format(char=c))
 		self.waiting[ctx.channel.id] = {
 			'type': 'long',
 			'plist': [p.id for p in players],
@@ -282,10 +287,9 @@ class PartyGames(commands.Cog):
 		if resultdict['best'] == '':
 			return score, used, None
 		score[resultdict['bestmem'].id] += 1
-		await ctx.send(
-			f'{resultdict["bestmem"].mention} gets a point! '
-			f'({score[resultdict["bestmem"].id]} total)'
-		)
+		await ctx.send(_(
+			'{mem} gets a point! ({score} total)'
+		).format(mem=resultdict['bestmem'].mention, score=score[resultdict['bestmem'].id]))
 		used.append(resultdict['best'].lower())
 		return score, used, resultdict['bestmem']
 	
@@ -300,7 +304,7 @@ class PartyGames(commands.Cog):
 		"""
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
-			return await ctx.send('Not enough players to play.')
+			return await ctx.send(_('Not enough players to play.'))
 		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
@@ -311,29 +315,27 @@ class PartyGames(commands.Cog):
 			if mem is None:
 				afk += 1
 				if afk == 3:
-					await ctx.send(
-						'No one wants to play :(\n'
-						f'{self._make_leaderboard(ctx, score)}'
-					)
+					await ctx.send(_(
+						'No one wants to play :(\n{board}'
+					).format(board=self._make_leaderboard(ctx, score)))
 					game = False
 				else:
-					await ctx.send('No one was able to come up with a word!')
+					await ctx.send(_('No one was able to come up with a word!'))
 			elif mem is False:
 				afk = 0
-				await ctx.send('There was a tie! Nobody gets points...')
+				await ctx.send(_('There was a tie! Nobody gets points...'))
 			else:
 				afk = 0
 				if score[mem.id] >= maxpoints:
-					await ctx.send(
-						f'{mem.mention} wins!\n'
-						f'{self._make_leaderboard(ctx, score)}'
-					)
+					await ctx.send(_(
+						'{mem} wins!\n{board}'
+					).format(mem=mem.mention, board=self._make_leaderboard(ctx, score)))
 					game = False
 			await asyncio.sleep(3)
 		
 	async def _most(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
-		await ctx.send(f'Type the most words containing: **{c}**')
+		await ctx.send(_('Type the most words containing: **{char}**').format(char=c))
 		self.waiting[ctx.channel.id] = {
 			'type': 'most',
 			'pdict': {p.id: [] for p in players},
@@ -357,17 +359,16 @@ class PartyGames(commands.Cog):
 				winners.append(uid)
 			else:
 				break
-		msg = 'Number of words found:\n'
+		msg = _('Number of words found:\n')
 		for uid in order:
 			name = self._get_name_string(ctx, uid, False)
 			msg += f'{len(resultdict["pdict"][uid])} {name}\n'
 		await ctx.send(f'```{msg}```')
 		if len(winners) == 1:
 			score[order[0]] += 1
-			await ctx.send(
-				f'{self._get_name_string(ctx, order[0], True)} gets a point! '
-				f'({score[order[0]]} total)'
-			)
+			await ctx.send(_(
+				'{mem} gets a point! ({score} total)'
+			).format(mem=self._get_name_string(ctx, order[0], True), score=score[order[0]]))
 			return score, used, ctx.guild.get_member(order[0])
 			#in the very specific case of a member leaving after becoming the person 
 			#with the most words, this will return None and do a werid double print.
@@ -384,7 +385,7 @@ class PartyGames(commands.Cog):
 		"""
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
-			return await ctx.send('Not enough players to play.')
+			return await ctx.send(_('Not enough players to play.'))
 		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
@@ -395,7 +396,9 @@ class PartyGames(commands.Cog):
 			if g == 3:
 				for p in players:
 					c = random.choice(CHARS[locale])
-					await ctx.send(f'{p.mention}, type a word containing: **{c}**')
+					await ctx.send(_(
+						'{mem}, type a word containing: **{char}**'
+					).format(mem=p.mention, chars=c))
 					try:
 						word = await self.bot.wait_for(
 							'message',
@@ -409,20 +412,18 @@ class PartyGames(commands.Cog):
 							)
 						)
 					except asyncio.TimeoutError:
-						await ctx.send(f'Time\'s up! No points for you...')
+						await ctx.send(_('Time\'s up! No points for you...'))
 					else:
 						await word.add_reaction('\N{WHITE HEAVY CHECK MARK}')
 						used.append(word.content.lower())
 						score[p.id] += 1
-						await ctx.send(
-							f'{p.mention} gets a point! '
-							f'({score[p.id]} total)'
-						)
+						await ctx.send(_(
+							'{mem} gets a point! ({score} total)'
+						).format(mem=p.mention, score=score[p.id]))
 						if score[p.id] >= maxpoints:
-							await ctx.send(
-								f'{p.mention} wins!\n'
-								f'{self._make_leaderboard(ctx, score)}'
-							)
+							await ctx.send(_(
+								'{mem} wins!\n{board}'
+							).format(mem=p.mention, board=self._make_leaderboard(ctx, score)))
 							game = False
 							break
 					await asyncio.sleep(3)
@@ -432,23 +433,21 @@ class PartyGames(commands.Cog):
 				if mem is None:
 					afk += 1
 					if afk == 3:
-						await ctx.send(
-							'No one wants to play :(\n'
-							f'{self._make_leaderboard(ctx, score)}'
-						)
+						await ctx.send(_(
+							'No one wants to play :(\n{board}'
+						).format(board=self._make_leaderboard(ctx, score)))
 						game = False
 					else:
-						await ctx.send('No one was able to come up with a word!')
+						await ctx.send(_('No one was able to come up with a word!'))
 				elif mem is False:
 					afk = 0
-					await ctx.send('There was a tie! Nobody gets points...')
+					await ctx.send(_('There was a tie! Nobody gets points...'))
 				else:
 					afk = 0
 					if score[mem.id] >= maxpoints:
-						await ctx.send(
-							f'{mem.mention} wins!\n'
-							f'{self._make_leaderboard(ctx, score)}'
-						)
+						await ctx.send(_(
+							'{mem} wins!\n{board}'
+						).format(mem=mem.mention, board=self._make_leaderboard(ctx, score)))
 						game = False
 			await asyncio.sleep(3)
 	
