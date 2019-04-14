@@ -458,7 +458,7 @@ class PartyGames(commands.Cog):
 						game = False
 			await asyncio.sleep(3)
 	
-	@checks.guildowner()
+	@checks.is_owner()
 	@partygames.group(invoke_without_command=True)
 	async def locale(self, ctx, locale: str):
 		"""Override the bot's locale for partygames."""
