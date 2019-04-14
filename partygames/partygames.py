@@ -1,5 +1,6 @@
 import discord
 from redbot.core import commands
+from redbot.core import Config
 from redbot.core.data_manager import bundled_data_path
 from redbot.core import checks
 from redbot.core.i18n import Translator, cog_i18n
@@ -58,6 +59,10 @@ class PartyGames(commands.Cog):
 	"""Chat games focused on coming up with words from 3 letters."""
 	def __init__(self, bot):
 		self.bot = bot
+		self.config = Config.get_conf(self, identifier=145519400223506432)
+		self.config.register_global(
+			locale = None
+		)
 		self.waiting = {}
 
 	@commands.group(aliases=['pg'])
@@ -81,7 +86,9 @@ class PartyGames(commands.Cog):
 
 	async def _get_wordlist(self, ctx):
 		"""Get the proper wordlist for the current locale."""
-		locale = await ctx.bot.db.locale()
+		locale = await self.config.locale()
+		if locale is None:
+			locale = await ctx.bot.db.locale()
 		if locale not in CHARS:
 			await ctx.send(_('Your locale is not available. Using `en-US`.'))
 			locale = 'en-US'
@@ -450,6 +457,21 @@ class PartyGames(commands.Cog):
 						).format(mem=mem.mention, board=self._make_leaderboard(ctx, score)))
 						game = False
 			await asyncio.sleep(3)
+	
+	@checks.guildowner()
+	@partygames.group(invoke_without_command=True)
+	async def locale(self, ctx, locale: str):
+		"""Override the bot's locale for partygames."""
+		if locale not in CHARS:
+			return await ctx.send(_('That locale is not valid or is not supported.'))
+		await self.config.locale.set(locale)
+		await ctx.send(_('Locale override is now set to `{locale}`.').format(locale=locale))
+	
+	@locale.command()
+	async def reset(self, ctx):
+		"""Reset partygames to use the bot's locale."""
+		await self.config.locale.set(None)
+		await ctx.send(_('Locale override removed.'))
 	
 	async def on_message(self, message):
 		if message.author.bot:
