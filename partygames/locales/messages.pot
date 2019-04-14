@@ -1,0 +1,180 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-04-14 00:25-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: redgettext 2.2\n"
+
+
+#: partygames.py:58
+#, docstring
+msgid "Chat games focused on coming up with words from 3 letters."
+msgstr ""
+
+#: partygames.py:65
+#, docstring
+msgid "Group command for party games."
+msgstr ""
+
+#: partygames.py:71
+msgid "React to this message to join. The game will start in 15 seconds."
+msgstr ""
+
+#: partygames.py:86
+msgid "Your locale is not available. Using `en-US`."
+msgstr ""
+
+#: partygames.py:98
+msgid "<removed member {uid}>"
+msgstr ""
+
+#: partygames.py:103
+msgid ""
+"Number of points:\n"
+msgstr ""
+
+#: partygames.py:111
+#, docstring
+msgid ""
+"\n"
+"\t\tStart a game of bombparty.\n"
+"\t\t\n"
+"\t\tEach player will be asked to come up with a word that contains the given characters.\n"
+"\t\tIf they are unable to do so, they will lose a life.\n"
+"\t\tWords cannot be reused.\n"
+"\t\tThe last person to have lives left wins.\n"
+"\t\t"
+msgstr ""
+
+#: partygames.py:121 partygames.py:181 partygames.py:246 partygames.py:307
+#: partygames.py:388
+msgid "Not enough players to play."
+msgstr ""
+
+#: partygames.py:132
+msgid "{p}, type a word containing: **{char}**"
+msgstr ""
+
+#: partygames.py:149
+msgid "Time's up! -1 HP ({health} remaining)"
+msgstr ""
+
+#: partygames.py:152
+msgid "{p} is eliminated!"
+msgstr ""
+
+#: partygames.py:155
+msgid "{p} wins!"
+msgstr ""
+
+#: partygames.py:162
+msgid ""
+"Current lives remaining:\n"
+msgstr ""
+
+#: partygames.py:172
+#, docstring
+msgid ""
+"\n"
+"\t\tRace to type a word the fastest.\n"
+"\t\t\n"
+"\t\tThe first person to type a word that contains the given characters gets a point.\n"
+"\t\tWords cannot be reused.\n"
+"\t\tThe first person to get `maxpoints` points wins.\n"
+"\t\t"
+msgstr ""
+
+#: partygames.py:192 partygames.py:257 partygames.py:318 partygames.py:436
+msgid ""
+"No one wants to play :(\n"
+"{board}"
+msgstr ""
+
+#: partygames.py:197 partygames.py:262 partygames.py:323 partygames.py:441
+msgid "No one was able to come up with a word!"
+msgstr ""
+
+#: partygames.py:201 partygames.py:266 partygames.py:330 partygames.py:424
+#: partygames.py:448
+msgid ""
+"{mem} wins!\n"
+"{board}"
+msgstr ""
+
+#: partygames.py:210
+msgid "Be the first person to type a word containing: **{char}**"
+msgstr ""
+
+#: partygames.py:229 partygames.py:290 partygames.py:369 partygames.py:420
+msgid "{mem} gets a point! ({score} total)"
+msgstr ""
+
+#: partygames.py:237
+#, docstring
+msgid ""
+"\n"
+"\t\tType the longest word.\n"
+"\t\t\n"
+"\t\tThe person to type the longest word that contains the given characters gets a point.\n"
+"\t\tWords cannot be reused.\n"
+"\t\tThe first person to get `maxpoints` points wins.\n"
+"\t\t"
+msgstr ""
+
+#: partygames.py:274
+msgid "Type the longest word containing: **{char}**"
+msgstr ""
+
+#: partygames.py:298
+#, docstring
+msgid ""
+"\n"
+"\t\tType the most words.\n"
+"\t\t\n"
+"\t\tThe person to type the most words that contain the given characters gets a point.\n"
+"\t\tWords cannot be reused.\n"
+"\t\tThe first person to get `maxpoints` points wins.\n"
+"\t\t"
+msgstr ""
+
+#: partygames.py:326 partygames.py:444
+msgid "There was a tie! Nobody gets points..."
+msgstr ""
+
+#: partygames.py:338
+msgid "Type the most words containing: **{char}**"
+msgstr ""
+
+#: partygames.py:362
+msgid ""
+"Number of words found:\n"
+msgstr ""
+
+#: partygames.py:380
+#, docstring
+msgid ""
+"\n"
+"\t\tPlay a mixture of all 4 games.\n"
+"\n"
+"\t\tWords cannot be reused.\n"
+"\t\tThe first person to get `maxpoints` points wins.\n"
+"\t\t"
+msgstr ""
+
+#: partygames.py:399
+msgid "{mem}, type a word containing: **{char}**"
+msgstr ""
+
+#: partygames.py:415
+msgid "Time's up! No points for you..."
+msgstr ""
+
