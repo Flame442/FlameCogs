@@ -32,7 +32,7 @@ Name | Description
 [Battleship](../master/README.md#battleship) | Play battleship against another member of your server.
 [Deepfry](../master/README.md#deepfry) | Deepfry and nuke images.
 [Face](../master/README.md#face) | Find and describe the faces in an image.
-[Gamevoice](../master/README.md#gamevoice) | Make voice channels require playing a specific game in order to join.
+[Gameroles](../master/README.md#gameroles) | Grant roles when a user is playing a specific game.
 [Hangman](../master/README.md#hangman) | Play hangman with the bot.
 [Monopoly](../master/README.md#monopoly) | Play monopoly with up to 7 other people in your server.
 [Onlinestats](../master/README.md#onlinestats) | Information about what devices people are using to run discord.
@@ -140,40 +140,49 @@ Defaults to `True`.
 This command is only usable by the server owner.  
 This value is server specific.
 
-## Gamevoice
+## Gameroles
 
-This cog lets you make voice channels that require a user to be playing a specific game in order to join.
+This cog will grant roles when a user is playing a specific game.
 
 ### Usage
 
-**`[p]gamevoice <argument>`**  
-Alias `[p]gv <argument>`
+**`[p]gameroles <argument>`**  
+Alias `[p]gr <argument>`
 
-**`[p]gamevoice set`**  
-Sets the voice channel you are in to only work with the game you are playing.  
-Any activity will count, including Spotify, so make sure discord thinks you are doing the correct activity.  
+**`[p]gameroles addrole <role>`**  
+Sets a role to be managed by gameroles.  
+Roles with with multiple word names need to be surrounded in quotes.
+The bot's highest role needs to be above the role that you are adding and the bot needs permission to manage roles.  
 This command is only usable by the server owner and bot owner.
 
-**`[p]gamevoice reset`**  
-Resets the voice channel you are in to defaults.  
-Will remove ALL permissions, not just those set by the cog, making it completely open.  
+**`[p]gameroles delrole <role>`**  
+Stop a role from being managed by gameroles.  
+Roles with with multiple word names need to be surrounded in quotes.  
 This command is only usable by the server owner and bot owner.
 
-**`[p]gamevoice listroles`**  
-Lists all the roles created for games on the server.  
+**`[p]gameroles addactivity <role> <activity>`**  
+Add an activity to trigger a role.  
+Roles and activities with with multiple word names need to be surrounded in quotes.  
+You can get the name of your current activity with `[p]gameroles currentactivity`.  
 This command is only usable by the server owner and bot owner.
 
-**`[p]gamevoice deleterole <name>`**  
-Delete a role from the server.  
-Also removes that game's restrictions from all channels.  
-Case sensitive.  
-Use `[p]gv listroles` to see all roles.  
-This command is only usable by the server owner and bot owner.  
-Alias `[p]gamevoice delrole <name>`
+**`[p]gameroles delactivity <role> <activity>`**  
+Remove an activity from triggering a role.  
+Roles and activities with with multiple word names need to be surrounded in quotes.  
+You can get the name of your current activity with `[p]gameroles currentactivity`.   
+This command is only usable by the server owner and bot owner.
 
-**`[p]gamevoice recheck`**  
-Force a recheck of your current game.  
-Use this if you are playing the correct game and it does not let you join.
+**`[p]gameroles listactivities <role>`**  
+List the activities that trigger a role.  
+Roles with with multiple word names need to be surrounded in quotes.  
+This command is only usable by the server owner and bot owner.
+
+**`[p]gameroles currentactivity`**  
+Get your current activity.  
+This command is only usable by the server owner and bot owner.
+
+**`[p]gameroles recheck`**  
+Force a recheck of your current activities.  
 
 ## Hangman
 
@@ -326,6 +335,12 @@ Play a mixture of all 4 games.
 Words cannot be reused.  
 The first person to get `maxpoints` points wins.  
 Use the optional paramater `maxpoints` to set the number of points required to win.
+
+**`[p]partygames locale <locale>`**  
+Override the bot's locale for partygames.  
+Use `reset` to remove the override.  
+This command is only usable by the bot owner.  
+This value is global.
 
 ## Wordstats
 

@@ -1,0 +1,346 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-04-14 01:22-0400\n"
+"PO-Revision-Date: 2019-04-14 22:30+0100\n"
+"Last-Translator: Predä\n"
+"Language-Team: French\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: redgettext 2.2\n"
+
+
+#: partygames.py:59
+#, docstring
+msgid "Chat games focused on coming up with words from 3 letters."
+msgstr "Un jeu où vous devez trouver des mots à partir de 3 lettres."
+
+#: partygames.py:74
+#, docstring
+msgid "Group command for party games."
+msgstr "Groupe de commandes pour les PartyGames."
+
+#: partygames.py:80
+msgid "React to this message to join. The game will start in 15 seconds."
+msgstr "Réagissez à ce message pour rejoindre. La partie va commencer dans 15 secondes."
+
+#: partygames.py:97
+msgid "Your locale is not available. Using `en-US`."
+msgstr "Votre langage n'est pas disponible. Utilisez `en-US`."
+
+#: partygames.py:109
+msgid "<removed member {uid}>"
+msgstr "<membre retiré {uid}>"
+
+#: partygames.py:114
+msgid ""
+"Number of points:\n"
+msgstr ""
+"Nombre de points :\n"
+
+#: partygames.py:122
+#, docstring
+msgid ""
+"\n"
+"\n\nStart a game of bombparty.\n"
+"\n\n\n"
+"\n\nEach player will be asked to come up with a word that contains the given characters.\n"
+"\n\nIf they are unable to do so, they will lose a life.\n"
+"\n\nWords cannot be reused.\n"
+"\n\nThe last person to have lives left wins.\n"
+"\n\n"
+msgstr ""
+"\n"
+"\n\nDémarrer une partie de BombParty.\n"
+"\n\n\n"
+"\n\nChaque joueur sera invité à trouver un mot contenant les caractères donnés.\n"
+"\n\nS'ils n'y parviennent pas, ils perdront une vie.\n"
+"\n\nLes mots ne peuvent pas être réutilisés.\n"
+"\n\nLa dernière personne qui a encore des vies gagne.\n"
+"\n\n"
+
+#: partygames.py:132 partygames.py:192 partygames.py:257 partygames.py:319
+#: partygames.py:401
+msgid "Not enough players to play."
+msgstr "Pas assez de joueurs pour jouer."
+
+#: partygames.py:143
+msgid "{p}, type a word containing: **{char}**"
+msgstr "{p}, tapez un mot contenant : **{char}**"
+
+#: partygames.py:160
+msgid "Time's up! -1 HP ({health} remaining)"
+msgstr "Le temps est écoulé ! -1 HP ({health} remaining)"
+
+#: partygames.py:163
+msgid "{p} is eliminated!"
+msgstr "{p} est éliminé !"
+
+#: partygames.py:166
+msgid "{p} wins!"
+msgstr "{p} gagne !"
+
+#: partygames.py:173
+msgid ""
+"Current lives remaining:\n"
+msgstr "Nombre de vies restantes :\n"
+
+#: partygames.py:183
+#, docstring
+msgid ""
+"\n"
+"Race to type a word the fastest.\n"
+"\n"
+"The first person to type a word that contains the given characters gets a point.\n"
+"Words cannot be reused.\n"
+"The first person to get `maxpoints` points wins.\n"
+"\n\n"
+msgstr ""
+"\n"
+"Faites la course pour taper un mot le plus vite possible.\n"
+"\n"
+"La première personne à taper un mot qui contient les caractères donnés reçoit un point.\n"
+"Les mots ne peuvent pas être réutilisés.\n"
+"La première personne à obtenir `maxpoints` points gagne.\n"
+"\n\n"
+
+#: partygames.py:203 partygames.py:268 partygames.py:330 partygames.py:449
+msgid ""
+"No one wants to play :(\n"
+"{board}"
+msgstr ""
+"Personne ne veut jouer :(\n"
+"{board}"
+
+#: partygames.py:208 partygames.py:273 partygames.py:335 partygames.py:454
+msgid "No one was able to come up with a word!"
+msgstr "Personne n'a réussi à trouver un mot !"
+
+#: partygames.py:212 partygames.py:277 partygames.py:342 partygames.py:437
+#: partygames.py:461
+msgid ""
+"{mem} wins!\n"
+"{board}"
+msgstr ""
+"{mem} gagne !\n"
+"{board}"
+
+#: partygames.py:221
+msgid "Be the first person to type a word containing: **{char}**"
+msgstr "Soyez la première personne à taper un mot contenant : **{char}**"
+
+#: partygames.py:240 partygames.py:302 partygames.py:382 partygames.py:433
+msgid "{mem} gets a point! ({score} total)"
+msgstr "{mem} marque un point! ({score} total)"
+
+#: partygames.py:248
+#, docstring
+msgid ""
+"\n"
+"\n\nType the longest word.\n"
+"\n\n\n"
+"\n\nThe person to type the longest word that contains the given characters gets a point.\n"
+"\n\nWords cannot be reused.\n"
+"\n\nThe first person to get `maxpoints` points wins.\n"
+"\n\n"
+msgstr ""
+"\n"
+"\n\nTapez le mot le plus long.\n"
+"\n\n\n"
+"\n\nLa personne qui tape le mot le plus long contenant les caractères donnés reçoit un point.\n"
+"\n\nLes mots ne peuvent pas être réutilisés.\n"
+"\n\nLa première personne à obtenir `maxpoints` points gagne.\n"
+"\n\n"
+
+#: partygames.py:286
+msgid "Type the longest word containing: **{char}**"
+msgstr "Tapez le mot le plus long contenant : **{char}**"
+
+#: partygames.py:310
+#, docstring
+msgid ""
+"\n"
+"\n\nType the most words.\n"
+"\n\n\n"
+"\n\nThe person to type the most words that contain the given characters gets a point.\n"
+"\n\nWords cannot be reused.\n"
+"\n\nThe first person to get `maxpoints` points wins.\n"
+"\n\n"
+msgstr ""
+"\n"
+"\n\nTapez le plus de mots.\n"
+"\n\n\n"
+"\n\nLa personne qui tape le plus de mots contenant les caractères donnés reçoit un point.\n"
+"\n\nLes mots ne peuvent pas être réutilisés.\n"
+"\n\nLa première personne à obtenir `maxpoints` points gagne.\n"
+"\n\n"
+
+#: partygames.py:338 partygames.py:457
+msgid "There was a tie! Nobody gets points..."
+msgstr "Il y avait égalité ! Personne n'obtient de points ..."
+
+#: partygames.py:350
+msgid "Type the most words containing: **{char}**"
+msgstr "Tapez le plus de mots contenant : **{char}**"
+
+#: partygames.py:375
+msgid ""
+"Number of words found:\n"
+msgstr ""
+"Nombre de mots trouvés :\n"
+
+#: partygames.py:393
+#, docstring
+msgid ""
+"\n"
+"\n\nPlay a mixture of all 4 games.\n"
+"\n"
+"\n\nWords cannot be reused.\n"
+"\n\nThe first person to get `maxpoints` points wins.\n"
+"\n\n"
+msgstr ""
+"\n"
+"\n\nJouez à un mélange des 4 jeux.\n"
+"\n"
+"\n\nLes mots ne peuvent pas être réutilisés.\n"
+"\n\nLa première personne à obtenir `maxpoints` points gagne.\n"
+"\n\n"
+
+#: partygames.py:412
+msgid "{mem}, type a word containing: **{char}**"
+msgstr "{mem}, tapez un mot contenant : **{char}**"
+
+#: partygames.py:428
+msgid "Time's up! No points for you..."
+msgstr "Le temps est écoulé ! Pas de points pour vous ..."
+
+#: partygames.py:470
+#, docstring
+msgid "Config options for partygames."
+msgstr "Options de configuration pour les PartyGames."
+
+#: partygames.py:475
+#, docstring
+msgid ""
+"\n"
+"Override the bot's locale for partygames.\n"
+"\n"
+"Defaults to None.\n"
+"This value is server specific.\n"
+"\n\n"
+msgstr ""
+"\n"
+"Remplace le langage du bot seulement pour les PartyGames.\n"
+"\n"
+"La valeur par défaut est None\n"
+"Cette valeur est spécifique au serveur.\n"
+"\n\n"
+
+#: partygames.py:482
+msgid "That locale is not valid or is not supported."
+msgstr "Ce langage n'est pas valide ou n'est pas supportée."
+
+#: partygames.py:484
+msgid "Locale override is now set to `{locale}`."
+msgstr "Le langage forcé est maintenant définit à `{locale}`."
+
+#: partygames.py:488
+#, docstring
+msgid ""
+"\n"
+"Remove the locale override and use the bot's locale.\n"
+"\n\n"
+msgstr ""
+"\n"
+"Réinitialiser PartyGames pour utiliser le langage du bot.\n"
+"\n\n"
+
+#: partygames.py:490
+msgid "Locale override removed."
+msgstr "Le langage forcé à été enlevé."
+
+#: partygames.py:494
+#, docstring
+msgid ""
+"\n"
+"\n\nSet the timeout of bombparty.\n"
+"\n\n\n"
+"\n\nDefaults to 7.\n"
+"\n\nThis value is server specific.\n"
+"\n\n"
+msgstr ""
+"\n"
+"\n\nDéfinir le délai d'attente de bombparty.\n"
+"\n\n\n"
+"\n\n7 par défaut.\n"
+"\n\nCette valeur est spécifique au serveur.\n"
+"\n\n"
+
+#: partygames.py:502 partygames.py:519 partygames.py:536 partygames.py:553
+msgid "The timeout is currently set to {v}."
+msgstr "Le délai d'attente est actuellement défini à {v}."
+
+#: partygames.py:505 partygames.py:522 partygames.py:539 partygames.py:556
+msgid "That value is too low."
+msgstr "Cette valeur est trop faible."
+
+#: partygames.py:507 partygames.py:524 partygames.py:541 partygames.py:558
+msgid "The timeout is now set to {value}."
+msgstr "Le délai d'attente est maintenant défini à {value}."
+
+#: partygames.py:511
+#, docstring
+msgid ""
+"\n"
+"Set the timeout of fast.\n"
+"\n\n\n"
+"\n\nDefaults to 15.\n"
+"\n\nThis value is server specific.\n"
+"\n\n"
+msgstr ""
+"\n"
+"Définir le délai d'attente de fast.\n"
+"\n\n\n"
+"\n\n15 par défaut.\n"
+"\n\nCette valeur est spécifique au serveur.\n"
+"\n\n"
+
+#: partygames.py:528
+#, docstring
+msgid ""
+"\n"
+"Set the timeout of long.\n"
+"\n"
+"Defaults to 15.\n"
+"This value is server specific.\n"
+"\n\n"
+msgstr ""
+"\n"
+"Définir le délai d'attente de long.\n"
+"\n"
+"15 par défaut.\n"
+"Cette valeur est spécifique au serveur.\n"
+"\n\n"
+
+#: partygames.py:545
+#, docstring
+msgid ""
+"\n"
+"\n\nSet the timeout of most.\n"
+"\n\n\n"
+"\n\nDefaults to 15.\n"
+"\n\nThis value is server specific.\n"
+"\n\n"
+msgstr ""
+"\n"
+"\n\nDéfinir le délai d'attente de most.\n"
+"\n\n\n"
+"\n\n15 par défaut.\n"
+"\n\nCette valeur est spécifique au serveur.\n"
+"\n\n"
+
