@@ -181,11 +181,11 @@ class PartyGames(commands.Cog):
 	@partygames.command()
 	async def fast(self, ctx, maxpoints: int=5):
 		"""
-		Race to type a word the fastest.
-		
-		The first person to type a word that contains the given characters gets a point.
-		Words cannot be reused.
-		The first person to get `maxpoints` points wins.
+Race to type a word the fastest.
+
+The first person to type a word that contains the given characters gets a point.
+Words cannot be reused.
+The first person to get `maxpoints` points wins.
 		"""
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
@@ -473,10 +473,10 @@ class PartyGames(commands.Cog):
 	@partygamesset.group(invoke_without_command=True)
 	async def locale(self, ctx, locale: str):
 		"""
-		Override the bot's locale for partygames.
-		
-		Defaults to None.
-		This value is server specific.
+Override the bot's locale for partygames.
+
+Defaults to None.
+This value is server specific.
 		"""
 		if locale not in CHARS:
 			return await ctx.send(_('That locale is not valid or is not supported.'))
@@ -485,7 +485,9 @@ class PartyGames(commands.Cog):
 	
 	@locale.command()
 	async def remove(self, ctx):
-		"""Remove the locale override and use the bot's locale."""
+		"""
+Remove the locale override and use the bot's locale.
+		"""
 		await self.config.guild(ctx.guild).locale.set(None)
 		await ctx.send(_('Locale override removed.'))
 	
@@ -526,10 +528,10 @@ class PartyGames(commands.Cog):
 	@partygamesset.command()
 	async def longtime(self, ctx, value: int=None):
 		"""
-		Set the timeout of long.
-		
-		Defaults to 15.
-		This value is server specific.
+Set the timeout of long.
+
+Defaults to 15.
+This value is server specific.
 		"""
 		if value is None:
 			v = await self.config.guild(ctx.guild).timeLong()
