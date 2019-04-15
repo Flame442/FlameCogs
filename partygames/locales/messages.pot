@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-04-14 12:40-0400\n"
+"POT-Creation-Date: 2019-04-15 13:35-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,11 +85,11 @@ msgstr ""
 #, docstring
 msgid ""
 "\n"
-"\t\tRace to type a word the fastest.\n"
-"\t\t\n"
-"\t\tThe first person to type a word that contains the given characters gets a point.\n"
-"\t\tWords cannot be reused.\n"
-"\t\tThe first person to get `maxpoints` points wins.\n"
+"Race to type a word the fastest.\n"
+"\n"
+"The first person to type a word that contains the given characters gets a point.\n"
+"Words cannot be reused.\n"
+"The first person to get `maxpoints` points wins.\n"
 "\t\t"
 msgstr ""
 
@@ -187,10 +187,10 @@ msgstr ""
 #, docstring
 msgid ""
 "\n"
-"\t\tOverride the bot's locale for partygames.\n"
-"\t\t\n"
-"\t\tDefaults to None.\n"
-"\t\tThis value is server specific.\n"
+"Override the bot's locale for partygames.\n"
+"\n"
+"Defaults to None.\n"
+"This value is server specific.\n"
 "\t\t"
 msgstr ""
 
@@ -204,14 +204,17 @@ msgstr ""
 
 #: partygames.py:488
 #, docstring
-msgid "Remove the locale override and use the bot's locale."
+msgid ""
+"\n"
+"Remove the locale override and use the bot's locale.\n"
+"\t\t"
 msgstr ""
 
-#: partygames.py:490
+#: partygames.py:492
 msgid "Locale override removed."
 msgstr ""
 
-#: partygames.py:494
+#: partygames.py:496
 #, docstring
 msgid ""
 "\n"
@@ -222,19 +225,19 @@ msgid ""
 "\t\t"
 msgstr ""
 
-#: partygames.py:502 partygames.py:519 partygames.py:536 partygames.py:553
+#: partygames.py:504 partygames.py:521 partygames.py:538 partygames.py:555
 msgid "The timeout is currently set to {v}."
 msgstr ""
 
-#: partygames.py:505 partygames.py:522 partygames.py:539 partygames.py:556
+#: partygames.py:507 partygames.py:524 partygames.py:541 partygames.py:558
 msgid "That value is too low."
 msgstr ""
 
-#: partygames.py:507 partygames.py:524 partygames.py:541 partygames.py:558
+#: partygames.py:509 partygames.py:526 partygames.py:543 partygames.py:560
 msgid "The timeout is now set to {value}."
 msgstr ""
 
-#: partygames.py:511
+#: partygames.py:513
 #, docstring
 msgid ""
 "\n"
@@ -245,18 +248,18 @@ msgid ""
 "\t\t"
 msgstr ""
 
-#: partygames.py:528
+#: partygames.py:530
 #, docstring
 msgid ""
 "\n"
-"\t\tSet the timeout of long.\n"
-"\t\t\n"
-"\t\tDefaults to 15.\n"
-"\t\tThis value is server specific.\n"
+"Set the timeout of long.\n"
+"\n"
+"Defaults to 15.\n"
+"This value is server specific.\n"
 "\t\t"
 msgstr ""
 
-#: partygames.py:545
+#: partygames.py:547
 #, docstring
 msgid ""
 "\n"
