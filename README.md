@@ -11,11 +11,15 @@ These cogs are a collection of random stuff I make.
 
 These are cogs for the [Red Bot V3](https://github.com/Cog-Creators/Red-DiscordBot/tree/V3/develop) so ensure you have a working red bot.
 
+Make sure downloader is loaded
+
+`[p]load downloader`
+
+>[p] is your prefix.
+
 Add this repo using
 
 `[p]repo add flamecogs https://github.com/Flame442/FlameCogs`
-
->[p] is your prefix.
 
 Then, install each cog individually with
 
@@ -373,12 +377,6 @@ Defaults to `True`.
 This command is only usable by the server owner and bot owner.  
 This value is channel specific.
 
-# Planned changes
-
-**[Monopoly]** Add config for various house rules (~~auctions~~, free parking, ~~landing on go~~, etc)
-
-**[Battleship/Hangman/Monopoly]** Add optional betting to games
-
 # Contact
 
 Feel free to create an issue on this repository or join [my discord](https://discord.gg/bYqCjvu) if you have any issues.
@@ -392,8 +390,9 @@ The helpful support staff at the [Redbot discord](https://discord.gg/red),
 [Hasbro](hasbro.com) for creating the games that Battleship and Monopoly are based off of,  
 [TrustyJAID](https://github.com/TrustyJAID) for helping with Deepfry,  
 [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman,  
-iComputer7#0007 for the inspiration for Face,  
+[iComputer7#0007](https://github.com/iComputer7) for the inspiration for Face,  
 [Microsoft Azure](https://azure.microsoft.com/en-us/) for the API that Face uses,  
 [Sparklin Labs](http://bombparty.sparklinlabs.com/) for creating the game that Partygames is based off of,  
 [/u/YoungsterGlenn](https://www.reddit.com/r/BombParty/comments/3lehxq/a_nearly_exhaustive_subset_of_the_bombparty/) for the wordlist used by Partygames,  
-And [Sinbad](https://github.com/mikeshardmind) for helping with Wordstats.
+[Sinbad](https://github.com/mikeshardmind) for helping with Wordstats,  
+And [Preda](https://github.com/PredaaA) for translating Partygames.
