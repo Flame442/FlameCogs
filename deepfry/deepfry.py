@@ -383,10 +383,10 @@ class Deepfry(commands.Cog):
 			return
 		if msg.attachments[0].size > MAX_SIZE:
 			return
-		ext = msg.attachments[0].url.split('.')[-1]
+		ext = msg.attachments[0].url.split('.')[-1].lower()
 		if ext in self.imagetypes:
 			isgif = False
-		if ext in self.videotypes:
+		elif ext in self.videotypes:
 			isgif = True
 		else:
 			return
