@@ -107,7 +107,7 @@ class Hangman(commands.Cog):
 		try:
 			f = open(fp)
 		except FileNotFoundError:
-			await ctx.send('Your wordlist was not found, using default wordlist.')
+			await ctx.send('Your wordlist was not found, using the default wordlist.')
 			f = open(str(bundled_data_path(self) / 'words.txt'))
 		wordlist = [line.strip().lower() for line in f]
 		word = wordlist[randint(0,len(wordlist)-1)] #pick and format random word
@@ -146,28 +146,28 @@ class Hangman(commands.Cog):
 					pass
 			if t in guessed:
 				err = 1
-			else:
-				err = 0
-				if t not in word:
-					fails += 1
-					if fails == 6: #too many fails
-						guessed += t
-						p = self._get_message(word, guessed)
-						p = f'```{self.man[6]}\n{p}```Game Over\nThe word was {word}.'
-						if doEdit:
-							await boardmsg.edit(content=p)
-						else:
-							await ctx.send(p)
-						game = False
-				guessed += t
-				if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
+				continue
+			err = 0
+			guessed += t
+			if t not in word:
+				fails += 1
+				if fails == 6: #too many fails
 					p = self._get_message(word, guessed)
-					p = f'```{self.man[fails]}\n{p}```You win!\nThe word was {word}.'
+					p = f'```{self.man[fails]}\n{p}```Game Over\nThe word was {word}.'
 					if doEdit:
 						await boardmsg.edit(content=p)
 					else:
 						await ctx.send(p)
 					game = False
+					continue
+			if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
+				p = self._get_message(word, guessed)
+				p = f'```{self.man[fails]}\n{p}```You win!\nThe word was {word}.'
+				if doEdit:
+					await boardmsg.edit(content=p)
+				else:
+					await ctx.send(p)
+				game = False
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -201,7 +201,7 @@ class Hangman(commands.Cog):
 		"""Set the wordlist to the default list."""
 		fp = str(bundled_data_path(self) / 'words.txt')
 		await self.config.guild(ctx.guild).fp.set(fp)
-		await ctx.send('The wordlist is now the default list.')
+		await ctx.send('The wordlist is now set to the default list.')
 
 	@wordlist.command()
 	async def list(self, ctx):
@@ -213,7 +213,7 @@ class Hangman(commands.Cog):
 		if wordlists == []:
 			return await ctx.send('You do not have any wordlists.')
 		msg = '\n'.join(wordlists).strip()
-		await ctx.send(f'Available wordlists:\n`{msg}`')
+		await ctx.send(f'Available wordlists:```\n{msg}```')
 
 	@wordlist.command()
 	async def current(self, ctx):

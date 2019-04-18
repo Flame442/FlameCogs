@@ -28,134 +28,310 @@ class WordStats(commands.Cog):
 			worddict = {}
 		)
 	
+	class GuildConvert(commands.Converter):
+		async def convert(self, ctx, value):
+			try:
+				guild = ctx.bot.get_guild(int(value))
+				if guild is not None:
+					return guild
+				raise commands.BadArgument()
+			except ValueError:
+				for guild in ctx.bot.guilds:
+					if guild.name == value:
+						return guild
+				raise commands.BadArgument()
+
 	@commands.guild_only()
-	@commands.command()
+	@commands.group(invoke_without_command=True)
 	async def wordstats(
 		self,
 		ctx,
-		member: Optional[discord.Member]=None,
-		amount: Optional[Union[int, str]]=30
+		member_or_guild: Optional[Union[discord.Member, GuildConvert]]=None,
+		amount_or_word: Optional[Union[int, str]]=30
 	):
 		"""
 		Prints the most commonly used words.
 		
-		Use the optional paramater "member" to see the stats of a member.
-		Use the optional paramater "amount" to change the number of words that are displayed, or to check the stats of a specific word.
+		Use the optional paramater "member_or_guild" to see the stats of a member or guild.
+		Use the optional paramater "amount_or_word" to change the number of words that are displayed or to check the stats of a specific word.
 		"""
-		try:
-			if amount <= 0:
+		if isinstance(amount_or_word, int):
+			if amount_or_word <= 0:
 				return await ctx.send('At least one word needs to be displayed.')
-		except TypeError:
-			pass
 		async with ctx.typing():
 			await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
-			if member is None:
-				mention = 'the server'
+			if member_or_guild is None:
+				mention = 'this server'
 				worddict = await self.config.guild(ctx.guild).worddict()
+			elif isinstance(member_or_guild, discord.Member):
+				mention = member_or_guild.display_name
+				worddict = await self.config.member(member_or_guild).worddict()
 			else:
-				mention = member.display_name
-				worddict = await self.config.member(member).worddict()
+				mention = member_or_guild.name
+				worddict = await self.config.guild(member_or_guild).worddict()
 			order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
-		if isinstance(amount, str):
-			try:
-				ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
-				if order.index(amount.lower()) != 0:
-					mc = ordinal(order.index(amount.lower())+1)+'** most common'
-				else:
-					mc = 'most common**'
+		if worddict == {}:
+			if mention == 'this server':
+				mention = 'This server'
+			return await ctx.send(f'{mention} has not said any words yet.')
+		if isinstance(amount_or_word, str): #specific word
+			if amount_or_word.lower() not in worddict:
 				return await ctx.send(
-					f'The word **{amount}** has been said by {mention} '
-					f'**{str(worddict[amount.lower()])}** '
-					f'{"times" if worddict[amount.lower()] != 1 else "time"}.\n'
-					f'It is the **{mc} word {mention} has said.'
+					f'The word **{amount_or_word}** has not been said by {mention} yet.'
 				)
-			except ValueError:
-				return await ctx.send(
-					f'The word **{amount}** has not been said by {mention} yet.'
-				)
+			ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
+			rank = order.index(amount_or_word.lower())
+			number = worddict[amount_or_word.lower()]
+			if rank == 0: #most common
+				mc = '**most common**'
+			else: #not the most common
+				mc = f'**{ordinal(rank+1)}** most common' #accounts for zero-indexing
+			return await ctx.send(
+				f'The word **{amount_or_word}** has been said by {mention} '
+				f'**{number}** {"times" if number != 1 else "time"}.\n'
+				f'It is the {mc} word {mention} has said.'
+			)
 		result = ''
-		smallresult = ''
 		n = 0
-		num = 0
-		maxlen = False
+		total = sum(worddict.values())
+		maxwidth = len(str(worddict[order[0]])) + 2 #max width of a number + extra for space
 		for word in order:
-			if not maxlen:
-				maxlen = len(str(worddict[word]))
-			if n < amount:
-				smallresult += (
-					f'{str(worddict[word])}'
-					f'{" ".join(["" for x in range(maxlen-(len(str(worddict[word])))+2)])}'
-					f'{str(word)}\n'
-				)
-				n += 1
-			result += f'{str(worddict[word])} {str(word)}\n'
-			num += int(worddict[word])
-		if smallresult == '':
-			if mention == 'the server':
-				mention = 'The server'
-			await ctx.send(f'{mention} has not said any words yet.')
+			currentwidth = len(str(worddict[word]))   
+			result += (
+				f'{worddict[word]}{" " * (maxwidth-currentwidth)}{word}\n'
+			)
+			n += 1
+			if n == amount_or_word:
+				break
+		if n == 1:
+			mc = '**most common** word'
 		else:
-			try:
-				await ctx.send(
-					f'Out of **{num}** words and **{len(worddict)}** unique words, '
-					f'the **{str(n) + "** most common words" if n != 1 else "most common** word"} '
-					f'that {mention} has said {"are" if n != 1 else "is"}:\n'
-					f'```{smallresult.rstrip()}```'
+			mc = f'**{n}** most common words'
+		try:
+			await ctx.send(
+				f'Out of **{total}** words and **{len(worddict)}** unique words, '
+				f'the {mc} that {mention} has said {"is" if n == 1 else "are"}:\n'
+				f'```{result.rstrip()}```'
+			)
+		except discord.errors.HTTPException:
+			await ctx.send('The result is too long to send.')
+	
+	@wordstats.command(name='global')
+	async def wordstats_global(self, ctx, amount_or_word: Optional[Union[int, str]]=30):
+		"""
+		Prints the most commonly used words across all guilds.
+		
+		Use the optional paramater "amount_or_word" to change the number of words that are displayed or to check the stats of a specific word.
+		"""
+		if isinstance(amount_or_word, int):
+			if amount_or_word <= 0:
+				return await ctx.send('At least one word needs to be displayed.')
+		async with ctx.typing():
+			await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
+			guilddicts = await self.config.all_guilds()
+			worddict = {}
+			for g in guilddicts:
+				for w in guilddicts[g]['worddict']:
+					if w in worddict:
+						worddict[w] += guilddicts[g]['worddict'][w]
+					else:
+						worddict[w] = guilddicts[g]['worddict'][w]
+			order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
+		if worddict == {}:
+			return await ctx.send(f'No words have been said yet.')
+		if isinstance(amount_or_word, str): #specific word
+			if amount_or_word.lower() not in worddict:
+				return await ctx.send(
+					f'The word **{amount_or_word}** has not been said yet.'
 				)
-			except discord.errors.HTTPException:
-				await ctx.send('Message too long to send.')
+			ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
+			rank = order.index(amount_or_word.lower())
+			number = worddict[amount_or_word.lower()]
+			if rank == 0: #most common
+				mc = '**most common**'
+			else: #not the most common
+				mc = f'**{ordinal(rank+1)}** most common' #accounts for zero-indexing
+			return await ctx.send(
+				f'The word **{amount_or_word}** has been said '
+				f'**{number}** {"times" if number != 1 else "time"} globally.\n'
+				f'It is the {mc} word said.'
+			)
+		result = ''
+		n = 0
+		total = sum(worddict.values())
+		maxwidth = len(str(worddict[order[0]])) + 2 #max width of a number + extra for space
+		for word in order:
+			currentwidth = len(str(worddict[word]))
+			result += (
+				f'{worddict[word]}{" " * (maxwidth-currentwidth)}{word}\n'
+			)
+			n += 1
+			if n == amount_or_word:
+				break
+		if n == 1:
+			mc = '**most common** word'
+		else:
+			mc = f'**{n}** most common words'
+		try:
+			await ctx.send(
+				f'Out of **{total}** words and **{len(worddict)}** unique words, '
+				f'the {mc} said globally {"is" if n == 1 else "are"}:\n'
+				f'```{result.rstrip()}```'
+			)
+		except discord.errors.HTTPException:
+			await ctx.send('The result is too long to send.')
 	
 	@commands.guild_only()
-	@commands.command()
-	async def topchatters(self, ctx, amount: int=10):
+	@commands.group(invoke_without_command=True)
+	async def topchatters(
+		self,
+		ctx,
+		guild: Optional[GuildConvert]=None,
+		word: Optional[str]=None,
+		amount: int=10
+	):
 		"""
 		Prints the members who have said the most words.
 		
+		Use the optional paramater "guild" to see the topchatters in a specific guild.
+		Use the optional paramater "word" to see the topchatters of a specific word.
 		Use the optional paramater "amount" to change the number of members that are displayed.
 		"""
+		if word:
+			if word.isdigit(): #fix for str being greedy
+				amount = int(word)
+				word = None
+			else: #word is actually a word
+				word = word.lower()
+		if amount <= 0:
+			return await ctx.send('At least one member needs to be displayed.')
+		if guild is None:
+			guild = ctx.guild
+		async with ctx.typing():
+			await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
+			data = await self.config.all_members(guild)
+			sumdict = {}
+			for memid in data:
+				if word:
+					if word in data[memid]['worddict']:
+						sumdict[memid] = data[memid]['worddict'][word]
+				else:
+					n = 0
+					for w in data[memid]['worddict']:
+						n += data[memid]['worddict'][w]
+					sumdict[memid] = n
+			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
+		if sumdict == {}:
+			return await ctx.send(f'No one has chatted yet.')
+		result = ''
+		n = 0
+		total = sum(sumdict.values())
+		maxwidth = len(str(sumdict[order[0]])) + 2 #max width of a number + extra for space
+		for memid in order:
+			mem = guild.get_member(memid)
+			if mem is None:
+				name = f'<removed member {memid}>'
+			else:
+				name = mem.display_name
+			currentwidth = len(str(sumdict[memid]))
+			result += (
+				f'{sumdict[memid]}{" " * (maxwidth-currentwidth)}{name}\n'
+			)
+			n += 1
+			if n == amount:
+				break
+		if word:
+			wordprint = f'the word **{word}** the most'
+		else:
+			wordprint = 'the most words'
+		if n == 1:
+			memberprint = 'member'
+		else:
+			memberprint = f'**{n}** members'
+		if guild == ctx.guild:
+			guildprint = 'this server'
+		else:
+			guildprint = guild.name
+		try:
+			await ctx.send(
+				f'Out of **{total}** words, the {memberprint} who {"has" if n == 1 else "have"} '
+				f'said {wordprint} in {guildprint} {"is" if n == 1 else "are"}:\n```{result}```'
+			)
+		except discord.errors.HTTPException:
+			await ctx.send('The result is too long to send.')
+	
+	@topchatters.command(name='global')
+	async def topchatters_global(self, ctx, word: Optional[str]=None, amount: int=10):
+		"""
+		Prints the members who have said the most words across all guilds.
+		
+		Use the optional paramater "word" to see the topchatters of a specific word.
+		Use the optional paramater "amount" to change the number of members that are displayed.
+		"""
+		if word:
+			if word.isdigit(): #fix for str being greedy
+				amount = int(word)
+				word = None
+			else: #word is actually a word
+				word = word.lower()
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
 		async with ctx.typing():
 			await self.update_data(members=self.members_to_update, guilds=self.guilds_to_update)
-			data = await self.config.all_members(ctx.guild)
+			data = await self.config.all_members()
 			sumdict = {}
-			for memid in data:
-				n = 0
-				for word in data[memid]['worddict']:
-					n += data[memid]['worddict'][word]
-				sumdict[memid] = n
+			for guild in data:
+				for memid in data[guild]:
+					if word:
+						if word in data[guild][memid]['worddict']:
+							if memid in sumdict:
+								sumdict[memid] += data[guild][memid]['worddict'][word]
+							else:
+								sumdict[memid] = data[guild][memid]['worddict'][word]
+					else:
+						n = 0
+						for w in data[guild][memid]['worddict']:
+							n += data[guild][memid]['worddict'][w]
+						if memid in sumdict:
+							sumdict[memid] += n
+						else:
+							sumdict[memid] = n
 			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
+		if sumdict == {}:
+			return await ctx.send(f'No one has chatted yet.')
 		result = ''
-		smallresult = ''
 		n = 0
-		num = 0
-		maxlen = False
+		total = sum(sumdict.values())
+		maxwidth = len(str(sumdict[order[0]])) + 2 #max width of a number + extra for space
 		for memid in order:
-			if n < amount:
-				if not maxlen:
-					maxlen = len(str(sumdict[memid]))
-				try:
-					mem = ctx.guild.get_member(memid)
-					name = mem.display_name
-				except AttributeError:
-					name = f'<removed member {memid}>'
-				smallresult += (
-					f'{str(sumdict[memid])}'
-					f'{" ".join(["" for x in range(maxlen-len(str(sumdict[memid]))+2)])}'
-					f'{name}\n'
-				)
-				n += 1
-			result += f'{str(sumdict[memid])} {str(memid)}\n'
-			num += int(sumdict[memid])
+			user = self.bot.get_user(memid)
+			if user is None:
+				name = f'<removed user {memid}>'
+			else:
+				name = user.name
+			currentwidth = len(str(sumdict[memid]))
+			result += (
+				f'{sumdict[memid]}{" " * (maxwidth-currentwidth)}{name}\n'
+			)
+			n += 1
+			if n == amount:
+				break
+		if word:
+			wordprint = f'the word **{word}** the most'
+		else:
+			wordprint = 'the most words'
+		if n == 1:
+			memberprint = 'user'
+		else:
+			memberprint = f'**{n}** users'
 		try:
 			await ctx.send(
-				f'Out of **{num}** words, the {"**" + str(n) + "** " if n != 1 else ""}'
-				f'{"members" if n != 1 else "member"} who {"have" if n != 1 else "has"} '
-				f'said the most words {"are" if n != 1 else "is"}:\n```{smallresult}```'
+				f'Out of **{total}** words, the {memberprint} who {"has" if n == 1 else "have"} '
+				f'said {wordprint} globally {"is" if n == 1 else "are"}:\n```{result}```'
 			)
 		except discord.errors.HTTPException:
-			await ctx.send('Message too long to send.')
-	
+			await ctx.send('The result is too long to send.')
+		
 	@commands.guild_only()
 	@checks.guildowner()
 	@commands.group()

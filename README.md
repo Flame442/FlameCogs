@@ -11,11 +11,15 @@ These cogs are a collection of random stuff I make.
 
 These are cogs for the [Red Bot V3](https://github.com/Cog-Creators/Red-DiscordBot/tree/V3/develop) so ensure you have a working red bot.
 
+Make sure downloader is loaded
+
+`[p]load downloader`
+
+>[p] is your prefix.
+
 Add this repo using
 
 `[p]repo add flamecogs https://github.com/Flame442/FlameCogs`
-
->[p] is your prefix.
 
 Then, install each cog individually with
 
@@ -37,6 +41,7 @@ Name | Description
 [Monopoly](../master/README.md#monopoly) | Play monopoly with up to 7 other people in your server.
 [Onlinestats](../master/README.md#onlinestats) | Information about what devices people are using to run discord.
 [Partygames](../master/README.md#partygames) | Chat games focused on coming up with words from 3 letters.
+[SimpleEmbed](../master/README.md#simpleembed) | Simply create embeds.
 [Wordstats](../master/README.md#wordstats) | Track commonly used words by server and member.
 
 ## Battleship
@@ -342,19 +347,33 @@ Use `reset` to remove the override.
 This command is only usable by the bot owner.  
 This value is global.
 
+## SimpleEmbed
+
+This cog will let you send embedded messages quickly and easily.
+
+### Usage
+
+**`[p]sendembed [color] <text>`**  
+Send an embed.  
+Use the optional paramter `color` to change the color of the embed.  
+The embed will contain the text `text`.  
+All normal discord formatting will work inside the embed.
+
 ## Wordstats
 
 This cog will track commonly used words by server and member.
 
 ### Usage
 
-**`[p]wordstats [member] [amount]`**  
+**`[p]wordstats [member_or_guild] [amount_or_word]`**  
 Prints the most commonly used words.  
-Use the optional paramater `member` to see the stats of a member.  
-Use the optional paramater `amount` to change the number of words that are displayed, or to check the stats of a specific word (default `30`).
+Use the optional paramater `member_or_guild` to see the stats of a member or guild, or set it to `global` to see global stats.  
+Use the optional paramater `amount_or_word` to change the number of words that are displayed, or to check the stats of a specific word (default `30`).
 
-**`[p]topchatters [amount]`**  
+**`[p]topchatters [guild] [word] [amount]`**  
 Prints the members who have said the most words.  
+Use the optional paramater `guild` to see the topchatters in a specific guild, or set it to `global` to see global stats.  
+Use the optional paramater `word` to see the topchatters of a specific word.  
 Use the optional paramater `amount` to change the number of members that are displayed (default `10`).
 
 **`[p]wordstatsset <argument>`**  
@@ -373,12 +392,6 @@ Defaults to `True`.
 This command is only usable by the server owner and bot owner.  
 This value is channel specific.
 
-# Planned changes
-
-**[Monopoly]** Add config for various house rules (~~auctions~~, free parking, ~~landing on go~~, etc)
-
-**[Battleship/Hangman/Monopoly]** Add optional betting to games
-
 # Contact
 
 Feel free to create an issue on this repository or join [my discord](https://discord.gg/bYqCjvu) if you have any issues.
@@ -392,8 +405,9 @@ The helpful support staff at the [Redbot discord](https://discord.gg/red),
 [Hasbro](hasbro.com) for creating the games that Battleship and Monopoly are based off of,  
 [TrustyJAID](https://github.com/TrustyJAID) for helping with Deepfry,  
 [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman,  
-iComputer7#0007 for the inspiration for Face,  
+[iComputer7#0007](https://github.com/iComputer7) for the inspiration for Face,  
 [Microsoft Azure](https://azure.microsoft.com/en-us/) for the API that Face uses,  
 [Sparklin Labs](http://bombparty.sparklinlabs.com/) for creating the game that Partygames is based off of,  
 [/u/YoungsterGlenn](https://www.reddit.com/r/BombParty/comments/3lehxq/a_nearly_exhaustive_subset_of_the_bombparty/) for the wordlist used by Partygames,  
-And [Sinbad](https://github.com/mikeshardmind) for helping with Wordstats.
+[Sinbad](https://github.com/mikeshardmind) for helping with Wordstats,  
+And [Preda](https://github.com/PredaaA) for translating Partygames.

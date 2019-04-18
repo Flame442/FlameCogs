@@ -37,7 +37,7 @@ class Deepfry(commands.Cog):
 		img = e.enhance(100)
 		e = ImageEnhance.Brightness(img)
 		img = e.enhance(.27)
-		r, b, g = img.split()[:3]
+		r, b, g = img.split()
 		e = ImageEnhance.Brightness(r)
 		r = e.enhance(4)
 		e = ImageEnhance.Brightness(g)
@@ -101,7 +101,7 @@ class Deepfry(commands.Cog):
 		img = e.enhance(100)
 		e = ImageEnhance.Brightness(img)
 		img = e.enhance(.27)
-		r, b, g = img.split()[:3]
+		r, b, g = img.split()
 		e = ImageEnhance.Brightness(r)
 		r = e.enhance(4)
 		e = ImageEnhance.Brightness(g)
@@ -215,6 +215,8 @@ class Deepfry(commands.Cog):
 			await ctx.message.attachments[0].save(temp_orig)
 			temp_orig.seek(0)
 			img = Image.open(temp_orig)
+		if not isgif:
+			img = img.convert('RGB')
 		return img, isgif
 	
 	@commands.command(aliases=['df'])
@@ -381,10 +383,10 @@ class Deepfry(commands.Cog):
 			return
 		if msg.attachments[0].size > MAX_SIZE:
 			return
-		ext = msg.attachments[0].url.split('.')[-1]
+		ext = msg.attachments[0].url.split('.')[-1].lower()
 		if ext in self.imagetypes:
 			isgif = False
-		if ext in self.videotypes:
+		elif ext in self.videotypes:
 			isgif = True
 		else:
 			return

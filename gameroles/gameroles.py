@@ -113,7 +113,7 @@ class GameRoles(commands.Cog):
 		activities = '\n'.join(roledict[rid])
 		await ctx.send(
 			f'Activities that currently trigger `{role.name}`:\n'
-			f'```{activities}```'
+			f'```\n{activities}```'
 		)
 
 	@checks.guildowner()
@@ -124,7 +124,7 @@ class GameRoles(commands.Cog):
 			activity = 'None'
 		else:
 			activity = ctx.message.author.activity.name
-		await ctx.send(f'```{activity}```')
+		await ctx.send(f'```\n{activity}```')
 
 	@gameroles.command()
 	async def recheck(self, ctx):
