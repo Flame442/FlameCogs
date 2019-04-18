@@ -68,7 +68,7 @@ class BattleshipGame():
 			b += f'\n{str(y)} '
 			for x in range(10):
 				b += outputchars[bt][self.board[player][(y*10)+x]] #horizontal positions
-		return f'```{b}```'
+		return f'```\n{b}```'
 	
 	async def _place(self, player, length, value):
 		"""
