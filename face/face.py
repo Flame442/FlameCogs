@@ -151,10 +151,8 @@ class Face(commands.Cog):
 							img = Image.open(BytesIO(r)).convert('RGBA')
 					except Exception: #ANY failure to find an image can pass silently
 						img = None
-			try:
+			if 'error' in faces:
 				return await ctx.send(f'API Error: {faces["error"]["message"]}')
-			except TypeError:
-				pass
 		await ctx.send(f'Found {len(faces)} {"face" if len(faces) == 1 else "faces"}.\n\n')
 		if ctx.guild:
 			doMakeMenu = await self.config.guild(ctx.guild).doMakeMenu()
