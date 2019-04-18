@@ -349,7 +349,7 @@ This value is global.
 
 ## SimpleEmbed
 
-This cog will let you send embeded messages quickly and easily.
+This cog will let you send embedded messages quickly and easily.
 
 ### Usage
 
