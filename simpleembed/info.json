@@ -1,0 +1,11 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing SimpleEmbed. Use	`[p]sendembed` to send embeds.",
+    "name" : "SimpleEmbed",
+    "short" : "Simply send embeds.",
+    "requirements" : [],
+    "description" : "Simply send embeds.",
+    "permissions" : ["Send Messages", "Embed Links"],
+    "tags" : ["Utility"],
+    "min_python_version": [3, 6, 0]
+}
