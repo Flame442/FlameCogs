@@ -41,6 +41,7 @@ Name | Description
 [Monopoly](../master/README.md#monopoly) | Play monopoly with up to 7 other people in your server.
 [Onlinestats](../master/README.md#onlinestats) | Information about what devices people are using to run discord.
 [Partygames](../master/README.md#partygames) | Chat games focused on coming up with words from 3 letters.
+[SimpleEmbed](../master/README.md#simpleembed) | Simply create embeds.
 [Wordstats](../master/README.md#wordstats) | Track commonly used words by server and member.
 
 ## Battleship
@@ -345,6 +346,18 @@ Override the bot's locale for partygames.
 Use `reset` to remove the override.  
 This command is only usable by the bot owner.  
 This value is global.
+
+## SimpleEmbed
+
+This cog will let you send embeded messages quickly and easily.
+
+### Usage
+
+**`[p]sendembed [color] <text>`**  
+Send an embed.  
+Use the optional paramter `color` to change the color of the embed.  
+The embed will contain the text `text`.  
+All normal discord formatting will work inside the embed.
 
 ## Wordstats
 
