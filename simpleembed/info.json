@@ -1,6 +1,6 @@
 {
     "author" : ["Flame442 (Flame#2941)"],
-    "install_msg" : "Thanks for installing SimpleEmbed. Use	`[p]sendembed` to send embeds.",
+    "install_msg" : "Thanks for installing SimpleEmbed. Use `[p]sendembed` to send embeds.",
     "name" : "SimpleEmbed",
     "short" : "Simply send embeds.",
     "requirements" : [],
