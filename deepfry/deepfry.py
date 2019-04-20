@@ -54,7 +54,7 @@ class Deepfry(commands.Cog):
 		return temp
 	
 	@staticmethod
-	def _videofry(img):
+	def _videofry(img, duration):
 		imgs = []
 		frame = 0
 		while img:
@@ -85,7 +85,10 @@ class Deepfry(commands.Cog):
 				break
 		temp = BytesIO()
 		temp.name = 'deepfried.gif'
-		imgs[0].save(temp, format='GIF', save_all=True, append_images=imgs[1:], loop=0)
+		if duration:
+			imgs[0].save(temp, format='GIF', save_all=True, append_images=imgs[1:], loop=0, duration=duration)
+		else:
+			imgs[0].save(temp, format='GIF', save_all=True, append_images=imgs[1:], loop=0)
 		temp.seek(0)
 		return temp
 	
@@ -121,7 +124,7 @@ class Deepfry(commands.Cog):
 		return temp
 	
 	@staticmethod
-	def _videonuke(img):
+	def _videonuke(img, duration):
 		imgs = []
 		frame = 0
 		while img:
@@ -158,7 +161,10 @@ class Deepfry(commands.Cog):
 				break
 		temp = BytesIO()
 		temp.name = 'nuke.gif'
-		imgs[0].save(temp, save_all=True, append_images=imgs[1:], loop=0)
+		if duration:
+			imgs[0].save(temp, save_all=True, append_images=imgs[1:], loop=0, duration=duration)
+		else:
+			imgs[0].save(temp, save_all=True, append_images=imgs[1:], loop=0)
 		temp.seek(0)
 		return temp
 	
@@ -215,9 +221,13 @@ class Deepfry(commands.Cog):
 			await ctx.message.attachments[0].save(temp_orig)
 			temp_orig.seek(0)
 			img = Image.open(temp_orig)
-		if not isgif:
+		duration = None
+		if isgif:
+			if 'duration' in img.info:
+				duration = img.info['duration']
+		else:
 			img = img.convert('RGB')
-		return img, isgif
+		return img, isgif, duration
 	
 	@commands.command(aliases=['df'])
 	@commands.bot_has_permissions(attach_files=True)
@@ -229,11 +239,11 @@ class Deepfry(commands.Cog):
 		"""
 		async with ctx.typing():
 			try:
-				img, isgif = await self._get_image(ctx, link)
+				img, isgif, duration = await self._get_image(ctx, link)
 			except ImageFindError as e:	
 				return await ctx.send(e)
 			if isgif:
-				task = functools.partial(self._videofry, img)
+				task = functools.partial(self._videofry, img, duration)
 			else:
 				task = functools.partial(self._fry, img)
 			task = self.bot.loop.run_in_executor(None, task)
@@ -256,11 +266,11 @@ class Deepfry(commands.Cog):
 		"""
 		async with ctx.typing():
 			try:
-				img, isgif = await self._get_image(ctx, link)
+				img, isgif, duration = await self._get_image(ctx, link)
 			except ImageFindError as e:	
 				return await ctx.send(e)
 			if isgif:
-				task = functools.partial(self._videonuke, img)
+				task = functools.partial(self._videonuke, img, duration)
 			else:
 				task = functools.partial(self._nuke, img)	
 			task = self.bot.loop.run_in_executor(None, task)
