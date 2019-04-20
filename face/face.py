@@ -174,24 +174,14 @@ class Face(commands.Cog):
 				'**Smile:** '
 				f'{round(face["faceAttributes"]["smile"] * 100)}%\n'
 				'\n'
-				'**Anger:** '
-				f'{round(face["faceAttributes"]["emotion"]["anger"] * 100)}%\n'
-				'**Contempt:** '
-				f'{round(face["faceAttributes"]["emotion"]["contempt"] * 100)}%\n'
-				'**Disgust:** '
-				f'{round(face["faceAttributes"]["emotion"]["disgust"] * 100)}%\n'
-				'**Fear:** '
-				f'{round(face["faceAttributes"]["emotion"]["fear"] * 100)}%\n'
-				'**Happiness:** '
-				f'{round(face["faceAttributes"]["emotion"]["happiness"] * 100)}%\n'
-				'**Neutral:** '
-				f'{round(face["faceAttributes"]["emotion"]["neutral"] * 100)}%\n'
-				'**Sadness:** '
-				f'{round(face["faceAttributes"]["emotion"]["sadness"] * 100)}%\n'
-				'**Surprise:** '
-				f'{round(face["faceAttributes"]["emotion"]["surprise"] * 100)}%\n'
-				'\n'
-				'**Bald:** '
+			)
+			for emotion in face["faceAttributes"]["emotion"]:
+				desc += (
+					f'**{emotion.title()}:** '
+					f'{round(face["faceAttributes"]["emotion"][emotion] * 100)}%\n'
+				)
+			desc += (
+				'\n**Bald:** '
 				f'{round(face["faceAttributes"]["hair"]["bald"] * 100)}%'
 			)
 			if face['faceAttributes']['hair']['hairColor'] != []:
