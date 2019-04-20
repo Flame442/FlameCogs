@@ -22,8 +22,8 @@ class Face(commands.Cog):
 			doMakeMenu = True
 		)
 	
-	@commands.group()
 	@checks.guildowner()
+	@commands.group()
 	async def faceset(self, ctx):
 		"""Config options for face."""
 		pass
@@ -64,7 +64,6 @@ class Face(commands.Cog):
 				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.'
 			)
 	
-	@checks.guildowner()
 	@commands.guild_only()
 	@faceset.command()
 	async def menu(self, ctx, value: bool=None):
@@ -106,16 +105,6 @@ class Face(commands.Cog):
 				'Follow this guide for instructions on how to get one:\n'
 				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>'
 			)
-		headers = {'Ocp-Apim-Subscription-Key': api_key} 
-		params = {
-			'returnFaceId': 'false',
-			'returnFaceLandmarks': 'false',
-			'returnFaceAttributes': (
-				'age,gender,headPose,smile,facialHair,glasses,emotion,'
-				'hair,makeup,occlusion,accessories,blur,exposure,noise'
-			)
-		}
-		img = None
 		if not ctx.message.attachments and not face_url:
 			async for msg in ctx.channel.history(limit=10):
 				for a in msg.attachments:
@@ -124,17 +113,21 @@ class Face(commands.Cog):
 						break
 				if face_url:
 					break
-			if not face_url:
-				return await ctx.send('You need to supply an image.')
+		elif not face_url and ctx.message.attachments:
+			for a in ctx.message.attachments:
+				if a.url.split('.')[-1].lower() in ['png', 'jpg', 'jpeg']:
+					face_url = a.url
+					break
 		if not face_url:
-			try:
-				face_url = ctx.message.attachments[0].url
-				temp_orig = BytesIO()
-				r = await ctx.message.attachments[0].save(temp_orig)
-				temp_orig.seek(0)
-				img = Image.open(temp_orig).convert('RGBA')
-			except Exception: #ANY failure to find an image needs to cancel
-				return await ctx.send('You need to supply an image.')
+			return await ctx.send('You need to supply an image.')
+		headers = {'Ocp-Apim-Subscription-Key': api_key} 
+		params = {
+			'returnFaceId': 'false',
+			'returnFaceLandmarks': 'false',
+			'returnFaceAttributes': (
+				'age,gender,smile,glasses,emotion,hair,makeup'
+			)
+		}
 		async with ctx.typing():
 			async with aiohttp.ClientSession() as session:
 				async with session.post(
@@ -144,110 +137,113 @@ class Face(commands.Cog):
 						json={'url': face_url}
 					) as response:
 					faces = await response.json(content_type=None)
-				if not img:
-					try:
-						async with session.get(face_url) as response:
-							r = await response.read()
-							img = Image.open(BytesIO(r)).convert('RGBA')
-					except Exception: #ANY failure to find an image can pass silently
-						img = None
-			if 'error' in faces:
-				return await ctx.send(f'API Error: {faces["error"]["message"]}')
-		await ctx.send(f'Found {len(faces)} {"face" if len(faces) == 1 else "faces"}.\n\n')
+				if 'error' in faces:
+					return await ctx.send(f'API Error: {faces["error"]["message"]}')
+				try:
+					async with session.get(face_url) as response:
+						r = await response.read()
+					img = Image.open(BytesIO(r)).convert('RGBA')
+				except Exception: #an image is not required to function
+					img = None
+		await ctx.send(f'Found {len(faces)} {"face" if len(faces) == 1 else "faces"}.')
 		if ctx.guild:
 			doMakeMenu = await self.config.guild(ctx.guild).doMakeMenu()
 		else:
 			doMakeMenu = True
 		faceNumber = 0
 		embedlist = []
+		glassesformat = {
+			'NoGlasses': 'No Glasses',
+			'ReadingGlasses': 'Reading Glasses',
+			'Sunglasses': 'Sunglasses',
+			'SwimmingGoggles': 'Swimming Goggles'
+		}
 		if img:
 			draw = ImageDraw.Draw(img)
 		for face in faces:
 			faceNumber += 1
-			faceRectangle = face['faceRectangle'] #dict of top, left, width, height
-			faceAttributes = face['faceAttributes'] #dict of all other attributes
-			smile = faceAttributes['smile'] #float, 0-1. intensity of smile
-			gender = faceAttributes['gender'] #male or female
-			age = faceAttributes['age'] #estimated age
-			facialHair = faceAttributes['facialHair'] #dict of moustache, beard, sideburns, estimated thickness of facial hair
-			glasses = faceAttributes['glasses'] #one of NoGlasses, ReadingGlasses, Sunglasses, SwimmingGoggles
-			emotion = faceAttributes['emotion'] #dict of anger, contempt, disgust, fear, happiness, neutral, saddness, surprise, intensity of each emotion
-			makeup = faceAttributes['makeup'] #dict of eyeMakeup, lipMakeup, value is bool
-			hair = faceAttributes['hair'] #dict of bald, float of probability of bald, plus inside dicts for color chances
-			hairColor = {}
-			for color in hair['hairColor']:
-				hairColor[color['color']] = color['confidence']
+			desc = (
+				f'*{round(face["faceAttributes"]["age"])} year old '
+				f'{face["faceAttributes"]["gender"]}*\n\n'
+				'**Eye Makeup:** '
+				f'{"Yes" if face["faceAttributes"]["makeup"]["eyeMakeup"] else "No"}\n'
+				'**Lip Makeup:** '
+				f'{"Yes" if face["faceAttributes"]["makeup"]["lipMakeup"] else "No"}\n'
+				'**Glasses:** '
+				f'{glassesformat[face["faceAttributes"]["glasses"]]}\n'
+				'**Smile:** '
+				f'{round(face["faceAttributes"]["smile"] * 100)}%\n'
+				'\n'
+				'**Anger:** '
+				f'{round(face["faceAttributes"]["emotion"]["anger"] * 100)}%\n'
+				'**Contempt:** '
+				f'{round(face["faceAttributes"]["emotion"]["contempt"] * 100)}%\n'
+				'**Disgust:** '
+				f'{round(face["faceAttributes"]["emotion"]["disgust"] * 100)}%\n'
+				'**Fear:** '
+				f'{round(face["faceAttributes"]["emotion"]["fear"] * 100)}%\n'
+				'**Happiness:** '
+				f'{round(face["faceAttributes"]["emotion"]["happiness"] * 100)}%\n'
+				'**Neutral:** '
+				f'{round(face["faceAttributes"]["emotion"]["neutral"] * 100)}%\n'
+				'**Sadness:** '
+				f'{round(face["faceAttributes"]["emotion"]["sadness"] * 100)}%\n'
+				'**Surprise:** '
+				f'{round(face["faceAttributes"]["emotion"]["surprise"] * 100)}%\n'
+				'\n'
+				'**Bald:** '
+				f'{round(face["faceAttributes"]["hair"]["bald"] * 100)}%'
+			)
+			if face['faceAttributes']['hair']['hairColor'] != []:
+				order = sorted(
+					face['faceAttributes']['hair']['hairColor'],
+					key=lambda c: c['color']
+				)
+				for hair in order:
+					desc += (
+						f'\n**{hair["color"].title()}:** {round(hair["confidence"] * 100)}%'
+					)
 			embed = discord.Embed(
 				title=f'**Face {faceNumber}**',
-				description=f'{round(age)} year old {gender}',
+				description=desc,
 				color=await ctx.embed_color()
-				)
-			if doMakeMenu and img:
-				draw.rectangle(
-					(
-						faceRectangle['left'],
-						faceRectangle['top'],
-						faceRectangle['left']+faceRectangle['width'],
-						faceRectangle['top']+faceRectangle['height']
-					),
-					outline='red'
-				)
-				draw.text((faceRectangle['left'], faceRectangle['top']), str(faceNumber))
+			)
+			if doMakeMenu:
+				if img:
+					draw.rectangle(
+						(
+							face['faceRectangle']['left'],
+							face['faceRectangle']['top'],
+							face['faceRectangle']['left']+face['faceRectangle']['width'],
+							face['faceRectangle']['top']+face['faceRectangle']['height']
+						),
+						outline='red'
+					)
+					draw.text(
+						(face['faceRectangle']['left'], face['faceRectangle']['top']),
+						str(faceNumber)
+					)
+				embedlist.append(embed)
 			else:
+				file = None
 				if img:
 					faceimg = img.crop((
-						faceRectangle['left'],
-						faceRectangle['top'],
-						faceRectangle['left']+faceRectangle['width'],
-						faceRectangle['top']+faceRectangle['height']
+						face['faceRectangle']['left'],
+						face['faceRectangle']['top'],
+						face['faceRectangle']['left']+face['faceRectangle']['width'],
+						face['faceRectangle']['top']+face['faceRectangle']['height']
 					))
 					temp = BytesIO()
 					temp.name = 'face.png'
 					faceimg.save(temp)
 					temp.seek(0)
 					file = discord.File(temp, 'face.png')
-					embed.set_image(url='attachment://face.png')
-				else:
-					file = None
-			glassesformat = {
-				'NoGlasses': 'No Glasses',
-				'ReadingGlasses': 'Reading Glasses',
-				'Sunglasses': 'Sunglasses',
-				'SwimmingGoggles': 'Swimming Goggles'
-			}
-			embed.add_field(name='Eye Makeup', value=f'{"Yes" if makeup["eyeMakeup"] else "No"}')
-			embed.add_field(name='Lip Makeup', value=f'{"Yes" if makeup["lipMakeup"] else "No"}')
-			embed.add_field(name='Glasses', value=f'{glassesformat[glasses]}')
-			embed.add_field(name='Anger', value=f'{round(emotion["anger"] * 100)}%')
-			embed.add_field(name='Contempt', value=f'{round(emotion["contempt"] * 100)}%')
-			embed.add_field(name='Disgust', value=f'{round(emotion["disgust"] * 100)}%')
-			embed.add_field(name='Fear', value=f'{round(emotion["fear"] * 100)}%')
-			embed.add_field(name='Happiness', value=f'{round(emotion["happiness"] * 100)}%')
-			embed.add_field(name='Neutral', value=f'{round(emotion["neutral"] * 100)}%')
-			embed.add_field(name='Sadness', value=f'{round(emotion["sadness"] * 100)}%')
-			embed.add_field(name='Surprise', value=f'{round(emotion["surprise"] * 100)}%')
-			embed.add_field(name='Smile', value=f'{round(smile * 100)}%')
-			embed.add_field(name='Bald', value=f'{round(hair["bald"] * 100)}%')
-			if hairColor == {}:
-				pass
-			else:
-				embed.add_field(name='Brown', value=f'{round(hairColor["brown"] * 100)}%')
-				embed.add_field(name='Black', value=f'{round(hairColor["black"] * 100)}%')
-				embed.add_field(name='Blond', value=f'{round(hairColor["blond"] * 100)}%')
-				embed.add_field(name='Gray', value=f'{round(hairColor["gray"] * 100)}%')
-				embed.add_field(name='Red', value=f'{round(hairColor["red"] * 100)}%')
-				embed.add_field(name='Other', value=f'{round(hairColor["other"] * 100)}%')
-			if not doMakeMenu:
-				if file:
-					try:
-						await ctx.send(embed=embed, files=[file])
-					except discord.errors.HTTPException:
-						await ctx.send(embed=embed)
-				else:
+					embed.set_thumbnail(url='attachment://face.png')
+				try:
+					await ctx.send(embed=embed, file=file)
+				except discord.errors.HTTPException:
 					await ctx.send(embed=embed)
-			else:
-				embedlist.append(embed)
-		if embedlist != []:
+		if doMakeMenu:
 			temp = BytesIO()
 			temp.name = 'faces.png'
 			img.save(temp)
