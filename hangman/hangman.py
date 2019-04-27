@@ -185,15 +185,12 @@ class Hangman(commands.Cog):
 		Wordlists are a .txt file with every new line being a new word.
 		This value is server specific.
 		"""
-		wordlists = []
-		for x in os.listdir(cog_data_path(self)):
-			if x[-4:] == '.txt':
-				wordlists.append(x[:-4])
-		if value in wordlists:
-			fp = str(cog_data_path(self) / str(value+'.txt'))
-			await self.config.guild(ctx.guild).fp.set(fp)
+		wordlists = [p.resolve() for p in cog_data_path(self).glob("*.txt")]
+		try:
+			fp = next(p for p in wordlists if p.stem == value)
+			await self.config.guild(ctx.guild).fp.set(str(fp))
 			await ctx.send(f'The wordlist is now set to `{value}`.')
-		else:
+		except StopIteration:
 			await ctx.send(f'Wordlist `{value}` not found.')
 	
 	@wordlist.command()
@@ -206,10 +203,7 @@ class Hangman(commands.Cog):
 	@wordlist.command()
 	async def list(self, ctx):
 		"""List available wordlists."""
-		wordlists = []
-		for x in os.listdir(cog_data_path(self)):
-			if x[-4:] == '.txt':
-				wordlists.append(x[:-4])
+		wordlists = [p.resolve().stem for p in cog_data_path(self).glob("*.txt")]
 		if wordlists == []:
 			return await ctx.send('You do not have any wordlists.')
 		msg = '\n'.join(wordlists).strip()
