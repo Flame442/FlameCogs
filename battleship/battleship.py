@@ -301,14 +301,14 @@ class BattleshipGame():
 				if self.board[pswap[self.p]][(y*10)+x] == 0:
 					self.board[pswap[self.p]][(y*10)+x] = 1
 					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p], 1))
-					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}Miss!')
+					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}**Miss!**')
 					i = 1
 				elif self.board[pswap[self.p]][(y*10)+x] in [1, 2]:
 					await self.ctx.send('You already shot there!')
 				elif self.board[pswap[self.p]][(y*10)+x] == 3:
 					self.board[pswap[self.p]][(y*10)+x] = 2
 					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p], 1))
-					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}Hit!')
+					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}**Hit!**')
 					#DEAD SHIP
 					for a in range(5):
 						if (y*10)+x in self.key[pswap[self.p]][a]:
@@ -320,12 +320,12 @@ class BattleshipGame():
 									break
 							if l == 0: #if ship destroyed
 								await self.ctx.send(
-									f'{self.name[pswap[self.p]]}\'s {str([5, 4, 3, 3, 2][a])} '
-									'length ship was destroyed!'
+									f'**{self.name[pswap[self.p]]}\'s {str([5, 4, 3, 3, 2][a])} '
+									'length ship was destroyed!**'
 								)
 					#DEAD PLAYER
 					if 3 not in self.board[pswap[self.p]]:
-						await self.ctx.send(f'{self.name[self.p]} wins!')
+						await self.ctx.send(f'**{self.name[self.p]} wins!**')
 						game = False
 					if game:
 						if self.eh:
