@@ -5,6 +5,6 @@
     "short" : "Information about what devices people are using to run discord.",
     "requirements" : [],
     "description" : "Information about what devices people are using to run discord.",
-    "tags" : [],
+    "tags" : ["utility", "online"],
     "min_python_version": [3, 6, 0]
 }
