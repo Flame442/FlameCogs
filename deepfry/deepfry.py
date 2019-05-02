@@ -412,9 +412,13 @@ class Deepfry(commands.Cog):
 				await msg.attachments[0].save(temp)
 				temp.seek(0)
 				img = Image.open(temp)
+				duration = None
 				if isgif:
-					task = functools.partial(self._videonuke, img)
+					if 'duration' in img.info:
+						duration = img.info['duration']
+					task = functools.partial(self._videonuke, img, duration)
 				else:
+					img = img.convert('RGB')
 					task = functools.partial(self._nuke, img)
 				task = self.bot.loop.run_in_executor(None, task)
 				try:
@@ -432,9 +436,13 @@ class Deepfry(commands.Cog):
 				await msg.attachments[0].save(temp)
 				temp.seek(0)
 				img = Image.open(temp)
+				duration = None
 				if isgif:
-					task = functools.partial(self._videofry, img)
+					if 'duration' in img.info:
+						duration = img.info['duration']
+					task = functools.partial(self._videofry, img, duration)
 				else:
+					img = img.convert('RGB')
 					task = functools.partial(self._fry, img)
 				task = self.bot.loop.run_in_executor(None, task)
 				try:
