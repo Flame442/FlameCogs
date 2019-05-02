@@ -42,7 +42,7 @@ class Face(commands.Cog):
 			await ctx.message.delete()
 		except discord.Forbidden:
 			await ctx.send(
-				'The command message could not be deleted.'
+				'The command message could not be deleted. '
 				'It is highly recomended you remove it to protect your key.'
 			)
 	
