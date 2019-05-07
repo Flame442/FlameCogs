@@ -146,6 +146,8 @@ class Face(commands.Cog):
 				except Exception: #an image is not required to function
 					img = None
 		await ctx.send(f'Found {len(faces)} {"face" if len(faces) == 1 else "faces"}.')
+		if len(faces) == 0:
+			return
 		if ctx.guild:
 			doMakeMenu = await self.config.guild(ctx.guild).doMakeMenu()
 		else:
