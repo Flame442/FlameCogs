@@ -81,7 +81,7 @@ class PartyGames(commands.Cog):
 		)
 		await msg.add_reaction('\N{WHITE HEAVY CHECK MARK}')
 		await asyncio.sleep(15)
-		msg = await ctx.channel.get_message(msg.id) #get the latest version of the message
+		msg = await ctx.channel.fetch_message(msg.id) #get the latest version of the message
 		reaction = [r for r in msg.reactions if r.emoji == '\N{WHITE HEAVY CHECK MARK}'][0]
 		players = []
 		async for user in reaction.users():
@@ -559,6 +559,7 @@ This value is server specific.
 			await self.config.guild(ctx.guild).timeMost.set(value)
 			await ctx.send(_('The timeout is now set to {value}.').format(value=value))
 	
+	@commands.Cog.listener()
 	async def on_message(self, message):
 		if message.author.bot:
 			return
