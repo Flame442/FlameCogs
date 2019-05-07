@@ -115,7 +115,7 @@ class Battleship(commands.Cog):
 			else:
 				await ctx.send('Players will not be mentioned when their turn begins.')
 	
-	def __unload(self):
+	def cog_unload(self):
 		return [game.stop() for game in self.games]
 
 class BattleshipGame():
