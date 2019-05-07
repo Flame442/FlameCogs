@@ -98,6 +98,24 @@ class GameRoles(commands.Cog):
 	
 	@checks.guildowner()
 	@gameroles.command()
+	async def listroles(self, ctx):
+		"""List the roles currently managed by gameroles."""
+		roledict = await self.config.guild(ctx.guild).roledict()
+		rolelist = []
+		for rid in roledict:
+			role = ctx.guild.get_role(int(rid))
+			if role:
+				rolelist.append(role.name)
+		if rolelist == []:
+			return await ctx.send('Gameroles is currently not managing any roles.')
+		roles = '\n'.join(rolelist)
+		await ctx.send(
+			'Roles currently managed by gameroles:\n'
+			f'```\n{roles}```'
+		)
+
+	@checks.guildowner()
+	@gameroles.command()
 	async def listactivities(self, ctx, role: discord.Role):
 		"""
 		List the activities that trigger a role.
