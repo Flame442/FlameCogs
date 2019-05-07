@@ -5,6 +5,119 @@ from redbot.core import checks
 import asyncio
 
 
+class Battleship(commands.Cog):
+	"""Play battleship with one other person."""
+	def __init__(self, bot):
+		self.bot = bot
+		self.games = []
+		self.bs = BattleshipGame
+		self.config = Config.get_conf(self, identifier=7345167901)
+		self.config.register_guild(
+			extraHit = True,
+			doMention = False
+		)
+	
+	@commands.guild_only()
+	@commands.command()
+	async def battleship(self, ctx):
+		"""Start a game of battleship."""
+		if [game for game in self.games if game.ctx.channel == ctx.channel]:
+			return await ctx.send('A game is already running in this channel.')
+		dm = await self.config.guild(ctx.guild).doMention()
+		eh = await self.config.guild(ctx.guild).extraHit()
+		check = lambda m: (
+			m.author != ctx.message.author 
+			and not m.author.bot 
+			and m.channel == ctx.message.channel 
+			and m.content.lower() == 'i'
+		)
+		await ctx.send('Second player, say I.')
+		try:
+			r = await self.bot.wait_for('message', timeout=60, check=check)
+		except asyncio.TimeoutError:
+			return await ctx.send('Nobody else wants to play, shutting down.')
+		if [game for game in self.games if game.ctx.channel == ctx.channel]:
+			return await ctx.send('Another game started in this channel while setting up.')
+		await ctx.send(
+			'A game of battleship will be played between '
+			f'{ctx.author.display_name} and {r.author.display_name}.'
+		)
+		game = BattleshipGame(ctx, self.bot, dm, eh, ctx.author, r.author, self)
+		self.games.append(game)
+	
+	@commands.guild_only()
+	@checks.guildowner()
+	@commands.command()
+	async def battleshipstop(self, ctx):
+		"""Stop the game of battleship in this channel."""
+		wasGame = False
+		for x in [game for game in self.games if game.ctx.channel == ctx.channel]:
+			x.stop()
+			wasGame = True
+		if wasGame: #prevent multiple messages if more than one game exists for some reason
+			await ctx.send('The game was stopped successfully.')
+		else:
+			await ctx.send('There is no ongoing game in this channel.')
+	
+	@commands.guild_only()
+	@checks.guildowner()
+	@commands.group()
+	async def battleshipset(self, ctx):
+		"""Config options for batteship."""
+		if ctx.invoked_subcommand is None:
+			extraHit = await self.config.guild(ctx.guild).extraHit()
+			doMention = await self.config.guild(ctx.guild).doMention()
+			msg = (
+				f'Extra shot on hit: {extraHit}\n'
+				f'Mention on turn: {doMention}'
+			)
+			await ctx.send(f'```py\n{msg}```')
+	
+	@battleshipset.command()
+	async def extra(self, ctx, value: bool=None):
+		"""
+		Set if an extra shot should be given after a hit.
+		
+		Defaults to True.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).extraHit()
+			if v:
+				await ctx.send('You are currently able to shoot again after a hit.')
+			else:
+				await ctx.send('You are currently not able to shoot again after a hit.')
+		else:
+			await self.config.guild(ctx.guild).extraHit.set(value)
+			if value:
+				await ctx.send('You will now be able to shoot again after a hit.')
+			else:
+				await ctx.send('You will no longer be able to shoot again after a hit.')
+	
+	@battleshipset.command()
+	async def mention(self, ctx, value: bool=None):
+		"""
+		Set if players should be mentioned when their turn begins.
+		
+		Defaults to False.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).doMention()
+			if v:
+				await ctx.send('Players are being mentioned when their turn begins.')
+			else:
+				await ctx.send('Players are not being mentioned when their turn begins.')
+		else:
+			await self.config.guild(ctx.guild).doMention.set(value)
+			if value:
+				await ctx.send('Players will be mentioned when their turn begins.')
+			else:
+				await ctx.send('Players will not be mentioned when their turn begins.')
+	
+	def __unload(self):
+		return [game.stop() for game in self.games]
+
 class BattleshipGame():
 	"""
 	A game of Battleship.
@@ -17,8 +130,6 @@ class BattleshipGame():
 	p1 = discord.member.Member, The member object of player 1.
 	p2 = discord.member.Member, The member object of player 2.
 	cog = battleship.battleship.Battleship, The cog the game is running on, used to stop the game.
-	
-	Create a game using BattleshipGame.create(params).
 	"""
 	def __init__(self, ctx, bot, doMention, extraHit, p1, p2, cog):
 		self.ctx = ctx
@@ -29,29 +140,14 @@ class BattleshipGame():
 		self.player = [p1, p2]
 		self.name = [p1.display_name, p2.display_name]
 		self.p = 1
-		self.board = [[0 for x in range(100)], [0 for x in range(100)]]
-		self.letnum = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8, 'j': 9}
+		self.board = [[0] * 100, [0] * 100]
+		self.letnum = {
+			'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4,
+			'f': 5, 'g': 6, 'h': 7, 'i': 8, 'j': 9
+		}
 		self.pmsg = []
 		self.key = [[], []]
-	
-	@classmethod
-	def create(cls, ctx, bot, doMention, extraHit, p1, p2, cog):
-		"""
-		Create a new BattleshipGame.
-		Returns the game (battleship.battleship.BattleshipGame).
-		
-		Params:
-		ctx = redbot.core.commands.context.Context, The context that should be used to send messages.
-		bot = redbot.core.bot.Red, The bot the game is running on, used to wait for messages.
-		doMention = bool, Should players be mentioned on the begining of their turn.
-		extraHit = bool, Should players get an extra shot on a hit.
-		p1 = discord.member.Member, The member object of player 1.
-		p2 = discord.member.Member, The member object of player 2.
-		cog = battleship.battleship.Battleship, The cog the game is running on, used to stop the game.
-		"""
-		game = cls(ctx, bot, doMention, extraHit, p1, p2, cog)
-		game._task = ctx.bot.loop.create_task(game.run())
-		return game
+		self._task = self.bot.loop.create_task(self.run())
 	
 	def _bprint(self, player, bt):
 		"""
@@ -68,7 +164,7 @@ class BattleshipGame():
 			b += f'\n{str(y)} '
 			for x in range(10):
 				b += outputchars[bt][self.board[player][(y*10)+x]] #horizontal positions
-		return f'```{b}```'
+		return f'```\n{b}```'
 	
 	async def _place(self, player, length, value):
 		"""
@@ -95,7 +191,9 @@ class BattleshipGame():
 		try:
 			d = value[2]
 		except IndexError:
-			await self.player[player].send('Invalid input, d cord must be a direction of d or r.')
+			await self.player[player].send(
+				'Invalid input, d cord must be a direction of d or r.'
+			)
 			return False
 		try:
 			if d == 'r': #right
@@ -104,7 +202,9 @@ class BattleshipGame():
 					return False
 				for z in range(length):
 					if self.board[player][(y*10)+x+z] != 0: #a spot taken by another ship
-						await self.player[player].send('Invalid input, another ship is in that range.')
+						await self.player[player].send(
+							'Invalid input, another ship is in that range.'
+						)
 						return False
 				for z in range(length):
 					self.board[player][(y*10)+x+z] = 3
@@ -112,13 +212,17 @@ class BattleshipGame():
 			elif d == 'd': #down
 				for z in range(length):
 					if self.board[player][((y+z)*10)+x] != 0: #a spot taken by another ship
-						await self.player[player].send('Invalid input, another ship is in that range.')
+						await self.player[player].send(
+							'Invalid input, another ship is in that range.'
+						)
 						return False
 				for z in range(length):
 					self.board[player][((y+z)*10)+x] = 3
 					hold[((y+z)*10)+x] = 0
 			else:
-				await self.player[player].send('Invalid input, d cord must be a direction of d or r.')
+				await self.player[player].send(
+					'Invalid input, d cord must be a direction of d or r.'
+				)
 				return False
 		except IndexError:
 			await self.player[player].send('Invalid input, too far down.')
@@ -129,7 +233,7 @@ class BattleshipGame():
 	async def run(self):
 		"""
 		Runs the actuall game.
-		Should only be called by create().
+		Should only be called by __init__.
 		"""
 		for x in range(2): #each player
 			await self.ctx.send(f'Messaging {self.name[x]} for setup now.')
@@ -197,14 +301,14 @@ class BattleshipGame():
 				if self.board[pswap[self.p]][(y*10)+x] == 0:
 					self.board[pswap[self.p]][(y*10)+x] = 1
 					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p], 1))
-					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}Miss!')
+					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}**Miss!**')
 					i = 1
 				elif self.board[pswap[self.p]][(y*10)+x] in [1, 2]:
 					await self.ctx.send('You already shot there!')
 				elif self.board[pswap[self.p]][(y*10)+x] == 3:
 					self.board[pswap[self.p]][(y*10)+x] = 2
 					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p], 1))
-					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}Hit!')
+					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}**Hit!**')
 					#DEAD SHIP
 					for a in range(5):
 						if (y*10)+x in self.key[pswap[self.p]][a]:
@@ -216,12 +320,12 @@ class BattleshipGame():
 									break
 							if l == 0: #if ship destroyed
 								await self.ctx.send(
-									f'{self.name[pswap[self.p]]}\'s {str([5, 4, 3, 3, 2][a])} '
-									'length ship was destroyed!'
+									f'**{self.name[pswap[self.p]]}\'s {str([5, 4, 3, 3, 2][a])} '
+									'length ship was destroyed!**'
 								)
 					#DEAD PLAYER
 					if 3 not in self.board[pswap[self.p]]:
-						await self.ctx.send(f'{self.name[self.p]} wins!')
+						await self.ctx.send(f'**{self.name[self.p]} wins!**')
 						game = False
 					if game:
 						if self.eh:
@@ -235,118 +339,3 @@ class BattleshipGame():
 		"""Stop and cleanup the game."""
 		self.cog.games.remove(self)
 		self._task.cancel()
-
-class Battleship(commands.Cog):
-	"""Play battleship with one other person."""
-	def __init__(self, bot):
-		self.bot = bot
-		self.games = []
-		self.bs = BattleshipGame
-		self.config = Config.get_conf(self, identifier=7345167901)
-		self.config.register_guild(
-			extraHit = True,
-			doMention = False
-		)
-	
-	@commands.guild_only()
-	@commands.command()
-	async def battleship(self, ctx):
-		"""Start a game of battleship."""
-		if [game for game in self.games if game.ctx.channel == ctx.channel]:
-			return await ctx.send('A game is already running in this channel.')
-		dm = await self.config.guild(ctx.guild).doMention()
-		eh = await self.config.guild(ctx.guild).extraHit()
-		check = lambda m: (
-			m.author != ctx.message.author 
-			and not m.author.bot 
-			and m.channel == ctx.message.channel 
-			and m.content.lower() == 'i'
-		)
-		await ctx.send('Second player, say I.')
-		try:
-			r = await self.bot.wait_for('message', timeout=60, check=check)
-		except asyncio.TimeoutError:
-			return await ctx.send('You took too long, shutting down.')
-		await ctx.send(
-			'A game of battleship will be played between '
-			f'{ctx.author.display_name} and {r.author.display_name}.'
-		)
-		game = BattleshipGame.create(ctx, self.bot, dm, eh, ctx.author, r.author, self)
-		self.games.append(game)
-	
-	@commands.guild_only()
-	@checks.guildowner()
-	@commands.command()
-	async def battleshipstop(self, ctx):
-		"""Stop the game of battleship in this channel."""
-		wasGame = False
-		for x in [game for game in self.games if game.ctx.channel == ctx.channel]:
-			x.stop()
-			wasGame = True
-		if wasGame:
-			await ctx.send('The game was stopped successfully.')
-		else:
-			await ctx.send('There is no ongoing game in this channel.')
-	
-	@commands.guild_only()
-	@checks.guildowner()
-	@commands.group()
-	async def battleshipset(self, ctx):
-		"""Config options for batteship."""
-		if ctx.invoked_subcommand is None:
-			extraHit = await self.config.guild(ctx.guild).extraHit()
-			doMention = await self.config.guild(ctx.guild).doMention()
-			msg = (
-				'Extra shot on hit: ' + str(extraHit) + '\n'
-				'Mention on turn: ' + str(doMention)
-				)
-			await ctx.send(f'```py\n{msg}```')
-	
-	@commands.guild_only()
-	@checks.guildowner()
-	@battleshipset.command()
-	async def extra(self, ctx, value: bool=None):
-		"""
-		Set if an extra shot should be given after a hit.
-		
-		Defaults to True.
-		This value is server specific.
-		"""
-		if value is None:
-			v = await self.config.guild(ctx.guild).extraHit()
-			if v:
-				await ctx.send('You are currently able to shoot again after a hit.')
-			else:
-				await ctx.send('You are currently not able to shoot again after a hit.')
-		else:
-			await self.config.guild(ctx.guild).extraHit.set(value)
-			if value:
-				await ctx.send('You will now be able to shoot again after a hit.')
-			else:
-				await ctx.send('You will no longer be able to shoot again after a hit.')
-	
-	@commands.guild_only()
-	@checks.guildowner()
-	@battleshipset.command()
-	async def mention(self, ctx, value: bool=None):
-		"""
-		Set if players should be mentioned when their turn begins.
-		
-		Defaults to False.
-		This value is server specific.
-		"""
-		if value is None:
-			v = await self.config.guild(ctx.guild).doMention()
-			if v:
-				await ctx.send('Players are being mentioned when their turn begins.')
-			else:
-				await ctx.send('Players are not being mentioned when their turn begins.')
-		else:
-			await self.config.guild(ctx.guild).doMention.set(value)
-			if value:
-				await ctx.send('Players will be mentioned when their turn begins.')
-			else:
-				await ctx.send('Players will not be mentioned when their turn begins.')
-	
-	def __unload(self):
-		return [game.stop() for game in self.games]

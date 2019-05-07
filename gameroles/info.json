@@ -5,7 +5,6 @@
     "short" : "Grant roles when a user is playing a specific game.",
     "requirements" : [],
     "description" : "Grant roles when a user is playing a specific game.",
-    "permissions" : ["Manage Roles", "Send Messages"],
-    "tags" : [],
+    "tags" : ["utility", "role"],
     "min_python_version": [3, 6, 0]
 }

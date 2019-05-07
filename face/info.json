@@ -5,6 +5,6 @@
     "short" : "Find and describe the faces in an image.",
     "requirements" : ["pillow"],
     "description" : "Find and describe the faces in an image.",
-    "tags" : ["Fun"],
+    "tags" : ["fun", "face"],
     "min_python_version": [3, 6, 0]
 }

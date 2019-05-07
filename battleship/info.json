@@ -5,7 +5,6 @@
     "short" : "Play battleship with a friend.",
     "requirements" : [],
     "description" : "Play battleship with a friend.",
-    "permissions" : ["Send Messages"],
-    "tags" : ["Fun", "Games"],
+    "tags" : ["fun", "games", "battleship"],
     "min_python_version": [3, 6, 0]
 }

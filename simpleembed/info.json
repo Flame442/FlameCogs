@@ -5,7 +5,6 @@
     "short" : "Simply send embeds.",
     "requirements" : [],
     "description" : "Simply send embeds.",
-    "permissions" : ["Send Messages", "Embed Links"],
-    "tags" : ["Utility"],
+    "tags" : ["utility", "embed"],
     "min_python_version": [3, 6, 0]
 }
