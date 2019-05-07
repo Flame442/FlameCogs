@@ -181,7 +181,6 @@ This command is only usable by the server owner and bot owner.
 List the roles currently managed by gameroles.  
 This command is only usable by the server owner and bot owner.
 
-
 **`[p]gameroles listactivities <role>`**  
 List the activities that trigger a role.  
 Roles with with multiple word names need to be surrounded in quotes.  
