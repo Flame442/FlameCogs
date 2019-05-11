@@ -14,57 +14,17 @@ class Face(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167907)
-		self.config.register_global(
-			api_key = None,
-			api_url = None,
-		)
 		self.config.register_guild(
 			doMakeMenu = True
 		)
 	
+	@commands.guild_only()
 	@checks.guildowner()
 	@commands.group()
 	async def faceset(self, ctx):
 		"""Config options for face."""
 		pass
 	
-	@checks.is_owner()
-	@faceset.command()
-	async def key(self, ctx, key: str):
-		"""
-		Set the API key for face.
-		
-		Please follow the guide at https://github.com/Flame442/FlameCogs/blob/master/face/setup.md for instructions.
-		"""
-		await self.config.api_key.set(key)
-		await ctx.send('API key set!')
-		try:
-			await ctx.message.delete()
-		except discord.Forbidden:
-			await ctx.send(
-				'The command message could not be deleted. '
-				'It is highly recomended you remove it to protect your key.'
-			)
-	
-	@checks.is_owner()
-	@faceset.command()
-	async def url(self, ctx, url: str):
-		"""
-		Set the API url for face.
-		
-		Please follow the guide at https://github.com/Flame442/FlameCogs/blob/master/face/setup.md for instructions.
-		"""
-		if url.startswith('https://') and url.endswith('.api.cognitive.microsoft.com/face/v1.0'):
-			await self.config.api_url.set(url + '/detect')
-			await ctx.send('API URL set!')
-		else:
-			await ctx.send(
-				'That doesn\'t look like a valid url. '
-				'Make sure you are following the guide at '
-				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.'
-			)
-	
-	@commands.guild_only()
 	@faceset.command()
 	async def menu(self, ctx, value: bool=None):
 		"""
@@ -91,19 +51,31 @@ class Face(commands.Cog):
 	@commands.command()
 	async def face(self, ctx, face_url: str=None):
 		"""Find and describe the faces in an image."""
-		api_key = await self.config.api_key()
+		api = await self.bot.db.api_tokens.get_raw('faceapi', default={'key': None, 'url': None})
+		api_key = api['key']
+		api_url = api['url']
 		if not api_key:
 			return await ctx.send(
 				'You need to set an API key!\n'
 				'Follow this guide for instructions on how to get one:\n'
 				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>'
 			)
-		api_url = await self.config.api_url()
 		if not api_url:
 			return await ctx.send(
 				'You need to set an API URL!\n'
 				'Follow this guide for instructions on how to get one:\n'
 				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>'
+			)
+		if (
+			api_url.startswith('https://')
+			and api_url.endswith('.api.cognitive.microsoft.com/face/v1.0')
+		):
+			api_url += '/detect'
+		else:
+			return await ctx.send(
+				'The URL you set does not seem valid. '
+				'Make sure you are following the guide at '
+				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.'
 			)
 		if not ctx.message.attachments and not face_url:
 			async for msg in ctx.channel.history(limit=10):
@@ -130,13 +102,20 @@ class Face(commands.Cog):
 		}
 		async with ctx.typing():
 			async with aiohttp.ClientSession() as session:
-				async with session.post(
-						api_url,
-						params=params,
-						headers=headers,
-						json={'url': face_url}
-					) as response:
-					faces = await response.json(content_type=None)
+				try:
+					async with session.post(
+							api_url,
+							params=params,
+							headers=headers,
+							json={'url': face_url}
+						) as response:
+						faces = await response.json(content_type=None)
+				except aiohttp.client_exceptions.ClientConnectorError:
+					return await ctx.send(
+						'The URL you set does not seem valid. '
+						'Make sure you are following the guide at '
+						'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.'
+					)
 				if 'error' in faces:
 					return await ctx.send(f'API Error: {faces["error"]["message"]}')
 				try:
