@@ -128,21 +128,11 @@ Use the optional paramater `link` to use a **direct link** as the target.
 Config options for face.  
 This command is only usable by the server owner and bot owner.
 
-**`[p]faceset key <key>`**  
-Set the API key.  
-This command is only usable by the bot owner.  
-This value is global.
-
-**`[p]faceset url <key>`**  
-Set the API URL.  
-This command is only usable by the bot owner.  
-This value is global.
-
 **`[p]faceset menu [value]`**  
 Set if results should be made into a menu.  
 If in a menu, one large image with faces marked will be sent instead of cropped images of each face.  
 Defaults to `True`.  
-This command is only usable by the server owner.  
+This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
 ## Gameroles
