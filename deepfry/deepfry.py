@@ -380,6 +380,7 @@ class Deepfry(commands.Cog):
 			else:
 				await ctx.send('You will no longer be able to use unverified types.')
 
+	@commands.Cog.listener()
 	async def on_message(self, msg):
 		"""Passively deepfries random images."""
 		#CHECKS

@@ -1,10 +1,11 @@
 {
     "author" : ["Flame442 (Flame#2941)"],
-    "install_msg" : "Thanks for installing wordstats. Use `[p]wordstats`.\n**WARNING**: This cog has the potential to create a lot of data and have a high I/O usage if your bot is in a large number of servers. Please remove this cog if you do not consent to that.",
+    "install_msg" : "**THIS COG IS CURRENTLY NOT WORKING IN THE LATEST VERSION OF RED!**\nThanks for installing wordstats. Use `[p]wordstats`.\n**WARNING**: This cog has the potential to create a lot of data and have a high I/O usage if your bot is in a large number of servers. Please remove this cog if you do not consent to that.",
     "name" : "WordStats",
     "short" : "Tracks commonly used words.",
     "requirements" : [],
     "description" : "Tracks the most commonly used words by every member and in every server.",
     "tags" : ["fun", "utility", "stats"],
-    "min_python_version": [3, 6, 0]
+    "min_python_version": [3, 6, 0],
+    "hidden": true
 }

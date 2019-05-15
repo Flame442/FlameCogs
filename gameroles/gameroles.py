@@ -166,6 +166,7 @@ class GameRoles(commands.Cog):
 				pass
 		await ctx.tick()
 
+	@commands.Cog.listener()
 	async def on_member_update(self, beforeMem, afterMem):
 		"""Updates a member's roles."""
 		if beforeMem.activity == afterMem.activity:

@@ -63,8 +63,9 @@ Select "Overview" from the list on the left.
 
 ## Step 8
 
-Copy the link under "Endpoint". Give that link to the bot using `[p]faceset url <link>`.  
-Copy one of your keys under "Manage keys". Give that key to the bot using `[p]faceset key <key>`.
+
+Copy one of your keys under "Manage keys" and the link under "Endpoint".  
+Give them to your bot with **`[p]set api faceapi key,<your_key> link,<your_link>`**  
 ![Step8](https://i.imgur.com/37kdPGZ.png)
 
 ## Step 9
