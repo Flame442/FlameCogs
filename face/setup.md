@@ -65,7 +65,7 @@ Select "Overview" from the list on the left.
 
 
 Copy one of your keys under "Manage keys" and the link under "Endpoint".  
-Give them to your bot with **`[p]set api faceapi key,<your_key> link,<your_link>`**  
+Give them to your bot with **`[p]set api faceapi key,<your_key> url,<your_link>`**  
 ![Step8](https://i.imgur.com/37kdPGZ.png)
 
 ## Step 9
