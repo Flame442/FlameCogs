@@ -43,7 +43,7 @@ class WordStats(commands.Cog):
 	def _combine_dicts(self, dicts: dict):
 		"""Combine multiple dicts into one"""
 		result = {}
-		for m in g:
+		for m in dicts:
 			for w in dicts[m]['worddict']:
 				if w in result:
 					result[w] += dicts[m]['worddict'][w]
