@@ -232,7 +232,7 @@ class BattleshipGame():
 	
 	async def run(self):
 		"""
-		Runs the actuall game.
+		Runs the actual game.
 		Should only be called by __init__.
 		"""
 		for x in range(2): #each player
