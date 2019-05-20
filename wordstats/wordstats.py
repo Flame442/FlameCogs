@@ -6,6 +6,7 @@ from redbot.core.data_manager import cog_data_path
 from redbot.core.data_manager import basic_config
 from redbot.core.config import Group
 from redbot.core.drivers import IdentifierData
+from collections import defaultdict
 from copy import deepcopy
 from typing import Optional, Union, Dict
 from random import randint
@@ -44,26 +45,20 @@ class WordStats(commands.Cog):
 	@staticmethod
 	def _combine_dicts(dicts: dict):
 		"""Combine multiple dicts into one from all_members in a guild."""
-		result = {}
-		for m in dicts:
-			for w in dicts[m]['worddict']:
-				if w in result:
-					result[w] += dicts[m]['worddict'][w]
-				else:
-					result[w] = dicts[m]['worddict'][w]
+		result = defaultdict(int)
+		for member in dicts.values():
+			for word, amount in member['worddict'].items():
+				result[word] += amount
 		return result
 
 	@staticmethod
 	def _combine_dicts_global(dicts: dict):
 		"""Combine multiple dicts into one from all_members in all guilds."""
-		result = {}
-		for g in dicts:
-			for m in dicts[g]:
-				for w in dicts[g][m]['worddict']:
-					if w in result:
-						result[w] += dicts[g][m]['worddict'][w]
-					else:
-						result[w] = dicts[g][m]['worddict'][w]
+		result = defaultdict(int)
+		for guild in dicts.values():
+			for member in guild.values():
+				for word, amount in member['worddict'].items():
+					result[word] += amount
 		return result
 	
 	@commands.guild_only()
