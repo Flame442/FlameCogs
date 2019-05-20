@@ -58,7 +58,7 @@ class WordStats(commands.Cog):
 		"""Combine multiple dicts into one from all_members in all guilds."""
 		result = {}
 		for g in dicts:
-			for m in g:
+			for m in dicts[g]:
 				for w in dicts[g][m]['worddict']:
 					if w in result:
 						result[w] += dicts[g][m]['worddict'][w]
