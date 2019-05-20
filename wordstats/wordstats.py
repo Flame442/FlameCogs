@@ -1,14 +1,17 @@
-import discord, re
+import discord
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
 from redbot.core.data_manager import cog_data_path
+from redbot.core.data_manager import basic_config
 from redbot.core.config import Group
+from redbot.core.drivers import IdentifierData
 from copy import deepcopy
 from typing import Optional, Union, Dict
 from random import randint
 import time
 import asyncio
+import re
 
 
 class WordStats(commands.Cog):
@@ -23,11 +26,9 @@ class WordStats(commands.Cog):
 			enableGuild = True,
 			disabledChannels = []
 		)
-		self.config.register_member(
-			worddict = {}
-		)
 	
 	class GuildConvert(commands.Converter):
+		"""Attempts to convert a value into a guild object."""
 		async def convert(self, ctx, value):
 			try:
 				guild = ctx.bot.get_guild(int(value))
@@ -40,8 +41,9 @@ class WordStats(commands.Cog):
 						return guild
 				raise commands.BadArgument()
 
-	def _combine_dicts(self, dicts: dict):
-		"""Combine multiple dicts into one"""
+	@staticmethod
+	def _combine_dicts(dicts: dict):
+		"""Combine multiple dicts into one from all_members in a guild."""
 		result = {}
 		for m in dicts:
 			for w in dicts[m]['worddict']:
@@ -51,8 +53,9 @@ class WordStats(commands.Cog):
 					result[w] = dicts[m]['worddict'][w]
 		return result
 
-	def _combine_dicts_global(self, dicts: dict):
-		"""Combine multiple dicts into one"""
+	@staticmethod
+	def _combine_dicts_global(dicts: dict):
+		"""Combine multiple dicts into one from all_members in all guilds."""
 		result = {}
 		for g in dicts:
 			for m in g:
@@ -88,7 +91,7 @@ class WordStats(commands.Cog):
 				worddict = self._combine_dicts(dicts)
 			elif isinstance(member_or_guild, discord.Member):
 				mention = member_or_guild.display_name
-				worddict = await self.config.member(member_or_guild).worddict()
+				worddict = await self.config.member(member_or_guild).get_raw('worddict', default={})
 			else:
 				mention = member_or_guild.name
 				dicts = await self.config.all_members(member_or_guild)
@@ -413,22 +416,57 @@ class WordStats(commands.Cog):
 					await ctx.send('Stats will no longer be recorded in this channel.')
 			
 	async def update_data(self):
-		"""Saves everything to disk."""
+		"""
+		Saves everything to disk.
+		Thanks to Sinbad for this dark magic.
+		"""
+		self.last_save = time.time()
+		base_group = self.config._get_base_group(self.config.MEMBER)
+
+		async with base_group() as data:
+			#The member dict is enumerated to prevent heartbeat issues later.
+			member_iterator = enumerate(list(self.members_to_update.items()), 1)
+			for index, (member, member_data) in member_iterator:
+				partial = data
+				gid = str(member.guild.id)
+				mid = str(member.id)
+				value = deepcopy(member_data)
+				
+				#If the guild is not already there, add it.
+				if gid not in partial:
+					partial.update({gid: {}})
+				
+				#Set the member to the new value.
+				partial[gid][mid] = value
+				
+				#Sleep every 10 values to prevent heartbeats.
+				if not index % 10: 
+					await asyncio.sleep(0)
+		
 		self.members_to_update = {}
 	
+	@commands.Cog.listener()
 	async def on_message(self, msg):
 		"""Passively records all message contents."""
 		if not msg.author.bot and isinstance(msg.channel, discord.TextChannel):
-			enableGuild = await self.config.guild(msg.guild).enableGuild()
-			disabledChannels = await self.config.guild(msg.guild).disabledChannels()
+			cfg = await self.config.guild(msg.guild).all()
+			enableGuild = cfg['enableGuild']
+			disabledChannels = cfg['disabledChannels']
 			if enableGuild and not msg.channel.id in disabledChannels:
 				p = await self.bot.get_prefix(msg)
 				if any([msg.content.startswith(x) for x in p]):
 					return
 				words = str(re.sub(r'[^a-zA-Z ]', '', msg.content.lower())).split(' ')
-				if msg.author not in self.members_to_update:
-					self.members_to_update[msg.author] = await self.config.member(msg.author).all()
-				memdict = self.members_to_update[msg.author]['worddict']
+				
+				if basic_config['STORAGE_TYPE'] == 'JSON':
+					if msg.author not in self.members_to_update:
+						self.members_to_update[msg.author] = await self.config.member(msg.author).all()
+					if 'worddict' not in self.members_to_update[msg.author]:
+						self.members_to_update[msg.author]['worddict'] = {}
+					memdict = self.members_to_update[msg.author]['worddict']
+				else:
+					memdict = await self.config.member(msg.author).get_raw('worddict', default={})
+				
 				for word in words:
 					if not word:
 						continue
@@ -436,6 +474,10 @@ class WordStats(commands.Cog):
 						memdict[word] += 1
 					else:
 						memdict[word] = 1
-				self.members_to_update[msg.author]['worddict'] = memdict
-				if time.time() - self.last_save >= 600: #10 minutes per save
-					await self.update_data()
+				
+				if basic_config['STORAGE_TYPE'] == 'JSON':
+					self.members_to_update[msg.author]['worddict'] = memdict
+					if time.time() - self.last_save >= 600: #10 minutes per save
+						await self.update_data()
+				else:
+					await self.config.member(msg.author).set_raw('worddict', value=memdict)
