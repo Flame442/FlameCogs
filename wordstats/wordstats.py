@@ -2,7 +2,6 @@ import discord
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
-from redbot.core.data_manager import cog_data_path
 from redbot.core.data_manager import basic_config
 from redbot.core.config import Group
 from redbot.core.drivers import IdentifierData
@@ -154,7 +153,7 @@ class WordStats(commands.Cog):
 			worddict = self._combine_dicts_global(dicts)
 			order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
 		if worddict == {}:
-			return await ctx.send(f'No words have been said yet.')
+			return await ctx.send('No words have been said yet.')
 		if isinstance(amount_or_word, str): #specific word
 			if amount_or_word.lower() not in worddict:
 				return await ctx.send(
@@ -238,7 +237,7 @@ class WordStats(commands.Cog):
 					sumdict[memid] = n
 			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
 		if sumdict == {}:
-			return await ctx.send(f'No one has chatted yet.')
+			return await ctx.send('No one has chatted yet.')
 		result = ''
 		n = 0
 		total = sum(sumdict.values())
@@ -347,7 +346,139 @@ class WordStats(commands.Cog):
 			)
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
+	
+	@commands.guild_only()
+	@commands.group(invoke_without_command=True)
+	async def topratio(
+		self,
+		ctx,
+		word: str,
+		guild: Optional[GuildConvert]=None,
+		amount: int=10
+	):
+		"""
+		Prints the members with the highest "word to all words" ratio.
 		
+		Use the paramater "word" to set the word to compare.
+		Use the optional paramater "guild" to see the ratio in a specific guild.
+		Use the optional paramater "amount" to change the number of members that are displayed.
+		"""
+		if amount <= 0:
+			return await ctx.send('At least one member needs to be displayed.')
+		if guild is None:
+			guild = ctx.guild
+		word = word.lower()
+		async with ctx.typing():
+			await self.update_data()
+			data = await self.config.all_members(guild)
+			sumdict = {}
+			for memid in data:
+				if word in data[memid]['worddict']:
+					n = 0
+					for w in data[memid]['worddict']:
+						n += data[memid]['worddict'][w]
+					if n == 0:
+						continue
+					sumdict[memid] = data[memid]['worddict'][word] / n
+			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
+		if sumdict == {}:
+			return await ctx.send('No one has chatted yet.')
+		result = ''
+		n = 0
+		for memid in order:
+			mem = guild.get_member(memid)
+			if mem is None:
+				name = f'<removed member {memid}>'
+			else:
+				name = mem.display_name
+			result += (
+				'{:4f} {}\n'.format(sumdict[memid], name)
+			)
+			n += 1
+			if n == amount:
+				break
+		if n == 1:
+			memberprint = 'member'
+		else:
+			memberprint = f'**{n}** members'
+		if guild == ctx.guild:
+			guildprint = 'this server'
+		else:
+			guildprint = guild.name
+		try:
+			await ctx.send(
+				f'The {memberprint} in {guildprint} who {"has" if n == 1 else "have"} said the word **{word}** '
+				f'the most compared to other words {"is" if n == 1 else "are"}:\n```{result}```'
+			)
+		except discord.errors.HTTPException:
+			await ctx.send('The result is too long to send.')
+	
+	@topratio.command(name='global')
+	async def topratio_global(self, ctx, word: str, amount: int=10):
+		"""
+		Prints the members with the highest "word to all words" ratio in all guilds.
+		
+		Use the paramater "word" to set the word to compare.
+		Use the optional paramater "amount" to change the number of members that are displayed.
+		"""
+		if amount <= 0:
+			return await ctx.send('At least one member needs to be displayed.')
+		word = word.lower()
+		async with ctx.typing():
+			await self.update_data()
+			data = await self.config.all_members()
+			tempdict = {}
+			for guild in data:
+				for memid in data[guild]:
+					wordn = 0
+					if word in data[guild][memid]['worddict']:
+						wordn = data[guild][memid]['worddict'][word]
+					n = 0
+					for w in data[guild][memid]['worddict']:
+						n += data[guild][memid]['worddict'][w]
+					if memid in tempdict:
+						v = tempdict[memid]
+						v[0] += wordn
+						v[1] += n
+						tempdict[memid] = v
+					else:
+						tempdict[memid] = [wordn, n]
+			sumdict = {}
+			for memid in tempdict:
+				v = tempdict[memid]
+				if v[1] == 0:
+					continue
+				sumdict[memid] = v[0] / v[1]
+			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
+		if sumdict == {}:
+			return await ctx.send('No one has chatted yet.')
+		result = ''
+		n = 0
+		for memid in order:
+			mem = ctx.guild.get_member(memid)
+			if mem is None:
+				name = f'<removed member {memid}>'
+			else:
+				name = mem.display_name
+			result += (
+				'{:4f} {}\n'.format(sumdict[memid], name)
+			)
+			n += 1
+			if n == amount:
+				break
+		if n == 1:
+			memberprint = 'member'
+		else:
+			memberprint = f'**{n}** members'
+		try:
+			await ctx.send(
+				f'The {memberprint} who {"has" if n == 1 else "have"} globally said the word **{word}** '
+				f'the most compared to other words {"is" if n == 1 else "are"}:\n```{result}```'
+			)
+		except discord.errors.HTTPException:
+			await ctx.send('The result is too long to send.')
+	
+	
 	@commands.guild_only()
 	@checks.guildowner()
 	@commands.group()
@@ -366,13 +497,13 @@ class WordStats(commands.Cog):
 		This value is server specific.
 		"""
 		if value is None:
-			v = await self.config.guild(msg.guild).enableGuild()
+			v = await self.config.guild(ctx.guild).enableGuild()
 			if v:
 				await ctx.send('Stats are being recorded in this server.')
 			else:
 				await ctx.send('Stats are not being recorded in this server.')
 		else:
-			await self.config.guild(msg.guild).enableGuild.set(value)
+			await self.config.guild(ctx.guild).enableGuild.set(value)
 			if value:
 				await ctx.send('Stats will now be recorded in this server.')
 			else:
