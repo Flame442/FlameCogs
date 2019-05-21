@@ -361,13 +361,33 @@ This cog will track commonly used words by server and member.
 
 **`[p]wordstats [member_or_guild] [amount_or_word]`**  
 Prints the most commonly used words.  
-Use the optional paramater `member_or_guild` to see the stats of a member or guild, or set it to `global` to see global stats.  
+Use the optional paramater `member_or_guild` to see the stats of a member or guild.  
+Use the optional paramater `amount_or_word` to change the number of words that are displayed, or to check the stats of a specific word (default `30`).
+
+**`[p]wordstats global [amount_or_word]`**  
+Prints the most commonly used words across all guilds.  
 Use the optional paramater `amount_or_word` to change the number of words that are displayed, or to check the stats of a specific word (default `30`).
 
 **`[p]topchatters [guild] [word] [amount]`**  
 Prints the members who have said the most words.  
-Use the optional paramater `guild` to see the topchatters in a specific guild, or set it to `global` to see global stats.  
+Use the optional paramater `guild` to see the topchatters in a specific guild.
 Use the optional paramater `word` to see the topchatters of a specific word.  
+Use the optional paramater `amount` to change the number of members that are displayed (default `10`).
+
+**`[p]topchatters global [word] [amount]`**  
+Prints the members who have said the most words across all guilds.  
+Use the optional paramater `word` to see the topchatters of a specific word.  
+Use the optional paramater `amount` to change the number of members that are displayed (default `10`).
+
+**`[p]topratio <word> [guild] [amount]`**  
+Prints the members with the highest "word to all words" ratio.  
+Use the paramater `word` to set the word to compare.  
+Use the optional paramater `guild` to see the ratio in a specific guild.  
+Use the optional paramater `amount` to change the number of members that are displayed (default `10`).
+
+**`[p]topratio global <word> [amount]`**  
+Prints the members with the highest "word to all words" ratio in all guilds.  
+Use the paramater `word` to set the word to compare.  
 Use the optional paramater `amount` to change the number of members that are displayed (default `10`).
 
 **`[p]wordstatsset <argument>`**  
