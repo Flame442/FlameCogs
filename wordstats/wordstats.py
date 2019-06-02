@@ -1,14 +1,17 @@
-import discord, re
+import discord
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
-from redbot.core.data_manager import cog_data_path
+from redbot.core.data_manager import basic_config
 from redbot.core.config import Group
+from redbot.core.drivers import IdentifierData
+from collections import defaultdict
 from copy import deepcopy
 from typing import Optional, Union, Dict
 from random import randint
 import time
 import asyncio
+import re
 
 
 class WordStats(commands.Cog):
@@ -23,11 +26,9 @@ class WordStats(commands.Cog):
 			enableGuild = True,
 			disabledChannels = []
 		)
-		self.config.register_member(
-			worddict = {}
-		)
 	
 	class GuildConvert(commands.Converter):
+		"""Attempts to convert a value into a guild object."""
 		async def convert(self, ctx, value):
 			try:
 				guild = ctx.bot.get_guild(int(value))
@@ -40,27 +41,23 @@ class WordStats(commands.Cog):
 						return guild
 				raise commands.BadArgument()
 
-	def _combine_dicts(self, dicts: dict):
-		"""Combine multiple dicts into one"""
-		result = {}
-		for m in g:
-			for w in dicts[m]['worddict']:
-				if w in result:
-					result[w] += dicts[m]['worddict'][w]
-				else:
-					result[w] = dicts[m]['worddict'][w]
+	@staticmethod
+	def _combine_dicts(dicts: dict):
+		"""Combine multiple dicts into one from all_members in a guild."""
+		result = defaultdict(int)
+		for member in dicts.values():
+			for word, amount in member['worddict'].items():
+				result[word] += amount
 		return result
 
-	def _combine_dicts_global(self, dicts: dict):
-		"""Combine multiple dicts into one"""
-		result = {}
-		for g in dicts:
-			for m in g:
-				for w in dicts[g][m]['worddict']:
-					if w in result:
-						result[w] += dicts[g][m]['worddict'][w]
-					else:
-						result[w] = dicts[g][m]['worddict'][w]
+	@staticmethod
+	def _combine_dicts_global(dicts: dict):
+		"""Combine multiple dicts into one from all_members in all guilds."""
+		result = defaultdict(int)
+		for guild in dicts.values():
+			for member in guild.values():
+				for word, amount in member['worddict'].items():
+					result[word] += amount
 		return result
 	
 	@commands.guild_only()
@@ -88,7 +85,7 @@ class WordStats(commands.Cog):
 				worddict = self._combine_dicts(dicts)
 			elif isinstance(member_or_guild, discord.Member):
 				mention = member_or_guild.display_name
-				worddict = await self.config.member(member_or_guild).worddict()
+				worddict = await self.config.member(member_or_guild).get_raw('worddict', default={})
 			else:
 				mention = member_or_guild.name
 				dicts = await self.config.all_members(member_or_guild)
@@ -156,7 +153,7 @@ class WordStats(commands.Cog):
 			worddict = self._combine_dicts_global(dicts)
 			order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
 		if worddict == {}:
-			return await ctx.send(f'No words have been said yet.')
+			return await ctx.send('No words have been said yet.')
 		if isinstance(amount_or_word, str): #specific word
 			if amount_or_word.lower() not in worddict:
 				return await ctx.send(
@@ -240,7 +237,7 @@ class WordStats(commands.Cog):
 					sumdict[memid] = n
 			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
 		if sumdict == {}:
-			return await ctx.send(f'No one has chatted yet.')
+			return await ctx.send('No one has chatted yet.')
 		result = ''
 		n = 0
 		total = sum(sumdict.values())
@@ -349,7 +346,139 @@ class WordStats(commands.Cog):
 			)
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
+	
+	@commands.guild_only()
+	@commands.group(invoke_without_command=True)
+	async def topratio(
+		self,
+		ctx,
+		word: str,
+		guild: Optional[GuildConvert]=None,
+		amount: int=10
+	):
+		"""
+		Prints the members with the highest "word to all words" ratio.
 		
+		Use the paramater "word" to set the word to compare.
+		Use the optional paramater "guild" to see the ratio in a specific guild.
+		Use the optional paramater "amount" to change the number of members that are displayed.
+		"""
+		if amount <= 0:
+			return await ctx.send('At least one member needs to be displayed.')
+		if guild is None:
+			guild = ctx.guild
+		word = word.lower()
+		async with ctx.typing():
+			await self.update_data()
+			data = await self.config.all_members(guild)
+			sumdict = {}
+			for memid in data:
+				if word in data[memid]['worddict']:
+					n = 0
+					for w in data[memid]['worddict']:
+						n += data[memid]['worddict'][w]
+					if n == 0:
+						continue
+					sumdict[memid] = data[memid]['worddict'][word] / n
+			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
+		if sumdict == {}:
+			return await ctx.send('No one has chatted yet.')
+		result = ''
+		n = 0
+		for memid in order:
+			mem = guild.get_member(memid)
+			if mem is None:
+				name = f'<removed member {memid}>'
+			else:
+				name = mem.display_name
+			result += (
+				'{:4f} {}\n'.format(sumdict[memid], name)
+			)
+			n += 1
+			if n == amount:
+				break
+		if n == 1:
+			memberprint = 'member'
+		else:
+			memberprint = f'**{n}** members'
+		if guild == ctx.guild:
+			guildprint = 'this server'
+		else:
+			guildprint = guild.name
+		try:
+			await ctx.send(
+				f'The {memberprint} in {guildprint} who {"has" if n == 1 else "have"} said the word **{word}** '
+				f'the most compared to other words {"is" if n == 1 else "are"}:\n```{result}```'
+			)
+		except discord.errors.HTTPException:
+			await ctx.send('The result is too long to send.')
+	
+	@topratio.command(name='global')
+	async def topratio_global(self, ctx, word: str, amount: int=10):
+		"""
+		Prints the members with the highest "word to all words" ratio in all guilds.
+		
+		Use the paramater "word" to set the word to compare.
+		Use the optional paramater "amount" to change the number of members that are displayed.
+		"""
+		if amount <= 0:
+			return await ctx.send('At least one member needs to be displayed.')
+		word = word.lower()
+		async with ctx.typing():
+			await self.update_data()
+			data = await self.config.all_members()
+			tempdict = {}
+			for guild in data:
+				for memid in data[guild]:
+					wordn = 0
+					if word in data[guild][memid]['worddict']:
+						wordn = data[guild][memid]['worddict'][word]
+					n = 0
+					for w in data[guild][memid]['worddict']:
+						n += data[guild][memid]['worddict'][w]
+					if memid in tempdict:
+						v = tempdict[memid]
+						v[0] += wordn
+						v[1] += n
+						tempdict[memid] = v
+					else:
+						tempdict[memid] = [wordn, n]
+			sumdict = {}
+			for memid in tempdict:
+				v = tempdict[memid]
+				if v[1] == 0:
+					continue
+				sumdict[memid] = v[0] / v[1]
+			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
+		if sumdict == {}:
+			return await ctx.send('No one has chatted yet.')
+		result = ''
+		n = 0
+		for memid in order:
+			mem = ctx.guild.get_member(memid)
+			if mem is None:
+				name = f'<removed member {memid}>'
+			else:
+				name = mem.display_name
+			result += (
+				'{:4f} {}\n'.format(sumdict[memid], name)
+			)
+			n += 1
+			if n == amount:
+				break
+		if n == 1:
+			memberprint = 'member'
+		else:
+			memberprint = f'**{n}** members'
+		try:
+			await ctx.send(
+				f'The {memberprint} who {"has" if n == 1 else "have"} globally said the word **{word}** '
+				f'the most compared to other words {"is" if n == 1 else "are"}:\n```{result}```'
+			)
+		except discord.errors.HTTPException:
+			await ctx.send('The result is too long to send.')
+	
+	
 	@commands.guild_only()
 	@checks.guildowner()
 	@commands.group()
@@ -368,13 +497,13 @@ class WordStats(commands.Cog):
 		This value is server specific.
 		"""
 		if value is None:
-			v = await self.config.guild(msg.guild).enableGuild()
+			v = await self.config.guild(ctx.guild).enableGuild()
 			if v:
 				await ctx.send('Stats are being recorded in this server.')
 			else:
 				await ctx.send('Stats are not being recorded in this server.')
 		else:
-			await self.config.guild(msg.guild).enableGuild.set(value)
+			await self.config.guild(ctx.guild).enableGuild.set(value)
 			if value:
 				await ctx.send('Stats will now be recorded in this server.')
 			else:
@@ -413,22 +542,57 @@ class WordStats(commands.Cog):
 					await ctx.send('Stats will no longer be recorded in this channel.')
 			
 	async def update_data(self):
-		"""Saves everything to disk."""
+		"""
+		Saves everything to disk.
+		Thanks to Sinbad for this dark magic.
+		"""
+		self.last_save = time.time()
+		base_group = self.config._get_base_group(self.config.MEMBER)
+
+		async with base_group() as data:
+			#The member dict is enumerated to prevent heartbeat issues later.
+			member_iterator = enumerate(list(self.members_to_update.items()), 1)
+			for index, (member, member_data) in member_iterator:
+				partial = data
+				gid = str(member.guild.id)
+				mid = str(member.id)
+				value = deepcopy(member_data)
+				
+				#If the guild is not already there, add it.
+				if gid not in partial:
+					partial.update({gid: {}})
+				
+				#Set the member to the new value.
+				partial[gid][mid] = value
+				
+				#Sleep every 10 values to prevent heartbeats.
+				if not index % 10: 
+					await asyncio.sleep(0)
+		
 		self.members_to_update = {}
 	
+	@commands.Cog.listener()
 	async def on_message(self, msg):
 		"""Passively records all message contents."""
 		if not msg.author.bot and isinstance(msg.channel, discord.TextChannel):
-			enableGuild = await self.config.guild(msg.guild).enableGuild()
-			disabledChannels = await self.config.guild(msg.guild).disabledChannels()
+			cfg = await self.config.guild(msg.guild).all()
+			enableGuild = cfg['enableGuild']
+			disabledChannels = cfg['disabledChannels']
 			if enableGuild and not msg.channel.id in disabledChannels:
 				p = await self.bot.get_prefix(msg)
 				if any([msg.content.startswith(x) for x in p]):
 					return
 				words = str(re.sub(r'[^a-zA-Z ]', '', msg.content.lower())).split(' ')
-				if msg.author not in self.members_to_update:
-					self.members_to_update[msg.author] = await self.config.member(msg.author).all()
-				memdict = self.members_to_update[msg.author]['worddict']
+				
+				if basic_config['STORAGE_TYPE'] == 'JSON':
+					if msg.author not in self.members_to_update:
+						self.members_to_update[msg.author] = await self.config.member(msg.author).all()
+					if 'worddict' not in self.members_to_update[msg.author]:
+						self.members_to_update[msg.author]['worddict'] = {}
+					memdict = self.members_to_update[msg.author]['worddict']
+				else:
+					memdict = await self.config.member(msg.author).get_raw('worddict', default={})
+				
 				for word in words:
 					if not word:
 						continue
@@ -436,6 +600,10 @@ class WordStats(commands.Cog):
 						memdict[word] += 1
 					else:
 						memdict[word] = 1
-				self.members_to_update[msg.author]['worddict'] = memdict
-				if time.time() - self.last_save >= 600: #10 minutes per save
-					await self.update_data()
+				
+				if basic_config['STORAGE_TYPE'] == 'JSON':
+					self.members_to_update[msg.author]['worddict'] = memdict
+					if time.time() - self.last_save >= 600: #10 minutes per save
+						await self.update_data()
+				else:
+					await self.config.member(msg.author).set_raw('worddict', value=memdict)
