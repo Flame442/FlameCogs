@@ -27,7 +27,7 @@ class Deepfry(commands.Cog):
 			allowAllTypes = False
 		)
 		self.imagetypes = ['png', 'jpg', 'jpeg']
-		self.videotypes = ['gif']
+		self.videotypes = ['gif', 'webp']
 	
 	@staticmethod
 	def _fry(img):
