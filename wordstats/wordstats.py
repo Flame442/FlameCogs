@@ -557,14 +557,11 @@ class WordStats(commands.Cog):
 				gid = str(member.guild.id)
 				mid = str(member.id)
 				value = deepcopy(member_data)
-				
 				#If the guild is not already there, add it.
 				if gid not in partial:
 					partial.update({gid: {}})
-				
 				#Set the member to the new value.
 				partial[gid][mid] = value
-				
 				#Sleep every 10 values to prevent heartbeats.
 				if not index % 10: 
 					await asyncio.sleep(0)
@@ -572,18 +569,16 @@ class WordStats(commands.Cog):
 		self.members_to_update = {}
 	
 	@commands.Cog.listener()
-	async def on_message(self, msg):
+	async def on_message_without_command(self, msg):
 		"""Passively records all message contents."""
 		if not msg.author.bot and isinstance(msg.channel, discord.TextChannel):
 			cfg = await self.config.guild(msg.guild).all()
 			enableGuild = cfg['enableGuild']
 			disabledChannels = cfg['disabledChannels']
 			if enableGuild and not msg.channel.id in disabledChannels:
-				p = await self.bot.get_prefix(msg)
-				if any([msg.content.startswith(x) for x in p]):
-					return
+				#Strip any characters besides letters and spaces.
 				words = str(re.sub(r'[^a-zA-Z ]', '', msg.content.lower())).split(' ')
-				
+				#Get the latest memdict.
 				if basic_config['STORAGE_TYPE'] == 'JSON':
 					if msg.author not in self.members_to_update:
 						self.members_to_update[msg.author] = await self.config.member(msg.author).all()
@@ -592,7 +587,7 @@ class WordStats(commands.Cog):
 					memdict = self.members_to_update[msg.author]['worddict']
 				else:
 					memdict = await self.config.member(msg.author).get_raw('worddict', default={})
-				
+				#Update the memdict.
 				for word in words:
 					if not word:
 						continue
@@ -600,7 +595,7 @@ class WordStats(commands.Cog):
 						memdict[word] += 1
 					else:
 						memdict[word] = 1
-				
+				#Save the memdict.
 				if basic_config['STORAGE_TYPE'] == 'JSON':
 					self.members_to_update[msg.author]['worddict'] = memdict
 					if time.time() - self.last_save >= 600: #10 minutes per save
