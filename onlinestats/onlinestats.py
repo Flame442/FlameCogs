@@ -30,26 +30,26 @@ class OnlineStats(commands.Cog):
 			)
 			store[device[value]] += 1
 		msg = (
-			f'offline all: {str(store[0])}'
-			f'\ndesktop only: {str(store[1])}'
-			f'\nweb only: {str(store[2])}'
-			f'\nmobile only: {str(store[3])}'
-			f'\ndesktop web: {str(store[4])}'
-			f'\nweb mobile: {str(store[5])}'
-			f'\ndesktop mobile: {str(store[6])}'
-			f'\nonline all: {str(store[7])}'
+			f'offline all: {store[0]}'
+			f'\ndesktop only: {store[1]}'
+			f'\nweb only: {store[2]}'
+			f'\nmobile only: {store[3]}'
+			f'\ndesktop web: {store[4]}'
+			f'\nweb mobile: {store[5]}'
+			f'\ndesktop mobile: {store[6]}'
+			f'\nonline all: {store[7]}'
 		)
 		await ctx.send(f'```py\n{msg}```')
 
 	@commands.guild_only()
 	@commands.command()
-	async def onlineinfo(self, ctx, *, user: discord.Member=None):
-		"""Show what devices a user is using."""
-		if user is None:
-			user = ctx.author
-		d = str(user.desktop_status)
-		m = str(user.mobile_status)
-		w = str(user.web_status)
+	async def onlineinfo(self, ctx, *, member: discord.Member=None):
+		"""Show what devices a member is using."""
+		if member is None:
+			member = ctx.author
+		d = str(member.desktop_status)
+		m = str(member.mobile_status)
+		w = str(member.web_status)
 		status = {
 			'online': '\N{GREEN BOOK}',
 			'idle': '\N{ORANGE BOOK}',
@@ -57,7 +57,7 @@ class OnlineStats(commands.Cog):
 			'offline': '\N{NOTEBOOK}'
 		}
 		embed = discord.Embed(
-			title=f'**{user.display_name}\'s devices:**',
+			title=f'**{member.display_name}\'s devices:**',
 			description=(
 				f'{status[d]} Desktop\n'
 				f'{status[m]} Mobile\n'
@@ -65,12 +65,12 @@ class OnlineStats(commands.Cog):
 			),
 			color=await ctx.embed_color()
 		)
-		embed.set_thumbnail(url=user.avatar_url)
+		embed.set_thumbnail(url=member.avatar_url)
 		try:
 			await ctx.send(embed=embed)
 		except discord.errors.Forbidden:
 			await ctx.send(
-				f'{user.display_name}\'s devices:\n'
+				f'{member.display_name}\'s devices:\n'
 				f'{status[d]} Desktop\n'
 				f'{status[m]} Mobile\n'
 				f'{status[w]} Web'
