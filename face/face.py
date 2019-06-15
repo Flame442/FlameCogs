@@ -215,13 +215,14 @@ class Face(commands.Cog):
 				except discord.errors.HTTPException:
 					await ctx.send(embed=embed)
 		if doMakeMenu:
-			temp = BytesIO()
-			temp.name = 'faces.png'
-			img.save(temp)
-			temp.seek(0)
-			try:
-				await ctx.send(file=discord.File(temp))
-			except discord.errors.HTTPException:
-				pass
+			if img:
+				temp = BytesIO()
+				temp.name = 'faces.png'
+				img.save(temp)
+				temp.seek(0)
+				try:
+					await ctx.send(file=discord.File(temp))
+				except discord.errors.HTTPException:
+					pass
 			c = DEFAULT_CONTROLS if len(embedlist) > 1 else {"\N{CROSS MARK}": close_menu}
 			await menu(ctx, embedlist, c)
