@@ -482,6 +482,10 @@ Override the bot's locale for partygames.
 Defaults to None.
 This value is server specific.
 		"""
+		for char in CHARS:
+			if locale.lower() == char.lower():
+				locale = char #convert case to the one used by the file
+				break
 		if locale not in CHARS:
 			return await ctx.send(_('That locale is not valid or is not supported.'))
 		await self.config.guild(ctx.guild).locale.set(locale)
