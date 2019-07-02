@@ -6,7 +6,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import aiohttp
 import json
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core.utils.menus import menu, DEFAULT_CONTROLS, close_menu
 
 
 class Face(commands.Cog):
@@ -215,12 +215,14 @@ class Face(commands.Cog):
 				except discord.errors.HTTPException:
 					await ctx.send(embed=embed)
 		if doMakeMenu:
-			temp = BytesIO()
-			temp.name = 'faces.png'
-			img.save(temp)
-			temp.seek(0)
-			try:
-				await ctx.send(file=discord.File(temp))
-			except discord.errors.HTTPException:
-				pass
-			await menu(ctx, embedlist, DEFAULT_CONTROLS)
+			if img:
+				temp = BytesIO()
+				temp.name = 'faces.png'
+				img.save(temp)
+				temp.seek(0)
+				try:
+					await ctx.send(file=discord.File(temp))
+				except discord.errors.HTTPException:
+					pass
+			c = DEFAULT_CONTROLS if len(embedlist) > 1 else {"\N{CROSS MARK}": close_menu}
+			await menu(ctx, embedlist, c)

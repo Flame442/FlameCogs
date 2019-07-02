@@ -93,7 +93,11 @@ class PartyGames(commands.Cog):
 		locale = await self.config.guild(ctx.guild).locale()
 		if locale is None:
 			locale = await ctx.bot.db.locale()
-		if locale not in CHARS:
+		for char in CHARS:
+			if locale.lower() == char.lower():
+				locale = char #convert case to the one used by the file
+				break
+		if locale not in CHARS: #now case insensitive 
 			await ctx.send(_('Your locale is not available. Using `en-US`.'))
 			locale = 'en-US'
 		with open(bundled_data_path(self) / f'{locale}.json') as f:
@@ -478,6 +482,10 @@ Override the bot's locale for partygames.
 Defaults to None.
 This value is server specific.
 		"""
+		for char in CHARS:
+			if locale.lower() == char.lower():
+				locale = char #convert case to the one used by the file
+				break
 		if locale not in CHARS:
 			return await ctx.send(_('That locale is not valid or is not supported.'))
 		await self.config.guild(ctx.guild).locale.set(locale)
