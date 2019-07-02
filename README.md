@@ -288,8 +288,9 @@ This cog gives information about what devices people are using to run discord.
 Prints how many people are using each type of device.  
 Alias: `[p]onlinestats`
 
-**`[p]onlineinfo`**  
-Shows what devices a user is using.
+**`[p]onlineinfo [member]`**  
+Shows what devices a member is using.  
+Defaults to the author.
 
 ## Partygames
 
