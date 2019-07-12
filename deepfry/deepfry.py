@@ -235,7 +235,7 @@ class Deepfry(commands.Cog):
 		"""
 		Deepfries images.
 		
-		Use the optional paramater "link" to use a **direct link** as the target.
+		Use the optional parameter "link" to use a **direct link** as the target.
 		"""
 		async with ctx.typing():
 			try:
@@ -262,7 +262,7 @@ class Deepfry(commands.Cog):
 		"""
 		Demolishes images.
 		
-		Use the optional paramater "link" to use a **direct link** as the target.
+		Use the optional parameter "link" to use a **direct link** as the target.
 		"""
 		async with ctx.typing():
 			try:
