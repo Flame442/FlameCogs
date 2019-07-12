@@ -64,7 +64,7 @@ class Battleship(commands.Cog):
 	@checks.guildowner()
 	@commands.group()
 	async def battleshipset(self, ctx):
-		"""Config options for batteship."""
+		"""Config options for battleship."""
 		if ctx.invoked_subcommand is None:
 			extraHit = await self.config.guild(ctx.guild).extraHit()
 			doMention = await self.config.guild(ctx.guild).doMention()
@@ -118,4 +118,3 @@ class Battleship(commands.Cog):
 	
 	def cog_unload(self):
 		return [game.stop() for game in self.games]
-
