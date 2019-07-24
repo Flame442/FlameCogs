@@ -10,7 +10,9 @@ class GameRoles(commands.Cog):
 		self.bot = bot
 		self.config = Config.get_conf(self, identifier=7345167903)
 		self.config.register_guild(
-			roledict = {}
+			roledict = {},
+			doAdd = True,
+			doRemove = True
 		)
 
 	@commands.guild_only()
@@ -148,31 +150,86 @@ class GameRoles(commands.Cog):
 	async def recheck(self, ctx):
 		"""Force a recheck of your current activities."""
 		roledict = await self.config.guild(ctx.guild).roledict()
-		torem = [role for role in ctx.author.roles if str(role.id) in roledict]
-		if torem != []:
-			try:
-				await ctx.author.remove_roles(*torem)
-			except discord.errors.Forbidden:
-				pass
-		toadd = []
-		for role in [rid for rid in roledict if ctx.author.activity.name in roledict[rid]]:
-			role = ctx.guild.get_role(int(role))
-			if role is not None:
-				toadd.append(role)
-		if toadd != []:
-			try:
-				await ctx.author.add_roles(*toadd)
-			except discord.errors.Forbidden:
-				pass
+		doAdd = await self.config.guild(ctx.guild).doAdd()
+		doRemove = await self.config.guild(ctx.guild).doRemove()
+		if doRemove:
+			torem = [role for role in ctx.author.roles if str(role.id) in roledict]
+			if torem != []:
+				try:
+					await ctx.author.remove_roles(*torem)
+				except discord.errors.Forbidden:
+					pass
+		if doAdd:
+			toadd = []
+			for role in [rid for rid in roledict if ctx.author.activity.name in roledict[rid]]:
+				role = ctx.guild.get_role(int(role))
+				if role is not None:
+					toadd.append(role)
+			if toadd != []:
+				try:
+					await ctx.author.add_roles(*toadd)
+				except discord.errors.Forbidden:
+					pass
 		await ctx.tick()
 
+	@commands.guild_only()
+	@checks.guildowner()
+	@commands.group(aliases=['grset'])
+	async def gameroleset(self, ctx):
+		"""Config options for gameroles."""
+		pass
+		
+	@gameroleset.command()
+	async def add(self, ctx, value: bool=None):
+		"""
+		Set if roles should be added when someone starts playing a game.
+		
+		Defaults to True.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).doAdd()
+			if v:
+				await ctx.send('Roles are added when someone starts playing.')
+			else:
+				await ctx.send('Roles are not added when someone starts playing.')
+		else:
+			await self.config.guild(ctx.guild).doAdd.set(value)
+			if value:
+				await ctx.send('Roles will now be added when someone starts playing.')
+			else:
+				await ctx.send('Roles will no longer be added when someone starts playing.')
+		
+	@gameroleset.command()
+	async def remove(self, ctx, value: bool=None):
+		"""
+		Set if roles should be removed when someone stops playing a game.
+		
+		Defaults to True.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).doRemove()
+			if v:
+				await ctx.send('Roles are removed when someone stops playing.')
+			else:
+				await ctx.send('Roles are not removed when someone stops playing.')
+		else:
+			await self.config.guild(ctx.guild).doRemove.set(value)
+			if value:
+				await ctx.send('Roles will now be removed when someone stops playing.')
+			else:
+				await ctx.send('Roles will no longer be removed when someone stops playing.')
+	
 	@commands.Cog.listener()
 	async def on_member_update(self, beforeMem, afterMem):
 		"""Updates a member's roles."""
 		if beforeMem.activity == afterMem.activity:
 			return
 		roledict = await self.config.guild(afterMem.guild).roledict()
-		if beforeMem.activity is not None:
+		doAdd = await self.config.guild(afterMem.guild).doAdd()
+		doRemove = await self.config.guild(afterMem.guild).doRemove()
+		if beforeMem.activity is not None and doRemove:
 			torem = []
 			for role in [rid for rid in roledict if beforeMem.activity.name in roledict[rid]]:
 				role = afterMem.guild.get_role(int(role))
@@ -183,7 +240,7 @@ class GameRoles(commands.Cog):
 					await afterMem.remove_roles(*torem)
 				except discord.errors.Forbidden:
 					pass
-		if afterMem.activity is not None:
+		if afterMem.activity is not None and doAdd:
 			toadd = []
 			for role in [rid for rid in roledict if afterMem.activity.name in roledict[rid]]:
 				role = afterMem.guild.get_role(int(role))
