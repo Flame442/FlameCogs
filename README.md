@@ -178,6 +178,21 @@ This command is only usable by the server owner and bot owner.
 **`[p]gameroles recheck`**  
 Force a recheck of your current activities.  
 
+**`[p]gameroleset <argument>`**  
+Config options for gameroles.  
+This command is only usable by the server owner and bot owner.  
+Alias: `[p]grset`
+
+**`[p]gameroleset add [value]`**  
+Set if roles should be added when someone starts playing a game.  
+Defaults to `True`.  
+This value is server specific.
+
+**`[p]gameroleset remove [value]`**  
+Set if roles should be removed when someone stops playing a game.  
+Defaults to `True`.  
+This value is server specific.
+
 ## Hangman
 
 This cog will play hangman with you.
@@ -202,7 +217,6 @@ This value is server specific.
 **`[p]hangmanset edit [value]`**  
 Set if hangman messages should be one edited message or many individual messages.  
 Defaults to `True`.  
-This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
 ## Monopoly
