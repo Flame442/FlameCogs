@@ -161,7 +161,8 @@ class GameRoles(commands.Cog):
 					pass
 		if doAdd:
 			toadd = []
-			for role in [rid for rid in roledict if ctx.author.activity.name in roledict[rid]]:
+			activities = [a.name for a in ctx.author.activities]
+			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
 				role = ctx.guild.get_role(int(role))
 				if role is not None:
 					toadd.append(role)
@@ -224,14 +225,15 @@ class GameRoles(commands.Cog):
 	@commands.Cog.listener()
 	async def on_member_update(self, beforeMem, afterMem):
 		"""Updates a member's roles."""
-		if beforeMem.activity == afterMem.activity:
+		if beforeMem.activities == afterMem.activities:
 			return
 		roledict = await self.config.guild(afterMem.guild).roledict()
 		doAdd = await self.config.guild(afterMem.guild).doAdd()
 		doRemove = await self.config.guild(afterMem.guild).doRemove()
 		if beforeMem.activity is not None and doRemove:
 			torem = []
-			for role in [rid for rid in roledict if beforeMem.activity.name in roledict[rid]]:
+			activities = [a.name for a in beforeMem.activities]
+			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
 				role = afterMem.guild.get_role(int(role))
 				if role is not None:
 					torem.append(role)
@@ -242,7 +244,8 @@ class GameRoles(commands.Cog):
 					pass
 		if afterMem.activity is not None and doAdd:
 			toadd = []
-			for role in [rid for rid in roledict if afterMem.activity.name in roledict[rid]]:
+			activities = [a.name for a in afterMem.activities]
+			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
 				role = afterMem.guild.get_role(int(role))
 				if role is not None:
 					toadd.append(role)
