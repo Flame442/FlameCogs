@@ -5,28 +5,23 @@
 [![discord.py](https://img.shields.io/badge/discord-py-blue.svg)](https://github.com/Rapptz/discord.py)
 
 Cogs for a [Red Discord Bot](https://github.com/Cog-Creators/Red-DiscordBot)  
-These cogs are a collection of random stuff I make.
 
 # Installation
 
-These are cogs for the [Red Bot V3](https://github.com/Cog-Creators/Red-DiscordBot/tree/V3/develop) so ensure you have a working red bot.
+>These are cogs for the [Red-DiscordBot V3](https://github.com/Cog-Creators/Red-DiscordBot/tree/V3/develop). You need to have a working V3 Redbot in order to install these cogs.
 
-Make sure downloader is loaded
+*[p] is your prefix.*
 
+Make sure downloader is loaded:  
 `[p]load downloader`
 
->[p] is your prefix.
-
-Add this repo using
-
+Add the repo to your bot:  
 `[p]repo add flamecogs https://github.com/Flame442/FlameCogs`
 
-Then, install each cog individually with
-
+Install the cogs you want:  
 `[p]cog install flamecogs <cog name>`
 
-And load each cog with
-
+Load installed cogs:  
 `[p]load <cog name>`
 
 # Cogs
@@ -54,7 +49,7 @@ This cog will let you play battleship against another member of your server.
 Begin a game of battleship.
 
 **`[p]battleshipset <argument>`**  
-Config options for batteship.  
+Config options for battleship.  
 This command is only usable by the server owner and bot owner.
 
 **`[p]battleshipset extra [value]`**  
@@ -76,13 +71,13 @@ This cog lets you deepfry and nuke images. It has a configurable chance to deepf
 ### Usage
 
 **`[p]deepfry [link]`**  
-Deepfries the attatched image.  
-Use the optional paramater `link` to use a **direct link** as the target.  
+Deepfries the attached image.  
+Use the optional parameter `link` to use a **direct link** as the target.  
 Alias: `[p]df`
 
 **`[p]nuke [link]`**  
-Nukes the attatched image.  
-Use the optional paramater `link` to use a **direct link** as the target.
+Nukes the attached image.  
+Use the optional parameter `link` to use a **direct link** as the target.
 
 **`[p]deepfryset <argument>`**  
 Config options for deepfry.  
@@ -121,8 +116,8 @@ This cog requires an API key from Microsoft Azure Face API. Setup instructions c
 ### Usage
 
 **`[p]face [link]`**  
-Finds and describes faces in the attatched image.  
-Use the optional paramater `link` to use a **direct link** as the target.
+Finds and describes faces in the attached image.  
+Use the optional parameter `link` to use a **direct link** as the target.
 
 **`[p]faceset <argument>`**  
 Config options for face.  
@@ -183,6 +178,21 @@ This command is only usable by the server owner and bot owner.
 **`[p]gameroles recheck`**  
 Force a recheck of your current activities.  
 
+**`[p]gameroleset <argument>`**  
+Config options for gameroles.  
+This command is only usable by the server owner and bot owner.  
+Alias: `[p]grset`
+
+**`[p]gameroleset add [value]`**  
+Set if roles should be added when someone starts playing a game.  
+Defaults to `True`.  
+This value is server specific.
+
+**`[p]gameroleset remove [value]`**  
+Set if roles should be removed when someone stops playing a game.  
+Defaults to `True`.  
+This value is server specific.
+
 ## Hangman
 
 This cog will play hangman with you.
@@ -207,7 +217,6 @@ This value is server specific.
 **`[p]hangmanset edit [value]`**  
 Set if hangman messages should be one edited message or many individual messages.  
 Defaults to `True`.  
-This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
 ## Monopoly
@@ -218,7 +227,7 @@ This cog will let you play monopoly with up to 7 other people in your server.
 
 **`[p]monopoly [savename]`**  
 Begin a game of monopoly.   
-Use the optional paramater `savename` to load a saved game.
+Use the optional parameter `savename` to load a saved game.
 
 **`[p]monopolyset <argument>`**  
 Config options for monopoly.  
@@ -307,34 +316,34 @@ Each player will be asked to come up with a word that contains the given charact
 If they are unable to do so, they will lose a life.  
 Words cannot be reused.  
 The last person to have lives left wins.  
-Use the optional paramater `hp` to set the number of lives each person starts with.
+Use the optional parameter `hp` to set the number of lives each person starts with.
 
 **`[p]partygames fast [maxpoints]`**  
 Race to type a word the fastest.  
 The first person to type a word that contains the given characters gets a point.  
 Words cannot be reused.  
 The first person to get `maxpoints` points wins.  
-Use the optional paramater `maxpoints` to set the number of points required to win.
+Use the optional parameter `maxpoints` to set the number of points required to win.
 
 **`[p]partygames long [maxpoints]`**  
 Type the longest word.  
 The person to type the longest word that contains the given characters gets a point.  
 Words cannot be reused.  
 The first person to get `maxpoints` points wins.  
-Use the optional paramater `maxpoints` to set the number of points required to win.
+Use the optional parameter `maxpoints` to set the number of points required to win.
 
 **`[p]partygames most [maxpoints]`**  
 Type the most words.  
 The person to type the most words that contain the given characters gets a point.  
 Words cannot be reused.  
 The first person to get `maxpoints` points wins.  
-Use the optional paramater `maxpoints` to set the number of points required to win.
+Use the optional parameter `maxpoints` to set the number of points required to win.
 
 **`[p]partygames mix [maxpoints]`**  
 Play a mixture of all 4 games.  
 Words cannot be reused.  
 The first person to get `maxpoints` points wins.  
-Use the optional paramater `maxpoints` to set the number of points required to win.
+Use the optional parameter `maxpoints` to set the number of points required to win.
 
 **`[p]partygames locale <locale>`**  
 Override the bot's locale for partygames.  
@@ -350,7 +359,7 @@ This cog will let you send embedded messages quickly and easily.
 
 **`[p]sendembed [color] <text>`**  
 Send an embed.  
-Use the optional paramter `color` to change the color of the embed.  
+Use the optional parameter `color` to change the color of the embed.  
 The embed will contain the text `text`.  
 All normal discord formatting will work inside the embed.
 
@@ -362,34 +371,34 @@ This cog will track commonly used words by server and member.
 
 **`[p]wordstats [member_or_guild] [amount_or_word]`**  
 Prints the most commonly used words.  
-Use the optional paramater `member_or_guild` to see the stats of a member or guild.  
-Use the optional paramater `amount_or_word` to change the number of words that are displayed, or to check the stats of a specific word (default `30`).
+Use the optional parameter `member_or_guild` to see the stats of a member or guild.  
+Use the optional parameter `amount_or_word` to change the number of words that are displayed, or to check the stats of a specific word (default `30`).
 
 **`[p]wordstats global [amount_or_word]`**  
 Prints the most commonly used words across all guilds.  
-Use the optional paramater `amount_or_word` to change the number of words that are displayed, or to check the stats of a specific word (default `30`).
+Use the optional parameter `amount_or_word` to change the number of words that are displayed, or to check the stats of a specific word (default `30`).
 
 **`[p]topchatters [guild] [word] [amount]`**  
 Prints the members who have said the most words.  
-Use the optional paramater `guild` to see the topchatters in a specific guild.
-Use the optional paramater `word` to see the topchatters of a specific word.  
-Use the optional paramater `amount` to change the number of members that are displayed (default `10`).
+Use the optional parameter `guild` to see the topchatters in a specific guild.
+Use the optional parameter `word` to see the topchatters of a specific word.  
+Use the optional parameter `amount` to change the number of members that are displayed (default `10`).
 
 **`[p]topchatters global [word] [amount]`**  
 Prints the members who have said the most words across all guilds.  
-Use the optional paramater `word` to see the topchatters of a specific word.  
-Use the optional paramater `amount` to change the number of members that are displayed (default `10`).
+Use the optional parameter `word` to see the topchatters of a specific word.  
+Use the optional parameter `amount` to change the number of members that are displayed (default `10`).
 
 **`[p]topratio <word> [guild] [amount]`**  
 Prints the members with the highest "word to all words" ratio.  
-Use the paramater `word` to set the word to compare.  
-Use the optional paramater `guild` to see the ratio in a specific guild.  
-Use the optional paramater `amount` to change the number of members that are displayed (default `10`).
+Use the parameter `word` to set the word to compare.  
+Use the optional parameter `guild` to see the ratio in a specific guild.  
+Use the optional parameter `amount` to change the number of members that are displayed (default `10`).
 
 **`[p]topratio global <word> [amount]`**  
 Prints the members with the highest "word to all words" ratio in all guilds.  
-Use the paramater `word` to set the word to compare.  
-Use the optional paramater `amount` to change the number of members that are displayed (default `10`).
+Use the parameter `word` to set the word to compare.  
+Use the optional parameter `amount` to change the number of members that are displayed (default `10`).
 
 **`[p]wordstatsset <argument>`**  
 Config options for wordstats.  

@@ -7,7 +7,7 @@ from redbot.core.config import Group
 from redbot.core.drivers import IdentifierData
 from collections import defaultdict
 from copy import deepcopy
-from typing import Optional, Union, Dict
+from typing import Optional, Union
 from random import randint
 import time
 import asyncio
@@ -71,8 +71,8 @@ class WordStats(commands.Cog):
 		"""
 		Prints the most commonly used words.
 		
-		Use the optional paramater "member_or_guild" to see the stats of a member or guild.
-		Use the optional paramater "amount_or_word" to change the number of words that are displayed or to check the stats of a specific word.
+		Use the optional parameter "member_or_guild" to see the stats of a member or guild.
+		Use the optional parameter "amount_or_word" to change the number of words that are displayed or to check the stats of a specific word.
 		"""
 		if isinstance(amount_or_word, int):
 			if amount_or_word <= 0:
@@ -142,7 +142,7 @@ class WordStats(commands.Cog):
 		"""
 		Prints the most commonly used words across all guilds.
 		
-		Use the optional paramater "amount_or_word" to change the number of words that are displayed or to check the stats of a specific word.
+		Use the optional parameter "amount_or_word" to change the number of words that are displayed or to check the stats of a specific word.
 		"""
 		if isinstance(amount_or_word, int):
 			if amount_or_word <= 0:
@@ -208,9 +208,9 @@ class WordStats(commands.Cog):
 		"""
 		Prints the members who have said the most words.
 		
-		Use the optional paramater "guild" to see the topchatters in a specific guild.
-		Use the optional paramater "word" to see the topchatters of a specific word.
-		Use the optional paramater "amount" to change the number of members that are displayed.
+		Use the optional parameter "guild" to see the topchatters in a specific guild.
+		Use the optional parameter "word" to see the topchatters of a specific word.
+		Use the optional parameter "amount" to change the number of members that are displayed.
 		"""
 		if word:
 			if word.isdigit(): #fix for str being greedy
@@ -280,8 +280,8 @@ class WordStats(commands.Cog):
 		"""
 		Prints the members who have said the most words across all guilds.
 		
-		Use the optional paramater "word" to see the topchatters of a specific word.
-		Use the optional paramater "amount" to change the number of members that are displayed.
+		Use the optional parameter "word" to see the topchatters of a specific word.
+		Use the optional parameter "amount" to change the number of members that are displayed.
 		"""
 		if word:
 			if word.isdigit(): #fix for str being greedy
@@ -359,9 +359,9 @@ class WordStats(commands.Cog):
 		"""
 		Prints the members with the highest "word to all words" ratio.
 		
-		Use the paramater "word" to set the word to compare.
-		Use the optional paramater "guild" to see the ratio in a specific guild.
-		Use the optional paramater "amount" to change the number of members that are displayed.
+		Use the parameter "word" to set the word to compare.
+		Use the optional parameter "guild" to see the ratio in a specific guild.
+		Use the optional parameter "amount" to change the number of members that are displayed.
 		"""
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
@@ -418,8 +418,8 @@ class WordStats(commands.Cog):
 		"""
 		Prints the members with the highest "word to all words" ratio in all guilds.
 		
-		Use the paramater "word" to set the word to compare.
-		Use the optional paramater "amount" to change the number of members that are displayed.
+		Use the parameter "word" to set the word to compare.
+		Use the optional parameter "amount" to change the number of members that are displayed.
 		"""
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')

@@ -16,7 +16,7 @@ class SimpleEmbed(commands.Cog):
 		"""
 		Send an embed.
 		
-		Use the optional paramter `color` to change the color of the embed.
+		Use the optional parameter `color` to change the color of the embed.
 		The embed will contain the text `text`.
 		All normal discord formatting will work inside the embed. 
 		"""

@@ -388,7 +388,7 @@ The first person to get `maxpoints` points wins.
 			).format(mem=self._get_name_string(ctx, order[0], True), score=score[order[0]]))
 			return score, used, ctx.guild.get_member(order[0])
 			#in the very specific case of a member leaving after becoming the person 
-			#with the most words, this will return None and do a werid double print.
+			#with the most words, this will return None and do a weird double print.
 			#deal with it.
 		return score, used, False #tie
 	

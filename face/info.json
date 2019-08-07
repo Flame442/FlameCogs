@@ -1,6 +1,6 @@
 {
     "author" : ["Flame442 (Flame#2941)"],
-    "install_msg" : "Thanks for installing face. Make sure to setup the cog with `[p]faceset`",
+    "install_msg" : "Thanks for installing face.\nYou will need to follow the install guide in order to get an API key to use this cog. The guide can be found at <https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>.",
     "name" : "Face",
     "short" : "Find and describe the faces in an image.",
     "requirements" : ["pillow"],
