@@ -715,9 +715,12 @@ class MonopolyGame():
 					#must pay 10x rent if owned
 					if (
 						self.ownedby[self.tile[self.p]] != self.p
-						self.ownedby[self.tile[self.p]] >= 0
+						and self.ownedby[self.tile[self.p]] >= 0
 						and self.ismortgaged[self.tile[self.p]] != 1
 					):
+						memown = self.ctx.guild.get_member(
+							self.uid[self.ownedby[self.tile[self.p]]]
+						)
 						self.bal[self.p] -= distance * 10
 						self.bal[self.ownedby[self.tile[self.p]]] += distance * 10
 						msg += (
@@ -744,9 +747,12 @@ class MonopolyGame():
 					#must pay 2x rent if owned
 					if (
 						self.ownedby[self.tile[self.p]] != self.p
-						self.ownedby[self.tile[self.p]] >= 0
+						and self.ownedby[self.tile[self.p]] >= 0
 						and self.ismortgaged[self.tile[self.p]] != 1
 					):
+						memown = self.ctx.guild.get_member(
+							self.uid[self.ownedby[self.tile[self.p]]]
+						)
 						rrcount = 0
 						if self.ownedby[5] == self.ownedby[self.tile[self.p]]:
 							rrcount += 1
@@ -959,13 +965,12 @@ class MonopolyGame():
 						and self.bal[self.uid.index(m.author.id)] >= int(m.content)
 						and self.isalive[self.uid.index(m.author.id)]
 					)
-				else:
-					return (
-						m.author.id in self.uid
-						and self.bal[self.uid.index(m.author.id)] >= int(m.content)
-						and self.isalive[self.uid.index(m.author.id)]
-						and (highest + minRaise) <= int(m.content)
-					)
+				return (
+					m.author.id in self.uid
+					and self.bal[self.uid.index(m.author.id)] >= int(m.content)
+					and self.isalive[self.uid.index(m.author.id)]
+					and (highest + minRaise) <= int(m.content)
+				)
 			except Exception:
 				return False
 		while True:
