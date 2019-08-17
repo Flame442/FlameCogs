@@ -106,10 +106,10 @@ CHANCENAME = [
 	'Advance to Illinois Ave\nIf you pass Go, collect $200.',
 	'Advance to St. Charles Place\nIf you pass Go, collect $200',
 	(
-		'Advance token to nearest Utility. If unowned, you may buy it from the Bank. ' #TODO fix using land() (10x)
+		'Advance token to nearest Utility. If unowned, you may buy it from the Bank. '
 		'If owned, throw dice and pay owner a total ten times the amount thrown.'
 	), (
-		'Advance token to the nearest Railroad and pay owner twice the rental to which ' #TODO fix using land() (twice)
+		'Advance token to the nearest Railroad and pay owner twice the rental to which '
 		'he/she is otherwise entitled. If Railroad is unowned, you may buy it from the Bank.'
 	),
 	'Bank pays you dividend of $50',
@@ -711,8 +711,22 @@ class MonopolyGame():
 						goValue = await self.cog.config.guild(self.ctx.guild).goValue()
 						self.bal[self.p] += goValue
 						msg += f'You passed go, you now have ${self.bal[self.p]}.\n'
-						self.tile[self.p] = 12 
-					msg = await self.land(msg, 0)
+						self.tile[self.p] = 12
+					#must pay 10x rent if owned
+					if (
+						self.ownedby[self.tile[self.p]] != self.p
+						self.ownedby[self.tile[self.p]] >= 0
+						and self.ismortgaged[self.tile[self.p]] != 1
+					):
+						self.bal[self.p] -= distance * 10
+						self.bal[self.ownedby[self.tile[self.p]]] += distance * 10
+						msg += (
+							f'You paid ${distance * 10} of rent to {memown.display_name}. '
+							f'You now have ${self.bal[self.p]}. {memown.display_name} now has '
+							f'${self.bal[self.ownedby[self.tile[self.p]]]}.\n'
+						)
+					else:
+						msg = await self.land(msg, 0)
 				elif card == 4:
 					if self.tile[self.p] <= 5:
 						self.tile[self.p] = 5
@@ -727,7 +741,30 @@ class MonopolyGame():
 						self.bal[self.p] += goValue
 						msg += f'You passed go, you now have ${self.bal[self.p]}.\n'
 						self.tile[self.p] = 5
-					msg = await self.land(msg, 0)
+					#must pay 2x rent if owned
+					if (
+						self.ownedby[self.tile[self.p]] != self.p
+						self.ownedby[self.tile[self.p]] >= 0
+						and self.ismortgaged[self.tile[self.p]] != 1
+					):
+						rrcount = 0
+						if self.ownedby[5] == self.ownedby[self.tile[self.p]]:
+							rrcount += 1
+						if self.ownedby[15] == self.ownedby[self.tile[self.p]]:
+							rrcount += 1
+						if self.ownedby[25] == self.ownedby[self.tile[self.p]]:
+							rrcount += 1
+						if self.ownedby[35] == self.ownedby[self.tile[self.p]]:
+							rrcount += 1
+						self.bal[self.p] -= RRPRICE[rrcount] * 2
+						self.bal[self.ownedby[self.tile[self.p]]] += RRPRICE[rrcount] * 2
+						msg += (
+							f'You paid ${RRPRICE[rrcount] * 2} of rent to {memown.display_name}. '
+							f'You now have ${self.bal[self.p]}. {memown.display_name} now has '
+							f'${self.bal[self.ownedby[self.tile[self.p]]]}.\n'
+						)
+					else:
+						msg = await self.land(msg, 0)
 				elif card == 5:
 					self.bal[self.p] += 50
 					msg += f'You now have ${self.bal[self.p]}.\n'
@@ -1092,13 +1129,14 @@ class MonopolyGame():
 			)
 			await self.ctx.send(file=discord.File(self.bprint()))
 			await self.ctx.send(msg)
+			valid = [str(x) for x in range(len(tradeable_p))] + ['m', 'j', 'd', 'c']
 			choice = await self.bot.wait_for(
 				'message',
 				timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
 				check=lambda m: (
 					m.author.id == self.uid[self.p]
 					and m.channel == self.ctx.channel
-					and m.content.lower() in [str(x) for x in range(len(tradeable_p))] + ['m', 'j', 'd', 'c'] #TODO line too long
+					and m.content.lower() in valid
 				)
 			)
 			choice = choice.content.lower()
@@ -1184,13 +1222,14 @@ class MonopolyGame():
 			)
 			await self.ctx.send(file=discord.File(self.bprint()))
 			await self.ctx.send(msg)
+			valid = [str(x) for x in range(len(tradeable_partner))] + ['m', 'j', 'd', 'c']
 			choice = await self.bot.wait_for(
 				'message',
 				timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
 				check=lambda m: (
 					m.author.id == self.uid[self.p]
 					and m.channel == self.ctx.channel
-					and m.content.lower() in [str(x) for x in range(len(tradeable_partner))] + ['m', 'j', 'd', 'c'] #TODO line too long
+					and m.content.lower() in valid
 				)
 			)
 			choice = choice.content.lower()
