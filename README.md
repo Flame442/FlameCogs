@@ -229,19 +229,72 @@ This cog will let you play monopoly with up to 7 other people in your server.
 Begin a game of monopoly.   
 Use the optional parameter `savename` to load a saved game.
 
+**`[p]monopoly delete <savefile>`**  
+Delete a save file.  
+This cannot be undone.  
+This command is only usable by the server owner and bot owner.
+
+**`[p]monopoly list`**  
+List available save files.   
+
+**`[p]monopolyconvert <savefile>`**  
+Convert a savefile to work with the latest version of this cog.
+
+**`[p]monopolyconvert list`**  
+List save files that can be converted.
+
+**`[p]monopolystop`**  
+Stop the game of monopoly in the current channel.  
+This command is only usable by the server owner and bot owner.
+
 **`[p]monopolyset <argument>`**  
 Config options for monopoly.  
 This command is only usable by the server owner and bot owner.
 
-**`[p]monopolyset mention [value]`**  
-Set if players should be mentioned when their turn begins.  
+**`[p]monopolyset auction [value]`**  
+Set if properties should be auctioned when passed on.  
 Defaults to `False`.  
-This command is only usable by the server owner and bot owner.
-This value is server specific.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
 
-**`[p]monopolyset startingcash [value]`**  
-Set how much money players should start the game with.  
-Defaults to `1500`.  
+**`[p]monopolyset bail [value]`**  
+Set how much bail should cost.  
+Defaults to `50`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset doublego [value]`**  
+Set if landing on go should double the amount of money given.  
+Defaults to `False`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset freeparking [value]`**  
+Set the reward for landing on free parking.  
+Use an integer to set a static reward.  
+Use "none" for no reward.  
+Use "tax" to use the sum of taxes and fees as the reward.  
+Defaults to `None`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset go [value]`**  
+Set the base value of passing go.  
+Defaults to `200`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset hotellimit [value]`**  
+Set a limit on the number of hotels that can be bought.  
+Use -1 to disable the limit.  
+Defaults to `12`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset houselimit [value]`**  
+Set a limit on the number of houses that can be bought.  
+Use -1 to disable the limit.  
+Defaults to `32`.  
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
@@ -257,33 +310,35 @@ Defaults to `100`.
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
-**`[p]monopolyset auction [value]`**  
-Set if properties should be auctioned when passed on.  
-Defaults to `False`.  
-This command is only usable by the server owner and bot owner.  
-This value is server specific.
-
-**`[p]monopolyset bail [value]`**  
-Set how much bail should cost.  
-Defaults to `50`.  
-This command is only usable by the server owner and bot owner.  
-This value is server specific.
-
 **`[p]monopolyset maxjailrolls [value]`**  
 Set the maximum number of rolls in jail before bail has to be paid.  
 Defaults to `3`.  
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
-**`[p]monopolyset go [value]`**  
-Set the base value of passing go.  
-Defaults to `200`.  
+**`[p]monopolyset mention [value]`**  
+Set if players should be mentioned when their turn begins.  
+Defaults to `False`.  
+This command is only usable by the server owner and bot owner.
+This value is server specific.  
+
+**`[p]monopolyset minraise [value]`**  
+Set the minimum raise in auctions.  
+Defaults to `1`.  
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
-**`[p]monopolyset doublego [value]`**  
-Set if landing on go should double the amount of money given.  
-Defaults to `False`.  
+**`[p]monopolyset startingcash [value]`**  
+Set how much money players should start the game with.  
+Defaults to `1500`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
+**`[p]monopolyset timeout [value]`**  
+Set the amount of time before the game times out.  
+Value is in seconds.  
+Use -1 to disable the timeout.  
+Defaults to `60`.  
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
