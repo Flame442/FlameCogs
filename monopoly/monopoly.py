@@ -504,7 +504,7 @@ class Monopoly(commands.Cog):
 		Set the minimum raise in auctions.
 		
 		Defaults to 1.
-		this value is server specific.
+		This value is server specific.
 		"""
 		if value is None:
 			v = await self.config.guild(ctx.guild).minRaise()
