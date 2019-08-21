@@ -161,6 +161,9 @@ PROPGROUPS = [
 	[31, 32, 34], [37, 39]
 ]
 
+class GetMemberError(Exception):
+	"""Error thrown when a member cannot be found by MonopolyGame.get_member."""
+	pass
 
 class MonopolyGame():
 	"""
@@ -273,7 +276,7 @@ class MonopolyGame():
 		"""Checks for errors in stopped games."""
 		try:
 			fut.result()
-		except asyncio.CancelledError:
+		except (asyncio.CancelledError, GetMemberError):
 			pass
 		except asyncio.TimeoutError:
 			asyncio.create_task(self.send_timeout())
@@ -305,6 +308,32 @@ class MonopolyGame():
 		save['freeparkingsum'] = self.freeparkingsum
 		self.autosave = save
 	
+	async def get_member(self, id):
+		"""Wrapper for guild.get_member that checks if the member is None."""
+		mem = self.ctx.guild.get_member(id)
+		if mem is None:
+			savename = str(self.ctx.message.id)
+			try:
+				user = await self.bot.fetch_user(id)
+				name = user.name
+			except discord.errors.NotFound:
+				await self.ctx.send(
+					'A player in the current game is no longer in this guild.\n'
+					f'Your game was saved to `{savename}`.\n'
+					f'You can load your save with `{self.ctx.prefix}monopoly {savename}`.'
+				)
+			else:
+				await self.ctx.send(
+					f'Player "{name}" in the current game is no longer in this guild.\n'
+					f'Your game was saved to `{savename}`.\n'
+					f'You can load your save with `{self.ctx.prefix}monopoly {savename}`.'
+				)
+			finally:
+				async with self.cog.config.guild(self.ctx.guild).saves() as saves:
+					saves[savename] = self.autosave
+				raise GetMemberError
+		return mem
+	
 	async def run(self):
 		"""Runs a game of monopoly."""
 		while self.numalive > 1:
@@ -318,7 +347,7 @@ class MonopolyGame():
 			self.num_doubles = 0
 			self.was_doubles = True
 			doMention = await self.cog.config.guild(self.ctx.guild).doMention()
-			mem = self.ctx.guild.get_member(self.uid[self.p])
+			mem = await self.get_member(self.uid[self.p])
 			if doMention:
 				mention = mem.mention
 			else:
@@ -548,7 +577,7 @@ class MonopolyGame():
 			self.p += 1
 		doMention = await self.cog.config.guild(self.ctx.guild).doMention()
 		winp = self.isalive.index(True)
-		mem = self.ctx.guild.get_member(self.uid[winp])
+		mem = await self.get_member(self.uid[winp])
 		if doMention:
 			mention = mem.mention
 		else:
@@ -637,7 +666,7 @@ class MonopolyGame():
 					msg += f'You now have ${self.bal[self.p]}.\n'
 					for i in range(self.num):
 						if self.isalive[i]:
-							mem = self.ctx.guild.get_member(self.uid[i])
+							mem = await self.get_member(self.uid[i])
 							self.bal[i] -= 50
 							msg += f'{mem.display_name} now has ${self.bal[i]}.\n'
 				elif card in (7, 10, 16):
@@ -718,7 +747,7 @@ class MonopolyGame():
 						and self.ownedby[self.tile[self.p]] >= 0
 						and self.ismortgaged[self.tile[self.p]] != 1
 					):
-						memown = self.ctx.guild.get_member(
+						memown = await self.get_member(
 							self.uid[self.ownedby[self.tile[self.p]]]
 						)
 						self.bal[self.p] -= distance * 10
@@ -750,7 +779,7 @@ class MonopolyGame():
 						and self.ownedby[self.tile[self.p]] >= 0
 						and self.ismortgaged[self.tile[self.p]] != 1
 					):
-						memown = self.ctx.guild.get_member(
+						memown = await self.get_member(
 							self.uid[self.ownedby[self.tile[self.p]]]
 						)
 						rrcount = 0
@@ -818,7 +847,7 @@ class MonopolyGame():
 					msg += f'You now have ${self.bal[self.p]}.\n'
 					for i in range(self.num):
 						if self.isalive[i]:
-							mem = self.ctx.guild.get_member(self.uid[i])
+							mem = await self.get_member(self.uid[i])
 							self.bal[i] -= 50
 							msg += f'{mem.display_name} now has ${self.bal[i]}.\n'
 				elif card == 14:
@@ -884,7 +913,7 @@ class MonopolyGame():
 				if doAuction:
 					msg = await self.auction(msg)
 		elif RENTPRICE[self.tile[self.p]*6] == -1: #pay rr/util rent
-			memown = self.ctx.guild.get_member(self.uid[self.ownedby[self.tile[self.p]]])
+			memown = await self.get_member(self.uid[self.ownedby[self.tile[self.p]]])
 			if self.tile[self.p] in (12, 28): #utility
 				if self.ownedby[12] == self.ownedby[28]: #own both
 					self.bal[self.p] -= distance * 10
@@ -920,7 +949,7 @@ class MonopolyGame():
 					f'${self.bal[self.ownedby[self.tile[self.p]]]}.\n'
 				)
 		else: #pay normal rent
-			memown = self.ctx.guild.get_member(self.uid[self.ownedby[self.tile[self.p]]])
+			memown = await self.get_member(self.uid[self.ownedby[self.tile[self.p]]])
 			isMonopoly = False
 			for group in PROPGROUPS:
 				if self.tile[self.p] in group:
@@ -990,7 +1019,7 @@ class MonopolyGame():
 		if highp is None:
 			msg = 'Nobody bid...\n'
 		else:
-			memwin = self.ctx.guild.get_member(self.uid[highp])
+			memwin = await self.get_member(self.uid[highp])
 			self.bal[highp] -= highest
 			self.ownedby[self.tile[self.p]] = highp
 			msg = (
@@ -1048,7 +1077,7 @@ class MonopolyGame():
 					self.numalive -= 1
 					self.isalive[self.p] = False
 					self.injail[self.p] = False #prevent them from executing jail code
-					mem = self.ctx.guild.get_member(self.uid[self.p])
+					mem = await self.get_member(self.uid[self.p])
 					await self.ctx.send(file=discord.File(self.bprint()))
 					await self.ctx.send(f'{mem.display_name} is now out of the game.')
 		return f'You are now out of debt. You now have ${self.bal[self.p]}.\n'
@@ -1076,7 +1105,7 @@ class MonopolyGame():
 		msg = '```\n'
 		for a in range(self.num):
 			if self.isalive[a] and a != self.p:
-				name = self.ctx.guild.get_member(self.uid[a]).display_name
+				name = await self.get_member(self.uid[a]).display_name
 				msg += f'{a} {name}\n'
 		msg += '```Select the player you want to trade with.\n`c`: Cancel'
 		await self.ctx.send(file=discord.File(self.bprint()))
@@ -1337,8 +1366,8 @@ class MonopolyGame():
 		if choice == 'c':
 			return
 		doMention = await self.cog.config.guild(self.ctx.guild).doMention()
-		member_p = self.ctx.guild.get_member(self.uid[self.p])
-		member_partner = self.ctx.guild.get_member(self.uid[partner])
+		member_p = await self.get_member(self.uid[self.p])
+		member_partner = await self.get_member(self.uid[partner])
 		if doMention:
 			mention = member_partner.mention
 		else:
