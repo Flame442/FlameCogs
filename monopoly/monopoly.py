@@ -60,6 +60,8 @@ class Monopoly(commands.Cog):
 					msg += f'Available save files:\n```\n{savenames}```'
 				return await ctx.send(msg)
 			data = saves[savefile]
+			if ctx.author.id not in data['uid']:
+				return await ctx.send('You are not a player in that game!')
 			await ctx.send(f'Using save file `{savefile}`')
 			game = MonopolyGame(ctx, self.bot, self, startCash, None, data)
 			self.games.append(game)
