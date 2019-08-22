@@ -525,7 +525,7 @@ class MonopolyGame():
 								await self.ctx.send(
 									'There is already another save with that name. Override it?'
 								)
-								timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue()
+								timeout = await self.cog.config.guild(self.ctx.guild).timeoutValue()
 								choice = await self.bot.wait_for(
 									'message',
 									timeout=timeout,
@@ -583,7 +583,6 @@ class MonopolyGame():
 		else:
 			mention = mem.display_name
 		await self.ctx.send(f'{mention} wins!')
-		self._task.cancel() #Not sure if this is needed, explicitly stop the task
 	
 	async def land(self, msg, distance):
 		"""Move players and handle the events that happen when they land."""
