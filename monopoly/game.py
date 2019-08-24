@@ -367,7 +367,7 @@ class MonopolyGame():
 				if self.jailturn[self.p] > maxJailRolls:
 					msg += (
 						f'\nYour {maxJailRolls} turn{"" if maxJailRolls == 1 else "s"} '
-						'in jail {"is" if maxJailRolls == 1 else "are"} up. '
+						f'in jail {"is" if maxJailRolls == 1 else "are"} up. '
 					)
 					if self.goojf[self.p] > 0:
 						msg += (
@@ -661,9 +661,9 @@ class MonopolyGame():
 					self.injail[self.p] = True
 					self.was_doubles = False
 				elif card == 6:
-					self.bal[self.p] += 50 * self.numalive
+					self.bal[self.p] += 50 * (self.numalive - 1)
 					msg += f'You now have ${self.bal[self.p]}.\n'
-					for i in range(self.num):
+					for i in range(self.num) and not i == self.p:
 						if self.isalive[i]:
 							mem = await self.get_member(self.uid[i])
 							self.bal[i] -= 50
@@ -842,12 +842,12 @@ class MonopolyGame():
 					self.tile[self.p] = 39
 					msg = await self.land(msg, 0)
 				elif card == 13:
-					self.bal[self.p] += 50 * self.numalive
+					self.bal[self.p] -= 50 * (self.numalive - 1)
 					msg += f'You now have ${self.bal[self.p]}.\n'
 					for i in range(self.num):
-						if self.isalive[i]:
+						if self.isalive[i] and not i == self.p:
 							mem = await self.get_member(self.uid[i])
-							self.bal[i] -= 50
+							self.bal[i] += 50
 							msg += f'{mem.display_name} now has ${self.bal[i]}.\n'
 				elif card == 14:
 					self.bal[self.p] += 150
@@ -1097,14 +1097,17 @@ class MonopolyGame():
 			21: 'Red', 23: 'Red', 24: 'Red',
 			26: 'Yellow', 27: 'Yellow', 29: 'Yellow',
 			31: 'Green', 32: 'Green', 34: 'Green',
-			37: 'Dark Blue', 39: 'Dark Blue'
+			37: 'Dark Blue', 39: 'Dark Blue',
+			5: 'Railroad', 15: 'Railroad', 25: 'Railroad', 35: 'Railroad', 
+			12: 'Utility', 28: 'Utility'
 		}
 		
 		
 		msg = '```\n'
 		for a in range(self.num):
 			if self.isalive[a] and a != self.p:
-				name = await self.get_member(self.uid[a]).display_name
+				mem = await self.get_member(self.uid[a])
+				name = mem.display_name
 				msg += f'{a} {name}\n'
 		msg += '```Select the player you want to trade with.\n`c`: Cancel'
 		await self.ctx.send(file=discord.File(self.bprint()))
