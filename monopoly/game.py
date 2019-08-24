@@ -626,7 +626,7 @@ class MonopolyGame():
 			elif self.tile[self.p] == 30: #go to jail
 				self.injail[self.p] = True
 				self.tile[self.p] = 10
-				self.was_double = False
+				self.was_doubles = False
 				msg += 'You are now in jail!\n'
 			elif self.tile[self.p] in (2, 17, 33): #cc
 				card = self.ccorder[self.ccn]
