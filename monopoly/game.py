@@ -663,8 +663,8 @@ class MonopolyGame():
 				elif card == 6:
 					self.bal[self.p] += 50 * (self.numalive - 1)
 					msg += f'You now have ${self.bal[self.p]}.\n'
-					for i in range(self.num) and not i == self.p:
-						if self.isalive[i]:
+					for i in range(self.num):
+						if self.isalive[i] and not i == self.p:
 							mem = await self.get_member(self.uid[i])
 							self.bal[i] -= 50
 							msg += f'{mem.display_name} now has ${self.bal[i]}.\n'
