@@ -1104,7 +1104,8 @@ class MonopolyGame():
 		msg = '```\n'
 		for a in range(self.num):
 			if self.isalive[a] and a != self.p:
-				name = await self.get_member(self.uid[a]).display_name
+				mem = await self.get_member(self.uid[a])
+				name = mem.display_name
 				msg += f'{a} {name}\n'
 		msg += '```Select the player you want to trade with.\n`c`: Cancel'
 		await self.ctx.send(file=discord.File(self.bprint()))
