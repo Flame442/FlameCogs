@@ -367,7 +367,7 @@ class MonopolyGame():
 				if self.jailturn[self.p] > maxJailRolls:
 					msg += (
 						f'\nYour {maxJailRolls} turn{"" if maxJailRolls == 1 else "s"} '
-						'in jail {"is" if maxJailRolls == 1 else "are"} up. '
+						f'in jail {"is" if maxJailRolls == 1 else "are"} up. '
 					)
 					if self.goojf[self.p] > 0:
 						msg += (
@@ -1097,7 +1097,9 @@ class MonopolyGame():
 			21: 'Red', 23: 'Red', 24: 'Red',
 			26: 'Yellow', 27: 'Yellow', 29: 'Yellow',
 			31: 'Green', 32: 'Green', 34: 'Green',
-			37: 'Dark Blue', 39: 'Dark Blue'
+			37: 'Dark Blue', 39: 'Dark Blue',
+			5: 'Railroad', 15: 'Railroad', 25: 'Railroad', 35: 'Railroad', 
+			12: 'Utility', 28: 'Utility'
 		}
 		
 		
