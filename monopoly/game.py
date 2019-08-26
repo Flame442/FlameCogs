@@ -626,7 +626,7 @@ class MonopolyGame():
 			elif self.tile[self.p] == 30: #go to jail
 				self.injail[self.p] = True
 				self.tile[self.p] = 10
-				self.was_double = False
+				self.was_doubles = False
 				msg += 'You are now in jail!\n'
 			elif self.tile[self.p] in (2, 17, 33): #cc
 				card = self.ccorder[self.ccn]
@@ -663,8 +663,8 @@ class MonopolyGame():
 				elif card == 6:
 					self.bal[self.p] += 50 * (self.numalive - 1)
 					msg += f'You now have ${self.bal[self.p]}.\n'
-					for i in range(self.num) and not i == self.p:
-						if self.isalive[i]:
+					for i in range(self.num):
+						if self.isalive[i] and not i == self.p:
 							mem = await self.get_member(self.uid[i])
 							self.bal[i] -= 50
 							msg += f'{mem.display_name} now has ${self.bal[i]}.\n'
