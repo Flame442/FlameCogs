@@ -1,5 +1,4 @@
 import discord
-from redbot.core import commands
 from functools import partial
 import asyncio
 import logging
@@ -36,15 +35,15 @@ class BattleshipGame():
 		self.key = [[], []]
 		self.log = logging.getLogger('red.flamecogs.battleship')
 		self._task = asyncio.create_task(self.run())
-		self._task.add_done_callback(partial(self.error_callback, ctx))
+		self._task.add_done_callback(partial(self.error_callback, ctx)) #Thanks Sinbad <3
 	
-	async def send_error(self, ctx, exc: Exception):
+	async def send_error(self, ctx):
 		"""Sends a message to the channel after an error."""
 		await ctx.send(
 			'A fatal error has occurred, shutting down.\n'
 			'Please have the bot owner copy the error from console '
 			'and post it in the support channel of <https://discord.gg/bYqCjvu>.'
-		) 
+		)
 	
 	def error_callback(self, ctx, fut):
 		"""Checks for errors in stopped games."""
@@ -53,26 +52,26 @@ class BattleshipGame():
 		except asyncio.CancelledError:
 			pass
 		except Exception as exc:
-			asyncio.create_task(self.send_error(ctx, exc))
+			asyncio.create_task(self.send_error(ctx))
 			msg = 'Error in Battleship.\n'
-			self.log.exception(msg)	
+			self.log.exception(msg)
 	
-	def _bprint(self, player, bt):
+	def _bprint(self, player, show_unhit):
 		"""
 		Creates a visualization of the board.
 		Returns a str of the board.
 		
 		Params:
 		player = int, Which player's board to print.
-		bt = int, Should unhit ships be shown.
+		show_unhit = int, Should unhit ships be shown.
 		"""
 		outputchars = [{0:'· ', 1:'O ', 2:'X ', 3:'· '}, {0:'· ', 1:'O ', 2:'X ', 3:'# '}]
-		b = '  ' + ' '.join(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']) #header row
+		output = '  ' + ' '.join(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']) #header row
 		for y in range(10): #vertical positions
-			b += f'\n{str(y)} '
-			for x in range(10):
-				b += outputchars[bt][self.board[player][(y*10)+x]] #horizontal positions
-		return f'```\n{b}```'
+			output += f'\n{y} '
+			for x in range(10): #horizontal positions
+				output += outputchars[show_unhit][self.board[player][(y*10)+x]]
+		return f'```\n{output}```'
 	
 	async def _place(self, player, length, value):
 		"""
@@ -99,9 +98,7 @@ class BattleshipGame():
 		try:
 			d = value[2]
 		except IndexError:
-			await self.player[player].send(
-				'Invalid input, d cord must be a direction of d or r.'
-			)
+			await self.player[player].send('Invalid input, d cord must be a direction of d or r.')
 			return False
 		try:
 			if d == 'r': #right
@@ -145,14 +142,14 @@ class BattleshipGame():
 		"""
 		for x in range(2): #each player
 			await self.ctx.send(f'Messaging {self.name[x]} for setup now.')
-			await self.player[x].send(
+			privateMessage = await self.player[x].send(
 				f'{self.name[x]}, it is your turn to set up your ships.\n'
 				'Place ships by entering the top left coordinate '
 				'and the direction of (r)ight or (d)own in xyd format.'
 			)
-			for k in [5, 4, 3, 3, 2]: #each ship length
-				privateMessage = await self.player[x].send(
-					f'{self._bprint(x,1)}Place your {str(k)} length ship.'
+			for ship_len in [5, 4, 3, 3, 2]: #each ship length
+				await self.player[x].send(
+					f'{self._bprint(x,1)}Place your {ship_len} length ship.'
 				)
 				while True:
 					try:
@@ -160,14 +157,14 @@ class BattleshipGame():
 							'message',
 							timeout=120,
 							check=lambda m: (
-								m.channel == privateMessage.channel 
+								m.channel == privateMessage.channel
 								and not m.author.bot
 							)
 						)
 					except asyncio.TimeoutError:
 						await self.ctx.send(f'{self.name[x]} took too long, shutting down.')
 						return self.stop()
-					if await self._place(x, k, t.content.lower()): #only break if _place succeeded
+					if await self._place(x, ship_len, t.content.lower()): #only break if _place succeeded
 						break
 			m = await self.player[x].send(self._bprint(x, 1))
 			self.pmsg.append(m) #save this message for editing later
@@ -185,15 +182,14 @@ class BattleshipGame():
 				f'{self._bprint(pswap[self.p], 0)}'
 				f'{self.name[self.p]}, take your shot.'
 			)
-			i = 0
-			while i == 0:
+			while True:
 				try:
 					s = await self.bot.wait_for(
 						'message',
 						timeout=120,
 						check=lambda m: (
-							m.author == self.player[self.p] 
-							and m.channel == channel 
+							m.author == self.player[self.p]
+							and m.channel == channel
 							and len(m.content) == 2
 						)
 					)
@@ -203,14 +199,13 @@ class BattleshipGame():
 				try: #makes sure input is valid
 					x = self.letnum[s.content[0].lower()]
 					y = int(s.content[1])
-					self.board[pswap[self.p]][(y*10)+x]
 				except (ValueError, KeyError, IndexError):
 					continue
 				if self.board[pswap[self.p]][(y*10)+x] == 0:
 					self.board[pswap[self.p]][(y*10)+x] = 1
 					await self.pmsg[pswap[self.p]].edit(content=self._bprint(pswap[self.p], 1))
 					await self.ctx.send(f'{self._bprint(pswap[self.p], 0)}**Miss!**')
-					i = 1
+					break
 				elif self.board[pswap[self.p]][(y*10)+x] in [1, 2]:
 					await self.ctx.send('You already shot there!')
 				elif self.board[pswap[self.p]][(y*10)+x] == 3:
@@ -221,14 +216,14 @@ class BattleshipGame():
 					for a in range(5):
 						if (y*10)+x in self.key[pswap[self.p]][a]:
 							self.key[pswap[self.p]][a][(y*10)+x] = 1
-							l = 0
+							any_unhit = False
 							for b in self.key[pswap[self.p]][a]:
-								if self.key[pswap[self.p]][a][b] == 0: #if any position in the ship is still there, l = 1
-									l = 1
+								if self.key[pswap[self.p]][a][b] == 0: #if any position in the ship is still there
+									any_unhit = True
 									break
-							if l == 0: #if ship destroyed
+							if not any_unhit: #if ship destroyed
 								await self.ctx.send(
-									f'**{self.name[pswap[self.p]]}\'s {str([5, 4, 3, 3, 2][a])} '
+									f'**{self.name[pswap[self.p]]}\'s {[5, 4, 3, 3, 2][a]} '
 									'length ship was destroyed!**'
 								)
 					#DEAD PLAYER
@@ -239,7 +234,7 @@ class BattleshipGame():
 						if self.eh:
 							await self.ctx.send('Take another shot.')
 						else:
-							i = 1
+							break
 					else:
 						self.stop()
 
