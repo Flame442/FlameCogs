@@ -577,7 +577,7 @@ class WordStats(commands.Cog):
 			disabledChannels = cfg['disabledChannels']
 			if enableGuild and not msg.channel.id in disabledChannels:
 				#Strip any characters besides letters and spaces.
-				words = str(re.sub(r'[^a-zA-Z ]', '', msg.content.lower())).split(' ')
+				words = str(re.sub(r'[^a-zA-Z \n]', '', msg.content.lower())).split()
 				#Get the latest memdict.
 				if basic_config['STORAGE_TYPE'] == 'JSON':
 					if msg.author not in self.members_to_update:

@@ -1101,8 +1101,6 @@ class MonopolyGame():
 			5: 'Railroad', 15: 'Railroad', 25: 'Railroad', 35: 'Railroad', 
 			12: 'Utility', 28: 'Utility'
 		}
-		
-		
 		msg = '```\n'
 		for a in range(self.num):
 			if self.isalive[a] and a != self.p:
@@ -1513,6 +1511,9 @@ class MonopolyGame():
 						msg = 'No houses were changed.\n'
 						break
 					price = abs(change) * HOUSEPRICE[props[0]]
+					if price > self.bal[self.p] and change > 0:
+						msg = 'You cannot afford to buy that many houses.\n'
+						break
 					if abs(change) == 1:
 						plural = ''
 					else:

@@ -3,7 +3,7 @@ from redbot.core import commands
 from redbot.core import Config
 from redbot.core.data_manager import bundled_data_path
 from redbot.core import checks
-from redbot.core.i18n import Translator, cog_i18n
+from redbot.core.i18n import Translator, cog_i18n, get_locale
 import random
 import asyncio
 import json
@@ -92,7 +92,7 @@ class PartyGames(commands.Cog):
 		"""Get the proper wordlist for the current locale."""
 		locale = await self.config.guild(ctx.guild).locale()
 		if locale is None:
-			locale = await ctx.bot.db.locale()
+			locale = get_locale()
 		for char in CHARS:
 			if locale.lower() == char.lower():
 				locale = char #convert case to the one used by the file
