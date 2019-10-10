@@ -233,7 +233,7 @@ class BattleshipGame():
 			await self.ctx.send(f'Messaging {self.name[x]} for setup now.')
 			privateMessage = await self.player[x].send(
 				f'{self.name[x]}, it is your turn to set up your ships.\n'
-				'Place ships by entering the letter of the column followed by the number of the row '
+				'Place ships by entering the top left coordiante as letter of the column followed by the number of the row '
 				'and the direction of (r)ight or (d)own in xyd format.'
 			)
 			for ship_len in [5, 4, 3, 3, 2]: #each ship length
