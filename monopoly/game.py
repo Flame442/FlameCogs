@@ -280,10 +280,11 @@ class MonopolyGame():
 			pass
 		except asyncio.TimeoutError:
 			asyncio.create_task(self.send_timeout())
-		except Exception:
+		except Exception as exc:
 			asyncio.create_task(self.send_error())
 			msg = 'Error in Monopoly.\n'
 			self.log.exception(msg)
+			self.bot.dispatch('flamecogs_game_error', self, exc)
 		try:
 			self.cog.games.remove(self)
 		except ValueError:
