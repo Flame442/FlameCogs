@@ -55,6 +55,11 @@ class BattleshipGame():
 			asyncio.create_task(self.send_error(ctx))
 			msg = 'Error in Battleship.\n'
 			self.log.exception(msg)
+			self.bot.dispatch('flamecogs_game_error', self, exc)
+		try:
+			self.cog.games.remove(self)
+		except ValueError:
+			pass
 	
 	def _gen_text(self, player, show_unhit):
 		"""
@@ -233,7 +238,8 @@ class BattleshipGame():
 			await self.ctx.send(f'Messaging {self.name[x]} for setup now.')
 			privateMessage = await self.player[x].send(
 				f'{self.name[x]}, it is your turn to set up your ships.\n'
-				'Place ships by entering the top left coordinate as letter of the column followed by the number of the row '
+				'Place ships by entering the top left coordinate using the '
+				'letter of the column followed by the number of the row '
 				'and the direction of (r)ight or (d)own in xyd format.'
 			)
 			for ship_len in [5, 4, 3, 3, 2]: #each ship length
@@ -250,15 +256,14 @@ class BattleshipGame():
 						)
 					except asyncio.TimeoutError:
 						await self.ctx.send(f'{self.name[x]} took too long, shutting down.')
-						return self.stop()
+						return
 					if await self._place(x, ship_len, t.content.lower()): #only break if _place succeeded
 						break
 			m = await self.send_board(x, 1, self.player[x], '')
 			self.pmsg.append(m) #save this message for editing later
-		game = True
 		pswap = {1:0, 0:1} #helper to swap player
 		channel = self.ctx.channel
-		while game:
+		while True:
 			self.p = pswap[self.p] #swap players
 			if await self.cog.config.guild(self.ctx.guild).doMention(): #should player be mentioned
 				mention = self.player[self.p].mention
@@ -281,7 +286,7 @@ class BattleshipGame():
 					)
 				except asyncio.TimeoutError:
 					await self.ctx.send('You took too long, shutting down.')
-					self.stop()
+					return
 				try: #makes sure input is valid
 					x = self.letnum[s.content[0].lower()]
 					y = int(s.content[1])
@@ -315,16 +320,8 @@ class BattleshipGame():
 					#DEAD PLAYER
 					if 3 not in self.board[pswap[self.p]]:
 						await self.ctx.send(f'**{self.name[self.p]} wins!**')
-						game = False
-					if game:
-						if await self.cog.config.guild(self.ctx.guild).extraHit():
-							await self.ctx.send('Take another shot.')
-						else:
-							break
+						return
+					if await self.cog.config.guild(self.ctx.guild).extraHit():
+						await self.ctx.send('Take another shot.')
 					else:
-						self.stop()
-
-	def stop(self):
-		"""Stop and cleanup the game."""
-		self.cog.games.remove(self)
-		self._task.cancel()
+						break
