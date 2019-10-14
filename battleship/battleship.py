@@ -158,4 +158,4 @@ class Battleship(commands.Cog):
 				await ctx.send('The board will now be displayed using text.')
 	
 	def cog_unload(self):
-		return [game.stop() for game in self.games]
+		return [game._task.cancel() for game in self.games]
