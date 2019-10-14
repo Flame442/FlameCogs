@@ -559,3 +559,6 @@ class Monopoly(commands.Cog):
 			else:
 				await self.config.guild(ctx.guild).timeoutValue.set(value)
 				await ctx.send(f'The timeout is now set to {value} seconds.')
+
+	def cog_unload(self):
+		return [game._task.cancel() for game in self.games]
