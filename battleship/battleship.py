@@ -51,8 +51,8 @@ class Battleship(commands.Cog):
 	async def battleshipstop(self, ctx):
 		"""Stop the game of battleship in this channel."""
 		wasGame = False
-		for x in [game for game in self.games if game.ctx.channel == ctx.channel]:
-			x.stop()
+		for game in [g for g in self.games if g.ctx.channel == ctx.channel]:
+			game._task.cancel()
 			wasGame = True
 		if wasGame: #prevent multiple messages if more than one game exists for some reason
 			await ctx.send('The game was stopped successfully.')
@@ -64,7 +64,7 @@ class Battleship(commands.Cog):
 		"""
 		View your current board in an ongoing game.
 		
-		Specify the channel ID of the channel you want to check.
+		Specify the channel ID of the channel the game is in.
 		"""
 		game = [game for game in self.games if game.ctx.channel.id == channel]
 		if not game:
