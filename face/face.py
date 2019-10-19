@@ -51,14 +51,14 @@ class Face(commands.Cog):
 	@commands.command()
 	async def face(self, ctx, face_url: str=None):
 		"""Find and describe the faces in an image."""
-		if hasattr(self.bot, 'db'): #3.1
-			api = await self.bot.db.api_tokens.get_raw('faceapi', default={'key': None, 'url': None})
-			api_key = api['key']
-			api_url = api['url']
-		else: #3.2
+		if hasattr(self.bot, 'get_shared_api_tokens'): #3.2
 			api = await self.bot.get_shared_api_tokens('faceapi')
 			api_key = api.get('key')
 			api_url = api.get('url')
+		else: #3.1	
+			api = await self.bot.db.api_tokens.get_raw('faceapi', default={'key': None, 'url': None})
+			api_key = api['key']
+			api_url = api['url']
 		
 		if not api_key:
 			return await ctx.send(

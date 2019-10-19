@@ -15,7 +15,8 @@ class Battleship(commands.Cog):
 		self.config = Config.get_conf(self, identifier=7345167901)
 		self.config.register_guild(
 			extraHit = True,
-			doMention = False
+			doMention = False,
+			doImage = True
 		)
 	
 	@commands.guild_only()
@@ -24,8 +25,6 @@ class Battleship(commands.Cog):
 		"""Start a game of battleship."""
 		if [game for game in self.games if game.ctx.channel == ctx.channel]:
 			return await ctx.send('A game is already running in this channel.')
-		dm = await self.config.guild(ctx.guild).doMention()
-		eh = await self.config.guild(ctx.guild).extraHit()
 		check = lambda m: (
 			m.author != ctx.message.author 
 			and not m.author.bot 
@@ -43,7 +42,7 @@ class Battleship(commands.Cog):
 			'A game of battleship will be played between '
 			f'{ctx.author.display_name} and {r.author.display_name}.'
 		)
-		game = BattleshipGame(ctx, self.bot, dm, eh, ctx.author, r.author, self)
+		game = BattleshipGame(ctx, self.bot, self, ctx.author, r.author)
 		self.games.append(game)
 	
 	@commands.guild_only()
@@ -52,13 +51,32 @@ class Battleship(commands.Cog):
 	async def battleshipstop(self, ctx):
 		"""Stop the game of battleship in this channel."""
 		wasGame = False
-		for x in [game for game in self.games if game.ctx.channel == ctx.channel]:
-			x.stop()
+		for game in [g for g in self.games if g.ctx.channel == ctx.channel]:
+			game._task.cancel()
 			wasGame = True
 		if wasGame: #prevent multiple messages if more than one game exists for some reason
 			await ctx.send('The game was stopped successfully.')
 		else:
 			await ctx.send('There is no ongoing game in this channel.')
+	
+	@commands.command()
+	async def battleshipboard(self, ctx, channel: int):
+		"""
+		View your current board in an ongoing game.
+		
+		Specify the channel ID of the channel the game is in.
+		"""
+		game = [game for game in self.games if game.ctx.channel.id == channel]
+		if not game:
+			return await ctx.send(
+				'There is no game in that channel or that channel does not exist.'
+			)
+		game = [g for g in game if ctx.author.id in [m.id for m in g.player]]
+		if not game:
+			return await ctx.send('You are not in that game.')
+		game = game[0]
+		p = [m.id for m in game.player].index(ctx.author.id)
+		await game.send_board(p, 1, ctx, '')
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -68,9 +86,11 @@ class Battleship(commands.Cog):
 		if ctx.invoked_subcommand is None:
 			extraHit = await self.config.guild(ctx.guild).extraHit()
 			doMention = await self.config.guild(ctx.guild).doMention()
+			doImage = await self.config.guild(ctx.guild).doImage()
 			msg = (
 				f'Extra shot on hit: {extraHit}\n'
-				f'Mention on turn: {doMention}'
+				f'Mention on turn: {doMention}\n'
+				f'Display the board using an image: {doImage}'
 			)
 			await ctx.send(f'```py\n{msg}```')
 	
@@ -116,5 +136,26 @@ class Battleship(commands.Cog):
 			else:
 				await ctx.send('Players will not be mentioned when their turn begins.')
 	
+	@battleshipset.command()
+	async def imgboard(self, ctx, value: bool=None):
+		"""
+		Set if the board should be displayed using an image.
+		
+		Defaults to True.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).doImage()
+			if v:
+				await ctx.send('The board is currently displayed using an image.')
+			else:
+				await ctx.send('The board is currently displayed using text.')
+		else:
+			await self.config.guild(ctx.guild).doImage.set(value)
+			if value:
+				await ctx.send('The board will now be displayed using an image.')
+			else:
+				await ctx.send('The board will now be displayed using text.')
+	
 	def cog_unload(self):
-		return [game.stop() for game in self.games]
+		return [game._task.cancel() for game in self.games]

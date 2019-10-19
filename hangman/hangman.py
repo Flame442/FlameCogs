@@ -142,7 +142,7 @@ class Hangman(commands.Cog):
 				await asyncio.sleep(.2)
 				try:
 					await umsg.delete()
-				except discord.errors.Forbidden:
+				except (discord.errors.Forbidden, discord.errors.NotFound):
 					pass
 			if t in guessed:
 				err = 1

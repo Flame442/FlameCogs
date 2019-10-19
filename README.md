@@ -48,6 +48,10 @@ This cog will let you play battleship against another member of your server.
 **`[p]battleship`**  
 Begin a game of battleship.
 
+**`[p]battleshipboard <channel>`**  
+View your current board in an ongoing game.  
+Use `channel` to specify the channel ID of the channel the game is in.
+
 **`[p]battleshipset <argument>`**  
 Config options for battleship.  
 This command is only usable by the server owner and bot owner.
@@ -60,6 +64,12 @@ This value is server specific.
 
 **`[p]battleshipset mention [value]`**  
 Set if players should be mentioned when their turn begins.  
+Defaults to `True`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
+**`[p]battleshipset imgboard [value]`**  
+Set if the board should be displayed using an image.  
 Defaults to `True`.  
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
@@ -444,16 +454,18 @@ Prints the members who have said the most words across all guilds.
 Use the optional parameter `word` to see the topchatters of a specific word.  
 Use the optional parameter `amount` to change the number of members that are displayed (default `10`).
 
-**`[p]topratio <word> [guild] [amount]`**  
+**`[p]topratio <word> [guild] [amount] [min_total]`**  
 Prints the members with the highest "word to all words" ratio.  
 Use the parameter `word` to set the word to compare.  
 Use the optional parameter `guild` to see the ratio in a specific guild.  
-Use the optional parameter `amount` to change the number of members that are displayed (default `10`).
+Use the optional parameter `amount` to change the number of members that are displayed (default `10`).  
+Use the optional parameter `min_total` to change the minimum number of words a user needs to have said to be shown.
 
-**`[p]topratio global <word> [amount]`**  
+**`[p]topratio global <word> [amount] [min_total]`**  
 Prints the members with the highest "word to all words" ratio in all guilds.  
 Use the parameter `word` to set the word to compare.  
-Use the optional parameter `amount` to change the number of members that are displayed (default `10`).
+Use the optional parameter `amount` to change the number of members that are displayed (default `10`).  
+Use the optional parameter `min_total` to change the minimum number of words a user needs to have said to be shown.
 
 **`[p]wordstatsset <argument>`**  
 Config options for wordstats.  
@@ -489,4 +501,5 @@ The helpful support staff at the [Redbot discord](https://discord.gg/red),
 [Sparklin Labs](http://bombparty.sparklinlabs.com/) for creating the game that Partygames is based off of,  
 [/u/YoungsterGlenn](https://www.reddit.com/r/BombParty/comments/3lehxq/a_nearly_exhaustive_subset_of_the_bombparty/) for the wordlist used by Partygames,  
 [Sinbad](https://github.com/mikeshardmind) for helping with Wordstats,  
-And [Preda](https://github.com/PredaaA) for translating Partygames.
+[Preda](https://github.com/PredaaA) for translating Partygames,  
+And Red for creating the sprites used in Battleship.

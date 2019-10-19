@@ -354,7 +354,8 @@ class WordStats(commands.Cog):
 		ctx,
 		word: str,
 		guild: Optional[GuildConvert]=None,
-		amount: int=10
+		amount: int=10,
+		min_total: int=0
 	):
 		"""
 		Prints the members with the highest "word to all words" ratio.
@@ -362,9 +363,12 @@ class WordStats(commands.Cog):
 		Use the parameter "word" to set the word to compare.
 		Use the optional parameter "guild" to see the ratio in a specific guild.
 		Use the optional parameter "amount" to change the number of members that are displayed.
+		Use the optional parameter "min_total" to change the minimum number of words a user needs to have said to be shown.
 		"""
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
+		if min_total < 0:
+			min_total = 0
 		if guild is None:
 			guild = ctx.guild
 		word = word.lower()
@@ -379,7 +383,8 @@ class WordStats(commands.Cog):
 						n += data[memid]['worddict'][w]
 					if n == 0:
 						continue
-					sumdict[memid] = data[memid]['worddict'][word] / n
+					if n >= min_total:
+						sumdict[memid] = data[memid]['worddict'][word] / n
 			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
 		if sumdict == {}:
 			return await ctx.send('No one has chatted yet.')
@@ -399,30 +404,39 @@ class WordStats(commands.Cog):
 				break
 		if n == 1:
 			memberprint = 'member'
+			have_has = 'has'
 		else:
 			memberprint = f'**{n}** members'
+			have_has = 'have'
 		if guild == ctx.guild:
 			guildprint = 'this server'
 		else:
 			guildprint = guild.name
+		min_words_msg = ''
+		if min_total > 0:
+			min_words_msg = f'that {have_has} said at least **{min_total}** messages '
 		try:
 			await ctx.send(
-				f'The {memberprint} in {guildprint} who {"has" if n == 1 else "have"} said the word **{word}** '
-				f'the most compared to other words {"is" if n == 1 else "are"}:\n```{result}```'
+				f'The {memberprint} in {guildprint} {min_words_msg}who {have_has} '
+				f'said the word **{word}** the most compared to other words '
+				f'{"is" if n == 1 else "are"}:\n```{result}```'
 			)
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
 	
 	@topratio.command(name='global')
-	async def topratio_global(self, ctx, word: str, amount: int=10):
+	async def topratio_global(self, ctx, word: str, amount: int=10, min_total: int=0):
 		"""
 		Prints the members with the highest "word to all words" ratio in all guilds.
 		
 		Use the parameter "word" to set the word to compare.
 		Use the optional parameter "amount" to change the number of members that are displayed.
+		Use the optional parameter "min_total" to change the minimum number of words a user needs to have said to be shown.
 		"""
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
+		if min_total < 0:
+			min_total = 0
 		word = word.lower()
 		async with ctx.typing():
 			await self.update_data()
@@ -446,7 +460,7 @@ class WordStats(commands.Cog):
 			sumdict = {}
 			for memid in tempdict:
 				v = tempdict[memid]
-				if v[1] == 0:
+				if v[1] == 0 or v[1] < min_total:
 					continue
 				sumdict[memid] = v[0] / v[1]
 			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
@@ -468,12 +482,18 @@ class WordStats(commands.Cog):
 				break
 		if n == 1:
 			memberprint = 'member'
+			have_has = 'has'
 		else:
 			memberprint = f'**{n}** members'
+			have_has = 'have'
+		min_words_msg = ''
+		if min_total > 0:
+			min_words_msg = f'that {have_has} said at least **{min_total}** messages '
 		try:
 			await ctx.send(
-				f'The {memberprint} who {"has" if n == 1 else "have"} globally said the word **{word}** '
-				f'the most compared to other words {"is" if n == 1 else "are"}:\n```{result}```'
+				f'The {memberprint} {min_words_msg}who {have_has} '
+				f'globally said the word **{word}** the most compared to other words '
+				f'{"is" if n == 1 else "are"}:\n```{result}```'
 			)
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
