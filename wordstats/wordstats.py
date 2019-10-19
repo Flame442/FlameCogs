@@ -363,7 +363,7 @@ class WordStats(commands.Cog):
 		Use the parameter "word" to set the word to compare.
 		Use the optional parameter "guild" to see the ratio in a specific guild.
 		Use the optional parameter "amount" to change the number of members that are displayed.
-		Use the optional parameter "min_total" to change the minumum number of words a user needs to have said to be shown.
+		Use the optional parameter "min_total" to change the minimum number of words a user needs to have said to be shown.
 		"""
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
@@ -431,7 +431,7 @@ class WordStats(commands.Cog):
 		
 		Use the parameter "word" to set the word to compare.
 		Use the optional parameter "amount" to change the number of members that are displayed.
-		Use the optional parameter "min_total" to change the minumum number of words a user needs to have said to be shown.
+		Use the optional parameter "min_total" to change the minimum number of words a user needs to have said to be shown.
 		"""
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
