@@ -145,7 +145,8 @@ class BattleshipGame():
 		"""
 		if not await self.cog.config.guild(self.ctx.guild).doImage():
 			content = self._gen_text(player, 1)
-			await self.pmsg[player].edit(content=content)
+			if self.pmsg[player]:
+				await self.pmsg[player].edit(content=content)
 	
 	async def send_board(self, player, show_unhit, dest, msg):
 		"""
@@ -245,19 +246,24 @@ class BattleshipGame():
 			for ship_len in [5, 4, 3, 3, 2]: #each ship length
 				await self.send_board(x, 1, self.player[x], f'Place your {ship_len} length ship.')
 				while True:
-					try:
-						t = await self.bot.wait_for(
-							'message',
-							timeout=120,
-							check=lambda m: (
-								m.channel == privateMessage.channel
-								and not m.author.bot
+					if isinstance(self.player[x], self.cog.ai):
+						await asyncio.sleep(1)
+						cords = self.player[x].place(self.board[x], ship_len)
+					else:
+						try:
+							cords = await self.bot.wait_for(
+								'message',
+								timeout=120,
+								check=lambda m: (
+									m.channel == privateMessage.channel
+									and not m.author.bot
+								)
 							)
-						)
-					except asyncio.TimeoutError:
-						await self.ctx.send(f'{self.name[x]} took too long, shutting down.')
-						return
-					if await self._place(x, ship_len, t.content.lower()): #only break if _place succeeded
+							cords = cords.content
+						except asyncio.TimeoutError:
+							await self.ctx.send(f'{self.name[x]} took too long, shutting down.')
+							return
+					if await self._place(x, ship_len, cords.lower()): #only break if _place succeeded
 						break
 			m = await self.send_board(x, 1, self.player[x], '')
 			self.pmsg.append(m) #save this message for editing later
@@ -274,22 +280,34 @@ class BattleshipGame():
 				pswap[self.p], 0, self.ctx, f'{self.name[self.p]}, take your shot.'
 			)
 			while True:
-				try:
-					s = await self.bot.wait_for(
-						'message',
-						timeout=120,
-						check=lambda m: (
-							m.author == self.player[self.p]
-							and m.channel == channel
-							and len(m.content) == 2
+				if isinstance(self.player[self.p], self.cog.ai):
+					safe_board = [i if i != 3 else 0 for i in self.board[pswap[self.p]]]
+					ship_status = []
+					for idx, ship_dict in enumerate(self.key[pswap[self.p]]):
+						if all(ship_dict.values()):
+							ship_status.append(self.ship_pos[pswap[self.p]][idx])
+						else:
+							ship_status.append(None)
+					cords = self.player[self.p].shoot(safe_board, ship_status)
+					cords = cords.lower()
+				else:
+					try:
+						cords = await self.bot.wait_for(
+							'message',
+							timeout=120,
+							check=lambda m: (
+								m.author == self.player[self.p]
+								and m.channel == channel
+								and len(m.content) == 2
+							)
 						)
-					)
-				except asyncio.TimeoutError:
-					await self.ctx.send('You took too long, shutting down.')
-					return
+						cords = cords.content.lower()
+					except asyncio.TimeoutError:
+						await self.ctx.send('You took too long, shutting down.')
+						return
 				try: #makes sure input is valid
-					x = self.letnum[s.content[0].lower()]
-					y = int(s.content[1])
+					x = self.letnum[cords[0]]
+					y = int(cords[1])
 				except (ValueError, KeyError, IndexError):
 					continue
 				if self.board[pswap[self.p]][(y*10)+x] == 0:
