@@ -4,6 +4,7 @@ from redbot.core import Config
 from redbot.core import checks
 import asyncio
 from .game import BattleshipGame
+from .ai import BattleshipAI
 
 
 class Battleship(commands.Cog):
@@ -12,6 +13,7 @@ class Battleship(commands.Cog):
 		self.bot = bot
 		self.games = []
 		self.bs = BattleshipGame
+		self.ai = BattleshipAI
 		self.config = Config.get_conf(self, identifier=7345167901)
 		self.config.register_guild(
 			extraHit = True,
@@ -26,23 +28,29 @@ class Battleship(commands.Cog):
 		if [game for game in self.games if game.ctx.channel == ctx.channel]:
 			return await ctx.send('A game is already running in this channel.')
 		check = lambda m: (
-			m.author != ctx.message.author 
-			and not m.author.bot 
-			and m.channel == ctx.message.channel 
-			and m.content.lower() == 'i'
+			not m.author.bot
+			and m.channel == ctx.message.channel
+			and (
+				(m.author != ctx.message.author and m.content.lower() == 'i')
+				or (m.author == ctx.message.author and m.content.lower() == 'ai')
+			)
 		)
-		await ctx.send('Second player, say I.')
+		await ctx.send('Second player, say I.\nOr say AI to play against the bot.')
 		try:
 			r = await self.bot.wait_for('message', timeout=60, check=check)
 		except asyncio.TimeoutError:
 			return await ctx.send('Nobody else wants to play, shutting down.')
 		if [game for game in self.games if game.ctx.channel == ctx.channel]:
 			return await ctx.send('Another game started in this channel while setting up.')
+		if r.content.lower() == 'ai':
+			p2 = BattleshipAI(ctx.guild.me.display_name)
+		else:
+			p2 = r.author
 		await ctx.send(
 			'A game of battleship will be played between '
-			f'{ctx.author.display_name} and {r.author.display_name}.'
+			f'{ctx.author.display_name} and {p2.display_name}.'
 		)
-		game = BattleshipGame(ctx, self.bot, self, ctx.author, r.author)
+		game = BattleshipGame(ctx, self.bot, self, ctx.author, p2)
 		self.games.append(game)
 	
 	@commands.guild_only()
