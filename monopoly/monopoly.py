@@ -111,11 +111,12 @@ class Monopoly(commands.Cog):
 	async def monopoly_list(self, ctx):
 		"""List available save files."""
 		saves = await self.config.guild(ctx.guild).saves()
-		if saves:
-			savenames = '\n'.join(saves.keys())
-			await ctx.send(f'Available save files:\n```\n{savenames}```')
-		else:
-			await ctx.send('You do not have any save files.')
+		if not saves:
+			return await ctx.send('There are no save files in this server.')
+		savenames = '\n'.join(name for name in saves if ctx.author.id in saves[name]['uid'])
+		if not savenames:
+			return await ctx.send('You do not have any save files.')
+		await ctx.send(f'Available save files:\n```\n{savenames}```')			
 	
 	@checks.guildowner()
 	@monopoly.command()
