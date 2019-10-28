@@ -27,7 +27,7 @@ class GameRoles(commands.Cog):
 		"""
 		Sets a role to be managed by gameroles.
 		
-		Roles with with multiple words need to be surrounded in quotes.
+		Roles with multiple words need to be surrounded in quotes.
 		The bot's highest role needs to be above the role that you are adding and the bot needs permission to manage roles.
 		"""
 		roledict = await self.config.guild(ctx.guild).roledict()
@@ -50,7 +50,7 @@ class GameRoles(commands.Cog):
 		"""
 		Stop a role from being managed by gameroles.
 		
-		Roles with with multiple words need to be surrounded in quotes.
+		Roles with multiple words need to be surrounded in quotes.
 		"""
 		roledict = await self.config.guild(ctx.guild).roledict()
 		rid = str(role.id)
@@ -66,7 +66,7 @@ class GameRoles(commands.Cog):
 		"""
 		Add an activity to trigger a role.
 		
-		Roles and activities with with multiple words need to be surrounded in quotes.
+		Roles and activities with multiple words need to be surrounded in quotes.
 		You can get the name of your current activity with [p]gameroles currentactivity.
 		"""
 		roledict = await self.config.guild(ctx.guild).roledict()
@@ -85,7 +85,7 @@ class GameRoles(commands.Cog):
 		"""
 		Remove an activity from triggering a role.
 		
-		Roles and activities with with multiple words need to be surrounded in quotes.
+		Roles and activities with multiple words need to be surrounded in quotes.
 		You can get the name of your current activity with [p]gameroles currentactivity.
 		"""
 		roledict = await self.config.guild(ctx.guild).roledict()
@@ -122,7 +122,7 @@ class GameRoles(commands.Cog):
 		"""
 		List the activities that trigger a role.
 		
-		Roles with with multiple words need to be surrounded in quotes.
+		Roles with multiple words need to be surrounded in quotes.
 		"""
 		roledict = await self.config.guild(ctx.guild).roledict()
 		rid = str(role.id)
