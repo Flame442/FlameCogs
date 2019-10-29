@@ -142,7 +142,7 @@ class Monopoly(commands.Cog):
 	@commands.group(invoke_without_command=True) 
 	async def monopolyconvert(self, ctx, savefile: str):
 		"""Convert a savefile to work with the latest version of this cog."""
-		if savefile == 'delete':
+		if savefile in ('delete', 'list'):
 			return await ctx.send(
 				'You cannot convert a save file with that name as '
 				'it conflicts with the name of a new command.'
@@ -408,7 +408,7 @@ class Monopoly(commands.Cog):
 				await ctx.send(f'The hotel limit is currently set to {v}.')
 		else:
 			if value < -1:
-				await ctx.send('That is not a valid value.')
+				return await ctx.send('That is not a valid value.')
 			await self.config.guild(ctx.guild).hotelLimit.set(value)
 			if value == -1:
 				await ctx.send('There is now no limit on the number of hotels.')
@@ -432,7 +432,7 @@ class Monopoly(commands.Cog):
 				await ctx.send(f'The house limit is currently set to {v}.')
 		else:
 			if value < -1:
-				await ctx.send('That is not a valid value.')
+				return await ctx.send('That is not a valid value.')
 			await self.config.guild(ctx.guild).houseLimit.set(value)
 			if value == -1:
 				await ctx.send('There is now no limit on the number of houses.')
@@ -519,7 +519,7 @@ class Monopoly(commands.Cog):
 			v = await self.config.guild(ctx.guild).minRaise()
 			await ctx.send(f'The minimum raise is ${v}.')
 		elif value <= 0:
-			await ctx.send('The minimum raise must be positive.')
+			return await ctx.send('The minimum raise must be positive.')
 		else:
 			await self.config.guild(ctx.guild).minRaise.set(value)
 			await ctx.send(f'The minimum raise is now ${value}.')
@@ -536,7 +536,7 @@ class Monopoly(commands.Cog):
 			v = await self.config.guild(ctx.guild).startCash()
 			await ctx.send(f'Players are starting with ${v}.')
 		elif value < 0:
-			await ctx.send('Players cannot start the game in debt. This isn\'t real life.')
+			return await ctx.send('Players cannot start the game in debt. This isn\'t real life.')
 		else:
 			await self.config.guild(ctx.guild).startCash.set(value)
 			await ctx.send(f'Players will start with ${value}.')
@@ -559,7 +559,7 @@ class Monopoly(commands.Cog):
 				await ctx.send(f'The timeout is currently set to {v} seconds.')
 		else:
 			if value < -1:
-				await ctx.send('That is not a valid value.')
+				return await ctx.send('That is not a valid value.')
 			if value == -1:
 				await self.config.guild(ctx.guild).timeoutValue.set(None)
 				await ctx.send('There is no longer a timeout.')
