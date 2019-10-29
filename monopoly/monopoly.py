@@ -113,10 +113,16 @@ class Monopoly(commands.Cog):
 		saves = await self.config.guild(ctx.guild).saves()
 		if not saves:
 			return await ctx.send('There are no save files in this server.')
-		savenames = '\n'.join(name for name in saves if ctx.author.id in saves[name]['uid'])
-		if not savenames:
+		savenames_in = '\n'.join(name for name in saves if ctx.author.id in saves[name]['uid'])
+		savenames_out = '\n'.join(name for name in saves if ctx.author.id not in saves[name]['uid'])
+		if not (savenames_in or savenames_out):
 			return await ctx.send('You do not have any save files.')
-		await ctx.send(f'Available save files:\n```\n{savenames}```')			
+		msg = ''
+		if savenames_in:
+			msg += f'\n[Saves you are in]\n{savenames_in}\n'
+		if savenames_out:
+			msg += f'\n[Saves you are not in]\n{savenames_out}\n'
+		await ctx.send(f'```ini{msg}```')			
 	
 	@checks.guildowner()
 	@monopoly.command()
