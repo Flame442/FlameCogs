@@ -154,26 +154,30 @@ class GameRoles(commands.Cog):
 		roledict = await self.config.guild(ctx.guild).roledict()
 		doAdd = await self.config.guild(ctx.guild).doAdd()
 		doRemove = await self.config.guild(ctx.guild).doRemove()
+		torem = []
+		toadd = []
 		if doRemove:
 			torem = [role for role in ctx.author.roles if str(role.id) in roledict]
 			torem = [role for role in torem if ctx.guild.me.top_role > role]
-			if torem != []:
-				try:
-					await ctx.author.remove_roles(*torem)
-				except discord.errors.Forbidden:
-					pass
 		if doAdd:
-			toadd = []
 			activities = [a.name for a in ctx.author.activities]
 			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
 				role = ctx.guild.get_role(int(role))
 				if role is not None and ctx.guild.me.top_role > role:
 					toadd.append(role)
-			if toadd != []:
-				try:
-					await ctx.author.add_roles(*toadd)
-				except discord.errors.Forbidden:
-					pass
+		setsum = set(torem) & set(toadd)
+		torem = set(torem) - setsum
+		toadd = set(toadd) - setsum
+		if toadd:
+			try:
+				await ctx.author.add_roles(*toadd)
+			except discord.errors.Forbidden:
+				pass
+		if torem:
+			try:
+				await ctx.author.remove_roles(*torem)
+			except discord.errors.Forbidden:
+				pass
 		await ctx.tick()
 
 	@commands.guild_only()
@@ -235,27 +239,30 @@ class GameRoles(commands.Cog):
 		roledict = await self.config.guild(afterMem.guild).roledict()
 		doAdd = await self.config.guild(afterMem.guild).doAdd()
 		doRemove = await self.config.guild(afterMem.guild).doRemove()
+		torem = []
+		toadd = []
 		if beforeMem.activity is not None and doRemove:
-			torem = []
 			activities = [a.name for a in beforeMem.activities]
 			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
 				role = afterMem.guild.get_role(int(role))
 				if role is not None and afterMem.guild.me.top_role > role:
 					torem.append(role)
-			if torem != []:
-				try:
-					await afterMem.remove_roles(*torem)
-				except discord.errors.Forbidden:
-					pass
 		if afterMem.activity is not None and doAdd:
-			toadd = []
 			activities = [a.name for a in afterMem.activities]
 			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
 				role = afterMem.guild.get_role(int(role))
 				if role is not None and afterMem.guild.me.top_role > role:
 					toadd.append(role)
-			if toadd != []:
-				try:
-					await afterMem.add_roles(*toadd)
-				except discord.errors.Forbidden:
-					pass
+		setsum = set(torem) & set(toadd)
+		torem = set(torem) - setsum
+		toadd = set(toadd) - setsum
+		if torem:
+			try:
+				await afterMem.remove_roles(*torem)
+			except discord.errors.Forbidden:
+				pass
+		if toadd:
+			try:
+				await afterMem.add_roles(*toadd)
+			except discord.errors.Forbidden:
+				pass
