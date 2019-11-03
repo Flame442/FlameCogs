@@ -149,11 +149,14 @@ class GameRoles(commands.Cog):
 	@gameroles.command()
 	async def recheck(self, ctx):
 		"""Force a recheck of your current activities."""
+		if not ctx.guild.me.guild_permissions.manage_roles:
+			return await ctx.send('I do not have permission to manage roles in this server.')
 		roledict = await self.config.guild(ctx.guild).roledict()
 		doAdd = await self.config.guild(ctx.guild).doAdd()
 		doRemove = await self.config.guild(ctx.guild).doRemove()
 		if doRemove:
 			torem = [role for role in ctx.author.roles if str(role.id) in roledict]
+			torem = [role for role in torem if ctx.guild.me.top_role > role]
 			if torem != []:
 				try:
 					await ctx.author.remove_roles(*torem)
@@ -164,7 +167,7 @@ class GameRoles(commands.Cog):
 			activities = [a.name for a in ctx.author.activities]
 			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
 				role = ctx.guild.get_role(int(role))
-				if role is not None:
+				if role is not None and ctx.guild.me.top_role > role:
 					toadd.append(role)
 			if toadd != []:
 				try:
@@ -225,6 +228,8 @@ class GameRoles(commands.Cog):
 	@commands.Cog.listener()
 	async def on_member_update(self, beforeMem, afterMem):
 		"""Updates a member's roles."""
+		if not afterMem.guild.me.guild_permissions.manage_roles:
+			return
 		if beforeMem.activities == afterMem.activities:
 			return
 		roledict = await self.config.guild(afterMem.guild).roledict()
@@ -235,7 +240,7 @@ class GameRoles(commands.Cog):
 			activities = [a.name for a in beforeMem.activities]
 			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
 				role = afterMem.guild.get_role(int(role))
-				if role is not None:
+				if role is not None and afterMem.guild.me.top_role > role:
 					torem.append(role)
 			if torem != []:
 				try:
@@ -247,7 +252,7 @@ class GameRoles(commands.Cog):
 			activities = [a.name for a in afterMem.activities]
 			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
 				role = afterMem.guild.get_role(int(role))
-				if role is not None:
+				if role is not None and afterMem.guild.me.top_role > role:
 					toadd.append(role)
 			if toadd != []:
 				try:
