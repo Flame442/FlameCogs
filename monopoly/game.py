@@ -309,30 +309,24 @@ class MonopolyGame():
 		save['freeparkingsum'] = self.freeparkingsum
 		self.autosave = save
 	
-	async def get_member(self, id):
+	async def get_member(self, uid):
 		"""Wrapper for guild.get_member that checks if the member is None."""
-		mem = self.ctx.guild.get_member(id)
+		mem = self.ctx.guild.get_member(uid)
 		if mem is None:
 			savename = str(self.ctx.message.id)
-			try:
-				user = await self.bot.fetch_user(id)
-				name = user.name
-			except discord.errors.NotFound:
-				await self.ctx.send(
-					'A player in the current game is no longer in this guild.\n'
-					f'Your game was saved to `{savename}`.\n'
-					f'You can load your save with `{self.ctx.prefix}monopoly {savename}`.'
-				)
+			user = self.bot.get_user(uid)
+			if user:
+				msg = f'Player "{user}" (`{user.id}`)'
 			else:
-				await self.ctx.send(
-					f'Player "{name}" in the current game is no longer in this guild.\n'
-					f'Your game was saved to `{savename}`.\n'
-					f'You can load your save with `{self.ctx.prefix}monopoly {savename}`.'
-				)
-			finally:
-				async with self.cog.config.guild(self.ctx.guild).saves() as saves:
-					saves[savename] = self.autosave
-				raise GetMemberError
+				msg = f'A player with the user ID `{uid}`'
+			await self.ctx.send(
+				f'{msg} in the current game is no longer in this guild.\n'
+				f'Your game was saved to `{savename}`.\n'
+				f'You can load your save with `{self.ctx.prefix}monopoly {savename}`.'
+			)
+			async with self.cog.config.guild(self.ctx.guild).saves() as saves:
+				saves[savename] = self.autosave
+			raise GetMemberError
 		return mem
 	
 	async def run(self):
