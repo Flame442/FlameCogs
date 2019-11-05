@@ -50,15 +50,12 @@ class Monopoly(commands.Cog):
 		if savefile is not None:
 			saves = await self.config.guild(ctx.guild).saves()
 			if savefile not in saves:
-				msg = (
+				return await ctx.send(
 					'There is no save file with that name.\n'
 					'Does it need to be converted? '
 					'Is it saved in another guild?\n'
+					f'Use `{ctx.prefix}monopoly list` to list save files.'
 				)
-				if saves:
-					savenames = '\n'.join(saves.keys())
-					msg += f'Available save files:\n```\n{savenames}```'
-				return await ctx.send(msg)
 			data = saves[savefile]
 			if ctx.author.id not in data['uid']:
 				return await ctx.send('You are not a player in that game!')
@@ -199,6 +196,7 @@ class Monopoly(commands.Cog):
 					return await ctx.send(
 						f'The value "{key}" is missing from the config file.'
 					)
+			savefile = savefile.replace(' ', '')
 			async with self.config.guild(ctx.guild).saves() as saves:
 				if savefile in saves:
 					await ctx.send('There is already another save with that name. Override it?')
