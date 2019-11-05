@@ -60,7 +60,7 @@ class Monopoly(commands.Cog):
 			if ctx.author.id not in data['uid']:
 				return await ctx.send('You are not a player in that game!')
 			await ctx.send(f'Using save file `{savefile}`')
-			game = MonopolyGame(ctx, self.bot, self, startCash, None, data)
+			game = MonopolyGame(ctx, self, data=data)
 			self.games.append(game)
 		else:
 			uid = [ctx.author.id]
@@ -101,7 +101,7 @@ class Monopoly(commands.Cog):
 				uid.append(joinmsg.author.id)
 			if [game for game in self.games if game.ctx.channel == ctx.channel]:
 				return await ctx.send('Another game started in this channel while setting up.')
-			game = MonopolyGame(ctx, self.bot, self, startCash, uid, None)
+			game = MonopolyGame(ctx, self, startCash=startCash, uid=uid)
 			self.games.append(game)
 	
 	@monopoly.command(name='list')
