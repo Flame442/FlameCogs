@@ -168,20 +168,24 @@ class GetMemberError(Exception):
 class MonopolyGame():
 	"""
 	A game of Monopoly.
+	If data is not provided, startCash and uid must be instead.
 	
 	Params:
 	ctx = redbot.core.commands.context.Context, The context that should be used, used to send messages.
-	bot = redbot.core.bot.Red, The bot the game is running on, used to wait for messages.
 	cog = monopoly.monopoly.Monopoly, The cog the game is running on, used to stop the game.
-	startCash = int, The amount of money players should start at.
-	uid = list, The user IDs of the players of the game.
-	data = dict or None, the save data to load from.
+	
+	Kwargs:
+	startCash = Optional[int], The amount of money players should start with.
+	uid = Optional[list], The user IDs of the players of the game.
+	data = Optional[dict], the save data to load from.
 	"""
-	def __init__(self, ctx, bot, cog, startCash, uid, data):
+	def __init__(self, ctx, cog, *, startCash=None, uid=None, data=None):
 		self.ctx = ctx
-		self.bot = bot
+		self.bot = ctx.bot
 		self.cog = cog
 		if data is None:
+			if startCash is None or not uid:
+				raise ValueError('Either data or both startCash and uid must be provided.')
 			self.p = 0
 			self.uid = uid
 			self.num = len(uid)
