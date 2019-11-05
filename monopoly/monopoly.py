@@ -115,8 +115,6 @@ class Monopoly(commands.Cog):
 			return await ctx.send('There are no save files in this server.')
 		savenames_in = '\n'.join(name for name in saves if ctx.author.id in saves[name]['uid'])
 		savenames_out = '\n'.join(name for name in saves if ctx.author.id not in saves[name]['uid'])
-		if not (savenames_in or savenames_out):
-			return await ctx.send('You do not have any save files.')
 		msg = ''
 		if savenames_in:
 			msg += f'\n[Saves you are in]\n{savenames_in}\n'
