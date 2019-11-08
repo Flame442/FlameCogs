@@ -160,7 +160,11 @@ class Hangman(commands.Cog):
 						await ctx.send(p)
 					game = False
 					continue
-			if word.strip(guessed) == word.strip('abcdefghijklmnopqrstuvwxyz'): #guessed entire word
+			#guessed entire word
+			if (
+				''.join(c for c in word if c in guessed) == 
+				''.join(c for c in word if c in 'abcdefghijklmnopqrstuvwxyz')
+			):
 				p = self._get_message(word, guessed)
 				p = f'```{self.man[fails]}\n{p}```You win!\nThe word was {word}.'
 				if doEdit:
