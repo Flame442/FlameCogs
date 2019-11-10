@@ -151,24 +151,24 @@ Alias `[p]gr <argument>`
 
 **`[p]gameroles addrole <role>`**  
 Sets a role to be managed by gameroles.  
-Roles with with multiple word names need to be surrounded in quotes.
+Roles with multiple word names need to be surrounded in quotes.
 The bot's highest role needs to be above the role that you are adding and the bot needs permission to manage roles.  
 This command is only usable by the server owner and bot owner.
 
 **`[p]gameroles delrole <role>`**  
 Stop a role from being managed by gameroles.  
-Roles with with multiple word names need to be surrounded in quotes.  
+Roles with multiple word names need to be surrounded in quotes.  
 This command is only usable by the server owner and bot owner.
 
 **`[p]gameroles addactivity <role> <activity>`**  
 Add an activity to trigger a role.  
-Roles and activities with with multiple word names need to be surrounded in quotes.  
+Roles and activities with multiple word names need to be surrounded in quotes.  
 You can get the name of your current activity with `[p]gameroles currentactivity`.  
 This command is only usable by the server owner and bot owner.
 
 **`[p]gameroles delactivity <role> <activity>`**  
 Remove an activity from triggering a role.  
-Roles and activities with with multiple word names need to be surrounded in quotes.  
+Roles and activities with multiple word names need to be surrounded in quotes.  
 You can get the name of your current activity with `[p]gameroles currentactivity`.   
 This command is only usable by the server owner and bot owner.
 
@@ -178,7 +178,7 @@ This command is only usable by the server owner and bot owner.
 
 **`[p]gameroles listactivities <role>`**  
 List the activities that trigger a role.  
-Roles with with multiple word names need to be surrounded in quotes.  
+Roles with multiple word names need to be surrounded in quotes.  
 This command is only usable by the server owner and bot owner.
 
 **`[p]gameroles currentactivity`**  

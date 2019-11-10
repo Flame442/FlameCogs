@@ -50,20 +50,17 @@ class Monopoly(commands.Cog):
 		if savefile is not None:
 			saves = await self.config.guild(ctx.guild).saves()
 			if savefile not in saves:
-				msg = (
+				return await ctx.send(
 					'There is no save file with that name.\n'
 					'Does it need to be converted? '
 					'Is it saved in another guild?\n'
+					f'Use `{ctx.prefix}monopoly list` to list save files.'
 				)
-				if saves:
-					savenames = '\n'.join(saves.keys())
-					msg += f'Available save files:\n```\n{savenames}```'
-				return await ctx.send(msg)
 			data = saves[savefile]
 			if ctx.author.id not in data['uid']:
 				return await ctx.send('You are not a player in that game!')
 			await ctx.send(f'Using save file `{savefile}`')
-			game = MonopolyGame(ctx, self.bot, self, startCash, None, data)
+			game = MonopolyGame(ctx, self, data=data)
 			self.games.append(game)
 		else:
 			uid = [ctx.author.id]
@@ -104,18 +101,23 @@ class Monopoly(commands.Cog):
 				uid.append(joinmsg.author.id)
 			if [game for game in self.games if game.ctx.channel == ctx.channel]:
 				return await ctx.send('Another game started in this channel while setting up.')
-			game = MonopolyGame(ctx, self.bot, self, startCash, uid, None)
+			game = MonopolyGame(ctx, self, startCash=startCash, uid=uid)
 			self.games.append(game)
 	
 	@monopoly.command(name='list')
 	async def monopoly_list(self, ctx):
 		"""List available save files."""
 		saves = await self.config.guild(ctx.guild).saves()
-		if saves:
-			savenames = '\n'.join(saves.keys())
-			await ctx.send(f'Available save files:\n```\n{savenames}```')
-		else:
-			await ctx.send('You do not have any save files.')
+		if not saves:
+			return await ctx.send('There are no save files in this server.')
+		savenames_in = '\n'.join(name for name in saves if ctx.author.id in saves[name]['uid'])
+		savenames_out = '\n'.join(name for name in saves if ctx.author.id not in saves[name]['uid'])
+		msg = ''
+		if savenames_in:
+			msg += f'\n[Saves you are in]\n{savenames_in}\n'
+		if savenames_out:
+			msg += f'\n[Saves you are not in]\n{savenames_out}\n'
+		await ctx.send(f'```ini{msg}```')			
 	
 	@checks.guildowner()
 	@monopoly.command()
@@ -135,7 +137,7 @@ class Monopoly(commands.Cog):
 	@commands.group(invoke_without_command=True) 
 	async def monopolyconvert(self, ctx, savefile: str):
 		"""Convert a savefile to work with the latest version of this cog."""
-		if savefile == 'delete':
+		if savefile in ('delete', 'list'):
 			return await ctx.send(
 				'You cannot convert a save file with that name as '
 				'it conflicts with the name of a new command.'
@@ -194,6 +196,7 @@ class Monopoly(commands.Cog):
 					return await ctx.send(
 						f'The value "{key}" is missing from the config file.'
 					)
+			savefile = savefile.replace(' ', '')
 			async with self.config.guild(ctx.guild).saves() as saves:
 				if savefile in saves:
 					await ctx.send('There is already another save with that name. Override it?')
@@ -401,7 +404,7 @@ class Monopoly(commands.Cog):
 				await ctx.send(f'The hotel limit is currently set to {v}.')
 		else:
 			if value < -1:
-				await ctx.send('That is not a valid value.')
+				return await ctx.send('That is not a valid value.')
 			await self.config.guild(ctx.guild).hotelLimit.set(value)
 			if value == -1:
 				await ctx.send('There is now no limit on the number of hotels.')
@@ -425,7 +428,7 @@ class Monopoly(commands.Cog):
 				await ctx.send(f'The house limit is currently set to {v}.')
 		else:
 			if value < -1:
-				await ctx.send('That is not a valid value.')
+				return await ctx.send('That is not a valid value.')
 			await self.config.guild(ctx.guild).houseLimit.set(value)
 			if value == -1:
 				await ctx.send('There is now no limit on the number of houses.')
@@ -512,7 +515,7 @@ class Monopoly(commands.Cog):
 			v = await self.config.guild(ctx.guild).minRaise()
 			await ctx.send(f'The minimum raise is ${v}.')
 		elif value <= 0:
-			await ctx.send('The minimum raise must be positive.')
+			return await ctx.send('The minimum raise must be positive.')
 		else:
 			await self.config.guild(ctx.guild).minRaise.set(value)
 			await ctx.send(f'The minimum raise is now ${value}.')
@@ -529,7 +532,7 @@ class Monopoly(commands.Cog):
 			v = await self.config.guild(ctx.guild).startCash()
 			await ctx.send(f'Players are starting with ${v}.')
 		elif value < 0:
-			await ctx.send('Players cannot start the game in debt. This isn\'t real life.')
+			return await ctx.send('Players cannot start the game in debt. This isn\'t real life.')
 		else:
 			await self.config.guild(ctx.guild).startCash.set(value)
 			await ctx.send(f'Players will start with ${value}.')
@@ -552,7 +555,7 @@ class Monopoly(commands.Cog):
 				await ctx.send(f'The timeout is currently set to {v} seconds.')
 		else:
 			if value < -1:
-				await ctx.send('That is not a valid value.')
+				return await ctx.send('That is not a valid value.')
 			if value == -1:
 				await self.config.guild(ctx.guild).timeoutValue.set(None)
 				await ctx.send('There is no longer a timeout.')

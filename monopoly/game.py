@@ -168,20 +168,24 @@ class GetMemberError(Exception):
 class MonopolyGame():
 	"""
 	A game of Monopoly.
+	If data is not provided, startCash and uid must be instead.
 	
 	Params:
 	ctx = redbot.core.commands.context.Context, The context that should be used, used to send messages.
-	bot = redbot.core.bot.Red, The bot the game is running on, used to wait for messages.
 	cog = monopoly.monopoly.Monopoly, The cog the game is running on, used to stop the game.
-	startCash = int, The amount of money players should start at.
-	uid = list, The user IDs of the players of the game.
-	data = dict or None, the save data to load from.
+	
+	Kwargs:
+	startCash = Optional[int], The amount of money players should start with.
+	uid = Optional[list], The user IDs of the players of the game.
+	data = Optional[dict], the save data to load from.
 	"""
-	def __init__(self, ctx, bot, cog, startCash, uid, data):
+	def __init__(self, ctx, cog, *, startCash=None, uid=None, data=None):
 		self.ctx = ctx
-		self.bot = bot
+		self.bot = ctx.bot
 		self.cog = cog
 		if data is None:
+			if startCash is None or not uid:
+				raise ValueError('Either data or both startCash and uid must be provided.')
 			self.p = 0
 			self.uid = uid
 			self.num = len(uid)
@@ -309,30 +313,24 @@ class MonopolyGame():
 		save['freeparkingsum'] = self.freeparkingsum
 		self.autosave = save
 	
-	async def get_member(self, id):
+	async def get_member(self, uid):
 		"""Wrapper for guild.get_member that checks if the member is None."""
-		mem = self.ctx.guild.get_member(id)
+		mem = self.ctx.guild.get_member(uid)
 		if mem is None:
 			savename = str(self.ctx.message.id)
-			try:
-				user = await self.bot.fetch_user(id)
-				name = user.name
-			except discord.errors.NotFound:
-				await self.ctx.send(
-					'A player in the current game is no longer in this guild.\n'
-					f'Your game was saved to `{savename}`.\n'
-					f'You can load your save with `{self.ctx.prefix}monopoly {savename}`.'
-				)
+			user = self.bot.get_user(uid)
+			if user:
+				msg = f'Player "{user}" (`{user.id}`)'
 			else:
-				await self.ctx.send(
-					f'Player "{name}" in the current game is no longer in this guild.\n'
-					f'Your game was saved to `{savename}`.\n'
-					f'You can load your save with `{self.ctx.prefix}monopoly {savename}`.'
-				)
-			finally:
-				async with self.cog.config.guild(self.ctx.guild).saves() as saves:
-					saves[savename] = self.autosave
-				raise GetMemberError
+				msg = f'A player with the user ID `{uid}`'
+			await self.ctx.send(
+				f'{msg} in the current game is no longer in this guild.\n'
+				f'Your game was saved to `{savename}`.\n'
+				f'You can load your save with `{self.ctx.prefix}monopoly {savename}`.'
+			)
+			async with self.cog.config.guild(self.ctx.guild).saves() as saves:
+				saves[savename] = self.autosave
+			raise GetMemberError
 		return mem
 	
 	async def run(self):
