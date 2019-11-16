@@ -1117,7 +1117,7 @@ class MonopolyGame():
 					if m.content.lower() == 'c':
 						return True
 					return False
-				if self.isalive[m] and m != self.p:
+				if 0 <= m < self.num and self.isalive[m] and m != self.p:
 					return True
 			return False
 		choice = await self.bot.wait_for(
