@@ -493,7 +493,7 @@ Thanks to:
 The [creators of Redbot](https://github.com/Cog-Creators/Red-DiscordBot/graphs/contributors) for creating the base these cogs run on,  
 The helpful support staff at the [Redbot discord](https://discord.gg/red),  
 [Aikaterna](https://github.com/aikaterna) for taking the time to QA this repo,  
-[Hasbro](hasbro.com) for creating the games that Battleship and Monopoly are based off of,  
+[Hasbro](https://hasbro.com) for creating the games that Battleship and Monopoly are based off of,  
 [TrustyJAID](https://github.com/TrustyJAID) for helping with Deepfry,  
 [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman,  
 [iComputer7#0007](https://github.com/iComputer7) for the inspiration for Face,  
