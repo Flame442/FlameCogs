@@ -185,7 +185,13 @@ class GameRoles(commands.Cog):
 	@commands.group(aliases=['grset'])
 	async def gameroleset(self, ctx):
 		"""Config options for gameroles."""
-		pass
+		if ctx.invoked_subcommand is None:
+			data = await self.config.guild(ctx.guild).all()
+			msg = (
+				f'Add roles: {data["doAdd"]}\n'
+				f'Remove roles: {data["doRemove"]}\n'
+			)
+			await ctx.send(f'```py\n{msg}```')
 		
 	@gameroleset.command()
 	async def add(self, ctx, value: bool=None):
