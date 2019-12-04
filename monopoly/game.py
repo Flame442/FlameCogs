@@ -855,7 +855,7 @@ class MonopolyGame():
 					self.bal[self.p] += 100
 					msg += f'You now have ${self.bal[self.p]}.\n'
 				self.chancen += 1
-				if self.chancen > 16:
+				if self.chancen > 15:
 					shuffle(self.chanceorder)
 					self.chancen = 0
 			elif self.tile[self.p] == 4: #income tax
