@@ -2,12 +2,16 @@ import discord
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
+from redbot.core.utils.chat_formatting import humanize_list
+import logging
+from typing import Union
 
 
 class GameRoles(commands.Cog):
 	"""Grant roles when a user is playing a specific game."""
 	def __init__(self, bot):
 		self.bot = bot
+		self.log = logging.getLogger('red.flamecogs.gameroles')
 		self.config = Config.get_conf(self, identifier=7345167903)
 		self.config.register_guild(
 			roledict = {},
@@ -46,19 +50,25 @@ class GameRoles(commands.Cog):
 	
 	@checks.guildowner()
 	@gameroles.command()
-	async def delrole(self, ctx, role: discord.Role):
+	async def delrole(self, ctx, role: Union[discord.Role, int]):
 		"""
 		Stop a role from being managed by gameroles.
 		
 		Roles with multiple words need to be surrounded in quotes.
+		Accepts the ID of the role in case it was deleted.
 		"""
 		roledict = await self.config.guild(ctx.guild).roledict()
-		rid = str(role.id)
+		if isinstance(role, discord.Role):
+			rid = str(role.id)
+			name = role.name
+		else:
+			rid = str(role)
+			name = rid
 		if rid not in roledict:
-			return await ctx.send(f'`{role.name}` is not managed by gameroles.')
+			return await ctx.send(f'`{name}` is not managed by gameroles.')
 		del roledict[rid]
 		await self.config.guild(ctx.guild).roledict.set(roledict)
-		await ctx.send(f'`{role.name}` is no longer managed by gameroles!')
+		await ctx.send(f'`{name}` is no longer managed by gameroles!')
 	
 	@checks.guildowner()
 	@gameroles.command()
@@ -151,33 +161,48 @@ class GameRoles(commands.Cog):
 		"""Force a recheck of your current activities."""
 		if not ctx.guild.me.guild_permissions.manage_roles:
 			return await ctx.send('I do not have permission to manage roles in this server.')
-		roledict = await self.config.guild(ctx.guild).roledict()
-		doAdd = await self.config.guild(ctx.guild).doAdd()
-		doRemove = await self.config.guild(ctx.guild).doRemove()
-		torem = []
-		toadd = []
-		if doRemove:
-			torem = [role for role in ctx.author.roles if str(role.id) in roledict]
-			torem = [role for role in torem if ctx.guild.me.top_role > role]
-		if doAdd:
-			activities = [a.name for a in ctx.author.activities]
-			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
-				role = ctx.guild.get_role(int(role))
-				if role is not None and ctx.guild.me.top_role > role:
-					toadd.append(role)
-		setsum = set(torem) & set(toadd)
-		torem = set(torem) - setsum
-		toadd = set(toadd) - setsum
-		if toadd:
+		data = await self.config.guild(ctx.guild).all()
+		roledict = data['roledict']
+		doAdd = data['doAdd']
+		doRemove = data['doRemove']
+		torem = set()
+		toadd = set()
+		failed = set()
+		for role in ctx.author.roles:
+			if str(role.id) in roledict:
+				if ctx.guild.me.top_role > role:
+					torem.add(role)
+				else:
+					failed.add(role) 
+		activities = [a.name for a in ctx.author.activities]
+		for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
+			role = ctx.guild.get_role(int(role))
+			if role is not None and ctx.guild.me.top_role > role:
+				toadd.add(role)
+			elif role:
+				failed.add(role)
+		setsum = torem & toadd
+		torem -= setsum
+		toadd -= setsum
+		if toadd and doAdd:
 			try:
-				await ctx.author.add_roles(*toadd)
+				await ctx.author.add_roles(*toadd, reason='Gameroles')
 			except discord.errors.Forbidden:
-				pass
-		if torem:
+				return await ctx.send(
+					'Encountered an unexpected discord.errors.Forbidden adding roles, canceling'
+				)
+		if torem and doRemove:
 			try:
-				await ctx.author.remove_roles(*torem)
+				await ctx.author.remove_roles(*torem, reason='Gameroles')
 			except discord.errors.Forbidden:
-				pass
+				return await ctx.send(
+					'Encountered an unexpected discord.errors.Forbidden removing roles, canceling'
+				)
+		if failed:
+			await ctx.send(
+				'The following roles could not be managed '
+				f'because they are higher than my highest role:\n`{humanize_list(list(failed))}`'
+			)
 		await ctx.tick()
 
 	@commands.guild_only()
@@ -239,36 +264,59 @@ class GameRoles(commands.Cog):
 	async def on_member_update(self, beforeMem, afterMem):
 		"""Updates a member's roles."""
 		if not afterMem.guild.me.guild_permissions.manage_roles:
-			return
+			self.log.debug(
+				f'I do not have manage_roles permission in {afterMem.guild} ({afterMem.guild.id}).'
+			)
 		if beforeMem.activities == afterMem.activities:
 			return
-		roledict = await self.config.guild(afterMem.guild).roledict()
-		doAdd = await self.config.guild(afterMem.guild).doAdd()
-		doRemove = await self.config.guild(afterMem.guild).doRemove()
-		torem = []
-		toadd = []
-		if beforeMem.activity is not None and doRemove:
-			activities = [a.name for a in beforeMem.activities]
-			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
-				role = afterMem.guild.get_role(int(role))
-				if role is not None and afterMem.guild.me.top_role > role:
-					torem.append(role)
-		if afterMem.activity is not None and doAdd:
-			activities = [a.name for a in afterMem.activities]
-			for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
-				role = afterMem.guild.get_role(int(role))
-				if role is not None and afterMem.guild.me.top_role > role:
-					toadd.append(role)
-		setsum = set(torem) & set(toadd)
-		torem = set(torem) - setsum
-		toadd = set(toadd) - setsum
-		if torem:
+		data = await self.config.guild(afterMem.guild).all()
+		roledict = data['roledict']
+		doAdd = data['doAdd']
+		doRemove = data['doRemove']
+		torem = set()
+		toadd = set()
+		#REMOVE
+		for role_obj in afterMem.roles:
+			if str(role_obj.id) in roledict:
+				if afterMem.guild.me.top_role > role_obj:
+					torem.add(role_obj)
+				else:
+					self.log.warning(
+						f'Role {role_obj} ({role_obj.id}) from guild '
+						f'{afterMem.guild} ({afterMem.guild.id}) is higher than my highest role.'
+					)
+		#ADD
+		activities = [a.name for a in afterMem.activities]
+		for role in [rid for rid in roledict if any(a in roledict[rid] for a in activities)]:
+			role_obj = afterMem.guild.get_role(int(role))
+			if role_obj is not None and afterMem.guild.me.top_role > role_obj:
+				toadd.add(role_obj)
+			elif role_obj:
+				self.log.warning(
+					f'Role {role_obj} ({role}) from guild '
+					f'{afterMem.guild} ({afterMem.guild.id}) is higher than my highest role.'
+				)
+			else:
+				self.log.warning(
+					f'Role {role} from guild {afterMem.guild} ({afterMem.guild.id}) '
+					'may no longer exist.'
+				)
+		setsum = torem & toadd
+		torem -= setsum
+		toadd -= setsum
+		if torem and doRemove:
 			try:
-				await afterMem.remove_roles(*torem)
+				await afterMem.remove_roles(*torem, reason='Gameroles')
 			except discord.errors.Forbidden:
-				pass
-		if toadd:
+				self.log.exception(
+					'Encountered an unexpected discord.errors.Forbidden removing roles '
+					f'from {afterMem} in {afterMem.guild} ({afterMem.guild.id}).'
+				)
+		if toadd and doAdd:
 			try:
-				await afterMem.add_roles(*toadd)
+				await afterMem.add_roles(*toadd, reason='Gameroles')
 			except discord.errors.Forbidden:
-				pass
+				self.log.exception(
+					'Encountered an unexpected discord.errors.Forbidden adding roles '
+					f'to {afterMem} in {afterMem.guild} ({afterMem.guild.id}).'
+				)
