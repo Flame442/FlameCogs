@@ -158,6 +158,7 @@ This command is only usable by the server owner and bot owner.
 **`[p]gameroles delrole <role>`**  
 Stop a role from being managed by gameroles.  
 Roles with multiple word names need to be surrounded in quotes.  
+Accepts the ID of the role in case it was deleted.  
 This command is only usable by the server owner and bot owner.
 
 **`[p]gameroles addactivity <role> <activity>`**  
