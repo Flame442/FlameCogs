@@ -52,15 +52,15 @@ class OnlineStats(commands.Cog):
 		w = str(member.web_status)
 		#because it isn't supported in d.py, manually override if streaming
 		if any([isinstance(a, discord.Streaming) for a in member.activities]):
-			d = 'streaming' if not d == 'offline' else d
-			m = 'streaming' if not m == 'offline' else m
-			w = 'streaming' if not w == 'offline' else w
+			d = d if d == 'offline' else 'streaming'
+			m = m if m == 'offline' else 'streaming'
+			w = w if w == 'offline' else 'streaming'
 		status = {
-			'online': '\N{GREEN BOOK}',
-			'idle': '\N{ORANGE BOOK}',
-			'dnd': '\N{CLOSED BOOK}',
-			'offline': '\N{NOTEBOOK}',
-			'streaming': '\N{PURPLE HEART}' #not a book, but the only purple emoji I could find
+			'online': '\U0001f7e2',
+			'idle': '\U0001f7e0',
+			'dnd': '\N{LARGE RED CIRCLE}',
+			'offline': '\N{MEDIUM WHITE CIRCLE}',
+			'streaming': '\U0001f7e3'
 		}
 		embed = discord.Embed(
 			title=f'**{member.display_name}\'s devices:**',

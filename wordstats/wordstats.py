@@ -2,7 +2,7 @@ import discord
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
-from redbot.core.data_manager import basic_config
+from redbot.core.data_manager import storage_type
 from redbot.core.config import Group
 from redbot.core.drivers import IdentifierData
 from collections import defaultdict
@@ -19,7 +19,6 @@ class WordStats(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.members_to_update = {}
-		self.guilds_to_update = {}
 		self.last_save = time.time()
 		self.config = Config.get_conf(self, identifier=7345167905)
 		self.config.register_guild(
@@ -597,9 +596,9 @@ class WordStats(commands.Cog):
 			disabledChannels = cfg['disabledChannels']
 			if enableGuild and not msg.channel.id in disabledChannels:
 				#Strip any characters besides letters and spaces.
-				words = str(re.sub(r'[^a-zA-Z \n]', '', msg.content.lower())).split()
+				words = re.sub(r'[^a-z \n]', '', msg.content.lower()).split()
 				#Get the latest memdict.
-				if basic_config['STORAGE_TYPE'] == 'JSON':
+				if storage_type() == 'JSON':
 					if msg.author not in self.members_to_update:
 						self.members_to_update[msg.author] = await self.config.member(msg.author).all()
 					if 'worddict' not in self.members_to_update[msg.author]:
@@ -616,7 +615,7 @@ class WordStats(commands.Cog):
 					else:
 						memdict[word] = 1
 				#Save the memdict.
-				if basic_config['STORAGE_TYPE'] == 'JSON':
+				if storage_type() == 'JSON':
 					self.members_to_update[msg.author]['worddict'] = memdict
 					if time.time() - self.last_save >= 600: #10 minutes per save
 						await self.update_data()

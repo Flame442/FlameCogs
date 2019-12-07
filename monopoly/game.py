@@ -298,18 +298,18 @@ class MonopolyGame():
 		"""Creates a save dict from the current game state."""
 		save = {}
 		save['p'] = self.p
-		save['injail'] = self.injail
-		save['tile'] = self.tile
-		save['bal'] = self.bal
-		save['goojf'] = self.goojf
-		save['isalive'] = self.isalive
-		save['jailturn'] = self.jailturn
-		save['ownedby'] = self.ownedby
-		save['numhouse'] = self.numhouse
-		save['ismortgaged'] = self.ismortgaged
+		save['injail'] = self.injail.copy()
+		save['tile'] = self.tile.copy()
+		save['bal'] = self.bal.copy()
+		save['goojf'] = self.goojf.copy()
+		save['isalive'] = self.isalive.copy()
+		save['jailturn'] = self.jailturn.copy()
+		save['ownedby'] = self.ownedby.copy()
+		save['numhouse'] = self.numhouse.copy()
+		save['ismortgaged'] = self.ismortgaged.copy()
 		save['num'] = self.num
 		save['numalive'] = self.numalive
-		save['uid'] = self.uid
+		save['uid'] = self.uid.copy()
 		save['freeparkingsum'] = self.freeparkingsum
 		self.autosave = save
 	
@@ -855,7 +855,7 @@ class MonopolyGame():
 					self.bal[self.p] += 100
 					msg += f'You now have ${self.bal[self.p]}.\n'
 				self.chancen += 1
-				if self.chancen > 16:
+				if self.chancen > 15:
 					shuffle(self.chanceorder)
 					self.chancen = 0
 			elif self.tile[self.p] == 4: #income tax
@@ -1117,7 +1117,7 @@ class MonopolyGame():
 					if m.content.lower() == 'c':
 						return True
 					return False
-				if self.isalive[m] and m != self.p:
+				if 0 <= m < self.num and self.isalive[m] and m != self.p:
 					return True
 			return False
 		choice = await self.bot.wait_for(
@@ -1130,11 +1130,18 @@ class MonopolyGame():
 			return
 		partner = int(choice)
 		for a in range(40):
-			if self.numhouse[a] in (-1, 0):
-				if self.ownedby[a] == self.p:
-					tradeable_p.append(a)
-				elif self.ownedby[a] == partner:
-					tradeable_partner.append(a)
+			#properties cannot be traded if any property in their color group has a house
+			groupHasHouse = False
+			for group in PROPGROUPS:
+				if a in group:
+					if any(self.numhouse[prop] not in (-1, 0) for prop in group):
+						groupHasHouse = True
+			if groupHasHouse:
+				continue
+			if self.ownedby[a] == self.p:
+				tradeable_p.append(a)
+			elif self.ownedby[a] == partner:
+				tradeable_partner.append(a)
 		to_trade_p = [False for _ in range(len(tradeable_p))]
 		to_trade_partner = [False for _ in range(len(tradeable_partner))]
 		msg = ''
@@ -1347,6 +1354,10 @@ class MonopolyGame():
 			hold_partner += '1 get out of jail free card.\n'
 		elif goojf_partner != 0:
 			hold_partner += f'{goojf_partner} get out of jail free cards.\n'
+		if not hold_p.strip():
+			hold_p = 'Nothing :('
+		if not hold_partner.strip():
+			hold_partner = 'Nothing :('
 		await self.ctx.send(file=discord.File(self.bprint()))
 		await self.ctx.send(
 			f'You will give:\n```\n{hold_p}```\nYou will get:\n```\n{hold_partner}```\n'
@@ -1422,7 +1433,7 @@ class MonopolyGame():
 				continue
 			houseable.append(color)
 		if not houseable:
-			return 'You do not have any properties that are eligible for houses.'
+			return 'You do not have any properties that are eligible for houses.\n'
 		msg = ''
 		while True:
 			msg += '```\nid price color\n'
@@ -1565,6 +1576,7 @@ class MonopolyGame():
 					)
 					value = value.content.lower()
 					if value == 'c':
+						msg = ''
 						continue
 					value = int(value)
 					new_values[choice] = value
@@ -1577,22 +1589,24 @@ class MonopolyGame():
 		for a in range(40):
 			if self.ownedby[a] == self.p and self.numhouse[a] <= 0:
 				mortgageable.append(a)
+		#properties cannot be mortgaged if any property in their color group has a house
+		for a in mortgageable:
+			groupHasHouse = False
+			for group in PROPGROUPS:
+				if a in group:
+					if any(self.numhouse[prop] not in (-1, 0) for prop in group):
+						groupHasHouse = True
+					break
+			if groupHasHouse:
+				mortgageable.remove(a)
 		if not mortgageable:
-			return 'You do not have any properties that are able to be mortgaged.'
+			return 'You do not have any properties that are able to be mortgaged.\n'
 		msg = ''
 		while True:
 			msg += '```\nid isM price name\n'
 			i = 0
 			for a in mortgageable:
-				#properties cannot be mortgaged if any property in their color group has a house
-				groupHasHouse = False
-				for group in PROPGROUPS:
-					if a in group:
-						if any(self.numhouse[prop] not in (-1, 0) for prop in group):
-							groupHasHouse = True
-						break
-				if groupHasHouse:
-					continue
+				
 				if self.ismortgaged[a] == 1:
 					msg += '{:2}   + {:5d} {}\n'.format(
 						i, MORTGAGEPRICE[a], TILENAME[a]
@@ -1729,6 +1743,8 @@ class MonopolyGame():
 		#and pcolor[t]. I could fix this by changing the hard coded values, but this is
 		#easier in the short term.
 		for t in range(1, self.num + 1):
+			if not self.isalive[t-1]:
+				continue
 			if self.tile[t-1] == 0:
 				d.rectangle(
 					[(12*(t-1))+604,636,(12*(t-1))+614,646], fill=(0,0,0,255)

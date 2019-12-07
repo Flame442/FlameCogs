@@ -158,6 +158,7 @@ This command is only usable by the server owner and bot owner.
 **`[p]gameroles delrole <role>`**  
 Stop a role from being managed by gameroles.  
 Roles with multiple word names need to be surrounded in quotes.  
+Accepts the ID of the role in case it was deleted.  
 This command is only usable by the server owner and bot owner.
 
 **`[p]gameroles addactivity <role> <activity>`**  
@@ -239,8 +240,8 @@ This cog will let you play monopoly with up to 7 other people in your server.
 Begin a game of monopoly.   
 Use the optional parameter `savename` to load a saved game.
 
-**`[p]monopoly delete <savefile>`**  
-Delete a save file.  
+**`[p]monopoly delete <savefiles>`**  
+Delete one or more save files.  
 This cannot be undone.  
 This command is only usable by the server owner and bot owner.
 
@@ -493,7 +494,7 @@ Thanks to:
 The [creators of Redbot](https://github.com/Cog-Creators/Red-DiscordBot/graphs/contributors) for creating the base these cogs run on,  
 The helpful support staff at the [Redbot discord](https://discord.gg/red),  
 [Aikaterna](https://github.com/aikaterna) for taking the time to QA this repo,  
-[Hasbro](hasbro.com) for creating the games that Battleship and Monopoly are based off of,  
+[Hasbro](https://hasbro.com) for creating the games that Battleship and Monopoly are based off of,  
 [TrustyJAID](https://github.com/TrustyJAID) for helping with Deepfry,  
 [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman,  
 [iComputer7#0007](https://github.com/iComputer7) for the inspiration for Face,  

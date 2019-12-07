@@ -2,6 +2,7 @@ import discord
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
+from redbot.core.utils.chat_formatting import humanize_list
 from typing import Union
 import asyncio, os
 from .game import MonopolyGame
@@ -121,17 +122,29 @@ class Monopoly(commands.Cog):
 	
 	@checks.guildowner()
 	@monopoly.command()
-	async def delete(self, ctx, savefile: str):
+	async def delete(self, ctx, *savefiles: str):
 		"""
-		Delete a save file.
+		Delete one or more save files.
 		
 		This cannot be undone.
 		"""
+		if not savefiles:
+			return await ctx.send_help()
+		success = []
+		fail = []
 		async with self.config.guild(ctx.guild).saves() as saves:
-			if savefile not in saves:
-				return await ctx.send('There is no save file with that name.')
-			del saves[savefile]
-			await ctx.send(f'Savefile `{savefile}` deleted.')
+			for file in savefiles:
+				if file not in saves:
+					fail.append(file)
+					continue
+				del saves[file]
+				success.append(file)
+		msg = ''
+		if success:
+			msg += f'The following savefiles were deleted: `{humanize_list(success)}`\n'
+		if fail:
+			msg += f'The following savefiles were not found: `{humanize_list(fail)}`\n'
+		await ctx.send(msg)
 	
 	@commands.guild_only()
 	@commands.group(invoke_without_command=True) 

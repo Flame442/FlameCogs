@@ -72,10 +72,9 @@ class Face(commands.Cog):
 				'Follow this guide for instructions on how to get one:\n'
 				'<https://github.com/Flame442/FlameCogs/blob/master/face/setup.md>'
 			)
-		if (
-			api_url.startswith('https://')
-			and api_url.endswith('.api.cognitive.microsoft.com/face/v1.0')
-		):
+		if api_url.endswith('.api.cognitive.microsoft.com/'):
+			api_url += 'face/v1.0'
+		if api_url.startswith('https://') and api_url.endswith('.api.cognitive.microsoft.com/face/v1.0'):
 			api_url += '/detect'
 		else:
 			return await ctx.send(

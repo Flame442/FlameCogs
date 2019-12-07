@@ -106,12 +106,10 @@ class BattleshipGame():
 				Image.open(path / 'len2destroyed.png')
 			]
 		]
-		len_key = [5, 4, 3, 3, 2]
 
 		#place ships
 		for index, pos in enumerate(self.ship_pos[player]):
 			x, y, d = pos
-			length = len_key[index]
 			if show_unhit and not all(self.key[player][index].values()): #show a non-damaged ship
 				if d == 'd': #down
 					ships[0][index] = ships[0][index].rotate(90, expand=True)
