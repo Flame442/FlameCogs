@@ -23,7 +23,8 @@ class WordStats(commands.Cog):
 		self.config = Config.get_conf(self, identifier=7345167905)
 		self.config.register_guild(
 			enableGuild = True,
-			disabledChannels = []
+			disabledChannels = [],
+			displayStopwords = True
 		)
 	
 	class GuildConvert(commands.Converter):
@@ -58,6 +59,26 @@ class WordStats(commands.Cog):
 				for word, amount in member['worddict'].items():
 					result[word] += amount
 		return result
+	
+	async def maybe_filter_stopwords(self, ctx, to_filter):
+		"""Maybe remove stopwords from display outputs."""
+		if not await self.config.guild(ctx.guild).displayStopwords():
+			stopwords = (
+				'a', 'able', 'about', 'across', 'after', 'all', 'almost', 'also', 'am', 'among',
+				'an', 'and', 'any', 'are', 'as', 'at', 'be', 'because', 'been', 'but', 'by', 'can',
+				'cannot', 'could', 'dear', 'did', 'do', 'does', 'either', 'else', 'ever', 'every',
+				'for', 'from', 'get', 'got', 'had', 'has', 'have', 'he', 'her', 'hers', 'him',
+				'his', 'how', 'however', 'i', 'if', 'in', 'into', 'is', 'it', 'its', 'just',
+				'least', 'let', 'like', 'likely', 'may', 'me', 'might', 'most', 'must', 'my',
+				'neither', 'no', 'nor', 'not', 'of', 'off', 'often', 'on', 'only', 'or', 'other',
+				'our', 'own', 'rather', 'said', 'say', 'says', 'she', 'should', 'since', 'so',
+				'some', 'than', 'that', 'the', 'their', 'them', 'then', 'there', 'these', 'they',
+				'this', 'tis', 'to', 'too', 'twas', 'us', 'wants', 'was', 'we', 'were', 'what',
+				'when', 'where', 'which', 'while', 'who', 'whom', 'why', 'will', 'with', 'would',
+				'yet', 'you', 'your'
+			)
+			to_filter = [word for word in to_filter if word not in stopwords]
+		return to_filter
 	
 	@commands.guild_only()
 	@commands.group(invoke_without_command=True)
@@ -111,6 +132,7 @@ class WordStats(commands.Cog):
 				f'**{number}** {"times" if number != 1 else "time"}.\n'
 				f'It is the {mc} word {mention} has said.'
 			)
+		order = await self.maybe_filter_stopwords(ctx, order)
 		result = ''
 		n = 0
 		total = sum(worddict.values())
@@ -170,6 +192,7 @@ class WordStats(commands.Cog):
 				f'**{number}** {"times" if number != 1 else "time"} globally.\n'
 				f'It is the {mc} word said.'
 			)
+		order = await self.maybe_filter_stopwords(ctx, order)
 		result = ''
 		n = 0
 		total = sum(worddict.values())
@@ -504,9 +527,7 @@ class WordStats(commands.Cog):
 	async def wordstatsset(self, ctx):
 		"""Config options for wordstats."""
 		pass
-			
-	@commands.guild_only()
-	@checks.guildowner()
+		
 	@wordstatsset.command()
 	async def server(self, ctx, value: bool=None):
 		"""
@@ -527,9 +548,7 @@ class WordStats(commands.Cog):
 				await ctx.send('Stats will now be recorded in this server.')
 			else:
 				await ctx.send('Stats will no longer be recorded in this server.')
-			
-	@commands.guild_only()
-	@checks.guildowner()
+	
 	@wordstatsset.command()
 	async def channel(self, ctx, value: bool=None):
 		"""
@@ -559,7 +578,30 @@ class WordStats(commands.Cog):
 					v.append(ctx.channel.id)
 					await self.config.guild(ctx.guild).disabledChannels.set(v)
 					await ctx.send('Stats will no longer be recorded in this channel.')
-			
+	
+	@wordstatsset.command()
+	async def stopwords(self, ctx, value: bool=None):
+		"""
+		Set if stopwords should be included in outputs.
+		
+		Stopwords are common words such as "a", "it" and "the".
+		Stopwords will still be included in numerical counts, they will only be hidden from list displays.
+		Defaults to True.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).displayStopwords()
+			if v:
+				await ctx.send('Stopwords are included in outputs.')
+			else:
+				await ctx.send('Stopwords are not included in outputs.')
+		else:
+			await self.config.guild(ctx.guild).displayStopwords.set(value)
+			if value:
+				await ctx.send('Stopwords will now be included in outputs.')
+			else:
+				await ctx.send('Stopwords will no longer be included in outputs.')
+	
 	async def update_data(self):
 		"""
 		Saves everything to disk.
