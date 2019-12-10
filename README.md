@@ -484,6 +484,14 @@ Defaults to `True`.
 This command is only usable by the server owner and bot owner.  
 This value is channel specific.
 
+**`[p]wordstatsset channel [value]`**  
+Set if stopwords should be included in outputs.  
+Stopwords are common words such as "a", "it" and "the".  
+Stopwords will still be included in numerical counts, they will only be hidden from list displays.  
+Defaults to `True`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
 # Contact
 
 Feel free to create an issue on this repository or join [my discord](https://discord.gg/bYqCjvu) if you have any issues.
