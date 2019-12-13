@@ -213,9 +213,9 @@ class GameRoles(commands.Cog):
 		if ctx.invoked_subcommand is None:
 			data = await self.config.guild(ctx.guild).all()
 			msg = (
-				f'Add roles: {data["doAdd"]}\n'
-				f'Remove roles: {data["doRemove"]}\n'
-			)
+				'Add roles: {doAdd}\n'
+				'Remove roles: {doRemove}\n'
+			).format_map(data)
 			await ctx.send(f'```py\n{msg}```')
 		
 	@gameroleset.command()
