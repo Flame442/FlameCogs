@@ -19,6 +19,7 @@ class WordStats(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.members_to_update = {}
+		self.ignore_cache = {}
 		self.last_save = time.time()
 		self.config = Config.get_conf(self, identifier=7345167905)
 		self.config.register_guild(
@@ -548,6 +549,8 @@ class WordStats(commands.Cog):
 				await ctx.send('Stats will now be recorded in this server.')
 			else:
 				await ctx.send('Stats will no longer be recorded in this server.')
+			if ctx.guild.id in self.ignore_cache:
+				del self.ignore_cache[ctx.guild.id]
 	
 	@wordstatsset.command()
 	async def channel(self, ctx, value: bool=None):
@@ -578,6 +581,8 @@ class WordStats(commands.Cog):
 					v.append(ctx.channel.id)
 					await self.config.guild(ctx.guild).disabledChannels.set(v)
 					await ctx.send('Stats will no longer be recorded in this channel.')
+			if ctx.guild.id in self.ignore_cache:
+				del self.ignore_cache[ctx.guild.id]
 	
 	@wordstatsset.command()
 	async def stopwords(self, ctx, value: bool=None):
@@ -633,9 +638,11 @@ class WordStats(commands.Cog):
 	async def on_message_without_command(self, msg):
 		"""Passively records all message contents."""
 		if not msg.author.bot and isinstance(msg.channel, discord.TextChannel):
-			cfg = await self.config.guild(msg.guild).all()
-			enableGuild = cfg['enableGuild']
-			disabledChannels = cfg['disabledChannels']
+			if msg.guild.id not in self.ignore_cache:
+				cfg = await self.config.guild(msg.guild).all()
+				self.ignore_cache[msg.guild.id] = cfg
+			enableGuild = self.ignore_cache[msg.guild.id]['enableGuild']
+			disabledChannels = self.ignore_cache[msg.guild.id]['disabledChannels']
 			if enableGuild and not msg.channel.id in disabledChannels:
 				#Strip any characters besides letters and spaces.
 				words = re.sub(r'[^a-z \n]', '', msg.content.lower()).split()
@@ -659,7 +666,7 @@ class WordStats(commands.Cog):
 				#Save the memdict.
 				if storage_type() == 'JSON':
 					self.members_to_update[msg.author]['worddict'] = memdict
-					if time.time() - self.last_save >= 600: #10 minutes per save
+					if time.time() - self.last_save >= 1800: #30 minutes per save
 						await self.update_data()
 				else:
 					await self.config.member(msg.author).set_raw('worddict', value=memdict)
