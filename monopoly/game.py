@@ -248,6 +248,11 @@ class MonopolyGame():
 		self.chancen = 0
 		self.chanceorder = [x for x in range(16)]
 		shuffle(self.chanceorder)
+		self.imgcache = {
+			'ownedby': {'value': None, 'image': None},
+			'tile': {'value': None, 'image': None},
+			'numhouse': {'value': None, 'image': None}
+		}
 		self.log = logging.getLogger('red.flamecogs.monopoly')
 		self._task = asyncio.create_task(self.run())
 		self._task.add_done_callback(self.error_callback) #Thanks Sinbad <3
@@ -1696,243 +1701,259 @@ class MonopolyGame():
 			(140, 0, 255, 255),
 			(255, 0, 255, 255)
 		]
-		img = Image.open(bundled_data_path(self.cog) / 'img.png')
-		d = ImageDraw.Draw(img)
 		#OWNEDBY
-		for t in range(40):
-			if self.ownedby[t] > -1:
-				if 0 < t < 10:
-					d.rectangle(
-						[(650-(t*50))-39,702,(650-(t*50))-10,735],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[(650-(t*50))-37,702,(650-(t*50))-12,733],
-						fill=pcolor[self.ownedby[t]]
-					)
-				elif 10 < t < 20:
-					d.rectangle(
-						[16,(650-((t-10)*50))-39,50,(650-((t-10)*50))-10],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[18,(650-((t-10)*50))-37,50,(650-((t-10)*50))-12],
-						fill=pcolor[self.ownedby[t]]
-					)
-				elif 20 < t < 30:
-					d.rectangle(
-						[(100+((t-20)*50))+11,16,(100+((t-20)*50))+41,50],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[(100+((t-20)*50))+13,18,(100+((t-20)*50))+39,50],
-						fill=pcolor[self.ownedby[t]]
-					)
-				elif 30 < t < 40:
-					d.rectangle(
-						[702,(100+((t-30)*50))+11,736,(100+((t-30)*50))+41],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[702,(100+((t-30)*50))+13,734,(100+((t-30)*50))+39],
-						fill=pcolor[self.ownedby[t]]
-					)
+		if self.imgcache['ownedby']['value'] != self.ownedby:
+			self.imgcache['ownedby']['value'] = self.ownedby.copy()
+			img = Image.new('RGBA', (750, 750), (0, 0, 0, 0))
+			d = ImageDraw.Draw(img)
+			for t in range(40):
+				if self.ownedby[t] > -1:
+					if 0 < t < 10:
+						d.rectangle(
+							[(650-(t*50))-39,702,(650-(t*50))-10,735],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[(650-(t*50))-37,702,(650-(t*50))-12,733],
+							fill=pcolor[self.ownedby[t]]
+						)
+					elif 10 < t < 20:
+						d.rectangle(
+							[16,(650-((t-10)*50))-39,50,(650-((t-10)*50))-10],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[18,(650-((t-10)*50))-37,50,(650-((t-10)*50))-12],
+							fill=pcolor[self.ownedby[t]]
+						)
+					elif 20 < t < 30:
+						d.rectangle(
+							[(100+((t-20)*50))+11,16,(100+((t-20)*50))+41,50],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[(100+((t-20)*50))+13,18,(100+((t-20)*50))+39,50],
+							fill=pcolor[self.ownedby[t]]
+						)
+					elif 30 < t < 40:
+						d.rectangle(
+							[702,(100+((t-30)*50))+11,736,(100+((t-30)*50))+41],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[702,(100+((t-30)*50))+13,734,(100+((t-30)*50))+39],
+							fill=pcolor[self.ownedby[t]]
+						)
+			self.imgcache['ownedby']['image'] = img
 		#TILE
 		#Because the player int used to be 1 indexed, the players would be in the wrong
 		#position without 1 indexing and subtracting 1 from t when calling self.tile[t]
 		#and pcolor[t]. I could fix this by changing the hard coded values, but this is
 		#easier in the short term.
-		for t in range(1, self.num + 1):
-			if not self.isalive[t-1]:
-				continue
-			if self.tile[t-1] == 0:
-				d.rectangle(
-					[(12*(t-1))+604,636,(12*(t-1))+614,646], fill=(0,0,0,255)
-				)
-				d.rectangle(
-					[(12*(t-1))+605,637,(12*(t-1))+613,645], fill=pcolor[t-1]
-				)
-			elif 0 < self.tile[t-1] < 10:
-				if t < 5:
+		if self.imgcache['tile']['value'] != self.tile:
+			self.imgcache['tile']['value'] = self.tile.copy()
+			img = Image.new('RGBA', (750, 750), (0, 0, 0, 0))
+			d = ImageDraw.Draw(img)
+			for t in range(1, self.num + 1):
+				if not self.isalive[t-1]:
+					continue
+				if self.tile[t-1] == 0:
 					d.rectangle(
-						[((650-(self.tile[t-1]*50))-47)+(12*(t-1)),636,((650-(self.tile[t-1]*50))-37)+(12*(t-1)),646],
+						[(12*(t-1))+604,636,(12*(t-1))+614,646], fill=(0,0,0,255)
+					)
+					d.rectangle(
+						[(12*(t-1))+605,637,(12*(t-1))+613,645], fill=pcolor[t-1]
+					)
+				elif 0 < self.tile[t-1] < 10:
+					if t < 5:
+						d.rectangle(
+							[((650-(self.tile[t-1]*50))-47)+(12*(t-1)),636,((650-(self.tile[t-1]*50))-37)+(12*(t-1)),646],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[((650-(self.tile[t-1]*50))-46)+(12*(t-1)),637,((650-(self.tile[t-1]*50))-38)+(12*(t-1)),645],
+							fill=pcolor[t-1]
+						)
+					else:
+						d.rectangle(
+							[((650-(self.tile[t-1]*50))-47)+(12*(t-5)),648,((650-(self.tile[t-1]*50))-37)+(12*(t-5)),658],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[((650-(self.tile[t-1]*50))-46)+(12*(t-5)),649,((650-(self.tile[t-1]*50))-38)+(12*(t-5)),657],
+							fill=pcolor[t-1]
+						)
+				elif self.tile[t-1] == 10:
+					d.rectangle(
+						[106,(12*(t-1))+604,116,(12*(t-1))+614],
 						fill=(0,0,0,255)
 					)
 					d.rectangle(
-						[((650-(self.tile[t-1]*50))-46)+(12*(t-1)),637,((650-(self.tile[t-1]*50))-38)+(12*(t-1)),645],
+						[107,(12*(t-1))+605,115,(12*(t-1))+613],
 						fill=pcolor[t-1]
 					)
-				else:
+				elif 10 < self.tile[t-1] < 20:
+					if t < 5:
+						d.rectangle(
+							[106,((650-((self.tile[t-1]-10)*50))-47)+(12*(t-1)),116,((650-((self.tile[t-1]-10)*50))-37)+(12*(t-1))],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[107,((650-((self.tile[t-1]-10)*50))-46)+(12*(t-1)),115,((650-((self.tile[t-1]-10)*50))-38)+(12*(t-1))],
+							fill=pcolor[t-1]
+						)
+					else:
+						d.rectangle(
+							[94,((650-((self.tile[t-1]-10)*50))-47)+(12*(t-5)),104,((650-((self.tile[t-1]-10)*50))-37)+(12*(t-5))],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[95,((650-((self.tile[t-1]-10)*50))-46)+(12*(t-5)),103,((650-((self.tile[t-1]-10)*50))-38)+(12*(t-5))],
+							fill=pcolor[t-1]
+						)
+				elif self.tile[t-1] == 20:
 					d.rectangle(
-						[((650-(self.tile[t-1]*50))-47)+(12*(t-5)),648,((650-(self.tile[t-1]*50))-37)+(12*(t-5)),658],
+						[138-(12*(t-1)),106,148-(12*(t-1)),116],
 						fill=(0,0,0,255)
 					)
 					d.rectangle(
-						[((650-(self.tile[t-1]*50))-46)+(12*(t-5)),649,((650-(self.tile[t-1]*50))-38)+(12*(t-5)),657],
+						[139-(12*(t-1)),107,147-(12*(t-1)),115],
 						fill=pcolor[t-1]
 					)
-			elif self.tile[t-1] == 10:
-				d.rectangle(
-					[106,(12*(t-1))+604,116,(12*(t-1))+614],
-					fill=(0,0,0,255)
-				)
-				d.rectangle(
-					[107,(12*(t-1))+605,115,(12*(t-1))+613],
-					fill=pcolor[t-1]
-				)
-			elif 10 < self.tile[t-1] < 20:
-				if t < 5:
+				elif 20 < self.tile[t-1] < 30:
+					if t < 5:
+						d.rectangle(
+							[((100+((self.tile[t-1]-20)*50))+39)-(12*(t-1)),106,((100+((self.tile[t-1]-20)*50))+49)-(12*(t-1)),116],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[((100+((self.tile[t-1]-20)*50))+40)-(12*(t-1)),107,((100+((self.tile[t-1]-20)*50))+48)-(12*(t-1)),115],
+							fill=pcolor[t-1]
+						)
+					else:
+						d.rectangle(
+							[((100+((self.tile[t-1]-20)*50))+39)-(12*(t-5)),94,((100+((self.tile[t-1]-20)*50))+49)-(12*(t-5)),104],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[((100+((self.tile[t-1]-20)*50))+40)-(12*(t-5)),95,((100+((self.tile[t-1]-20)*50))+48)-(12*(t-5)),103],
+							fill=pcolor[t-1]
+						)
+				elif self.tile[t-1] == 30:
 					d.rectangle(
-						[106,((650-((self.tile[t-1]-10)*50))-47)+(12*(t-1)),116,((650-((self.tile[t-1]-10)*50))-37)+(12*(t-1))],
+						[636,138-(12*(t-1)),646,148-(12*(t-1))],
 						fill=(0,0,0,255)
 					)
 					d.rectangle(
-						[107,((650-((self.tile[t-1]-10)*50))-46)+(12*(t-1)),115,((650-((self.tile[t-1]-10)*50))-38)+(12*(t-1))],
+						[637,139-(12*(t-1)),645,147-(12*(t-1))],
 						fill=pcolor[t-1]
 					)
-				else:
-					d.rectangle(
-						[94,((650-((self.tile[t-1]-10)*50))-47)+(12*(t-5)),104,((650-((self.tile[t-1]-10)*50))-37)+(12*(t-5))],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[95,((650-((self.tile[t-1]-10)*50))-46)+(12*(t-5)),103,((650-((self.tile[t-1]-10)*50))-38)+(12*(t-5))],
-						fill=pcolor[t-1]
-					)
-			elif self.tile[t-1] == 20:
-				d.rectangle(
-					[138-(12*(t-1)),106,148-(12*(t-1)),116],
-					fill=(0,0,0,255)
-				)
-				d.rectangle(
-					[139-(12*(t-1)),107,147-(12*(t-1)),115],
-					fill=pcolor[t-1]
-				)
-			elif 20 < self.tile[t-1] < 30:
-				if t < 5:
-					d.rectangle(
-						[((100+((self.tile[t-1]-20)*50))+39)-(12*(t-1)),106,((100+((self.tile[t-1]-20)*50))+49)-(12*(t-1)),116],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[((100+((self.tile[t-1]-20)*50))+40)-(12*(t-1)),107,((100+((self.tile[t-1]-20)*50))+48)-(12*(t-1)),115],
-						fill=pcolor[t-1]
-					)
-				else:
-					d.rectangle(
-						[((100+((self.tile[t-1]-20)*50))+39)-(12*(t-5)),94,((100+((self.tile[t-1]-20)*50))+49)-(12*(t-5)),104],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[((100+((self.tile[t-1]-20)*50))+40)-(12*(t-5)),95,((100+((self.tile[t-1]-20)*50))+48)-(12*(t-5)),103],
-						fill=pcolor[t-1]
-					)
-			elif self.tile[t-1] == 30:
-				d.rectangle(
-					[636,138-(12*(t-1)),646,148-(12*(t-1))],
-					fill=(0,0,0,255)
-				)
-				d.rectangle(
-					[637,139-(12*(t-1)),645,147-(12*(t-1))],
-					fill=pcolor[t-1]
-				)
-			elif 30 < self.tile[t-1] < 40:
-				if t < 5:
-					d.rectangle(
-						[636,((100+((self.tile[t-1]-30)*50))+39)-(12*(t-1)),646,((100+((self.tile[t-1]-30)*50))+49)-(12*(t-1))],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[637,((100+((self.tile[t-1]-30)*50))+40)-(12*(t-1)),645,((100+((self.tile[t-1]-30)*50))+48)-(12*(t-1))],
-						fill=pcolor[t-1]
-					)
-				else:
-					d.rectangle(
-						[648,((100+((self.tile[t-1]-30)*50))+39)-(12*(t-5)),658,((100+((self.tile[t-1]-30)*50))+49)-(12*(t-5))],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[649,((100+((self.tile[t-1]-30)*50))+40)-(12*(t-5)),657,((100+((self.tile[t-1]-30)*50))+48)-(12*(t-5))],
-						fill=pcolor[t-1]
-					)
+				elif 30 < self.tile[t-1] < 40:
+					if t < 5:
+						d.rectangle(
+							[636,((100+((self.tile[t-1]-30)*50))+39)-(12*(t-1)),646,((100+((self.tile[t-1]-30)*50))+49)-(12*(t-1))],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[637,((100+((self.tile[t-1]-30)*50))+40)-(12*(t-1)),645,((100+((self.tile[t-1]-30)*50))+48)-(12*(t-1))],
+							fill=pcolor[t-1]
+						)
+					else:
+						d.rectangle(
+							[648,((100+((self.tile[t-1]-30)*50))+39)-(12*(t-5)),658,((100+((self.tile[t-1]-30)*50))+49)-(12*(t-5))],
+							fill=(0,0,0,255)
+						)
+						d.rectangle(
+							[649,((100+((self.tile[t-1]-30)*50))+40)-(12*(t-5)),657,((100+((self.tile[t-1]-30)*50))+48)-(12*(t-5))],
+							fill=pcolor[t-1]
+						)
+			self.imgcache['tile']['image'] = img
 		#NUMHOUSE
-		for t in range(40):
-			if self.numhouse[t] == 5:
-				if 0 < t < 10:
-					d.rectangle(
-						[(650-(t*50))-33,606,(650-(t*50))-15,614],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[(650-(t*50))-32,607,(650-(t*50))-16,613],
-						fill=(255,0,0,255)
-					)
-				elif 10 < t < 20:			
-					d.rectangle(
-						[138,(650-((t-10)*50))-33,146,(650-((t-10)*50))-17],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[139,(650-((t-10)*50))-32,145,(650-((t-10)*50))-18],
-						fill=(255,0,0,255)
-					)
-				elif 20 < t < 30:
-					d.rectangle(
-						[(100+((t-20)*50))+17,138,(100+((t-20)*50))+35,146],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[(100+((t-20)*50))+18,139,(100+((t-20)*50))+34,145],
-						fill=(255,0,0,255)
-					)
-				elif 30 < t < 40:
-					d.rectangle(
-						[606,(100+((t-30)*50))+17,614,(100+((t-30)*50))+35],
-						fill=(0,0,0,255)
-					)
-					d.rectangle(
-						[607,(100+((t-30)*50))+18,613,(100+((t-30)*50))+34],
-						fill=(255,0,0,255)
-					)
-			elif self.numhouse[t] > 0:
-				for tt in range(self.numhouse[t]):
+		if self.imgcache['numhouse']['value'] != self.numhouse:
+			self.imgcache['numhouse']['value'] = self.numhouse.copy()
+			img = Image.new('RGBA', (750, 750), (0, 0, 0, 0))
+			d = ImageDraw.Draw(img)
+			for t in range(40):
+				if self.numhouse[t] == 5:
 					if 0 < t < 10:
 						d.rectangle(
-							[((650-(t*50))-47)+(tt*12),606,((650-(t*50))-37)+(tt*12),614],
+							[(650-(t*50))-33,606,(650-(t*50))-15,614],
 							fill=(0,0,0,255)
 						)
 						d.rectangle(
-							[((650-(t*50))-46)+(tt*12),607,((650-(t*50))-38)+(tt*12),613],
-							fill=(0,255,0,255)
+							[(650-(t*50))-32,607,(650-(t*50))-16,613],
+							fill=(255,0,0,255)
 						)
-					elif 10 < t < 20:
+					elif 10 < t < 20:			
 						d.rectangle(
-							[138,((650-((t-10)*50))-47)+(tt*12),146,((650-((t-10)*50))-37)+(tt*12)],
+							[138,(650-((t-10)*50))-33,146,(650-((t-10)*50))-17],
 							fill=(0,0,0,255)
 						)
 						d.rectangle(
-							[139,((650-((t-10)*50))-46)+(tt*12),145,((650-((t-10)*50))-38)+(tt*12)],
-							fill=(0,255,0,255)
+							[139,(650-((t-10)*50))-32,145,(650-((t-10)*50))-18],
+							fill=(255,0,0,255)
 						)
 					elif 20 < t < 30:
 						d.rectangle(
-							[((100+((t-20)*50))+39)-(tt*12),138,((100+((t-20)*50))+49)-(tt*12),146],
+							[(100+((t-20)*50))+17,138,(100+((t-20)*50))+35,146],
 							fill=(0,0,0,255)
 						)
 						d.rectangle(
-							[((100+((t-20)*50))+40)-(tt*12),139,((100+((t-20)*50))+48)-(tt*12),145],
-							fill=(0,255,0,255)
+							[(100+((t-20)*50))+18,139,(100+((t-20)*50))+34,145],
+							fill=(255,0,0,255)
 						)
 					elif 30 < t < 40:
 						d.rectangle(
-							[606,((100+((t-30)*50))+39)-(tt*12),614,((100+((t-30)*50))+49)-(tt*12)],
+							[606,(100+((t-30)*50))+17,614,(100+((t-30)*50))+35],
 							fill=(0,0,0,255)
 						)
 						d.rectangle(
-							[607,((100+((t-30)*50))+40)-(tt*12),613,((100+((t-30)*50))+48)-(tt*12)],
-							fill=(0,255,0,255)
+							[607,(100+((t-30)*50))+18,613,(100+((t-30)*50))+34],
+							fill=(255,0,0,255)
 						)
+				elif self.numhouse[t] > 0:
+					for tt in range(self.numhouse[t]):
+						if 0 < t < 10:
+							d.rectangle(
+								[((650-(t*50))-47)+(tt*12),606,((650-(t*50))-37)+(tt*12),614],
+								fill=(0,0,0,255)
+							)
+							d.rectangle(
+								[((650-(t*50))-46)+(tt*12),607,((650-(t*50))-38)+(tt*12),613],
+								fill=(0,255,0,255)
+							)
+						elif 10 < t < 20:
+							d.rectangle(
+								[138,((650-((t-10)*50))-47)+(tt*12),146,((650-((t-10)*50))-37)+(tt*12)],
+								fill=(0,0,0,255)
+							)
+							d.rectangle(
+								[139,((650-((t-10)*50))-46)+(tt*12),145,((650-((t-10)*50))-38)+(tt*12)],
+								fill=(0,255,0,255)
+							)
+						elif 20 < t < 30:
+							d.rectangle(
+								[((100+((t-20)*50))+39)-(tt*12),138,((100+((t-20)*50))+49)-(tt*12),146],
+								fill=(0,0,0,255)
+							)
+							d.rectangle(
+								[((100+((t-20)*50))+40)-(tt*12),139,((100+((t-20)*50))+48)-(tt*12),145],
+								fill=(0,255,0,255)
+							)
+						elif 30 < t < 40:
+							d.rectangle(
+								[606,((100+((t-30)*50))+39)-(tt*12),614,((100+((t-30)*50))+49)-(tt*12)],
+								fill=(0,0,0,255)
+							)
+							d.rectangle(
+								[607,((100+((t-30)*50))+40)-(tt*12),613,((100+((t-30)*50))+48)-(tt*12)],
+								fill=(0,255,0,255)
+							)
+			self.imgcache['numhouse']['image'] = img
 		#END
+		img = Image.open(bundled_data_path(self.cog) / 'img.png')
+		for value in self.imgcache.values():
+			img.paste(value['image'], box=(0, 0), mask=value['image'])
 		temp = BytesIO()
 		temp.name = 'board.png'
 		img.save(temp)
