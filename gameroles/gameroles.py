@@ -12,6 +12,7 @@ class GameRoles(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.log = logging.getLogger('red.flamecogs.gameroles')
+		self.cache = {}
 		self.config = Config.get_conf(self, identifier=7345167903)
 		self.config.register_guild(
 			roledict = {},
@@ -47,6 +48,8 @@ class GameRoles(commands.Cog):
 			f'`{role.name}` is now managed by gameroles! '
 			f'Use `{ctx.prefix}gameroles addactivity` to add activities.'
 		)
+		if ctx.guild.id in self.cache:
+			del self.cache[ctx.guild.id]
 	
 	@checks.guildowner()
 	@gameroles.command()
@@ -69,6 +72,8 @@ class GameRoles(commands.Cog):
 		del roledict[rid]
 		await self.config.guild(ctx.guild).roledict.set(roledict)
 		await ctx.send(f'`{name}` is no longer managed by gameroles!')
+		if ctx.guild.id in self.cache:
+			del self.cache[ctx.guild.id]
 	
 	@checks.guildowner()
 	@gameroles.command()
@@ -88,6 +93,8 @@ class GameRoles(commands.Cog):
 		roledict[rid].append(activity)
 		await self.config.guild(ctx.guild).roledict.set(roledict)
 		await ctx.send(f'`{role.name}` is now triggered by `{activity}`!')
+		if ctx.guild.id in self.cache:
+			del self.cache[ctx.guild.id]
 	
 	@checks.guildowner()
 	@gameroles.command()
@@ -107,6 +114,8 @@ class GameRoles(commands.Cog):
 		roledict[rid].remove(activity)
 		await self.config.guild(ctx.guild).roledict.set(roledict)
 		await ctx.send(f'`{role.name}` is no longer triggered by `{activity}`!')
+		if ctx.guild.id in self.cache:
+			del self.cache[ctx.guild.id]
 	
 	@checks.guildowner()
 	@gameroles.command()
@@ -238,6 +247,8 @@ class GameRoles(commands.Cog):
 				await ctx.send('Roles will now be added when someone starts playing.')
 			else:
 				await ctx.send('Roles will no longer be added when someone starts playing.')
+			if ctx.guild.id in self.cache:
+				del self.cache[ctx.guild.id]
 		
 	@gameroleset.command()
 	async def remove(self, ctx, value: bool=None):
@@ -259,20 +270,24 @@ class GameRoles(commands.Cog):
 				await ctx.send('Roles will now be removed when someone stops playing.')
 			else:
 				await ctx.send('Roles will no longer be removed when someone stops playing.')
+			if ctx.guild.id in self.cache:
+				del self.cache[ctx.guild.id]
 	
 	@commands.Cog.listener()
 	async def on_member_update(self, beforeMem, afterMem):
 		"""Updates a member's roles."""
-		if not afterMem.guild.me.guild_permissions.manage_roles:
-			self.log.debug(
-				f'I do not have manage_roles permission in {afterMem.guild} ({afterMem.guild.id}).'
-			)
 		if beforeMem.activities == afterMem.activities:
 			return
-		data = await self.config.guild(afterMem.guild).all()
-		roledict = data['roledict']
-		doAdd = data['doAdd']
-		doRemove = data['doRemove']
+		if afterMem.guild.id not in self.cache:
+			data = await self.config.guild(afterMem.guild).all()
+			self.cache[afterMem.guild.id] = data
+		roledict = self.cache[afterMem.guild.id]['roledict']
+		if not roledict:
+			return
+		doAdd = self.cache[afterMem.guild.id]['doAdd']
+		doRemove = self.cache[afterMem.guild.id]['doRemove']
+		if not (doAdd or doRemove):
+			return
 		torem = set()
 		toadd = set()
 		#REMOVE
@@ -304,6 +319,13 @@ class GameRoles(commands.Cog):
 		setsum = torem & toadd
 		torem -= setsum
 		toadd -= setsum
+		if not (torem or toadd):
+			return
+		if not afterMem.guild.me.guild_permissions.manage_roles:
+			self.log.debug(
+				f'I do not have manage_roles permission in {afterMem.guild} ({afterMem.guild.id}).'
+			)
+			return
 		if torem and doRemove:
 			try:
 				await afterMem.remove_roles(*torem, reason='Gameroles')
