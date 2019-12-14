@@ -250,6 +250,7 @@ class MonopolyGame():
 		shuffle(self.chanceorder)
 		self.imgcache = {
 			'ownedby': {'value': None, 'image': None},
+			'ismortgaged': {'value': None, 'image': None},
 			'tile': {'value': None, 'image': None},
 			'numhouse': {'value': None, 'image': None}
 		}
@@ -1745,6 +1746,25 @@ class MonopolyGame():
 							fill=pcolor[self.ownedby[t]]
 						)
 			self.imgcache['ownedby']['image'] = img
+		#ISMORTGAGED
+		if self.imgcache['ismortgaged']['value'] != self.ismortgaged:
+			self.imgcache['ismortgaged']['value'] = self.ismortgaged.copy()
+			img = Image.new('RGBA', (750, 750), (0, 0, 0, 0))
+			m = Image.open(bundled_data_path(self.cog) / 'mortgage.png')
+			for t in range(40):
+				if self.ismortgaged[t] == 1:
+					if 0 < t < 10:
+						img.paste(m, box=(600-(t*50), 600), mask=m)
+					elif 10 < t < 20:
+						rotate = m.transpose(method=Image.ROTATE_270)
+						img.paste(rotate, box=(52, 600-((t-10)*50)), mask=rotate)
+					elif 20 < t < 30:
+						rotate = m.transpose(method=Image.ROTATE_180)
+						img.paste(rotate, box=(102+((t-20)*50), 52), mask=rotate)
+					elif 30 < t < 40:
+						rotate = m.transpose(method=Image.ROTATE_90)
+						img.paste(rotate, box=(600, 102+((t-30)*50)), mask=rotate)
+			self.imgcache['ismortgaged']['image'] = img
 		#TILE
 		#Because the player int used to be 1 indexed, the players would be in the wrong
 		#position without 1 indexing and subtracting 1 from t when calling self.tile[t]
