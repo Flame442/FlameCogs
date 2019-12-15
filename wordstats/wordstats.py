@@ -2,30 +2,52 @@ import discord
 from redbot.core import commands
 from redbot.core import Config
 from redbot.core import checks
-from redbot.core.data_manager import storage_type
-from redbot.core.config import Group
-from redbot.core.drivers import IdentifierData
-from collections import defaultdict
-from copy import deepcopy
+from redbot.core.data_manager import cog_data_path
 from typing import Optional, Union
-from random import randint
-import time
+import apsw
 import asyncio
 import re
 
+
+STOPWORDS = (
+	'a', 'able', 'about', 'across', 'after', 'all', 'almost', 'also', 'am', 'among',
+	'an', 'and', 'any', 'are', 'as', 'at', 'be', 'because', 'been', 'but', 'by', 'can',
+	'cannot', 'could', 'dear', 'did', 'do', 'does', 'either', 'else', 'ever', 'every',
+	'for', 'from', 'get', 'got', 'had', 'has', 'have', 'he', 'her', 'hers', 'him',
+	'his', 'how', 'however', 'i', 'if', 'in', 'into', 'is', 'it', 'its', 'just',
+	'least', 'let', 'like', 'likely', 'may', 'me', 'might', 'most', 'must', 'my',
+	'neither', 'no', 'nor', 'not', 'of', 'off', 'often', 'on', 'only', 'or', 'other',
+	'our', 'own', 'rather', 'said', 'say', 'says', 'she', 'should', 'since', 'so',
+	'some', 'than', 'that', 'the', 'their', 'them', 'then', 'there', 'these', 'they',
+	'this', 'tis', 'to', 'too', 'twas', 'us', 'wants', 'was', 'we', 'were', 'what',
+	'when', 'where', 'which', 'while', 'who', 'whom', 'why', 'will', 'with', 'would',
+	'yet', 'you', 'your'
+)
 
 class WordStats(commands.Cog):
 	"""Tracks commonly used words."""
 	def __init__(self, bot):
 		self.bot = bot
-		self.members_to_update = {}
 		self.ignore_cache = {}
-		self.last_save = time.time()
 		self.config = Config.get_conf(self, identifier=7345167905)
 		self.config.register_guild(
 			enableGuild = True,
 			disabledChannels = [],
 			displayStopwords = True
+		)
+		self._connection = apsw.Connection(str(cog_data_path(self) / 'wordstats.db'))
+		self.cursor = self._connection.cursor()
+		self.cursor.execute('PRAGMA journal_mode = wal;')
+		self.cursor.execute('PRAGMA wal_autocheckpoint;')
+		self.cursor.execute('PRAGMA read_uncommitted = 1;')
+		self.cursor.execute(
+			'CREATE TABLE IF NOT EXISTS guild_words ('
+			'guild_id INTEGER NOT NULL,'
+			'user_id INTEGER NOT NULL,'
+			'word TEXT NOT NULL,'
+			'quantity INTEGER DEFAULT 1,'
+			'PRIMARY KEY (guild_id, user_id, word)'
+			');'
 		)
 	
 	class GuildConvert(commands.Converter):
@@ -41,44 +63,11 @@ class WordStats(commands.Cog):
 					if guild.name == value:
 						return guild
 				raise commands.BadArgument()
-
-	@staticmethod
-	def _combine_dicts(dicts: dict):
-		"""Combine multiple dicts into one from all_members in a guild."""
-		result = defaultdict(int)
-		for member in dicts.values():
-			for word, amount in member['worddict'].items():
-				result[word] += amount
-		return result
-
-	@staticmethod
-	def _combine_dicts_global(dicts: dict):
-		"""Combine multiple dicts into one from all_members in all guilds."""
-		result = defaultdict(int)
-		for guild in dicts.values():
-			for member in guild.values():
-				for word, amount in member['worddict'].items():
-					result[word] += amount
-		return result
 	
 	async def maybe_filter_stopwords(self, ctx, to_filter):
 		"""Maybe remove stopwords from display outputs."""
 		if not await self.config.guild(ctx.guild).displayStopwords():
-			stopwords = (
-				'a', 'able', 'about', 'across', 'after', 'all', 'almost', 'also', 'am', 'among',
-				'an', 'and', 'any', 'are', 'as', 'at', 'be', 'because', 'been', 'but', 'by', 'can',
-				'cannot', 'could', 'dear', 'did', 'do', 'does', 'either', 'else', 'ever', 'every',
-				'for', 'from', 'get', 'got', 'had', 'has', 'have', 'he', 'her', 'hers', 'him',
-				'his', 'how', 'however', 'i', 'if', 'in', 'into', 'is', 'it', 'its', 'just',
-				'least', 'let', 'like', 'likely', 'may', 'me', 'might', 'most', 'must', 'my',
-				'neither', 'no', 'nor', 'not', 'of', 'off', 'often', 'on', 'only', 'or', 'other',
-				'our', 'own', 'rather', 'said', 'say', 'says', 'she', 'should', 'since', 'so',
-				'some', 'than', 'that', 'the', 'their', 'them', 'then', 'there', 'these', 'they',
-				'this', 'tis', 'to', 'too', 'twas', 'us', 'wants', 'was', 'we', 'were', 'what',
-				'when', 'where', 'which', 'while', 'who', 'whom', 'why', 'will', 'with', 'would',
-				'yet', 'you', 'your'
-			)
-			to_filter = [word for word in to_filter if word not in stopwords]
+			to_filter = [word for word in to_filter if word not in STOPWORDS]
 		return to_filter
 	
 	@commands.guild_only()
@@ -98,19 +87,30 @@ class WordStats(commands.Cog):
 		if isinstance(amount_or_word, int):
 			if amount_or_word <= 0:
 				return await ctx.send('At least one word needs to be displayed.')
+		worddict = {}
 		async with ctx.typing():
-			await self.update_data()
-			if member_or_guild is None:
-				mention = 'this server'
-				dicts = await self.config.all_members(ctx.guild)
-				worddict = self._combine_dicts(dicts)
-			elif isinstance(member_or_guild, discord.Member):
+			if isinstance(member_or_guild, discord.Member):
 				mention = member_or_guild.display_name
-				worddict = await self.config.member(member_or_guild).get_raw('worddict', default={})
+				for word, quantity in self.cursor.execute(
+					'SELECT word, quantity FROM guild_words '
+					'WHERE guild_id = ? AND user_id = ?',
+					(ctx.guild.id, member_or_guild.id)
+				):
+					worddict[word] = quantity
 			else:
-				mention = member_or_guild.name
-				dicts = await self.config.all_members(member_or_guild)
-				worddict = self._combine_dicts(dicts)
+				if member_or_guild is None:
+					mention = 'this server'
+					guild = ctx.guild
+				else:
+					mention = member_or_guild.name
+					guild = member_or_guild
+				for word, quantity in self.cursor.execute(
+					'SELECT word, sum(quantity) FROM guild_words '
+					'WHERE guild_id = ?'
+					'GROUP BY word',
+					(guild.id,)
+				):
+					worddict[word] = quantity
 			order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
 		if worddict == {}:
 			if mention == 'this server':
@@ -169,10 +169,13 @@ class WordStats(commands.Cog):
 		if isinstance(amount_or_word, int):
 			if amount_or_word <= 0:
 				return await ctx.send('At least one word needs to be displayed.')
+		worddict = {}
 		async with ctx.typing():
-			await self.update_data()
-			dicts = await self.config.all_members()
-			worddict = self._combine_dicts_global(dicts)
+			for word, quantity in self.cursor.execute(
+				'SELECT word, sum(quantity) FROM guild_words '
+				'GROUP BY word'
+			):
+				worddict[word] = quantity
 			order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
 		if worddict == {}:
 			return await ctx.send('No words have been said yet.')
@@ -245,19 +248,24 @@ class WordStats(commands.Cog):
 			return await ctx.send('At least one member needs to be displayed.')
 		if guild is None:
 			guild = ctx.guild
+		sumdict = {}
 		async with ctx.typing():
-			await self.update_data()
-			data = await self.config.all_members(guild)
-			sumdict = {}
-			for memid in data:
-				if word:
-					if word in data[memid]['worddict']:
-						sumdict[memid] = data[memid]['worddict'][word]
-				else:
-					n = 0
-					for w in data[memid]['worddict']:
-						n += data[memid]['worddict'][w]
-					sumdict[memid] = n
+			if word:
+				for user_id, quantity in self.cursor.execute(
+					'SELECT user_id, sum(quantity) FROM guild_words '
+					'WHERE guild_id = ? AND word = ?'
+					'GROUP BY user_id',
+					(guild.id, word)
+				):
+					sumdict[user_id] = quantity
+			else:
+				for user_id, quantity in self.cursor.execute(
+					'SELECT user_id, sum(quantity) FROM guild_words '
+					'WHERE guild_id = ?'
+					'GROUP BY user_id',
+					(guild.id,)
+				):
+					sumdict[user_id] = quantity
 			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
 		if sumdict == {}:
 			return await ctx.send('No one has chatted yet.')
@@ -314,26 +322,22 @@ class WordStats(commands.Cog):
 				word = word.lower()
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
+		sumdict = {}
 		async with ctx.typing():
-			await self.update_data()
-			data = await self.config.all_members()
-			sumdict = {}
-			for guild in data:
-				for memid in data[guild]:
-					if word:
-						if word in data[guild][memid]['worddict']:
-							if memid in sumdict:
-								sumdict[memid] += data[guild][memid]['worddict'][word]
-							else:
-								sumdict[memid] = data[guild][memid]['worddict'][word]
-					else:
-						n = 0
-						for w in data[guild][memid]['worddict']:
-							n += data[guild][memid]['worddict'][w]
-						if memid in sumdict:
-							sumdict[memid] += n
-						else:
-							sumdict[memid] = n
+			if word:
+				for user_id, quantity in self.cursor.execute(
+					'SELECT user_id, sum(quantity) FROM guild_words '
+					'WHERE word = ?'
+					'GROUP BY user_id',
+					(word,)
+				):
+					sumdict[user_id] = quantity
+			else:
+				for user_id, quantity in self.cursor.execute(
+					'SELECT user_id, sum(quantity) FROM guild_words '
+					'GROUP BY user_id'
+				):
+					sumdict[user_id] = quantity
 			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
 		if sumdict == {}:
 			return await ctx.send(f'No one has chatted yet.')
@@ -395,19 +399,20 @@ class WordStats(commands.Cog):
 		if guild is None:
 			guild = ctx.guild
 		word = word.lower()
+		worddict = {}
 		async with ctx.typing():
-			await self.update_data()
-			data = await self.config.all_members(guild)
+			for user_id, w, quantity in self.cursor.execute(
+				'SELECT user_id, word, quantity FROM guild_words '
+				'WHERE guild_id = ? ',
+				(guild.id,)
+			):
+				if user_id not in worddict:
+					worddict[user_id] = {}
+				worddict[user_id][w] = quantity
 			sumdict = {}
-			for memid in data:
-				if word in data[memid]['worddict']:
-					n = 0
-					for w in data[memid]['worddict']:
-						n += data[memid]['worddict'][w]
-					if n == 0:
-						continue
-					if n >= min_total:
-						sumdict[memid] = data[memid]['worddict'][word] / n
+			for user_id in worddict:
+				if word in worddict[user_id] and sum(worddict[user_id].values()) >= min_total:
+					sumdict[user_id] = worddict[user_id][word] / sum(worddict[user_id].values())
 			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
 		if sumdict == {}:
 			return await ctx.send('No one has chatted yet.')
@@ -461,31 +466,21 @@ class WordStats(commands.Cog):
 		if min_total < 0:
 			min_total = 0
 		word = word.lower()
+		worddict = {}
 		async with ctx.typing():
-			await self.update_data()
-			data = await self.config.all_members()
-			tempdict = {}
-			for guild in data:
-				for memid in data[guild]:
-					wordn = 0
-					if word in data[guild][memid]['worddict']:
-						wordn = data[guild][memid]['worddict'][word]
-					n = 0
-					for w in data[guild][memid]['worddict']:
-						n += data[guild][memid]['worddict'][w]
-					if memid in tempdict:
-						v = tempdict[memid]
-						v[0] += wordn
-						v[1] += n
-						tempdict[memid] = v
-					else:
-						tempdict[memid] = [wordn, n]
+			for user_id, w, quantity in self.cursor.execute(
+				'SELECT user_id, word, quantity FROM guild_words'
+			):
+				if user_id not in worddict:
+					worddict[user_id] = {}
+				if w not in worddict[user_id]:
+					worddict[user_id][w] = quantity
+				else:
+					worddict[user_id][w] += quantity
 			sumdict = {}
-			for memid in tempdict:
-				v = tempdict[memid]
-				if v[1] == 0 or v[1] < min_total:
-					continue
-				sumdict[memid] = v[0] / v[1]
+			for user_id in worddict:
+				if word in worddict[user_id] and sum(worddict[user_id].values()) >= min_total:
+					sumdict[user_id] = worddict[user_id][word] / sum(worddict[user_id].values())
 			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
 		if sumdict == {}:
 			return await ctx.send('No one has chatted yet.')
@@ -521,14 +516,63 @@ class WordStats(commands.Cog):
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
 	
-	
 	@commands.guild_only()
 	@checks.guildowner()
 	@commands.group()
 	async def wordstatsset(self, ctx):
 		"""Config options for wordstats."""
 		pass
+	
+	@checks.is_owner()
+	@wordstatsset.command()
+	async def deleteall(self, ctx, confirm: bool=False):
+		"""
+		Dalete all wordstats data.
 		
+		This removes all existing data, creating a blank state.
+		This cannot be undone.
+		"""
+		if not confirm:
+			await ctx.send(
+				'Running this command will delete all wordstats data. '
+				'This cannot be undone. '
+				f'Run `{ctx.prefix}wordstatsset deleteall yes` to confirm.'
+			)
+			return
+		self.cursor.execute('DROP TABLE guild_words;')
+		self.cursor.execute(
+			'CREATE TABLE IF NOT EXISTS guild_words ('
+			'guild_id INTEGER NOT NULL,'
+			'user_id INTEGER NOT NULL,'
+			'word TEXT NOT NULL,'
+			'quantity INTEGER DEFAULT 1,'
+			'PRIMARY KEY (guild_id, user_id, word)'
+			');'
+		)
+		await ctx.send('Wordstats data has been reset.')
+	
+	@checks.is_owner()
+	@wordstatsset.command()
+	async def convert(self, ctx):
+		"""Convert data from config to the SQLite database."""
+		await ctx.send('Begining conversion, this may take a while.')
+		async with ctx.typing():
+			self.cursor.execute('BEGIN TRANSACTION;')
+			data = await self.config.all_members()
+			for guild_id in data:
+				for member_id in data[guild_id]:
+					for word in data[guild_id][member_id]['worddict']:
+						value = data[guild_id][member_id]['worddict'][word]
+						self.cursor.execute(
+							'INSERT INTO guild_words (guild_id, user_id, word, quantity)'
+							'VALUES (?, ?, ?, ?)'
+							'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + ?;',
+							(guild_id, member_id, word, value, value)
+						)
+					await asyncio.sleep(0)
+			self.cursor.execute('COMMIT;')
+		await ctx.send('Done converting.')
+	
 	@wordstatsset.command()
 	async def server(self, ctx, value: bool=None):
 		"""
@@ -607,33 +651,6 @@ class WordStats(commands.Cog):
 			else:
 				await ctx.send('Stopwords will no longer be included in outputs.')
 	
-	async def update_data(self):
-		"""
-		Saves everything to disk.
-		Thanks to Sinbad for this dark magic.
-		"""
-		self.last_save = time.time()
-		base_group = self.config._get_base_group(self.config.MEMBER)
-
-		async with base_group() as data:
-			#The member dict is enumerated to prevent heartbeat issues later.
-			member_iterator = enumerate(list(self.members_to_update.items()), 1)
-			for index, (member, member_data) in member_iterator:
-				partial = data
-				gid = str(member.guild.id)
-				mid = str(member.id)
-				value = deepcopy(member_data)
-				#If the guild is not already there, add it.
-				if gid not in partial:
-					partial.update({gid: {}})
-				#Set the member to the new value.
-				partial[gid][mid] = value
-				#Sleep every 10 values to prevent heartbeats.
-				if not index % 10: 
-					await asyncio.sleep(0)
-		
-		self.members_to_update = {}
-	
 	@commands.Cog.listener()
 	async def on_message_without_command(self, msg):
 		"""Passively records all message contents."""
@@ -646,27 +663,10 @@ class WordStats(commands.Cog):
 			if enableGuild and not msg.channel.id in disabledChannels:
 				#Strip any characters besides letters and spaces.
 				words = re.sub(r'[^a-z \n]', '', msg.content.lower()).split()
-				#Get the latest memdict.
-				if storage_type() == 'JSON':
-					if msg.author not in self.members_to_update:
-						self.members_to_update[msg.author] = await self.config.member(msg.author).all()
-					if 'worddict' not in self.members_to_update[msg.author]:
-						self.members_to_update[msg.author]['worddict'] = {}
-					memdict = self.members_to_update[msg.author]['worddict']
-				else:
-					memdict = await self.config.member(msg.author).get_raw('worddict', default={})
-				#Update the memdict.
 				for word in words:
-					if not word:
-						continue
-					if word in memdict:
-						memdict[word] += 1
-					else:
-						memdict[word] = 1
-				#Save the memdict.
-				if storage_type() == 'JSON':
-					self.members_to_update[msg.author]['worddict'] = memdict
-					if time.time() - self.last_save >= 1800: #30 minutes per save
-						await self.update_data()
-				else:
-					await self.config.member(msg.author).set_raw('worddict', value=memdict)
+					self.cursor.execute(
+						'INSERT INTO guild_words (guild_id, user_id, word)'
+						'VALUES (?, ?, ?)'
+						'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + 1;',
+						(msg.guild.id, msg.author.id, word)
+					)
