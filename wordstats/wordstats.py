@@ -527,7 +527,7 @@ class WordStats(commands.Cog):
 	@wordstatsset.command()
 	async def deleteall(self, ctx, confirm: bool=False):
 		"""
-		Dalete all wordstats data.
+		Delete all wordstats data.
 		
 		This removes all existing data, creating a blank state.
 		This cannot be undone.
