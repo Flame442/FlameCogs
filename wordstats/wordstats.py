@@ -41,7 +41,7 @@ class WordStats(commands.Cog):
 		self.cursor.execute('PRAGMA wal_autocheckpoint;')
 		self.cursor.execute('PRAGMA read_uncommitted = 1;')
 		self.cursor.execute(
-			'CREATE TABLE IF NOT EXISTS guild_words ('
+			'CREATE TABLE IF NOT EXISTS member_words ('
 			'guild_id INTEGER NOT NULL,'
 			'user_id INTEGER NOT NULL,'
 			'word TEXT NOT NULL,'
@@ -87,16 +87,86 @@ class WordStats(commands.Cog):
 		if isinstance(amount_or_word, int):
 			if amount_or_word <= 0:
 				return await ctx.send('At least one word needs to be displayed.')
-		worddict = {}
+			amount = amount_or_word
+			word = None
+		else:
+			amount = None
+			word = amount_or_word.lower()
 		async with ctx.typing():
+			if word:
+				if isinstance(member_or_guild, discord.Member):
+					mention = member_or_guild.display_name
+					result = self.cursor.execute(
+						'SELECT rank, count FROM '
+						'( '
+						'SELECT rank() OVER win AS rank, word AS word, count as count '
+						'FROM ( '
+						'SELECT SUM(quantity) as count, word FROM member_words '
+						'WHERE guild_id = ? AND user_id = ? '
+						'GROUP BY word '
+						') '
+						'WINDOW win as (ORDER BY count DESC) '
+						') '
+						'WHERE word = ?',
+						(ctx.guild.id, member_or_guild.id, word)
+					).fetchone()
+				else:
+					if member_or_guild is None:
+						mention = 'this server'
+						guild = ctx.guild
+					else:
+						mention = member_or_guild.name
+						guild = member_or_guild
+					result = self.cursor.execute(
+						'SELECT rank, count FROM '
+						'('
+						'SELECT rank() OVER win AS rank, word AS word, count AS count '
+						'FROM ( '
+						'SELECT SUM(quantity) AS count, word FROM member_words '
+						'WHERE guild_id = ? '
+						'GROUP BY word '
+						') '
+						'WINDOW win AS (ORDER BY count DESC) '
+						') '
+						'WHERE word = ?',
+						(guild.id, word)
+					).fetchone()
+				if not result:
+					return await ctx.send(
+						f'The word **{word}** has not been said by {mention} yet.'
+					)
+				rank, count = result
+				ordinal = lambda n: "%d%s" % (n, "tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
+				if rank == 1: #most common
+					mc = '**most common**'
+				else: #not the most common
+					mc = f'**{ordinal(rank)}** most common'
+				return await ctx.send(
+					f'The word **{word}** has been said by {mention} '
+					f'**{count}** {"times" if count != 1 else "time"}.\n'
+					f'It is the {mc} word {mention} has said.'
+				)
+			result = self.cursor.execute(
+				'SELECT sum(quantity), count(DISTINCT word) FROM member_words WHERE guild_id = ?',
+				(ctx.guild.id,)
+			).fetchone()
+			if not result:
+				return await ctx.send('No words have been said yet.')
+			total, unique = result
+			amount = min(unique, amount)
+			if await self.config.guild(ctx.guild).displayStopwords():
+				stop = tuple()
+			else:
+				stop = STOPWORDS
 			if isinstance(member_or_guild, discord.Member):
 				mention = member_or_guild.display_name
-				for word, quantity in self.cursor.execute(
-					'SELECT word, quantity FROM guild_words '
-					'WHERE guild_id = ? AND user_id = ?',
-					(ctx.guild.id, member_or_guild.id)
-				):
-					worddict[word] = quantity
+				result = self.cursor.execute(
+					'SELECT word, quantity FROM member_words '
+					f'WHERE guild_id = ? AND user_id = ? AND word NOT IN {stop} '
+					'ORDER BY quantity DESC '
+					'LIMIT ? ',
+					(ctx.guild.id, member_or_guild.id, amount)
+				).fetchall()
 			else:
 				if member_or_guild is None:
 					mention = 'this server'
@@ -104,57 +174,32 @@ class WordStats(commands.Cog):
 				else:
 					mention = member_or_guild.name
 					guild = member_or_guild
-				for word, quantity in self.cursor.execute(
-					'SELECT word, sum(quantity) FROM guild_words '
-					'WHERE guild_id = ?'
-					'GROUP BY word',
-					(guild.id,)
-				):
-					worddict[word] = quantity
-			order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
-		if worddict == {}:
-			if mention == 'this server':
-				mention = 'This server'
-			return await ctx.send(f'{mention} has not said any words yet.')
-		if isinstance(amount_or_word, str): #specific word
-			if amount_or_word.lower() not in worddict:
-				return await ctx.send(
-					f'The word **{amount_or_word}** has not been said by {mention} yet.'
-				)
-			ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
-			rank = order.index(amount_or_word.lower())
-			number = worddict[amount_or_word.lower()]
-			if rank == 0: #most common
-				mc = '**most common**'
-			else: #not the most common
-				mc = f'**{ordinal(rank+1)}** most common' #accounts for zero-indexing
-			return await ctx.send(
-				f'The word **{amount_or_word}** has been said by {mention} '
-				f'**{number}** {"times" if number != 1 else "time"}.\n'
-				f'It is the {mc} word {mention} has said.'
+				result = self.cursor.execute(
+					'SELECT word, sum(quantity) as total FROM member_words '
+					f'WHERE guild_id = ? AND word NOT IN {stop} '
+					'GROUP BY word '
+					'ORDER BY total DESC '
+					'LIMIT ? ',
+					(guild.id, amount)
+				).fetchall()
+		msg = ''
+		maxwidth = len(str(result[0][1])) + 2 #max width of a number + extra for space
+		for value in result:
+			currentwidth = len(str(value[1]))   
+			msg += (
+				f'{value[1]}{" " * (maxwidth-currentwidth)}{value[0]}\n'
 			)
-		order = await self.maybe_filter_stopwords(ctx, order)
-		result = ''
-		n = 0
-		total = sum(worddict.values())
-		maxwidth = len(str(worddict[order[0]])) + 2 #max width of a number + extra for space
-		for word in order:
-			currentwidth = len(str(worddict[word]))   
-			result += (
-				f'{worddict[word]}{" " * (maxwidth-currentwidth)}{word}\n'
-			)
-			n += 1
-			if n == amount_or_word:
-				break
-		if n == 1:
+		if amount == 1:
 			mc = '**most common** word'
+			is_are = 'is'
 		else:
-			mc = f'**{n}** most common words'
+			mc = f'**{amount}** most common words'
+			is_are = 'are'
 		try:
 			await ctx.send(
-				f'Out of **{total}** words and **{len(worddict)}** unique words, '
-				f'the {mc} that {mention} has said {"is" if n == 1 else "are"}:\n'
-				f'```{result.rstrip()}```'
+				f'Out of **{total}** words and **{unique}** unique words, '
+				f'the {mc} that {mention} has said {is_are}:\n'
+				f'```{msg.rstrip()}```'
 			)
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
@@ -169,55 +214,78 @@ class WordStats(commands.Cog):
 		if isinstance(amount_or_word, int):
 			if amount_or_word <= 0:
 				return await ctx.send('At least one word needs to be displayed.')
-		worddict = {}
-		async with ctx.typing():
-			for word, quantity in self.cursor.execute(
-				'SELECT word, sum(quantity) FROM guild_words '
-				'GROUP BY word'
-			):
-				worddict[word] = quantity
-			order = list(reversed(sorted(worddict, key=lambda w: worddict[w])))
-		if worddict == {}:
-			return await ctx.send('No words have been said yet.')
-		if isinstance(amount_or_word, str): #specific word
-			if amount_or_word.lower() not in worddict:
-				return await ctx.send(
-					f'The word **{amount_or_word}** has not been said yet.'
-				)
-			ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
-			rank = order.index(amount_or_word.lower())
-			number = worddict[amount_or_word.lower()]
-			if rank == 0: #most common
-				mc = '**most common**'
-			else: #not the most common
-				mc = f'**{ordinal(rank+1)}** most common' #accounts for zero-indexing
-			return await ctx.send(
-				f'The word **{amount_or_word}** has been said '
-				f'**{number}** {"times" if number != 1 else "time"} globally.\n'
-				f'It is the {mc} word said.'
-			)
-		order = await self.maybe_filter_stopwords(ctx, order)
-		result = ''
-		n = 0
-		total = sum(worddict.values())
-		maxwidth = len(str(worddict[order[0]])) + 2 #max width of a number + extra for space
-		for word in order:
-			currentwidth = len(str(worddict[word]))
-			result += (
-				f'{worddict[word]}{" " * (maxwidth-currentwidth)}{word}\n'
-			)
-			n += 1
-			if n == amount_or_word:
-				break
-		if n == 1:
-			mc = '**most common** word'
+			amount = amount_or_word
+			word = None
 		else:
-			mc = f'**{n}** most common words'
+			amount = None
+			word = amount_or_word.lower()
+		async with ctx.typing():
+			if word:
+				result = self.cursor.execute(
+					'SELECT rank, count FROM '
+					'( '
+					'SELECT rank() OVER win AS rank, word AS word, count as count '
+					'FROM ( '
+					'SELECT SUM(quantity) as count, word FROM member_words '
+					'GROUP BY word '
+					') '
+					'WINDOW win as (ORDER BY count DESC) '
+					') '
+					'WHERE word = ?',
+					(word,)
+				).fetchone()
+				if not result:
+					return await ctx.send(
+						f'The word **{word}** has not been said yet.'
+					)
+				rank, count = result
+				ordinal = lambda n: "%d%s" % (n, "tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
+				if rank == 1: #most common
+					mc = '**most common**'
+				else: #not the most common
+					mc = f'**{ordinal(rank)}** most common'
+				return await ctx.send(
+					f'The word **{word}** has been said globally '
+					f'**{count}** {"times" if count != 1 else "time"}.\n'
+					f'It is the {mc} word said.'
+				)
+			result = self.cursor.execute(
+				'SELECT sum(quantity), count(DISTINCT word) FROM member_words'
+			).fetchone()
+			if not result:
+				return await ctx.send('No words have been said yet.')
+			total, unique = result
+			amount = min(unique, amount)
+			if await self.config.guild(ctx.guild).displayStopwords():
+				stop = tuple()
+			else:
+				stop = STOPWORDS
+			result = self.cursor.execute(
+				'SELECT word, sum(quantity) as total FROM member_words '
+				f'WHERE word NOT IN {stop} '
+				'GROUP BY word '
+				'ORDER BY total DESC '
+				'LIMIT ? ',
+				(amount,)
+			).fetchall()
+		msg = ''
+		maxwidth = len(str(result[0][1])) + 2 #max width of a number + extra for space
+		for value in result:
+			currentwidth = len(str(value[1]))   
+			msg += (
+				f'{value[1]}{" " * (maxwidth-currentwidth)}{value[0]}\n'
+			)
+		if amount == 1:
+			mc = '**most common** word'
+			is_are = 'is'
+		else:
+			mc = f'**{amount}** most common words'
+			is_are = 'are'
 		try:
 			await ctx.send(
-				f'Out of **{total}** words and **{len(worddict)}** unique words, '
-				f'the {mc} said globally {"is" if n == 1 else "are"}:\n'
-				f'```{result.rstrip()}```'
+				f'Out of **{total}** words and **{unique}** unique words, '
+				f'the {mc} said globally {is_are}:\n'
+				f'```{msg.rstrip()}```'
 			)
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
@@ -252,7 +320,7 @@ class WordStats(commands.Cog):
 		async with ctx.typing():
 			if word:
 				for user_id, quantity in self.cursor.execute(
-					'SELECT user_id, sum(quantity) FROM guild_words '
+					'SELECT user_id, sum(quantity) FROM member_words '
 					'WHERE guild_id = ? AND word = ?'
 					'GROUP BY user_id',
 					(guild.id, word)
@@ -260,7 +328,7 @@ class WordStats(commands.Cog):
 					sumdict[user_id] = quantity
 			else:
 				for user_id, quantity in self.cursor.execute(
-					'SELECT user_id, sum(quantity) FROM guild_words '
+					'SELECT user_id, sum(quantity) FROM member_words '
 					'WHERE guild_id = ?'
 					'GROUP BY user_id',
 					(guild.id,)
@@ -326,7 +394,7 @@ class WordStats(commands.Cog):
 		async with ctx.typing():
 			if word:
 				for user_id, quantity in self.cursor.execute(
-					'SELECT user_id, sum(quantity) FROM guild_words '
+					'SELECT user_id, sum(quantity) FROM member_words '
 					'WHERE word = ?'
 					'GROUP BY user_id',
 					(word,)
@@ -334,7 +402,7 @@ class WordStats(commands.Cog):
 					sumdict[user_id] = quantity
 			else:
 				for user_id, quantity in self.cursor.execute(
-					'SELECT user_id, sum(quantity) FROM guild_words '
+					'SELECT user_id, sum(quantity) FROM member_words '
 					'GROUP BY user_id'
 				):
 					sumdict[user_id] = quantity
@@ -402,7 +470,7 @@ class WordStats(commands.Cog):
 		worddict = {}
 		async with ctx.typing():
 			for user_id, w, quantity in self.cursor.execute(
-				'SELECT user_id, word, quantity FROM guild_words '
+				'SELECT user_id, word, quantity FROM member_words '
 				'WHERE guild_id = ? ',
 				(guild.id,)
 			):
@@ -469,7 +537,7 @@ class WordStats(commands.Cog):
 		worddict = {}
 		async with ctx.typing():
 			for user_id, w, quantity in self.cursor.execute(
-				'SELECT user_id, word, quantity FROM guild_words'
+				'SELECT user_id, word, quantity FROM member_words'
 			):
 				if user_id not in worddict:
 					worddict[user_id] = {}
@@ -539,9 +607,9 @@ class WordStats(commands.Cog):
 				f'Run `{ctx.prefix}wordstatsset deleteall yes` to confirm.'
 			)
 			return
-		self.cursor.execute('DROP TABLE guild_words;')
+		self.cursor.execute('DROP TABLE member_words;')
 		self.cursor.execute(
-			'CREATE TABLE IF NOT EXISTS guild_words ('
+			'CREATE TABLE IF NOT EXISTS member_words ('
 			'guild_id INTEGER NOT NULL,'
 			'user_id INTEGER NOT NULL,'
 			'word TEXT NOT NULL,'
@@ -564,12 +632,12 @@ class WordStats(commands.Cog):
 					for word in data[guild_id][member_id]['worddict']:
 						value = data[guild_id][member_id]['worddict'][word]
 						self.cursor.execute(
-							'INSERT INTO guild_words (guild_id, user_id, word, quantity)'
+							'INSERT INTO member_words (guild_id, user_id, word, quantity)'
 							'VALUES (?, ?, ?, ?)'
 							'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + ?;',
 							(guild_id, member_id, word, value, value)
 						)
-					await asyncio.sleep(0)
+					await asyncio.sleep(0) #TODO: Don't sleep if possible
 			self.cursor.execute('COMMIT;')
 		await ctx.send('Done converting.')
 	
@@ -663,10 +731,12 @@ class WordStats(commands.Cog):
 			if enableGuild and not msg.channel.id in disabledChannels:
 				#Strip any characters besides letters and spaces.
 				words = re.sub(r'[^a-z \n]', '', msg.content.lower()).split()
+				self.cursor.execute('BEGIN TRANSACTION;')
 				for word in words:
 					self.cursor.execute(
-						'INSERT INTO guild_words (guild_id, user_id, word)'
+						'INSERT INTO member_words (guild_id, user_id, word)'
 						'VALUES (?, ?, ?)'
 						'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + 1;',
 						(msg.guild.id, msg.author.id, word)
 					)
+				self.cursor.execute('COMMIT;')
