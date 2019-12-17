@@ -150,7 +150,7 @@ class WordStats(commands.Cog):
 				'SELECT sum(quantity), count(DISTINCT word) FROM member_words WHERE guild_id = ?',
 				(ctx.guild.id,)
 			).fetchone()
-			if not result:
+			if not result[0]:
 				return await ctx.send('No words have been said yet.')
 			total, unique = result
 			amount = min(unique, amount)
@@ -252,7 +252,7 @@ class WordStats(commands.Cog):
 			result = self.cursor.execute(
 				'SELECT sum(quantity), count(DISTINCT word) FROM member_words'
 			).fetchone()
-			if not result:
+			if not result[0]:
 				return await ctx.send('No words have been said yet.')
 			total, unique = result
 			amount = min(unique, amount)
@@ -625,19 +625,21 @@ class WordStats(commands.Cog):
 		"""Convert data from config to the SQLite database."""
 		await ctx.send('Begining conversion, this may take a while.')
 		async with ctx.typing():
-			self.cursor.execute('BEGIN TRANSACTION;')
+			hold = []
 			data = await self.config.all_members()
 			for guild_id in data:
 				for member_id in data[guild_id]:
 					for word in data[guild_id][member_id]['worddict']:
 						value = data[guild_id][member_id]['worddict'][word]
-						self.cursor.execute(
-							'INSERT INTO member_words (guild_id, user_id, word, quantity)'
-							'VALUES (?, ?, ?, ?)'
-							'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + ?;',
-							(guild_id, member_id, word, value, value)
-						)
-					await asyncio.sleep(0) #TODO: Don't sleep if possible
+						hold.append((guild_id, member_id, word, value, value))
+					await asyncio.sleep(0)
+			self.cursor.execute('BEGIN TRANSACTION;')
+			self.cursor.executemany(
+				'INSERT INTO member_words (guild_id, user_id, word, quantity)'
+				'VALUES (?, ?, ?, ?)'
+				'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + ?;',
+				(hold)
+			)
 			self.cursor.execute('COMMIT;')
 		await ctx.send('Done converting.')
 	
