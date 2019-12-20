@@ -38,7 +38,6 @@ class WordStats(commands.Cog):
 		self._connection = apsw.Connection(str(cog_data_path(self) / 'wordstats.db'))
 		self.cursor = self._connection.cursor()
 		self.cursor.execute('PRAGMA journal_mode = wal;')
-		self.cursor.execute('PRAGMA wal_autocheckpoint;')
 		self.cursor.execute('PRAGMA read_uncommitted = 1;')
 		self.cursor.execute(
 			'CREATE TABLE IF NOT EXISTS member_words ('
@@ -63,12 +62,6 @@ class WordStats(commands.Cog):
 					if guild.name == value:
 						return guild
 				raise commands.BadArgument()
-	
-	async def maybe_filter_stopwords(self, ctx, to_filter):
-		"""Maybe remove stopwords from display outputs."""
-		if not await self.config.guild(ctx.guild).displayStopwords():
-			to_filter = [word for word in to_filter if word not in STOPWORDS]
-		return to_filter
 	
 	@commands.guild_only()
 	@commands.group(invoke_without_command=True)
@@ -316,60 +309,73 @@ class WordStats(commands.Cog):
 			return await ctx.send('At least one member needs to be displayed.')
 		if guild is None:
 			guild = ctx.guild
-		sumdict = {}
 		async with ctx.typing():
 			if word:
-				for user_id, quantity in self.cursor.execute(
-					'SELECT user_id, sum(quantity) FROM member_words '
-					'WHERE guild_id = ? AND word = ?'
-					'GROUP BY user_id',
+				result = self.cursor.execute(
+					'SELECT sum(quantity), count(DISTINCT user_id) FROM member_words '
+					'WHERE guild_id = ? AND word = ?',
 					(guild.id, word)
-				):
-					sumdict[user_id] = quantity
+				).fetchone()
 			else:
-				for user_id, quantity in self.cursor.execute(
-					'SELECT user_id, sum(quantity) FROM member_words '
-					'WHERE guild_id = ?'
-					'GROUP BY user_id',
+				result = self.cursor.execute(
+					'SELECT sum(quantity), count(DISTINCT user_id) FROM member_words '
+					'WHERE guild_id = ?',
 					(guild.id,)
-				):
-					sumdict[user_id] = quantity
-			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
-		if sumdict == {}:
-			return await ctx.send('No one has chatted yet.')
-		result = ''
-		n = 0
-		total = sum(sumdict.values())
-		maxwidth = len(str(sumdict[order[0]])) + 2 #max width of a number + extra for space
-		for memid in order:
-			mem = guild.get_member(memid)
+				).fetchone()
+			if not result[0]:
+				return await ctx.send('No words have been said yet.')
+			total, unique = result
+			amount = min(unique, amount)
+			if word:
+				result = self.cursor.execute(
+					'SELECT user_id, sum(quantity) as total FROM member_words '
+					'WHERE guild_id = ? AND word = ?'
+					'GROUP BY user_id '
+					'ORDER BY total DESC '
+					'LIMIT ?',
+					(guild.id, word, amount)
+				).fetchall()
+			else:
+				result = self.cursor.execute(
+					'SELECT user_id, sum(quantity) as total FROM member_words '
+					'WHERE guild_id = ?'
+					'GROUP BY user_id '
+					'ORDER BY total DESC '
+					'LIMIT ?',
+					(guild.id, amount)
+				).fetchall()
+		msg = ''
+		maxwidth = len(str(result[0][1])) + 2 #max width of a number + extra for space
+		for value in result:
+			currentwidth = len(str(value[1]))  
+			mem = guild.get_member(value[0])
 			if mem is None:
-				name = f'<removed member {memid}>'
+				name = f'<removed member {value[0]}>'
 			else:
 				name = mem.display_name
-			currentwidth = len(str(sumdict[memid]))
-			result += (
-				f'{sumdict[memid]}{" " * (maxwidth-currentwidth)}{name}\n'
+			msg += (
+				f'{value[1]}{" " * (maxwidth-currentwidth)}{name}\n'
 			)
-			n += 1
-			if n == amount:
-				break
 		if word:
 			wordprint = f'the word **{word}** the most'
 		else:
 			wordprint = 'the most words'
-		if n == 1:
+		if amount == 1:
 			memberprint = 'member'
+			is_are = 'is'
+			has_have = 'has'
 		else:
-			memberprint = f'**{n}** members'
+			memberprint = f'**{amount}** members'
+			is_are = 'are'
+			has_have = 'have'
 		if guild == ctx.guild:
 			guildprint = 'this server'
 		else:
 			guildprint = guild.name
 		try:
 			await ctx.send(
-				f'Out of **{total}** words, the {memberprint} who {"has" if n == 1 else "have"} '
-				f'said {wordprint} in {guildprint} {"is" if n == 1 else "are"}:\n```{result}```'
+				f'Out of **{total}** words, the {memberprint} who {has_have} '
+				f'said {wordprint} in {guildprint} {is_are}:\n```{msg}```'
 			)
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
@@ -390,54 +396,66 @@ class WordStats(commands.Cog):
 				word = word.lower()
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
-		sumdict = {}
 		async with ctx.typing():
 			if word:
-				for user_id, quantity in self.cursor.execute(
-					'SELECT user_id, sum(quantity) FROM member_words '
-					'WHERE word = ?'
-					'GROUP BY user_id',
+				result = self.cursor.execute(
+					'SELECT sum(quantity), count(DISTINCT user_id) FROM member_words '
+					'WHERE word = ?',
 					(word,)
-				):
-					sumdict[user_id] = quantity
+				).fetchone()
 			else:
-				for user_id, quantity in self.cursor.execute(
-					'SELECT user_id, sum(quantity) FROM member_words '
-					'GROUP BY user_id'
-				):
-					sumdict[user_id] = quantity
-			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
-		if sumdict == {}:
-			return await ctx.send(f'No one has chatted yet.')
-		result = ''
-		n = 0
-		total = sum(sumdict.values())
-		maxwidth = len(str(sumdict[order[0]])) + 2 #max width of a number + extra for space
-		for memid in order:
-			user = self.bot.get_user(memid)
+				result = self.cursor.execute(
+					'SELECT sum(quantity), count(DISTINCT user_id) FROM member_words'
+				).fetchone()
+			if not result[0]:
+				return await ctx.send('No words have been said yet.')
+			total, unique = result
+			amount = min(unique, amount)
+			if word:
+				result = self.cursor.execute(
+					'SELECT user_id, sum(quantity) as total FROM member_words '
+					'WHERE word = ? '
+					'GROUP BY user_id '
+					'ORDER BY total DESC '
+					'LIMIT ?',
+					(word, amount)
+				).fetchall()
+			else:
+				result = self.cursor.execute(
+					'SELECT user_id, sum(quantity) as total FROM member_words '
+					'GROUP BY user_id '
+					'ORDER BY total DESC '
+					'LIMIT ?',
+					(amount,)
+				).fetchall()
+		msg = ''
+		maxwidth = len(str(result[0][1])) + 2 #max width of a number + extra for space
+		for value in result:
+			currentwidth = len(str(value[1]))  
+			user = self.bot.get_user(value[0])
 			if user is None:
-				name = f'<removed user {memid}>'
+				name = f'<removed user {value[0]}>'
 			else:
 				name = user.name
-			currentwidth = len(str(sumdict[memid]))
-			result += (
-				f'{sumdict[memid]}{" " * (maxwidth-currentwidth)}{name}\n'
+			msg += (
+				f'{value[1]}{" " * (maxwidth-currentwidth)}{name}\n'
 			)
-			n += 1
-			if n == amount:
-				break
 		if word:
 			wordprint = f'the word **{word}** the most'
 		else:
 			wordprint = 'the most words'
-		if n == 1:
+		if amount == 1:
 			memberprint = 'user'
+			is_are = 'is'
+			has_have = 'has'
 		else:
-			memberprint = f'**{n}** users'
+			memberprint = f'**{amount}** users'
+			is_are = 'are'
+			has_have = 'have'
 		try:
 			await ctx.send(
-				f'Out of **{total}** words, the {memberprint} who {"has" if n == 1 else "have"} '
-				f'said {wordprint} globally {"is" if n == 1 else "are"}:\n```{result}```'
+				f'Out of **{total}** words, the {memberprint} who {has_have} '
+				f'said {wordprint} globally {is_are}:\n```{msg}```'
 			)
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
