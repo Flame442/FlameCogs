@@ -85,31 +85,37 @@ class WordStats(commands.Cog):
 		else:
 			amount = None
 			word = amount_or_word.lower()
+		if isinstance(member_or_guild, discord.Member):
+			guild = ctx.guild
+			member = member_or_guild
+			mention = member.display_name
+		else:
+			if member_or_guild is None:
+				guild = ctx.guild
+				member = None
+				mention = 'this server'
+			else:
+				guild = member_or_guild
+				member = None
+				mention = guild.name
 		async with ctx.typing():
 			if word:
-				if isinstance(member_or_guild, discord.Member):
-					mention = member_or_guild.display_name
+				if member:
 					result = self.cursor.execute(
 						'SELECT rank, count FROM '
 						'( '
-						'SELECT rank() OVER win AS rank, word AS word, count as count '
+						'SELECT rank() OVER win AS rank, word AS word, count AS count '
 						'FROM ( '
-						'SELECT SUM(quantity) as count, word FROM member_words '
+						'SELECT SUM(quantity) AS count, word FROM member_words '
 						'WHERE guild_id = ? AND user_id = ? '
 						'GROUP BY word '
 						') '
-						'WINDOW win as (ORDER BY count DESC) '
+						'WINDOW win AS (ORDER BY count DESC) '
 						') '
 						'WHERE word = ?',
-						(ctx.guild.id, member_or_guild.id, word)
+						(guild.id, member.id, word)
 					).fetchone()
 				else:
-					if member_or_guild is None:
-						mention = 'this server'
-						guild = ctx.guild
-					else:
-						mention = member_or_guild.name
-						guild = member_or_guild
 					result = self.cursor.execute(
 						'SELECT rank, count FROM '
 						'('
@@ -141,7 +147,7 @@ class WordStats(commands.Cog):
 				)
 			result = self.cursor.execute(
 				'SELECT sum(quantity), count(DISTINCT word) FROM member_words WHERE guild_id = ?',
-				(ctx.guild.id,)
+				(guild.id,)
 			).fetchone()
 			if not result[0]:
 				return await ctx.send('No words have been said yet.')
@@ -151,30 +157,25 @@ class WordStats(commands.Cog):
 				stop = tuple()
 			else:
 				stop = STOPWORDS
-			if isinstance(member_or_guild, discord.Member):
-				mention = member_or_guild.display_name
+			if member:
 				result = self.cursor.execute(
 					'SELECT word, quantity FROM member_words '
 					f'WHERE guild_id = ? AND user_id = ? AND word NOT IN {stop} '
 					'ORDER BY quantity DESC '
 					'LIMIT ? ',
-					(ctx.guild.id, member_or_guild.id, amount)
+					(guild.id, member.id, amount)
 				).fetchall()
 			else:
-				if member_or_guild is None:
-					mention = 'this server'
-					guild = ctx.guild
-				else:
-					mention = member_or_guild.name
-					guild = member_or_guild
 				result = self.cursor.execute(
-					'SELECT word, sum(quantity) as total FROM member_words '
+					'SELECT word, sum(quantity) AS total FROM member_words '
 					f'WHERE guild_id = ? AND word NOT IN {stop} '
 					'GROUP BY word '
 					'ORDER BY total DESC '
 					'LIMIT ? ',
 					(guild.id, amount)
 				).fetchall()
+		if not result:
+			return await ctx.send('No words have been said yet.')
 		msg = ''
 		maxwidth = len(str(result[0][1])) + 2 #max width of a number + extra for space
 		for value in result:
@@ -217,12 +218,12 @@ class WordStats(commands.Cog):
 				result = self.cursor.execute(
 					'SELECT rank, count FROM '
 					'( '
-					'SELECT rank() OVER win AS rank, word AS word, count as count '
+					'SELECT rank() OVER win AS rank, word AS word, count AS count '
 					'FROM ( '
-					'SELECT SUM(quantity) as count, word FROM member_words '
+					'SELECT SUM(quantity) AS count, word FROM member_words '
 					'GROUP BY word '
 					') '
-					'WINDOW win as (ORDER BY count DESC) '
+					'WINDOW win AS (ORDER BY count DESC) '
 					') '
 					'WHERE word = ?',
 					(word,)
@@ -254,13 +255,15 @@ class WordStats(commands.Cog):
 			else:
 				stop = STOPWORDS
 			result = self.cursor.execute(
-				'SELECT word, sum(quantity) as total FROM member_words '
+				'SELECT word, sum(quantity) AS total FROM member_words '
 				f'WHERE word NOT IN {stop} '
 				'GROUP BY word '
 				'ORDER BY total DESC '
 				'LIMIT ? ',
 				(amount,)
 			).fetchall()
+		if not result:
+			return await ctx.send('No words have been said yet.')
 		msg = ''
 		maxwidth = len(str(result[0][1])) + 2 #max width of a number + extra for space
 		for value in result:
@@ -328,7 +331,7 @@ class WordStats(commands.Cog):
 			amount = min(unique, amount)
 			if word:
 				result = self.cursor.execute(
-					'SELECT user_id, sum(quantity) as total FROM member_words '
+					'SELECT user_id, sum(quantity) AS total FROM member_words '
 					'WHERE guild_id = ? AND word = ?'
 					'GROUP BY user_id '
 					'ORDER BY total DESC '
@@ -337,7 +340,7 @@ class WordStats(commands.Cog):
 				).fetchall()
 			else:
 				result = self.cursor.execute(
-					'SELECT user_id, sum(quantity) as total FROM member_words '
+					'SELECT user_id, sum(quantity) AS total FROM member_words '
 					'WHERE guild_id = ?'
 					'GROUP BY user_id '
 					'ORDER BY total DESC '
@@ -413,7 +416,7 @@ class WordStats(commands.Cog):
 			amount = min(unique, amount)
 			if word:
 				result = self.cursor.execute(
-					'SELECT user_id, sum(quantity) as total FROM member_words '
+					'SELECT user_id, sum(quantity) AS total FROM member_words '
 					'WHERE word = ? '
 					'GROUP BY user_id '
 					'ORDER BY total DESC '
@@ -422,7 +425,7 @@ class WordStats(commands.Cog):
 				).fetchall()
 			else:
 				result = self.cursor.execute(
-					'SELECT user_id, sum(quantity) as total FROM member_words '
+					'SELECT user_id, sum(quantity) AS total FROM member_words '
 					'GROUP BY user_id '
 					'ORDER BY total DESC '
 					'LIMIT ?',
