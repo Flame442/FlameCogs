@@ -492,6 +492,16 @@ Defaults to `True`.
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
+**`[p]wordstatsset convert`**  
+Convert data from config to the SQLite database.  
+This command is only usable by the bot owner.
+
+**`[p]wordstatsset deleteall`**  
+Delete all wordstats data.  
+This removes all existing data, creating a blank state.  
+This cannot be undone.  
+This command is only usable by the bot owner.
+
 # Contact
 
 Feel free to create an issue on this repository or join [my discord](https://discord.gg/bYqCjvu) if you have any issues.
