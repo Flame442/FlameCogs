@@ -6,6 +6,8 @@ from redbot.core.data_manager import cog_data_path
 from typing import Optional, Union
 import apsw
 import asyncio
+import concurrent.futures
+import functools
 import re
 
 
@@ -48,6 +50,7 @@ class WordStats(commands.Cog):
 			'PRIMARY KEY (guild_id, user_id, word)'
 			');'
 		)
+		self._executor = concurrent.futures.ThreadPoolExecutor(1)
 	
 	class GuildConvert(commands.Converter):
 		"""Attempts to convert a value into a guild object."""
@@ -80,6 +83,8 @@ class WordStats(commands.Cog):
 		if isinstance(amount_or_word, int):
 			if amount_or_word <= 0:
 				return await ctx.send('At least one word needs to be displayed.')
+			if amount_or_word > 100:
+				return await ctx.send('You cannot request more than 100 words.')
 			amount = amount_or_word
 			word = None
 		else:
@@ -208,6 +213,8 @@ class WordStats(commands.Cog):
 		if isinstance(amount_or_word, int):
 			if amount_or_word <= 0:
 				return await ctx.send('At least one word needs to be displayed.')
+			if amount_or_word > 100:
+				return await ctx.send('You cannot request more than 100 words.')
 			amount = amount_or_word
 			word = None
 		else:
@@ -310,6 +317,8 @@ class WordStats(commands.Cog):
 				word = word.lower()
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
+		if amount > 100:
+			return await ctx.send('You cannot request more than 100 members.')
 		if guild is None:
 			guild = ctx.guild
 		async with ctx.typing():
@@ -398,7 +407,9 @@ class WordStats(commands.Cog):
 			else: #word is actually a word
 				word = word.lower()
 		if amount <= 0:
-			return await ctx.send('At least one member needs to be displayed.')
+			return await ctx.send('At least one user needs to be displayed.')
+		if amount > 100:
+			return await ctx.send('You cannot request more than 100 users.')
 		async with ctx.typing():
 			if word:
 				result = self.cursor.execute(
@@ -483,6 +494,8 @@ class WordStats(commands.Cog):
 		"""
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
+		if amount > 100:
+			return await ctx.send('You cannot request more than 100 members.')
 		if min_total < 0:
 			min_total = 0
 		if guild is None:
@@ -551,7 +564,9 @@ class WordStats(commands.Cog):
 		Use the optional parameter "min_total" to change the minimum number of words a user needs to have said to be shown.
 		"""
 		if amount <= 0:
-			return await ctx.send('At least one member needs to be displayed.')
+			return await ctx.send('At least one user needs to be displayed.')
+		if amount > 100:
+			return await ctx.send('You cannot request more than 100 users.')
 		if min_total < 0:
 			min_total = 0
 		word = word.lower()
@@ -742,6 +757,9 @@ class WordStats(commands.Cog):
 			else:
 				await ctx.send('Stopwords will no longer be included in outputs.')
 	
+	def cog_unload(self):
+		self._executor.shutdown()
+	
 	@commands.Cog.listener()
 	async def on_message_without_command(self, msg):
 		"""Passively records all message contents."""
@@ -754,12 +772,11 @@ class WordStats(commands.Cog):
 			if enableGuild and not msg.channel.id in disabledChannels:
 				#Strip any characters besides letters and spaces.
 				words = re.sub(r'[^a-z \n]', '', msg.content.lower()).split()
-				self.cursor.execute('BEGIN TRANSACTION;')
-				for word in words:
-					self.cursor.execute(
-						'INSERT INTO member_words (guild_id, user_id, word)'
-						'VALUES (?, ?, ?)'
-						'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + 1;',
-						(msg.guild.id, msg.author.id, word)
-					)
-				self.cursor.execute('COMMIT;')
+				query = (
+					'INSERT INTO member_words (guild_id, user_id, word)'
+					'VALUES (?, ?, ?)'
+					'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + 1;'
+				)
+				data = ((msg.guild.id, msg.author.id, word) for word in words)
+				task = functools.partial(self.cursor.executemany, query, data)
+				await self.bot.loop.run_in_executor(self._executor, task)
