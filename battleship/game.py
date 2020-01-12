@@ -44,6 +44,14 @@ class BattleshipGame():
 			'Please have the bot owner copy the error from console '
 			'and post it in the support channel of <https://discord.gg/bYqCjvu>.'
 		)
+		
+	async def send_forbidden(self, ctx):
+		"""Sends a message to the channel warning that a player could not be DMed."""
+		await ctx.send(
+			'I cannot send direct messages to one of the players. Please ensure '
+			'that the privicy setting "Allow direct messages from server members" '
+			'is enabled and that the bot is not blocked.'
+		)
 	
 	def error_callback(self, ctx, fut):
 		"""Checks for errors in stopped games."""
@@ -51,6 +59,9 @@ class BattleshipGame():
 			fut.result()
 		except asyncio.CancelledError:
 			pass
+		except discord.errors.Forbidden:
+			asyncio.create_task(self.send_forbidden(ctx))
+			self.log.warning('Canceled a game due to a discord.errors.Forbidden error.')
 		except Exception as exc:
 			asyncio.create_task(self.send_error(ctx))
 			msg = 'Error in Battleship.\n'
@@ -142,8 +153,8 @@ class BattleshipGame():
 		player = int, Which player's board to print.
 		"""
 		if not await self.cog.config.guild(self.ctx.guild).doImage():
-			content = self._gen_text(player, 1)
 			if self.pmsg[player]:
+				content = self._gen_text(player, 1)
 				await self.pmsg[player].edit(content=content)
 	
 	async def send_board(self, player, show_unhit, dest, msg):
@@ -158,12 +169,13 @@ class BattleshipGame():
 		if await self.cog.config.guild(self.ctx.guild).doImage():
 			img = self._gen_img(player, show_unhit)
 			file = discord.File(img, 'board.png')
-			m = await dest.send(file=file)
+			await dest.send(file=file)
 			if msg:
-				m = await dest.send(msg)
-			return m
+				await dest.send(msg)
+			return
 		content = self._gen_text(player, show_unhit)
-		return await dest.send(f'{content}{msg}')
+		m = await dest.send(f'{content}{msg}')
+		return m
 	
 	async def _place(self, player, length, value):
 		"""

@@ -271,21 +271,21 @@ class Monopoly(commands.Cog):
 		if ctx.invoked_subcommand is None:
 			cfg = await self.config.guild(ctx.guild).all()
 			msg = (
-				f'Hold auctions: {cfg["doAuction"]}\n'
-				f'Bail price: {cfg["bailValue"]}\n'
-				f'Double go: {cfg["doDoubleGo"]}\n'
-				f'Free parking reward: {cfg["freeParkingValue"]}\n'
-				f'Go reward: {cfg["goValue"]}\n'
-				f'Hotel Limit: {cfg["hotelLimit"]}\n'
-				f'House limit: {cfg["houseLimit"]}\n'
-				f'Income tax: {cfg["incomeValue"]}\n'
-				f'Luxury tax: {cfg["luxuryValue"]}\n'
-				f'Max jail rolls: {cfg["maxJailRolls"]}\n'
-				f'Mention on turn: {cfg["doMention"]}\n'
-				f'Minimum auction increase: {cfg["minRaise"]}\n'
-				f'Starting cash: {cfg["startCash"]}\n'
-				f'Timeout length: {cfg["timeoutValue"]}'
-			)
+				'Hold auctions: {doAuction}\n'
+				'Bail price: {bailValue}\n'
+				'Double go: {doDoubleGo}\n'
+				'Free parking reward: {freeParkingValue}\n'
+				'Go reward: {goValue}\n'
+				'Hotel Limit: {hotelLimit}\n'
+				'House limit: {houseLimit}\n'
+				'Income tax: {incomeValue}\n'
+				'Luxury tax: {luxuryValue}\n'
+				'Max jail rolls: {maxJailRolls}\n'
+				'Mention on turn: {doMention}\n'
+				'Minimum auction increase: {minRaise}\n'
+				'Starting cash: {startCash}\n'
+				'Timeout length: {timeoutValue}'
+			).format_map(cfg)
 			await ctx.send(f'```py\n{msg}```')
 	
 	@monopolyset.command()

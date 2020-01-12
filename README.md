@@ -32,6 +32,7 @@ Name | Description
 [Deepfry](../master/README.md#deepfry) | Deepfry and nuke images.
 [Face](../master/README.md#face) | Find and describe the faces in an image.
 [Gameroles](../master/README.md#gameroles) | Grant roles when a user is playing a specific game.
+[Giftaway](../master/README.md#giftaway) | Create grabbable key giveaways.
 [Hangman](../master/README.md#hangman) | Play hangman with the bot.
 [Monopoly](../master/README.md#monopoly) | Play monopoly with up to 7 other people in your server.
 [Onlinestats](../master/README.md#onlinestats) | Information about what devices people are using to run discord.
@@ -202,6 +203,43 @@ This value is server specific.
 **`[p]gameroleset remove [value]`**  
 Set if roles should be removed when someone stops playing a game.  
 Defaults to `True`.  
+This value is server specific.
+
+## GiftAway
+
+This cog allows you to create giveaways for game keys. Users can claim a key by reacting to a message describing the key. It was originally requested by Mistery#3287  
+This cog features optional integration with the IGDB API to display a description of the game being given away. Setup instructions can be found [here!](../master/giftaway/setup.md)
+
+### Usage
+
+**`[p]giftaway <guild> <game_name> <key1> [key2]...`**  
+Giftaway a key to a specific server.  
+Wrap any parameters that require spaces in quotes.  
+This command is only usable in DMs.  
+Alias: `[p]ga`
+
+**`[p]globalgift <game_name> <key1> [key2]...`**  
+Giftaway a key to all servers.  
+Wrap any parameters that require spaces in quotes.  
+This command is only usable in DMs.  
+Alias: `[p]gg`
+
+**`[p]giftat <channel> <game_name> <key1> [key2]...`**  
+Giftaway a key to a specific channel.  
+You probably should run this command from a location people can't see to protect the keys.  
+Wrap any parameters that require spaces in quotes.  
+This command is only usable in a server.
+
+**`[p]giftawayset <argument>`**  
+Config options for giftaway.  
+This command is only usable by the server owner and bot owner.
+
+**`[p]giftawayset channel <channel>`**  
+Set the channel that giftaway messages will be sent to in the current server.  
+This value is server specific.
+
+**`[p]giftawayset channel remove`**  
+Remove the giftaway channel from the current server and stop receiving giftaway messages.  
 This value is server specific.
 
 ## Hangman
@@ -491,6 +529,16 @@ Stopwords will still be included in numerical counts, they will only be hidden f
 Defaults to `True`.  
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
+
+**`[p]wordstatsset convert`**  
+Convert data from config to the SQLite database.  
+This command is only usable by the bot owner.
+
+**`[p]wordstatsset deleteall`**  
+Delete all wordstats data.  
+This removes all existing data, creating a blank state.  
+This cannot be undone.  
+This command is only usable by the bot owner.
 
 # Contact
 

@@ -291,10 +291,10 @@ class Deepfry(commands.Cog):
 		if ctx.invoked_subcommand is None:
 			cfg = await self.config.guild(ctx.guild).all()
 			msg = (
-				f'Allow all filetypes: {cfg["allowAllTypes"]}\n'
-				f'Deepfry chance: {cfg["fryChance"]}\n'
-				f'Nuke chance: {cfg["nukeChance"]}'
-			)
+				'Allow all filetypes: {allowAllTypes}\n'
+				'Deepfry chance: {fryChance}\n'
+				'Nuke chance: {nukeChance}'
+			).format_map(cfg)
 			await ctx.send(f'```py\n{msg}```')
 	
 	@deepfryset.command()	
