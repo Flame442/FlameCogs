@@ -301,7 +301,6 @@ class GiftAway(commands.Cog):
 		await ctx.tick()
 
 	@commands.dm_only()
-	@checks.is_owner()
 	@commands.command(aliases=['gg'])
 	async def globalgift(self, ctx, game_name, *keys):
 		"""
