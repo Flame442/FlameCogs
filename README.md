@@ -207,7 +207,7 @@ This value is server specific.
 
 ## GiftAway
 
-This cog allows you to create givaways for game keys. Users can claim a key by reacting to a message describing the key. It was originally requested by Mistery#3287  
+This cog allows you to create giveaways for game keys. Users can claim a key by reacting to a message describing the key. It was originally requested by Mistery#3287  
 This cog features optional integration with the IGDB API to display a description of the game being given away. Setup instructions can be found [here!](../master/giftaway/setup.md)
 
 ### Usage
@@ -215,12 +215,14 @@ This cog features optional integration with the IGDB API to display a descriptio
 **`[p]giftaway <guild> <game_name> <key1> [key2]...`**  
 Giftaway a key to a specific server.  
 Wrap any parameters that require spaces in quotes.  
-This command is only usable in DMs.
+This command is only usable in DMs.  
+Alias: `[p]ga`
 
 **`[p]globalgift <game_name> <key1> [key2]...`**  
 Giftaway a key to all servers.  
 Wrap any parameters that require spaces in quotes.  
-This command is only usable in DMs.
+This command is only usable in DMs.  
+Alias: `[p]gg`
 
 **`[p]giftat <channel> <game_name> <key1> [key2]...`**  
 Giftaway a key to a specific channel.  
