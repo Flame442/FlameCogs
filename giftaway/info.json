@@ -1,0 +1,10 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing giftaway. Use `[p]help GiftAway`.",
+    "name" : "GiftAway",
+    "short" : "Create grabbable key giveaways.",
+    "requirements" : [],
+    "description" : "Create grabbable key giveaways.",
+    "tags" : ["utility"],
+    "min_python_version": [3, 6, 0]
+}
