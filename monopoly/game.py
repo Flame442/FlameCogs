@@ -1321,7 +1321,7 @@ class MonopolyGame():
 				else:
 					if cards > self.goojf[partner]:
 						msg = 'They do not have that many get out of jail free cards.\n'
-					elif money < 0:
+					elif cards < 0:
 						msg = 'You cannot take a negative amount of get out of jail free cards.\n'
 					else:
 						goojf_partner = cards
