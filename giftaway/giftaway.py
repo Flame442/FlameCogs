@@ -56,7 +56,7 @@ class Gift:
 			raise GiftError(_('At least one key must be provided.'))
 		if not channels:
 			raise GiftError(_('No channels provided.'))
-		data = await obj.get_game_data()
+		await obj.get_game_data()
 		embed = obj.gen_embed()
 		messages = await asyncio.gather(*(channel.send(embed=embed) for channel in channels), return_exceptions=True)
 		#filter exceptions
@@ -131,11 +131,12 @@ class Gift:
 				'{author} is gifting {num} keys for **{game}**.'
 			).format(author=self.author.display_name, num=total, game=self.game_name),
 			description=desc,
-			url = self.link_url
+			url = self.link_url or discord.Embed.Empty
 		)
 		for field in self.fields:
 			embed.add_field(name=field[0], value=field[1], inline=False)
-		embed.set_image(url=self.cover_url)
+		if self.cover_url:
+			embed.set_image(url=self.cover_url)
 		return embed
 	
 	async def get_game_data(self):
@@ -148,7 +149,7 @@ class Gift:
 			key = api['key']
 		
 		if not key:
-			return None
+			return
 		
 		async with aiohttp.ClientSession() as session:
 			async with session.post(
@@ -159,7 +160,7 @@ class Gift:
 				resp = await response.json(content_type=None)
 			#The game could not be found
 			if not resp:
-				return None
+				return
 			game = resp[0]
 			
 			released = game.get('first_release_date', None)
