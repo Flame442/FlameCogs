@@ -760,6 +760,11 @@ class WordStats(commands.Cog):
 	def cog_unload(self):
 		self._executor.shutdown()
 	
+	def safe_write(self, query, data):
+		"""Func for safely writing in another thread."""
+		cursor = self._connection.cursor()
+		cursor.executemany(query, data)
+	
 	@commands.Cog.listener()
 	async def on_message_without_command(self, msg):
 		"""Passively records all message contents."""
@@ -778,5 +783,5 @@ class WordStats(commands.Cog):
 					'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + 1;'
 				)
 				data = ((msg.guild.id, msg.author.id, word) for word in words)
-				task = functools.partial(self.cursor.executemany, query, data)
+				task = functools.partial(self.safe_write, query, data)
 				await self.bot.loop.run_in_executor(self._executor, task)
