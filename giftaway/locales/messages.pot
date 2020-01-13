@@ -1,0 +1,154 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2020-01-12 18:58-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: redgettext 3.1\n"
+
+#: giftaway.py:22 giftaway.py:27
+msgid "Could not find guild `{value}`."
+msgstr ""
+
+#: giftaway.py:56
+msgid "At least one key must be provided."
+msgstr ""
+
+#: giftaway.py:58
+msgid "No channels provided."
+msgstr ""
+
+#: giftaway.py:73
+msgid "Could not find the author."
+msgstr ""
+
+#: giftaway.py:98
+msgid "No messages could be found."
+msgstr ""
+
+#: giftaway.py:119
+msgid ""
+"Click the reaction below to grab a key.\\n\\nCurrently available: "
+"**{top}/{bottom}**"
+msgstr ""
+
+#: giftaway.py:124
+msgid "All keys have been claimed!"
+msgstr ""
+
+#: giftaway.py:126
+msgid "\\n\\nGrabbed by:"
+msgstr ""
+
+#: giftaway.py:130
+msgid "{author} is gifting {num} keys for **{game}**."
+msgstr ""
+
+#: giftaway.py:213
+msgid "**Released:** {released}\\n"
+msgstr ""
+
+#: giftaway.py:215
+msgid "**Generes:** {generes}\\n"
+msgstr ""
+
+#: giftaway.py:217
+msgid "**Rating:** {rating:.1f}"
+msgstr ""
+
+#: giftaway.py:221
+msgid "Game info"
+msgstr ""
+
+#: giftaway.py:223
+msgid "Summary"
+msgstr ""
+
+#: giftaway.py:229
+msgid "\\n**{name}** in **{guild}**"
+msgstr ""
+
+#: giftaway.py:233
+msgid "Here is your key for `{game}`: `{key}`"
+msgstr ""
+
+#: giftaway.py:251
+#, docstring
+msgid "Create grabbable key giveaways."
+msgstr ""
+
+#: giftaway.py:279
+#, docstring
+msgid ""
+"\\n\\t\\tGiftaway a key to a specific server.\\n\\t\\t\\n\\t\\tWrap any "
+"parameters that require spaces in quotes.\\n\\t\\t"
+msgstr ""
+
+#: giftaway.py:290
+msgid "That guild has not set up a giftaway channel."
+msgstr ""
+
+#: giftaway.py:293
+msgid "That giftaway channel for that guild does not exist."
+msgstr ""
+
+#: giftaway.py:295 giftaway.py:352
+msgid "I do not have permission to send embeds in the giftaway channel."
+msgstr ""
+
+#: giftaway.py:308
+#, docstring
+msgid ""
+"\\n\\t\\tGiftaway a key to all servers.\\n\\t\\t\\n\\t\\tWrap any parameters"
+" that require spaces in quotes.\\n\\t\\t"
+msgstr ""
+
+#: giftaway.py:341
+#, docstring
+msgid ""
+"\\n\\t\\tGiftaway a key to a specific channel.\\n\\t\\t\\n\\t\\tYou probably"
+" should run this command from a location people can't see to protect the "
+"keys.\\n\\t\\tWrap any parameters that require spaces in quotes.\\n\\t\\t"
+msgstr ""
+
+#: giftaway.py:366
+#, docstring
+msgid "Group command for giftaway."
+msgstr ""
+
+#: giftaway.py:371
+#, docstring
+msgid "Set the channel that giftaway messages will be sent to in this server."
+msgstr ""
+
+#: giftaway.py:375
+msgid "The giftaway channel has not been set up."
+msgstr ""
+
+#: giftaway.py:379
+msgid "The giftaway channel has been deleted or could not be found."
+msgstr ""
+
+#: giftaway.py:380
+msgid "The current giftaway channel is {channel}."
+msgstr ""
+
+#: giftaway.py:383
+msgid "The giftaway channel is now {channel}."
+msgstr ""
+
+#: giftaway.py:387
+#, docstring
+msgid ""
+"Remove the giftaway channel from this server and stop receiving giftaway "
+"messages."
+msgstr ""
+
+#: giftaway.py:389
+msgid "Removed."
+msgstr ""
