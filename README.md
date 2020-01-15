@@ -559,4 +559,5 @@ The helpful support staff at the [Redbot discord](https://discord.gg/red),
 [/u/YoungsterGlenn](https://www.reddit.com/r/BombParty/comments/3lehxq/a_nearly_exhaustive_subset_of_the_bombparty/) for the wordlist used by Partygames,  
 [Sinbad](https://github.com/mikeshardmind) for helping with Wordstats,  
 [Preda](https://github.com/PredaaA) for translating Partygames,  
-And Red for creating the sprites used in Battleship.
+Red for creating the sprites used in Battleship,  
+And Mistery#3287 for requesting and translating GiftAway
