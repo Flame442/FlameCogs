@@ -199,14 +199,14 @@ class Deepfry(commands.Cog):
 					f'"{ext}" is not a supported filetype. Make sure you provide a direct link.'
 				)
 			async with aiohttp.ClientSession() as session:
-				async with session.get(link) as response:
-					r = await response.read()
-					try:
+				try:
+					async with session.get(link) as response:
+						r = await response.read()
 						img = Image.open(BytesIO(r))
-					except OSError:
-						raise ImageFindError(
-							'An image could not be found. Make sure you provide a direct link.'
-						)
+				except (OSError, aiohttp.ClientError):
+					raise ImageFindError(
+						'An image could not be found. Make sure you provide a direct link.'
+					)
 		else: #attached image
 			ext = ctx.message.attachments[0].url.split('.')[-1]
 			if ext.lower() in self.imagetypes:
