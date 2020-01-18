@@ -54,8 +54,8 @@ msgid "**Released:** {released}\\n"
 msgstr "**Erschienen:** {released}\\n"
 
 #: giftaway.py:215
-msgid "**Generes:** {generes}\\n"
-msgstr "**Kategorie** {generes}\\n"
+msgid "**Genres:** {genres}\\n"
+msgstr "**Kategorie** {genres}\\n"
 
 #: giftaway.py:217
 msgid "**Rating:** {rating:.1f}"
