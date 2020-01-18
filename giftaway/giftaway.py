@@ -169,9 +169,15 @@ class Gift:
 			game_url = game.get('url', None)
 			
 			cover_id = game.get('cover', None)
-			genere_ids = '(' + ','.join(str(g) for g in game['genres']) + ')'
-			website_ids = '(' + ','.join(str(w) for w in game['websites']) + ')'
-			
+			if game.get('genres', None):
+				genre_ids = '(' + ','.join(str(g) for g in game['genres']) + ')'
+			else:
+				genre_ids = None
+			if game.get('websites', None):
+				website_ids = '(' + ','.join(str(w) for w in game['websites']) + ')'
+			else:
+				website_ids = None
+
 			if cover_id:
 				async with session.post(
 					'https://api-v3.igdb.com/covers',
@@ -183,16 +189,16 @@ class Gift:
 					cover_url = resp[0]['url'][2:].replace('t_thumb', 't_cover_big_2x')
 					self.cover_url = 'https://' + cover_url
 				
-			if genere_ids:
+			if genre_ids:
 				async with session.post(
 					'https://api-v3.igdb.com/genres',
 					headers={'Accept': 'application/json', 'user-key': key},
-					data=f'where id = {genere_ids}; fields name;'
+					data=f'where id = {genre_ids}; fields name;'
 				) as response:
 					resp = await response.json(content_type=None)
-				generes = [g['name'] for g in resp]
+				genres = [g['name'] for g in resp]
 			else:
-				generes = None
+				genres = None
 			
 			if website_ids:
 				async with session.post(
@@ -211,8 +217,8 @@ class Gift:
 		game_info = ''
 		if released:
 			game_info += _('**Released:** {released}\n').format(released=date.fromtimestamp(released))
-		if generes:
-			game_info += _('**Generes:** {generes}\n').format(generes=", ".join(generes))
+		if genres:
+			game_info += _('**Genres:** {genres}\n').format(genres=", ".join(genres))
 		if rating:
 			game_info += _('**Rating:** {rating:.1f}').format(rating=rating)
 		
