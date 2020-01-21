@@ -166,13 +166,25 @@ class BattleshipGame():
 		dest = discord.abc.Messageable, Where to send to.
 		msg = str, Text to include with the board.
 		"""
-		if await self.cog.config.guild(self.ctx.guild).doImage():
-			img = self._gen_img(player, show_unhit)
-			file = discord.File(img, 'board.png')
-			await dest.send(file=file)
-			if msg:
-				await dest.send(msg)
+		if isinstance(dest, self.cog.ai):
 			return
+		if self.cog.config.guild(self.ctx.guild).doImage():
+			if isinstance(dest, discord.Member):
+				filesize_limit = 8388608
+				attach_files = True
+			else:
+				filesize_limit = dest.guild.filesize_limit
+				attach_files = dest.channel.permissions_for(self.ctx.me).attach_files
+			if attach_files:
+				img = self._gen_img(player, show_unhit)
+				file_size = img.tell()
+				img.seek(0)
+				if file_size <= filesize_limit:
+					file = discord.File(img, 'board.png')
+					await dest.send(file=file)
+					if msg:
+						await dest.send(msg)
+					return
 		content = self._gen_text(player, show_unhit)
 		m = await dest.send(f'{content}{msg}')
 		return m
