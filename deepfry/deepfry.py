@@ -172,8 +172,10 @@ class Deepfry(commands.Cog):
 		"""Helper function to find an image."""
 		if ctx.guild:
 			allowAllTypes = await self.config.guild(ctx.message.guild).allowAllTypes()
+			filesize_limit = ctx.guild.filesize_limit
 		else:
 			allowAllTypes = False
+			filesize_limit = MAX_SIZE
 		if not ctx.message.attachments and not link:
 			async for msg in ctx.channel.history(limit=10):
 				for a in msg.attachments:
@@ -215,8 +217,8 @@ class Deepfry(commands.Cog):
 				isgif = True
 			else:
 				raise ImageFindError(f'"{ext}" is not a supported filetype.')
-			if ctx.message.attachments[0].size > MAX_SIZE: #only usable with attachments
-				raise ImageFindError('That image is too large. Max image size is 8MB.')
+			if ctx.message.attachments[0].size > filesize_limit:
+				raise ImageFindError('That image is too large.')
 			temp_orig = BytesIO()
 			await ctx.message.attachments[0].save(temp_orig)
 			temp_orig.seek(0)
@@ -390,9 +392,11 @@ class Deepfry(commands.Cog):
 			return
 		if msg.guild is None:
 			return
+		if not msg.channel.permissions_for(msg.guild.me).attach_files:
+			return
 		if any([msg.content.startswith(x) for x in await self.bot.get_prefix(msg)]):
 			return
-		if msg.attachments[0].size > MAX_SIZE:
+		if msg.attachments[0].size > msg.guild.filesize_limit:
 			return
 		ext = msg.attachments[0].url.split('.')[-1].lower()
 		if ext in self.imagetypes:
