@@ -49,7 +49,7 @@ class BattleshipGame():
 		"""Sends a message to the channel warning that a player could not be DMed."""
 		await ctx.send(
 			'I cannot send direct messages to one of the players. Please ensure '
-			'that the privicy setting "Allow direct messages from server members" '
+			'that the privacy setting "Allow direct messages from server members" '
 			'is enabled and that the bot is not blocked.'
 		)
 	
