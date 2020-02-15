@@ -223,6 +223,8 @@ class Deepfry(commands.Cog):
 			await ctx.message.attachments[0].save(temp_orig)
 			temp_orig.seek(0)
 			img = Image.open(temp_orig)
+		if max(img.size) > 3840:
+			raise ImageFindError('That image is too large.')
 		duration = None
 		if isgif:
 			if 'duration' in img.info:
