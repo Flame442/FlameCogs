@@ -1,6 +1,7 @@
 # Face cog setup
 
-This guide will teach you how to properly set up this cog.
+This guide will teach you how to properly set up this cog.  
+⚠️ **THIS COG IS NO LONGER SUPPORTED! USE AT YOUR OWN RISK!** ⚠️
 
 ## Step 1
 
@@ -78,13 +79,9 @@ After completing step 8, you should be able to use Face. However, this tier of s
 At this point, you need to upgrade to a pay as you go plan.  
 Do not be scared by the name, face is one of Microsoft's **Always Free\*** APIs :  
 
-![Step9b](https://i.imgur.com/dILz6wP.png)
-
 \**as in, you do not need to pay a monthly fee just to use it*
-
-As long as you do not surpass 30,000 calls per month (~42 calls per hour), you will not be charged.  
-It is pretty hard to reach that number on small bots, but larger bots with lots of servers could reasonably reach that number.  
-**I will take no responsibility if you reach 30,000 calls and are charged as a result.**  
+ 
+**I will take no responsibility if you surpass the maximum free calls and are charged as a result.**  
 
 ## Step 10
 

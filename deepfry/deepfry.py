@@ -172,8 +172,10 @@ class Deepfry(commands.Cog):
 		"""Helper function to find an image."""
 		if ctx.guild:
 			allowAllTypes = await self.config.guild(ctx.message.guild).allowAllTypes()
+			filesize_limit = ctx.guild.filesize_limit
 		else:
 			allowAllTypes = False
+			filesize_limit = MAX_SIZE
 		if not ctx.message.attachments and not link:
 			async for msg in ctx.channel.history(limit=10):
 				for a in msg.attachments:
@@ -199,14 +201,14 @@ class Deepfry(commands.Cog):
 					f'"{ext}" is not a supported filetype. Make sure you provide a direct link.'
 				)
 			async with aiohttp.ClientSession() as session:
-				async with session.get(link) as response:
-					r = await response.read()
-					try:
+				try:
+					async with session.get(link) as response:
+						r = await response.read()
 						img = Image.open(BytesIO(r))
-					except OSError:
-						raise ImageFindError(
-							'An image could not be found. Make sure you provide a direct link.'
-						)
+				except (OSError, aiohttp.ClientError):
+					raise ImageFindError(
+						'An image could not be found. Make sure you provide a direct link.'
+					)
 		else: #attached image
 			ext = ctx.message.attachments[0].url.split('.')[-1]
 			if ext.lower() in self.imagetypes:
@@ -215,12 +217,14 @@ class Deepfry(commands.Cog):
 				isgif = True
 			else:
 				raise ImageFindError(f'"{ext}" is not a supported filetype.')
-			if ctx.message.attachments[0].size > MAX_SIZE: #only usable with attachments
-				raise ImageFindError('That image is too large. Max image size is 8MB.')
+			if ctx.message.attachments[0].size > filesize_limit:
+				raise ImageFindError('That image is too large.')
 			temp_orig = BytesIO()
 			await ctx.message.attachments[0].save(temp_orig)
 			temp_orig.seek(0)
 			img = Image.open(temp_orig)
+		if max(img.size) > 3840:
+			raise ImageFindError('That image is too large.')
 		duration = None
 		if isgif:
 			if 'duration' in img.info:
@@ -390,9 +394,11 @@ class Deepfry(commands.Cog):
 			return
 		if msg.guild is None:
 			return
+		if not msg.channel.permissions_for(msg.guild.me).attach_files:
+			return
 		if any([msg.content.startswith(x) for x in await self.bot.get_prefix(msg)]):
 			return
-		if msg.attachments[0].size > MAX_SIZE:
+		if msg.attachments[0].size > msg.guild.filesize_limit:
 			return
 		ext = msg.attachments[0].url.split('.')[-1].lower()
 		if ext in self.imagetypes:

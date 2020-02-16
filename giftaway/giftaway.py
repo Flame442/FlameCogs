@@ -70,7 +70,7 @@ class Gift:
 		obj.cog = cog
 		author = cog.bot.get_user(dict['author'])
 		if not author:
-			raise GiftError('Could not find the author.')
+			raise GiftError(_('Could not find the author.'))
 		obj.author = author
 		obj.invoke_id = invoke_id
 		obj.game_name = dict['game_name']
@@ -95,7 +95,7 @@ class Gift:
 				continue
 			messages.append(m)
 		if not messages:
-			raise GiftError('No messages could be found.')
+			raise GiftError(_('No messages could be found.'))
 		obj.messages = messages
 		return obj
 
@@ -169,9 +169,15 @@ class Gift:
 			game_url = game.get('url', None)
 			
 			cover_id = game.get('cover', None)
-			genere_ids = '(' + ','.join(str(g) for g in game['genres']) + ')'
-			website_ids = '(' + ','.join(str(w) for w in game['websites']) + ')'
-			
+			if game.get('genres', None):
+				genre_ids = '(' + ','.join(str(g) for g in game['genres']) + ')'
+			else:
+				genre_ids = None
+			if game.get('websites', None):
+				website_ids = '(' + ','.join(str(w) for w in game['websites']) + ')'
+			else:
+				website_ids = None
+
 			if cover_id:
 				async with session.post(
 					'https://api-v3.igdb.com/covers',
@@ -183,16 +189,16 @@ class Gift:
 					cover_url = resp[0]['url'][2:].replace('t_thumb', 't_cover_big_2x')
 					self.cover_url = 'https://' + cover_url
 				
-			if genere_ids:
+			if genre_ids:
 				async with session.post(
 					'https://api-v3.igdb.com/genres',
 					headers={'Accept': 'application/json', 'user-key': key},
-					data=f'where id = {genere_ids}; fields name;'
+					data=f'where id = {genre_ids}; fields name;'
 				) as response:
 					resp = await response.json(content_type=None)
-				generes = [g['name'] for g in resp]
+				genres = [g['name'] for g in resp]
 			else:
-				generes = None
+				genres = None
 			
 			if website_ids:
 				async with session.post(
@@ -210,17 +216,17 @@ class Gift:
 			
 		game_info = ''
 		if released:
-			game_info += _('**Released:** {released}\n'.format(released=date.fromtimestamp(released)))
-		if generes:
-			game_info += _('**Generes:** {generes}\n'.format(generes=", ".join(generes)))
+			game_info += _('**Released:** {released}\n').format(released=date.fromtimestamp(released))
+		if genres:
+			game_info += _('**Genres:** {genres}\n').format(genres=", ".join(genres))
 		if rating:
-			game_info += _('**Rating:** {rating:.1f}'.format(rating=rating))
+			game_info += _('**Rating:** {rating:.1f}').format(rating=rating)
 		
 		self.link_url = website or game_url
 		if game_info:
-			self.fields.append(['Game info', game_info])
+			self.fields.append([_('Game info'), game_info])
 		if summary:
-			self.fields.append(['Summary', summary[:1000]])
+			self.fields.append([_('Summary'), summary[:1000]])
 	
 	async def give_key(self, member):
 		"""Give one of the keys to a particular user."""
@@ -274,7 +280,6 @@ class GiftAway(commands.Cog):
 			for invoke_id in to_del:
 				del data[invoke_id]
 
-	@commands.dm_only()
 	@commands.command(aliases=['ga'])
 	async def giftaway(self, ctx, guild: GuildConvert, game_name, *keys):
 		"""
@@ -282,6 +287,10 @@ class GiftAway(commands.Cog):
 		
 		Wrap any parameters that require spaces in quotes.
 		"""
+		try:
+			await ctx.message.delete()
+		except:
+			pass
 		cid = await self.config.guild(guild).giftChannel()
 		if not cid:
 			return await ctx.send(_('That guild has not set up a giftaway channel.'))
@@ -300,7 +309,6 @@ class GiftAway(commands.Cog):
 			gifts[key] = value
 		await ctx.tick()
 
-	@commands.dm_only()
 	@commands.command(aliases=['gg'])
 	async def globalgift(self, ctx, game_name, *keys):
 		"""
@@ -308,6 +316,10 @@ class GiftAway(commands.Cog):
 		
 		Wrap any parameters that require spaces in quotes.
 		"""
+		try:
+			await ctx.message.delete()
+		except:
+			pass
 		guilds = []
 		for guild in self.bot.guilds:
 			cid = await self.config.guild(guild).giftChannel()
@@ -354,6 +366,7 @@ class GiftAway(commands.Cog):
 			gifts[key] = value
 		await ctx.tick()
 	
+	@commands.guild_only()
 	@commands.group()
 	async def giftawayset(self, ctx):
 		"""Group command for giftaway."""
@@ -379,7 +392,7 @@ class GiftAway(commands.Cog):
 	async def remove(self, ctx):
 		"""Remove the giftaway channel from this server and stop receiving giftaway messages."""
 		await self.config.guild(ctx.guild).giftChannel.set(None)
-		await ctx.send('Removed.')
+		await ctx.send(_('Removed.'))
 
 	@commands.Cog.listener()
 	async def on_reaction_add(self, reaction, user):

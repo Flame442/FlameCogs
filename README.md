@@ -30,7 +30,6 @@ Name | Description
 --- | ---
 [Battleship](../master/README.md#battleship) | Play battleship against another member of your server.
 [Deepfry](../master/README.md#deepfry) | Deepfry and nuke images.
-[Face](../master/README.md#face) | Find and describe the faces in an image.
 [Gameroles](../master/README.md#gameroles) | Grant roles when a user is playing a specific game.
 [Giftaway](../master/README.md#giftaway) | Create grabbable key giveaways.
 [Hangman](../master/README.md#hangman) | Play hangman with the bot.
@@ -116,28 +115,6 @@ This value is server specific.
 Allow filetypes that have not been verified to be valid.  
 Can cause errors if enabled, **use at your own risk**.  
 Defaults to `False`.  
-This command is only usable by the server owner and bot owner.  
-This value is server specific.
-
-## Face
-
-This cog will find faces in images and give information about them such as predicted age, hair color, and emotions.  
-This cog requires an API key from Microsoft Azure Face API. Setup instructions can be found [here!](../master/face/setup.md)
-
-### Usage
-
-**`[p]face [link]`**  
-Finds and describes faces in the attached image.  
-Use the optional parameter `link` to use a **direct link** as the target.
-
-**`[p]faceset <argument>`**  
-Config options for face.  
-This command is only usable by the server owner and bot owner.
-
-**`[p]faceset menu [value]`**  
-Set if results should be made into a menu.  
-If in a menu, one large image with faces marked will be sent instead of cropped images of each face.  
-Defaults to `True`.  
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
@@ -559,4 +536,5 @@ The helpful support staff at the [Redbot discord](https://discord.gg/red),
 [/u/YoungsterGlenn](https://www.reddit.com/r/BombParty/comments/3lehxq/a_nearly_exhaustive_subset_of_the_bombparty/) for the wordlist used by Partygames,  
 [Sinbad](https://github.com/mikeshardmind) for helping with Wordstats,  
 [Preda](https://github.com/PredaaA) for translating Partygames,  
-And Red for creating the sprites used in Battleship.
+Red for creating the sprites used in Battleship,  
+And Mistery#3287 for requesting and translating GiftAway

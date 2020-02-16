@@ -1,0 +1,161 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2020-01-12 18:58-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Mistery#3287 <dennis@the-mistery.de>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: redgettext 3.1\n"
+
+#: giftaway.py:22 giftaway.py:27
+msgid "Could not find guild `{value}`."
+msgstr "Konnte Server `{value}` nicht finden."
+
+#: giftaway.py:56
+msgid "At least one key must be provided."
+msgstr "Es muss mindestens ein Key angegeben werden."
+
+#: giftaway.py:58
+msgid "No channels provided."
+msgstr "Es wurde kein Kanal angegeben."
+
+#: giftaway.py:73
+msgid "Could not find the author."
+msgstr "Konnte den Autor nicht finden."
+
+#: giftaway.py:98
+msgid "No messages could be found."
+msgstr "Es konnte keine Nachricht gefunden werden"
+
+#: giftaway.py:119
+msgid ""
+"Click the reaction below to grab a key.\\n\\nCurrently available: "
+"**{top}/{bottom}**"
+msgstr "Klicke auf die Reaktion unten um einen Key zu ergattern."
+
+#: giftaway.py:124
+msgid "All keys have been claimed!"
+msgstr "Alley Keys wurden ergattert."
+
+#: giftaway.py:126
+msgid "\\n\\nGrabbed by:"
+msgstr "\\n\\nErbeutet von:"
+
+#: giftaway.py:130
+msgid "{author} is gifting {num} keys for **{game}**."
+msgstr "{author} verschenkt {num} Keys für **{game}**."
+
+#: giftaway.py:213
+msgid "**Released:** {released}\\n"
+msgstr "**Erschienen:** {released}\\n"
+
+#: giftaway.py:215
+msgid "**Genres:** {genres}\\n"
+msgstr "**Kategorie** {genres}\\n"
+
+#: giftaway.py:217
+msgid "**Rating:** {rating:.1f}"
+msgstr "**Bewertung:** {rating:.1f}"
+
+#: giftaway.py:221
+msgid "Game info"
+msgstr "Spiel Info"
+
+#: giftaway.py:223
+msgid "Summary"
+msgstr "Zusammenfassung"
+
+#: giftaway.py:229
+msgid "\\n**{name}** in **{guild}**"
+msgstr "\\n**{name}** in **{guild}**"
+
+#: giftaway.py:233
+msgid "Here is your key for `{game}`: `{key}`"
+msgstr "Hier ist dein Key für `{game}`: `{key}`"
+
+#: giftaway.py:251
+#, docstring
+msgid "Create grabbable key giveaways."
+msgstr "Erstelle Giveaways für beanspruchbare Keys."
+
+#: giftaway.py:279
+#, docstring
+msgid ""
+"\\n\\t\\tGiftaway a key to a specific server.\\n\\t\\t\\n\\t\\tWrap any "
+"parameters that require spaces in quotes.\\n\\t\\t"
+msgstr ""
+"\\n\\t\\tGiftaway einen Key an einen specifischen Server.\\n\\t\\t\\n\\t\\tSchreibe alle "
+"Parameter die ein Leerzeichen benötigen in Anführungszeichen.\\n\\t\\t"
+
+#: giftaway.py:290
+msgid "That guild has not set up a giftaway channel."
+msgstr "Dieser Server hat noch keinen Giftaway Kanal erstellt."
+
+#: giftaway.py:293
+msgid "That giftaway channel for that guild does not exist."
+msgstr "Der Giftaway Kanal für diesen Server existiert nicht."
+
+#: giftaway.py:295 giftaway.py:352
+msgid "I do not have permission to send embeds in the giftaway channel."
+msgstr "Ich habe keine Berechtigung eingebettete Nachrichten an den Giftaway Kanal zu senden."
+
+#: giftaway.py:308
+#, docstring
+msgid ""
+"\\n\\t\\tGiftaway a key to all servers.\\n\\t\\t\\n\\t\\tWrap any parameters"
+" that require spaces in quotes.\\n\\t\\t"
+msgstr ""
+"\\n\\t\\tGiftaway einen Key an alle Server.\\n\\t\\t\\n\\t\\tSchreibe alle Parameter"
+" die ein Leerzeichen benötigen in Anführungszeichen.\\n\\t\\t"
+
+#: giftaway.py:341
+#, docstring
+msgid ""
+"\\n\\t\\tGiftaway a key to a specific channel.\\n\\t\\t\\n\\t\\tYou probably"
+" should run this command from a location people can't see to protect the "
+"keys.\\n\\t\\tWrap any parameters that require spaces in quotes.\\n\\t\\t"
+msgstr ""
+"\\n\\t\\tGiftaway einen key an einen specifischen Kanal.\\n\\t\\t\\n\\t\\tDu solltest"
+" diesen Befehl besser von einem Ort ausführen den niemand sehen kann umd die Keys zu "
+"schützen.\\n\\t\\tSchreibe alle Parameter die ein Leerzeichen benötigen in Anführungszeichen.\\n\\t\\t"
+
+#: giftaway.py:366
+#, docstring
+msgid "Group command for giftaway."
+msgstr "Gruppen Befehl für Giftaway"
+
+#: giftaway.py:371
+#, docstring
+msgid "Set the channel that giftaway messages will be sent to in this server."
+msgstr "Stelle den Kanal ein an den die Giftaway Nachrichten auf diesem Server geschickt werden."
+
+#: giftaway.py:375
+msgid "The giftaway channel has not been set up."
+msgstr "Der Giftaway Kanal wurde noch nicht eingestellt."
+
+#: giftaway.py:379
+msgid "The giftaway channel has been deleted or could not be found."
+msgstr "Der Giftaway Kanal wurde gelöscht oder konnte nicht gefunden werden."
+
+#: giftaway.py:380
+msgid "The current giftaway channel is {channel}."
+msgstr "Der aktuelle Giftaway Kanal ist {channel}."
+
+#: giftaway.py:383
+msgid "The giftaway channel is now {channel}."
+msgstr "Der Giftaway Kanal ist nun {channel}."
+
+#: giftaway.py:387
+#, docstring
+msgid ""
+"Remove the giftaway channel from this server and stop receiving giftaway "
+"messages."
+msgstr "Entferne den Giftaway Kanal von diesem Server und bekomme keine Giftaway Nachrichten mehr."
+
+#: giftaway.py:389
+msgid "Removed."
+msgstr "Entfernt."
