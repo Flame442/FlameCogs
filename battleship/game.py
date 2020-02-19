@@ -168,7 +168,7 @@ class BattleshipGame():
 		"""
 		if isinstance(dest, self.cog.ai):
 			return
-		if self.cog.config.guild(self.ctx.guild).doImage():
+		if await self.cog.config.guild(self.ctx.guild).doImage():
 			if isinstance(dest, discord.Member):
 				filesize_limit = 8388608
 				attach_files = True
