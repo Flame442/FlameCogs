@@ -37,6 +37,7 @@ Name | Description
 [Onlinestats](../master/README.md#onlinestats) | Information about what devices people are using to run discord.
 [Partygames](../master/README.md#partygames) | Chat games focused on coming up with words from 3 letters.
 [SimpleEmbed](../master/README.md#simpleembed) | Simply create embeds.
+[Stocks](../master/README.md#stocks) | Buy and sell stocks with bot currency.
 [Wordstats](../master/README.md#wordstats) | Track commonly used words by server and member.
 
 ## Battleship
@@ -444,6 +445,36 @@ Use the optional parameter `color` to change the color of the embed.
 The embed will contain the text `text`.  
 All normal discord formatting will work inside the embed.
 
+## Stocks
+
+This cog allows you to purchase stocks using the economy credits built in to the bot.  
+This cog assumes the bank is set to be a global bank, if your bank is guild-specific, users will be able to transfer credits between guilds using this cog.
+
+### Usage
+
+**`[p]stocks <argument>`**  
+Alias `[p]stock <argument>`  
+Alias `[p]stonks <argument>`  
+Alias `[p]stonk <argument>`
+
+**`[p]stocks buy <name> <shares>`**  
+Buy stocks.  
+Enter the ticker symbol for the stock.  
+Conversion rate: $1 = 100 credits.
+
+**`[p]stocks sell <name> <shares>`**  
+Sell stocks.  
+Enter the ticker symbol for the stock.  
+Conversion rate: $1 = 100 credits.
+
+**`[p]stocks price <name>`**  
+View the price of a stock.  
+Enter the ticker symbol for the stock.  
+Conversion rate: $1 = 100 credits.
+
+**`[p]stocks list`**  
+List your stocks.
+
 ## Wordstats
 
 This cog will track commonly used words by server and member.
@@ -530,11 +561,10 @@ The helpful support staff at the [Redbot discord](https://discord.gg/red),
 [Hasbro](https://hasbro.com) for creating the games that Battleship and Monopoly are based off of,  
 [TrustyJAID](https://github.com/TrustyJAID) for helping with Deepfry,  
 [Desi Quintans](http://www.desiquintans.com/nounlist) for the wordlist used by Hangman,  
-[iComputer7#0007](https://github.com/iComputer7) for the inspiration for Face,  
-[Microsoft Azure](https://azure.microsoft.com/en-us/) for the API that Face uses,  
 [Sparklin Labs](http://bombparty.sparklinlabs.com/) for creating the game that Partygames is based off of,  
 [/u/YoungsterGlenn](https://www.reddit.com/r/BombParty/comments/3lehxq/a_nearly_exhaustive_subset_of_the_bombparty/) for the wordlist used by Partygames,  
 [Sinbad](https://github.com/mikeshardmind) for helping with Wordstats,  
 [Preda](https://github.com/PredaaA) for translating Partygames,  
 Red for creating the sprites used in Battleship,  
-And Mistery#3287 for requesting and translating GiftAway
+Mistery#3287 for requesting and translating GiftAway,  
+And [Financial Modeling Prep](https://financialmodelingprep.com) for the API used in Stocks.
