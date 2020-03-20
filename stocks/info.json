@@ -1,0 +1,10 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing stocks. Commands are all under the group command `[p]stocks`.",
+    "name" : "Stocks",
+    "short" : "Buy and sell stocks with bot currency.",
+    "requirements" : [],
+    "description" : "Buy and sell stocks with bot currency.",
+    "tags" : ["utility", "stock"],
+    "min_python_version": [3, 6, 0]
+}
