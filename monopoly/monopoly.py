@@ -6,6 +6,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 from typing import Union
 import asyncio, os
 from .game import MonopolyGame
+from .ai import MonopolyAI
 
 #temp imports for backwards compatibility
 from redbot.core.data_manager import cog_data_path
@@ -18,6 +19,7 @@ class Monopoly(commands.Cog):
 		self.bot = bot
 		self.games = []
 		self.monopoly_game_object = MonopolyGame
+		self.monopoly_ai_object = MonopolyAI
 		self.config = Config.get_conf(self, identifier=7345167904)
 		self.config.register_guild(
 			doMention = False,
@@ -84,22 +86,30 @@ class Monopoly(commands.Cog):
 					await ctx.send('Please select a number between 2 and 8.')
 					continue
 				break
+			check = lambda m: (
+				not m.author.bot
+				and m.channel == ctx.channel
+				and (
+					(m.author.id not in uid and m.content.lower() == 'i')
+					or (m.author == ctx.message.author and m.content.lower() == 'ai')
+				)
+			)
+			ai_count = 1
 			for a in range(1, num):
-				await ctx.send(f'Player {a+1}, say I')
+				await ctx.send(f'Player {a+1}, say I.\nOr say AI to add an AI opponent.')
 				try:
 					joinmsg = await self.bot.wait_for(
 						'message',
 						timeout=60,
-						check=lambda m: (
-							m.author.id not in uid
-							and not m.author.bot
-							and m.channel == ctx.channel
-							and m.content.lower() == 'i'
-						)
+						check=check
 					)
 				except asyncio.TimeoutError:
 					return await ctx.send('You took too long to respond.')
-				uid.append(joinmsg.author.id)
+				if joinmsg.content.lower() == 'ai':
+					uid.append(MonopolyAI(a, f'[AI] ({ai_count})'))
+					ai_count += 1
+				else:
+					uid.append(joinmsg.author.id)
 			if [game for game in self.games if game.ctx.channel == ctx.channel]:
 				return await ctx.send('Another game started in this channel while setting up.')
 			game = MonopolyGame(ctx, self, startCash=startCash, uid=uid)
