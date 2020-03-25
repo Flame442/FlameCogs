@@ -928,7 +928,7 @@ class MonopolyGame():
 			)
 			if self.is_ai(self.p):
 				config = await self.cog.config.guild(self.ctx.guild).all()
-				choice = self.uid[self.p].jail_turn(self, config, ('t', 'h', 'm', 'g'))
+				choice = self.uid[self.p].turn(self, config, ('t', 'h', 'm', 'g'))
 			else:
 				await self.send(img=True)
 				choice = await self.bot.wait_for(
