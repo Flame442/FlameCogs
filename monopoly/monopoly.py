@@ -36,6 +36,7 @@ class Monopoly(commands.Cog):
 			houseLimit = 32,
 			timeoutValue = 60,
 			minRaise = 1,
+			darkMode = False,
 			saves = {}
 		)
 
@@ -585,6 +586,27 @@ class Monopoly(commands.Cog):
 			else:
 				await self.config.guild(ctx.guild).timeoutValue.set(value)
 				await ctx.send(f'The timeout is now set to {value} seconds.')
+
+	@monopolyset.command()
+	async def darkmode(self, ctx, value: bool=None):
+		"""
+		Set if the board should be a darker varient.
+		
+		Defaults to False.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).darkMode()
+			if v:
+				await ctx.send('The board is currently the darker version.')
+			else:
+				await ctx.send('The board is currently the lighter version.')
+		else:
+			await self.config.guild(ctx.guild).darkMode.set(value)
+			if value:
+				await ctx.send('The board will now be the darker version.')
+			else:
+				await ctx.send('The board will now be the lighter version.')
 
 	def cog_unload(self):
 		return [game._task.cancel() for game in self.games]
