@@ -290,6 +290,12 @@ Defaults to `50`.
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
+**`[p]monopolyset darkmode [value]`**  
+Set if the board should be a darker varient.  
+Defaults to `False`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
 **`[p]monopolyset doublego [value]`**  
 Set if landing on go should double the amount of money given.  
 Defaults to `False`.  
