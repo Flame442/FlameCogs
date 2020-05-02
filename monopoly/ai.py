@@ -93,7 +93,7 @@ class MonopolyAI():
 							result[i] = result.get(i, 0) + 1
 						return result
 					if allow_above:
-						if best > goal:
+						if sum(best) > goal:
 							#already too large
 							if sum(hold) > sum(best):
 								continue
