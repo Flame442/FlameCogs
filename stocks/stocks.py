@@ -161,6 +161,9 @@ class Stocks(commands.Cog):
 				elif stock in stock_data and user_stocks[stock]['total_count'] != stock_data[stock]['total_count']:
 					old = user_stocks[stock]['total_count']
 					new = stock_data[stock]['total_count']
+					if not (old and new):
+						user_stocks[stock]['total_count'] = new
+						continue
 					if old // new != 0:
 						user_stocks[stock]['count'] //= old // new
 					elif new // old != 0:
@@ -180,7 +183,7 @@ class Stocks(commands.Cog):
 		stock = {
 			x['symbol']: {
 				'price': int(x['price'] * 100),
-				'total_count': int(x['marketCap'] / x['price'])
+				'total_count': int(x['marketCap'] / x['price']) if x['marketCap'] else None
 			} for x in r
 		}
 		return stock
