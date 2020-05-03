@@ -55,7 +55,7 @@ class Stocks(commands.Cog):
 			if name in user_stocks:
 				user_stocks[name]['count'] += shares
 			else:
-				user_stocks[name]['count'] = shares
+				user_stocks[name] = {'count': shares, 'total_count': stock_data[name]['total_count']}
 		await ctx.send(
 			f'You purchased {shares} share{plural} of {name} for {price * shares} {currency} '
 			f'({price} {currency} each).\nYou now have {bal} {currency}.'
