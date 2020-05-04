@@ -284,14 +284,13 @@ class MonopolyGame():
 					d1 = randint(1, 6)
 					d2 = randint(1, 6)
 					self.msg += f'You rolled a **{d1}** and a **{d2}**.\n'
+					self.was_doubles = False
 					if d1 == d2:
-						self.num_doubles += 1
 						self.jailturn[self.p] = -1
 						self.injail[self.p] = False
 						self.msg += 'You rolled out of jail!\n'
 						await self.land(d1 + d2)
 					else:
-						self.was_doubles = False
 						self.msg += 'Sorry, not doubles.\n'
 				elif choice == 'b':
 					if self.bal[self.p] < bailValue and not (
@@ -348,83 +347,75 @@ class MonopolyGame():
 						self.was_doubles = False
 					await self.land(d1 + d2)
 			#If not in jail, start a normal turn
-			else:
-				while self.was_doubles and self.isalive[self.p]:
-					self.msg += '`r`: Roll\n`t`: Trade\n`h`: Manage houses\n`m`: Mortgage properties\n'
-					if self.num_doubles == 0:
-						self.msg += '`s`: Save\n'
-					if self.is_ai(self.p):
-						config = await self.cog.config.guild(self.ctx.guild).all()
-						choice = self.uid[self.p].turn(self, config, ('r', 't', 'h', 'm'))
+			while self.was_doubles and self.isalive[self.p]:
+				self.msg += '`r`: Roll\n`t`: Trade\n`h`: Manage houses\n`m`: Mortgage properties\n'
+				if self.num_doubles == 0:
+					self.msg += '`s`: Save\n'
+				if self.is_ai(self.p):
+					config = await self.cog.config.guild(self.ctx.guild).all()
+					choice = self.uid[self.p].turn(self, config, ('r', 't', 'h', 'm'))
+				else:
+					await self.send(img=True)
+					choice = await self.bot.wait_for(
+						'message',
+						timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
+						check=lambda m: (
+							m.author.id == self.uid[self.p]
+							and m.channel == self.ctx.channel
+							and m.content.lower() in ('r', 't', 'h', 'm', 's')
+						)
+					)
+					choice = choice.content.lower()
+				if choice == 'r':
+					d1 = randint(1, 6)
+					d2 = randint(1, 6)
+					self.msg += f'You rolled a **{d1}** and a **{d2}**.\n'
+					if d1 == d2:
+						self.num_doubles += 1
 					else:
-						await self.send(img=True)
-						choice = await self.bot.wait_for(
-							'message',
-							timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-							check=lambda m: (
-								m.author.id == self.uid[self.p]
-								and m.channel == self.ctx.channel
-								and m.content.lower() in ('r', 't', 'h', 'm', 's')
-							)
+						self.was_doubles = False
+					if self.num_doubles == 3:
+						self.tile[self.p] = 10
+						self.injail[self.p] = True
+						self.was_doubles = False
+						self.msg += 'You rolled doubles 3 times in a row, you are now in jail!\n'
+					else:
+						await self.land(d1 + d2)
+				elif choice == 't':
+					await self.trade()
+				elif choice == 'h':
+					await self.house()
+				elif choice == 'm':
+					await self.mortgage()
+				elif choice == 's' and self.num_doubles == 0:
+					await self.ctx.send('Save file name?')
+					choice = await self.bot.wait_for(
+						'message',
+						timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
+						check=lambda m: (
+							m.author.id == self.uid[self.p]
+							and m.channel == self.ctx.channel
 						)
-						choice = choice.content.lower()
-					if choice == 'r':
-						d1 = randint(1, 6)
-						d2 = randint(1, 6)
-						self.msg += f'You rolled a **{d1}** and a **{d2}**.\n'
-						if d1 == d2:
-							self.num_doubles += 1
-						else:
-							self.was_doubles = False
-						if self.num_doubles == 3:
-							self.tile[self.p] = 10
-							self.injail[self.p] = True
-							self.was_doubles = False
-							self.msg += 'You rolled doubles 3 times in a row, you are now in jail!\n'
-						else:
-							await self.land(d1 + d2)
-					elif choice == 't':
-						await self.trade()
-					elif choice == 'h':
-						await self.house()
-					elif choice == 'm':
-						await self.mortgage()
-					elif choice == 's' and self.num_doubles == 0:
-						await self.ctx.send('Save file name?')
-						choice = await self.bot.wait_for(
-							'message',
-							timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-							check=lambda m: (
-								m.author.id == self.uid[self.p]
-								and m.channel == self.ctx.channel
+					)
+					savename = choice.content.replace(' ', '')
+					async with self.cog.config.guild(self.ctx.guild).saves() as saves:
+						if savename in ('delete', 'list'):
+							self.msg = 'You cannot name your save that.\n'
+						elif savename in saves:
+							await self.ctx.send(
+								'There is already another save with that name. Override it?'
 							)
-						)
-						savename = choice.content.replace(' ', '')
-						async with self.cog.config.guild(self.ctx.guild).saves() as saves:
-							if savename in ('delete', 'list'):
-								self.msg = 'You cannot name your save that.\n'
-							elif savename in saves:
-								await self.ctx.send(
-									'There is already another save with that name. Override it?'
+							timeout = await self.cog.config.guild(self.ctx.guild).timeoutValue()
+							choice = await self.bot.wait_for(
+								'message',
+								timeout=timeout,
+								check=lambda m: (
+									m.author.id == self.uid[self.p]
+									and m.channel == self.ctx.channel
 								)
-								timeout = await self.cog.config.guild(self.ctx.guild).timeoutValue()
-								choice = await self.bot.wait_for(
-									'message',
-									timeout=timeout,
-									check=lambda m: (
-										m.author.id == self.uid[self.p]
-										and m.channel == self.ctx.channel
-									)
-								)
-								if choice.content.lower() not in ('yes', 'y'):
-									self.msg = 'Not overriding.\n'
-								else:
-									saves[savename] = self.autosave
-									return await self.ctx.send(
-										f'Your game was saved to `{savename}`.\n'
-										'You can load your save with '
-										f'`{self.ctx.prefix}monopoly {savename}`.'
-									)
+							)
+							if choice.content.lower() not in ('yes', 'y'):
+								self.msg = 'Not overriding.\n'
 							else:
 								saves[savename] = self.autosave
 								return await self.ctx.send(
@@ -432,6 +423,13 @@ class MonopolyGame():
 									'You can load your save with '
 									f'`{self.ctx.prefix}monopoly {savename}`.'
 								)
+						else:
+							saves[savename] = self.autosave
+							return await self.ctx.send(
+								f'Your game was saved to `{savename}`.\n'
+								'You can load your save with '
+								f'`{self.ctx.prefix}monopoly {savename}`.'
+							)
 			#After roll
 			while self.isalive[self.p]:
 				self.msg += '`t`: Trade\n`h`: Manage houses\n`m`: Mortgage properties\n`d`: Done\n'
