@@ -315,7 +315,7 @@ This command is only usable by the server owner and bot owner.
 This value is server specific.
 
 **`[p]monopolyset darkmode [value]`**  
-Set if the board should be a darker varient.  
+Set if the board should be a darker variant.  
 Defaults to `False`.  
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
