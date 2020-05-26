@@ -18,8 +18,6 @@ class Monopoly(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.games = []
-		self.monopoly_game_object = MonopolyGame
-		self.monopoly_ai_object = MonopolyAI
 		self.config = Config.get_conf(self, identifier=7345167904)
 		self.config.register_guild(
 			doMention = False,
