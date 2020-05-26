@@ -5,6 +5,7 @@ from redbot.core.data_manager import bundled_data_path
 from io import BytesIO
 import asyncio
 import logging
+from .ai import BattleshipAI
 
 
 class BattleshipGame():
@@ -166,7 +167,7 @@ class BattleshipGame():
 		dest = discord.abc.Messageable, Where to send to.
 		msg = str, Text to include with the board.
 		"""
-		if isinstance(dest, self.cog.ai):
+		if isinstance(dest, BattleshipAI):
 			return
 		if await self.cog.config.guild(self.ctx.guild).doImage():
 			if isinstance(dest, discord.Member):
@@ -268,7 +269,7 @@ class BattleshipGame():
 			for ship_len in [5, 4, 3, 3, 2]: #each ship length
 				await self.send_board(x, 1, self.player[x], f'Place your {ship_len} length ship.')
 				while True:
-					if isinstance(self.player[x], self.cog.ai):
+					if isinstance(self.player[x], BattleshipAI):
 						await asyncio.sleep(1)
 						cords = self.player[x].place(self.board[x], ship_len)
 					else:
@@ -302,7 +303,7 @@ class BattleshipGame():
 				pswap[self.p], 0, self.ctx, f'{self.name[self.p]}, take your shot.'
 			)
 			while True:
-				if isinstance(self.player[self.p], self.cog.ai):
+				if isinstance(self.player[self.p], BattleshipAI):
 					safe_board = [i if i != 3 else 0 for i in self.board[pswap[self.p]]]
 					ship_status = []
 					for idx, ship_dict in enumerate(self.key[pswap[self.p]]):
