@@ -1,0 +1,10 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing hider. Commands are all under the group command `[p]hider`.",
+    "name" : "Hider",
+    "short" : "Hide commands from users in help.",
+    "requirements" : [],
+    "description" : "Hide commands from users in help.",
+    "tags" : ["utility"],
+    "min_python_version": [3, 6, 0]
+}

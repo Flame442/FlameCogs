@@ -67,6 +67,7 @@ class MonopolyAI():
 		Params:
 		options = Dict[int, int], maps a choice to the number of times it can be used.
 		goal = int, the number to reach.
+		allow_above = bool, whether the closest number should be above or below the goal.
 		
 		Returns:
 		Dict[int, int], maps a choice to the number of times it should be used, the sum of which has a sum closet possible to goal.
@@ -310,7 +311,7 @@ class MonopolyAI():
 			else:
 				mortgage_value[per].append(idx)
 				to_subset_sum[per] += 1
-		subset_sum = self._subset_sum(to_subset_sum, max_spend, True)
+		subset_sum = self._subset_sum(to_subset_sum, goal, True)
 		result = []
 		#ittr over each price
 		for price in subset_sum:

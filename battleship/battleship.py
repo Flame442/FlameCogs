@@ -12,8 +12,6 @@ class Battleship(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.games = []
-		self.bs = BattleshipGame
-		self.ai = BattleshipAI
 		self.config = Config.get_conf(self, identifier=7345167901)
 		self.config.register_guild(
 			extraHit = True,
