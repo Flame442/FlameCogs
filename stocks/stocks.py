@@ -4,8 +4,6 @@ from redbot.core import commands
 from redbot.core import Config
 import aiohttp
 
-STOCK_URL = 'https://financialmodelingprep.com/api/v3/quote/'
-
 
 class Stocks(commands.Cog):
 	"""Buy and sell stocks with bot currency."""
@@ -36,7 +34,10 @@ class Stocks(commands.Cog):
 			await ctx.send('You cannot buy less than one share.')
 			return
 		name = name.upper()
-		stock_data = await self._get_stock_data([name])
+		try:
+			stock_data = await self._get_stock_data([name])
+		except ValueError as e:
+			return await ctx.send(e)
 		if name not in stock_data:
 			await ctx.send(f'I couldn\'t find any data for the stock {name}. Please try another stock.')
 			return
@@ -75,7 +76,10 @@ class Stocks(commands.Cog):
 			await ctx.send('You cannot sell less than one share.')
 			return
 		name = name.upper()
-		stock_data = await self._get_stock_data([name])
+		try:
+			stock_data = await self._get_stock_data([name])
+		except ValueError as e:
+			return await ctx.send(e)
 		if name not in stock_data:
 			await ctx.send(f'I couldn\'t find any data for the stock {name}. Please try another stock.')
 			return
@@ -108,7 +112,10 @@ class Stocks(commands.Cog):
 		if not user_stocks:
 			await ctx.send('You do not have any stocks.')
 			return
-		stock_data = await self._get_stock_data(user_stocks.keys())
+		try:
+			stock_data = await self._get_stock_data(user_stocks.keys())
+		except ValueError as e:
+			return await ctx.send(e)
 		name_len = max(max(len(n) for n in user_stocks), 4) + 1
 		count_len = max(max(len(str(stock_data[n]['price'])) for n in user_stocks), 5) + 1
 		msg = '```\nName'
@@ -140,7 +147,10 @@ class Stocks(commands.Cog):
 		Conversion rate: $1 = 100 credits.
 		"""
 		name = name.upper()
-		stock_data = await self._get_stock_data([name])
+		try:
+			stock_data = await self._get_stock_data([name])
+		except ValueError as e:
+			return await ctx.send(e)
 		if name not in stock_data:
 			await ctx.send(f'I couldn\'t find any data for the stock {name}. Please try another stock.')
 			return
@@ -151,7 +161,10 @@ class Stocks(commands.Cog):
 	async def _fix_stocks(self, user):
 		"""Fix a user's stock data to account for old data and stock splits."""
 		async with self.config.user(user).stocks() as user_stocks:
-			stock_data = await self._get_stock_data(user_stocks.keys())
+			try:
+				stock_data = await self._get_stock_data(user_stocks.keys())
+			except ValueError as e:
+				return
 			for stock in user_stocks:
 				if isinstance(user_stocks[stock], int):
 					user_stocks[stock] = {
@@ -170,20 +183,44 @@ class Stocks(commands.Cog):
 						user_stocks[stock]['count'] *= new // old
 					user_stocks[stock]['total_count'] = new
 	
-	@staticmethod
-	async def _get_stock_data(stocks):
-		"""Returns a dict mapping stock symbols to a dict of their converted price and the total shares of that stock."""
+	async def _get_stock_data(self, stocks: list):
+		"""
+		Returns a dict mapping stock symbols to a dict of their converted price and the total shares of that stock.
+		
+		This function is designed to contain all of the API code in order to avoid having to mangle multiple parts
+		of the code in the event of an API change.
+		"""
+		api_url = 'https://sandbox.tradier.com/v1/markets/quotes'
 		stocks = ','.join(stocks)
 		if not stocks:
 			return []
+		token = await self.bot.get_shared_api_tokens('stocks')
+		token = token.get('key', None)
+		if not token:
+			raise ValueError(
+				'You need to set an API key!\n'
+				'Follow this guide for instructions on how to get one:\n'
+				'<https://github.com/Flame442/FlameCogs/blob/master/stocks/setup.md>'
+			)
+		params = {'symbols': stocks}
+		headers = {'Authorization': f'Bearer {token}', 'Accept': 'application/json'}
 		async with aiohttp.ClientSession() as session:
-			async with session.get(STOCK_URL + stocks) as r:
-				r = await r.json()
-		print(r)
+			async with session.get(api_url, params=params, headers=headers) as r:
+				try:
+					r = await r.json()
+				except aiohttp.client_exceptions.ContentTypeError:
+					#This might happen when being rate limited, but IDK for sure...
+					raise ValueError('Could not get stock data. The API key entered is most likely not valid.')
+		r = r['quotes']
+		if 'quote' not in r:
+			return []
+		r = r['quote']
+		if not isinstance(r, list):
+			r = [r]
 		stock = {
 			x['symbol']: {
-				'price': int(x['price'] * 100),
-				'total_count': int(x['marketCap'] / x['price']) if x['marketCap'] else None
+				'price': int(x['last'] * 100),
+				'total_count': None #int(x['marketCap'] / x['last']) if x['marketCap'] else None
 			} for x in r
 		}
 		return stock

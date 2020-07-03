@@ -199,7 +199,7 @@ class MonopolyGame():
 	
 	async def send(self, *, img=False):
 		"""Safely send the contents of self.msg."""
-		if img:
+		if img and self.ctx.channel.permissions_for(self.ctx.me).attach_files:
 			dm = await self.cog.config.guild(self.ctx.guild).darkMode()
 			await self.ctx.send(file=discord.File(self.bprint(dm)))
 		for page in pagify(self.msg):

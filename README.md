@@ -597,4 +597,4 @@ The helpful support staff at the [Redbot discord](https://discord.gg/red),
 [Preda](https://github.com/PredaaA) for translating Partygames,  
 Red for creating the sprites used in Battleship,  
 Mistery#3287 for requesting and translating GiftAway,  
-And [Financial Modeling Prep](https://financialmodelingprep.com) for the API used in Stocks.
+And [Tradier](https://tradier.com/) for the API used in Stocks.

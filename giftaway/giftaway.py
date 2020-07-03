@@ -7,6 +7,7 @@ import aiohttp
 import asyncio
 from datetime import date
 from io import BytesIO
+import logging
 
 
 _ = Translator('GiftAway', __file__)
@@ -257,6 +258,7 @@ class GiftAway(commands.Cog):
 	"""Create grabbable key giveaways."""
 	def __init__(self, bot):
 		self.bot = bot
+		self.log = logging.getLogger('red.flamecogs.giftaway')
 		self.config = Config.get_conf(self, identifier=145519400223506432)
 		self.config.register_global(
 			gifts = {}
@@ -268,12 +270,17 @@ class GiftAway(commands.Cog):
 		asyncio.create_task(self.setup())
 
 	async def setup(self):
+		await self.bot.wait_until_red_ready()
 		to_del = []
 		async with self.config.gifts() as data:
 			for invoke_id in data:
 				try:
 					gift = await Gift.from_dict(self, invoke_id, data[invoke_id])
 				except GiftError as e:
+					self.log.warning(
+						f'Game {data[invoke_id]["game_name"]} by {data[invoke_id]["author"]} '
+						'could not be created and has been deleted.'
+					)
 					to_del.append(invoke_id)
 					continue
 				self.gifts.append(gift)
