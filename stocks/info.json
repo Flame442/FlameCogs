@@ -1,6 +1,6 @@
 {
     "author" : ["Flame442 (Flame#2941)"],
-    "install_msg" : "Thanks for installing stocks. Commands are all under the group command `[p]stocks`.\nThis cog assumes the bank is set to be a global bank, if your bank is guild-specific, users will be able to transfer credits between guilds using this cog.",
+    "install_msg" : "Thanks for installing stocks. Commands are all under the group command `[p]stocks`.\n\nYou will need to follow the install guide in order to get an API key to use this cog. The guide can be found at <https://github.com/Flame442/FlameCogs/blob/master/stocks/setup.md>.\n\nThis cog assumes the bank is set to be a global bank, if your bank is guild-specific, users will be able to transfer credits between guilds using this cog.",
     "name" : "Stocks",
     "short" : "Buy and sell stocks with bot currency.",
     "requirements" : [],
