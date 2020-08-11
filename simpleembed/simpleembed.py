@@ -12,7 +12,7 @@ class SimpleEmbed(commands.Cog):
 	@checks.has_permissions(manage_messages=True)
 	@commands.bot_has_permissions(embed_links=True)
 	@commands.command()
-	async def sendembed(self, ctx, color:Optional[discord.Color]=None, *, text):
+	async def sendembed(self, ctx, color: Optional[discord.Color]=None, *, text):
 		"""
 		Send an embed.
 		
@@ -31,3 +31,7 @@ class SimpleEmbed(commands.Cog):
 			await ctx.message.delete()
 		except discord.Forbidden:
 			pass
+
+	async def red_delete_data_for_user(self, **kwargs):
+		"""Nothing to delete."""
+		return
