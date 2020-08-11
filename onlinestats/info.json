@@ -6,5 +6,6 @@
     "requirements" : [],
     "description" : "Information about what devices people are using to run discord.",
     "tags" : ["utility", "online"],
-    "min_python_version": [3, 6, 0]
+    "min_python_version": [3, 6, 0],
+    "end_user_data_statement": "This cog does not store user data."
 }
