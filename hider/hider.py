@@ -63,7 +63,11 @@ class Hider(commands.Cog):
 			result = self.bot.get_command(command)
 			if result and not isinstance(result, commands.commands._AlwaysAvailableCommand):
 				result.hidden = True
-	
+
+	async def red_delete_data_for_user(self, **kwargs):
+		"""Nothing to delete."""
+		return
+
 	@commands.Cog.listener()
 	async def on_command_add(self, command):
 		"""Hides commands from newly loaded cogs."""
