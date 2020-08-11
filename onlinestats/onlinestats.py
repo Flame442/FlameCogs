@@ -81,3 +81,7 @@ class OnlineStats(commands.Cog):
 				f'{status[m]} Mobile\n'
 				f'{status[w]} Web'
 			)
+
+	async def red_delete_data_for_user(self, **kwargs):
+		"""Nothing to delete."""
+		return

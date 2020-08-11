@@ -163,3 +163,7 @@ class Battleship(commands.Cog):
 	
 	def cog_unload(self):
 		return [game._task.cancel() for game in self.games]
+	
+	async def red_delete_data_for_user(self, **kwargs):
+		"""Nothing to delete."""
+		return

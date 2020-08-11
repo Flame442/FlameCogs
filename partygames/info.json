@@ -6,5 +6,6 @@
     "requirements" : [],
     "description" : "Chat games focused on coming up with words from 3 letters.",
     "tags" : ["fun", "games", "chat"],
-    "min_python_version": [3, 6, 0]
+    "min_python_version": [3, 6, 0],
+    "end_user_data_statement": "This cog does not store user data."
 }

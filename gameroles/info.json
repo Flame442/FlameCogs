@@ -6,5 +6,6 @@
     "requirements" : [],
     "description" : "Grant roles when a user is playing a specific game.",
     "tags" : ["utility", "role"],
-    "min_python_version": [3, 6, 0]
+    "min_python_version": [3, 6, 0],
+    "end_user_data_statement": "This cog does not store user data."
 }

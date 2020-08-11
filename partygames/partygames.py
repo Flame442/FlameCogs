@@ -566,7 +566,11 @@ This value is server specific.
 				return await ctx.send(_('That value is too low.'))
 			await self.config.guild(ctx.guild).timeMost.set(value)
 			await ctx.send(_('The timeout is now set to {value}.').format(value=value))
-	
+
+	async def red_delete_data_for_user(self, **kwargs):
+		"""Nothing to delete."""
+		return
+
 	@commands.Cog.listener()
 	async def on_message(self, message):
 		if message.author.bot:

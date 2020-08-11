@@ -326,7 +326,8 @@ class MonopolyAI():
 		self.cache = result
 		return 'm'
 
-	def _calc_prop_value(self, game, ownedby, player):
+	@staticmethod
+	def _calc_prop_value(game, ownedby, player):
 		"""Calculate the value of a player's properties for trading."""
 		value = 0
 		for prop in range(40):
@@ -386,7 +387,7 @@ class MonopolyAI():
 	def bid(self, game, config, prop_id):
 		if game.bal[self.me] < self._get_min_safe(game, config):
 			return None
-		raise NotImplemetedError
+		raise NotImplementedError
 	
 	def incoming_trade(self, game, them_id, incoming, outgoing):
 		"""Decide whether to accept or deny an incoming trade."""
@@ -399,14 +400,18 @@ class MonopolyAI():
 		value -= outgoing[1] * 50
 		#and finally properties
 		ownedby = game.ownedby.copy()
-		value -= self._calc_prop_value(game, ownedby, self.me)
-		value += self._calc_prop_value(game, ownedby, them_id)
+		me_delta = -1 * self._calc_prop_value(game, ownedby, self.me)
+		them_delta = -1 * self._calc_prop_value(game, ownedby, them_id)
 		for prop in incoming[2]:
 			ownedby[prop] = self.me
 		for prop in outgoing[2]:
 			ownedby[prop] = them_id
-		value += self._calc_prop_value(game, ownedby, self.me)
-		value -= self._calc_prop_value(game, ownedby, them_id)
+		me_delta += self._calc_prop_value(game, ownedby, self.me)
+		them_delta += self._calc_prop_value(game, ownedby, them_id)
+		if me_delta > them_delta:
+			value += me_delta
+		else:
+			value -= them_delta
 		if value > -50:
 			return 'y'
 		return 'n'

@@ -221,6 +221,6 @@ class Stocks(commands.Cog):
 			x['symbol']: {
 				'price': int(x['last'] * 100),
 				'total_count': None #int(x['marketCap'] / x['last']) if x['marketCap'] else None
-			} for x in r
+			} for x in r if 'last' in x
 		}
 		return stock

@@ -6,5 +6,6 @@
     "requirements" : [],
     "description" : "Simply send embeds.",
     "tags" : ["utility", "embed"],
-    "min_python_version": [3, 6, 0]
+    "min_python_version": [3, 6, 0],
+    "end_user_data_statement": "This cog does not store user data."
 }

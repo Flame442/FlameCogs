@@ -272,7 +272,11 @@ class GameRoles(commands.Cog):
 				await ctx.send('Roles will no longer be removed when someone stops playing.')
 			if ctx.guild.id in self.cache:
 				del self.cache[ctx.guild.id]
-	
+
+	async def red_delete_data_for_user(self, **kwargs):
+		"""Nothing to delete."""
+		return
+				
 	@commands.Cog.listener()
 	async def on_member_update(self, beforeMem, afterMem):
 		"""Updates a member's roles."""

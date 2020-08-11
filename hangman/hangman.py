@@ -242,3 +242,7 @@ class Hangman(commands.Cog):
 				await ctx.send('Games will now be played on a single, edited message.')
 			else:
 				await ctx.send('Games will now be played on multiple messages.')
+
+	async def red_delete_data_for_user(self, **kwargs):
+		"""Nothing to delete."""
+		return
