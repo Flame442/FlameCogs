@@ -224,3 +224,7 @@ class Stocks(commands.Cog):
 			} for x in r if 'last' in x
 		}
 		return stock
+
+	async def red_delete_data_for_user(self, *, requester, user_id):
+		"""Delete stock data for a particular user."""
+		await self.config.user_from_id(user_id).clear()
