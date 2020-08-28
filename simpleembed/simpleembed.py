@@ -28,7 +28,7 @@ class SimpleEmbed(commands.Cog):
 			color=color
 		)
 		if ctx.message.attachments:
-                        content = await message.attachments[0].to_file()
+                	content = await message.attachments[0].to_file()
 			embed.set_image(url="attachment://" + str(content.filename))
 		await ctx.send(embed=embed, file=content if ctx.message.attachments else None)
 		try:
