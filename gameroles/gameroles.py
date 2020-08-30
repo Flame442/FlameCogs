@@ -193,6 +193,9 @@ class GameRoles(commands.Cog):
 		setsum = torem & toadd
 		torem -= setsum
 		toadd -= setsum
+		#Filter out managed roles like Nitro Booster
+		torem = [r for r in torem if not r.managed]
+		toadd = [r for r in toadd if not r.managed]
 		if toadd and doAdd:
 			try:
 				await ctx.author.add_roles(*toadd, reason='Gameroles')
@@ -330,6 +333,9 @@ class GameRoles(commands.Cog):
 				f'I do not have manage_roles permission in {afterMem.guild} ({afterMem.guild.id}).'
 			)
 			return
+		#Filter out managed roles like Nitro Booster
+		torem = [r for r in torem if not r.managed]
+		toadd = [r for r in toadd if not r.managed]
 		if torem and doRemove:
 			try:
 				await afterMem.remove_roles(*torem, reason='Gameroles')
