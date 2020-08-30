@@ -28,8 +28,9 @@ class SimpleEmbed(commands.Cog):
 			color=color
 		)
 		if ctx.message.attachments:
-			embed.set_image(url=ctx.message.attachments[0].url)
-		await ctx.send(embed=embed)
+			content = await ctx.message.attachments[0].to_file()
+			embed.set_image(url="attachment://" + str(content.filename))
+		await ctx.send(embed=embed, file=content if ctx.message.attachments else None)
 		try:
 			await ctx.message.delete()
 		except discord.Forbidden:
