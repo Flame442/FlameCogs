@@ -68,6 +68,7 @@ class PartyGames(commands.Cog):
 			timeMost = 15
 		)
 		self.waiting = {}
+		self.games = []
 
 	@commands.group(aliases=['pg'])
 	async def partygames(self, ctx):
@@ -131,9 +132,16 @@ class PartyGames(commands.Cog):
 		Words cannot be reused.
 		The last person to have lives left wins.
 		"""
+		if ctx.channel.id in self.games:
+			await ctx.send(_('There is already a game running in this channel!'))
+			return
+		self.games.append(ctx.channel.id)
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
-			return await ctx.send(_('Not enough players to play.'))
+			await ctx.send(_('Not enough players to play.'))
+			if ctx.channel.id in self.games:
+				self.games.remove(ctx.channel.id)
+			return
 		wordlist, locale = await self._get_wordlist(ctx)
 		health = {p.id: hp for p in players}
 		game = True
@@ -168,8 +176,9 @@ class PartyGames(commands.Cog):
 						players.remove(p)
 						if len(players) == 1:
 							await ctx.send(_('{p} wins!').format(p=players[0].mention))
-							game = False
-							break
+							if ctx.channel.id in self.games:
+								self.games.remove(ctx.channel.id)
+							return
 				else:
 					await word.add_reaction('\N{WHITE HEAVY CHECK MARK}')
 					used.append(word.content.lower())
@@ -191,9 +200,16 @@ The first person to type a word that contains the given characters gets a point.
 Words cannot be reused.
 The first person to get `maxpoints` points wins.
 		"""
+		if ctx.channel.id in self.games:
+			await ctx.send(_('There is already a game running in this channel!'))
+			return
+		self.games.append(ctx.channel.id)
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
-			return await ctx.send(_('Not enough players to play.'))
+			await ctx.send(_('Not enough players to play.'))
+			if ctx.channel.id in self.games:
+				self.games.remove(ctx.channel.id)
+			return
 		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
@@ -218,6 +234,8 @@ The first person to get `maxpoints` points wins.
 					).format(mem=mem.mention, board=self._make_leaderboard(ctx, score)))
 					game = False
 			await asyncio.sleep(3)
+		if ctx.channel.id in self.games:
+			self.games.remove(ctx.channel.id)
 	
 	async def _fast(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
@@ -256,9 +274,16 @@ The first person to get `maxpoints` points wins.
 		Words cannot be reused.
 		The first person to get `maxpoints` points wins.
 		"""
+		if ctx.channel.id in self.games:
+			await ctx.send(_('There is already a game running in this channel!'))
+			return
+		self.games.append(ctx.channel.id)
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
-			return await ctx.send(_('Not enough players to play.'))
+			await ctx.send(_('Not enough players to play.'))
+			if ctx.channel.id in self.games:
+				self.games.remove(ctx.channel.id)
+			return
 		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
@@ -283,6 +308,8 @@ The first person to get `maxpoints` points wins.
 					).format(mem=mem.mention, board=self._make_leaderboard(ctx, score)))
 					game = False
 			await asyncio.sleep(3)
+		if ctx.channel.id in self.games:
+			self.games.remove(ctx.channel.id)
 		
 	async def _long(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
@@ -318,9 +345,16 @@ The first person to get `maxpoints` points wins.
 		Words cannot be reused.
 		The first person to get `maxpoints` points wins.
 		"""
+		if ctx.channel.id in self.games:
+			await ctx.send(_('There is already a game running in this channel!'))
+			return
+		self.games.append(ctx.channel.id)
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
-			return await ctx.send(_('Not enough players to play.'))
+			await ctx.send(_('Not enough players to play.'))
+			if ctx.channel.id in self.games:
+				self.games.remove(ctx.channel.id)
+			return
 		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
@@ -348,6 +382,8 @@ The first person to get `maxpoints` points wins.
 					).format(mem=mem.mention, board=self._make_leaderboard(ctx, score)))
 					game = False
 			await asyncio.sleep(3)
+		if ctx.channel.id in self.games:
+			self.games.remove(ctx.channel.id)
 		
 	async def _most(self, ctx, score, used, players, wordlist, locale):
 		c = random.choice(CHARS[locale])
@@ -400,9 +436,16 @@ The first person to get `maxpoints` points wins.
 		Words cannot be reused.
 		The first person to get `maxpoints` points wins.
 		"""
+		if ctx.channel.id in self.games:
+			await ctx.send(_('There is already a game running in this channel!'))
+			return
+		self.games.append(ctx.channel.id)
 		players = await self._get_players(ctx)
 		if len(players) <= 1:
-			return await ctx.send(_('Not enough players to play.'))
+			await ctx.send(_('Not enough players to play.'))
+			if ctx.channel.id in self.games:
+				self.games.remove(ctx.channel.id)
+			return
 		wordlist, locale = await self._get_wordlist(ctx)
 		score = {p.id: 0 for p in players}
 		game = True
@@ -442,7 +485,6 @@ The first person to get `maxpoints` points wins.
 								'{mem} wins!\n{board}'
 							).format(mem=p.mention, board=self._make_leaderboard(ctx, score)))
 							game = False
-							break
 					await asyncio.sleep(3)
 			else:
 				func = [self._fast, self._long, self._most][g]
@@ -467,6 +509,8 @@ The first person to get `maxpoints` points wins.
 						).format(mem=mem.mention, board=self._make_leaderboard(ctx, score)))
 						game = False
 			await asyncio.sleep(3)
+		if ctx.channel.id in self.games:
+			self.games.remove(ctx.channel.id)
 	
 	@checks.guildowner()
 	@commands.group(aliases=['pgset'])
