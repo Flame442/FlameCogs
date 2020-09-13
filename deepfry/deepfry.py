@@ -397,7 +397,7 @@ class Deepfry(commands.Cog):
 			return
 		if msg.guild is None:
 			return
-		if self.bot.cog_disabled_in_guild(self, msg.guild):
+		if await self.bot.cog_disabled_in_guild(self, msg.guild):
 			return
 		if not msg.channel.permissions_for(msg.guild.me).attach_files:
 			return
