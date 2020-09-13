@@ -285,6 +285,8 @@ class GameRoles(commands.Cog):
 		"""Updates a member's roles."""
 		if beforeMem.activities == afterMem.activities:
 			return
+		if self.bot.cog_disabled_in_guild(self, afterMem.guild):
+			return
 		if afterMem.guild.id not in self.cache:
 			data = await self.config.guild(afterMem.guild).all()
 			self.cache[afterMem.guild.id] = data
