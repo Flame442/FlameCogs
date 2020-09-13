@@ -405,6 +405,8 @@ class GiftAway(commands.Cog):
 	async def on_reaction_add(self, reaction, user):
 		if user.bot:
 			return
+		if reaction.message.guild and await self.bot.cog_disabled_in_guild(self, reaction.message.guild):
+			return
 		if str(reaction.emoji) != '\N{WHITE HEAVY CHECK MARK}':
 			return 
 		gift = None
