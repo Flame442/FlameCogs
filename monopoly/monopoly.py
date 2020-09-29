@@ -608,3 +608,17 @@ class Monopoly(commands.Cog):
 
 	def cog_unload(self):
 		return [game._task.cancel() for game in self.games]
+
+	async def red_delete_data_for_user(self, *, requester, user_id):
+		"""Replace a user with an AI in all of their games."""
+		data = await self.config.all_guilds()
+		for guild_id, config in data.items():
+			for name, save in config['saves'].items():
+				userinfo = save['uid']
+				change = False
+				for idx, uid in enumerate(save['uid']):
+					if uid == user_id:
+						userinfo[idx] = {'me': idx, 'display_name': '[AI]'}
+						change = True
+				if change:
+					await self.config.guild_from_id(guild_id).set_raw('saves', name, 'uid', value=userinfo)

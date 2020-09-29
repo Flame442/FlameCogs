@@ -117,7 +117,8 @@ class WordStats(commands.Cog):
 						') '
 						'WINDOW win AS (ORDER BY count DESC) '
 						') '
-						'WHERE word = ?',
+						'WHERE word = ? '
+						'LIMIT 1',
 						(guild.id, member.id, word)
 					).fetchone()
 				else:
@@ -132,7 +133,8 @@ class WordStats(commands.Cog):
 						') '
 						'WINDOW win AS (ORDER BY count DESC) '
 						') '
-						'WHERE word = ?',
+						'WHERE word = ? '
+						'LIMIT 1',
 						(guild.id, word)
 					).fetchone()
 				if not result:
@@ -151,7 +153,7 @@ class WordStats(commands.Cog):
 					f'It is the {mc} word {mention} has said.'
 				)
 			result = self.cursor.execute(
-				'SELECT sum(quantity), count(DISTINCT word) FROM member_words WHERE guild_id = ?',
+				'SELECT sum(quantity), count(DISTINCT word) FROM member_words WHERE guild_id = ? LIMIT 1',
 				(guild.id,)
 			).fetchone()
 			if not result[0]:
@@ -232,7 +234,8 @@ class WordStats(commands.Cog):
 					') '
 					'WINDOW win AS (ORDER BY count DESC) '
 					') '
-					'WHERE word = ?',
+					'WHERE word = ? '
+					'LIMIT 1',
 					(word,)
 				).fetchone()
 				if not result:
@@ -251,7 +254,7 @@ class WordStats(commands.Cog):
 					f'It is the {mc} word said.'
 				)
 			result = self.cursor.execute(
-				'SELECT sum(quantity), count(DISTINCT word) FROM member_words'
+				'SELECT sum(quantity), count(DISTINCT word) FROM member_words LIMIT 1'
 			).fetchone()
 			if not result[0]:
 				return await ctx.send('No words have been said yet.')
@@ -325,13 +328,13 @@ class WordStats(commands.Cog):
 			if word:
 				result = self.cursor.execute(
 					'SELECT sum(quantity), count(DISTINCT user_id) FROM member_words '
-					'WHERE guild_id = ? AND word = ?',
+					'WHERE guild_id = ? AND word = ? LIMIT 1',
 					(guild.id, word)
 				).fetchone()
 			else:
 				result = self.cursor.execute(
 					'SELECT sum(quantity), count(DISTINCT user_id) FROM member_words '
-					'WHERE guild_id = ?',
+					'WHERE guild_id = ? LIMIT 1',
 					(guild.id,)
 				).fetchone()
 			if not result[0]:
@@ -414,12 +417,12 @@ class WordStats(commands.Cog):
 			if word:
 				result = self.cursor.execute(
 					'SELECT sum(quantity), count(DISTINCT user_id) FROM member_words '
-					'WHERE word = ?',
+					'WHERE word = ? LIMIT 1',
 					(word,)
 				).fetchone()
 			else:
 				result = self.cursor.execute(
-					'SELECT sum(quantity), count(DISTINCT user_id) FROM member_words'
+					'SELECT sum(quantity), count(DISTINCT user_id) FROM member_words LIMIT 1'
 				).fetchone()
 			if not result[0]:
 				return await ctx.send('No words have been said yet.')
@@ -768,20 +771,24 @@ class WordStats(commands.Cog):
 	@commands.Cog.listener()
 	async def on_message_without_command(self, msg):
 		"""Passively records all message contents."""
-		if not msg.author.bot and isinstance(msg.channel, discord.TextChannel):
-			if msg.guild.id not in self.ignore_cache:
-				cfg = await self.config.guild(msg.guild).all()
-				self.ignore_cache[msg.guild.id] = cfg
-			enableGuild = self.ignore_cache[msg.guild.id]['enableGuild']
-			disabledChannels = self.ignore_cache[msg.guild.id]['disabledChannels']
-			if enableGuild and not msg.channel.id in disabledChannels:
-				#Strip any characters besides letters and spaces.
-				words = re.sub(r'[^a-z \n]', '', msg.content.lower()).split()
-				query = (
-					'INSERT INTO member_words (guild_id, user_id, word)'
-					'VALUES (?, ?, ?)'
-					'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + 1;'
-				)
-				data = ((msg.guild.id, msg.author.id, word) for word in words)
-				task = functools.partial(self.safe_write, query, data)
-				await self.bot.loop.run_in_executor(self._executor, task)
+		if msg.author.bot or not isinstance(msg.channel, discord.TextChannel):
+			return
+		if await self.bot.cog_disabled_in_guild(self, msg.guild):
+			return
+		if msg.guild.id not in self.ignore_cache:
+			cfg = await self.config.guild(msg.guild).all()
+			self.ignore_cache[msg.guild.id] = cfg
+		enableGuild = self.ignore_cache[msg.guild.id]['enableGuild']
+		disabledChannels = self.ignore_cache[msg.guild.id]['disabledChannels']
+		if not enableGuild or msg.channel.id in disabledChannels:
+			return
+		#Strip any characters besides letters and spaces.
+		words = re.sub(r'[^a-z \n]', '', msg.content.lower()).split()
+		query = (
+			'INSERT INTO member_words (guild_id, user_id, word)'
+			'VALUES (?, ?, ?)'
+			'ON CONFLICT(guild_id, user_id, word) DO UPDATE SET quantity = quantity + 1;'
+		)
+		data = ((msg.guild.id, msg.author.id, word) for word in words)
+		task = functools.partial(self.safe_write, query, data)
+		await self.bot.loop.run_in_executor(self._executor, task)

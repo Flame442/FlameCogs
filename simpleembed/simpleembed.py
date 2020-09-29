@@ -18,7 +18,8 @@ class SimpleEmbed(commands.Cog):
 		
 		Use the optional parameter `color` to change the color of the embed.
 		The embed will contain the text `text`.
-		All normal discord formatting will work inside the embed. 
+		All normal discord formatting will work inside the embed.
+		Send the optional image with the command to insert an image at the bottom of the embed.
 		"""
 		if color is None:
 			color = await ctx.embed_color()
@@ -26,7 +27,10 @@ class SimpleEmbed(commands.Cog):
 			description=text,
 			color=color
 		)
-		await ctx.send(embed=embed)
+		if ctx.message.attachments:
+			content = await ctx.message.attachments[0].to_file()
+			embed.set_image(url="attachment://" + str(content.filename))
+		await ctx.send(embed=embed, file=content if ctx.message.attachments else None)
 		try:
 			await ctx.message.delete()
 		except discord.Forbidden:
