@@ -8,6 +8,7 @@ from random import randint
 from io import BytesIO
 import functools
 import asyncio
+import urllib
 
 
 MAX_SIZE = 8 * 1000 * 1000
@@ -179,9 +180,10 @@ class Deepfry(commands.Cog):
 		if not ctx.message.attachments and not link:
 			async for msg in ctx.channel.history(limit=10):
 				for a in msg.attachments:
+					path = urllib.parse.urlparse(a.url).path
 					if (
-						a.url.split('.')[-1].lower() in self.imagetypes 
-						or a.url.split('.')[-1].lower() in self.videotypes 
+						any(path.lower().endswith(x) for x in self.imagetypes)
+						or any(path.lower().endswith(x) for x in self.videotypes)
 						or allowAllTypes
 					):
 						link = a.url
@@ -190,15 +192,15 @@ class Deepfry(commands.Cog):
 					break
 			if not link:
 				raise ImageFindError('Please provide an attachment.')
-		if link: #linked image	
-			if link.split('.')[-1].lower() in self.imagetypes:
+		if link: #linked image
+			path = urllib.parse.urlparse(link).path
+			if any(path.lower().endswith(x) for x in self.imagetypes):
 				isgif = False
-			elif link.split('.')[-1].lower() in self.videotypes or allowAllTypes:
+			elif any(path.lower().endswith(x) for x in self.videotypes) or allowAllTypes:
 				isgif = True
 			else:
-				ext = link.split('.')[-1]
 				raise ImageFindError(
-					f'"{ext}" is not a supported filetype. Make sure you provide a direct link.'
+					f'That does not look like an image of a supported filetype. Make sure you provide a direct link.'
 				)
 			async with aiohttp.ClientSession() as session:
 				try:
@@ -210,13 +212,13 @@ class Deepfry(commands.Cog):
 						'An image could not be found. Make sure you provide a direct link.'
 					)
 		else: #attached image
-			ext = ctx.message.attachments[0].url.split('.')[-1]
-			if ext.lower() in self.imagetypes:
+			path = urllib.parse.urlparse(ctx.message.attachments[0].url).path
+			if any(path.lower().endswith(x) for x in self.imagetypes):
 				isgif = False
-			elif ext.lower() in self.videotypes or allowAllTypes:
+			elif any(path.lower().endswith(x) for x in self.videotypes) or allowAllTypes:
 				isgif = True
 			else:
-				raise ImageFindError(f'"{ext}" is not a supported filetype.')
+				raise ImageFindError(f'That does not look like an image of a supported filetype.')
 			if ctx.message.attachments[0].size > filesize_limit:
 				raise ImageFindError('That image is too large.')
 			temp_orig = BytesIO()
