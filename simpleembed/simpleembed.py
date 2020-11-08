@@ -5,39 +5,39 @@ from typing import Optional
 
 
 class SimpleEmbed(commands.Cog):
-    """Simply send embeds."""
+	"""Simply send embeds."""
 
-    def __init__(self, bot):
-        self.bot = bot
+	def __init__(self, bot):
+		self.bot = bot
 
-    @checks.has_permissions(manage_messages=True)
-    @commands.bot_has_permissions(embed_links=True)
-    @commands.command()
-    async def sendembed(self, ctx, color: Optional[discord.Color] = None, image=None, thumbnail=None, *, text):
-        """
-        Send an embed.
+	@checks.has_permissions(manage_messages=True)
+	@commands.bot_has_permissions(embed_links=True)
+	@commands.command()
+	async def sendembed(self, ctx, color: Optional[discord.Color] = None, image=None, thumbnail=None, *, text):
+		"""
+		Send an embed.
 
-        Use the optional parameter `color` to change the color of the embed.
-        Use the optional parameter 'image' to include an image url
-        Use the optional parameter 'thumbnail' to include an thumbnail image url
-        The embed will contain the text `text`.
+		Use the optional parameter `color` to change the color of the embed.
+		Use the optional parameter 'image' to include an image url
+		Use the optional parameter 'thumbnail' to include an thumbnail image url
+		The embed will contain the text `text`.
 
-        """
-        if color is None:
-            color = await ctx.embed_color()
-        embed = discord.Embed(
-            description=text,
-            color=color
-        )
+		"""
+		if color is None:
+			color = await ctx.embed_color()
+		embed = discord.Embed(
+			description=text,
+			color=color
+		)
 
-        if image is not None:
-            embed.set_image(url=image)
+		if image is not None:
+			embed.set_image(url=image)
 
-        if thumbnail is not None:
-            embed.set_thumbnail(url=thumbnail)
+		if thumbnail is not None:
+			embed.set_thumbnail(url=thumbnail)
 
-        await ctx.send(embed=embed)
+		await ctx.send(embed=embed)
 
-    async def red_delete_data_for_user(self, **kwargs):
-        """Nothing to delete."""
-        return
+	async def red_delete_data_for_user(self, **kwargs):
+		"""Nothing to delete."""
+		return
