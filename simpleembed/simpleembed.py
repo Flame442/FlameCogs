@@ -18,8 +18,8 @@ class SimpleEmbed(commands.Cog):
 		Send an embed.
 
 		Use the optional parameter `color` to change the color of the embed.
-		Use the optional parameter 'image' to include an image url
-		Use the optional parameter 'thumbnail' to include an thumbnail image url
+		Use the parameter 'image' to include an image url
+		Use the parameter 'thumbnail' to include an thumbnail image url
 		The embed will contain the text `text`.
 
 		"""
@@ -37,6 +37,10 @@ class SimpleEmbed(commands.Cog):
 			embed.set_thumbnail(url=thumbnail)
 
 		await ctx.send(embed=embed)
+		try:
+			await ctx.message.delete()
+		except discord.Forbidden:
+			pass
 
 	async def red_delete_data_for_user(self, **kwargs):
 		"""Nothing to delete."""
