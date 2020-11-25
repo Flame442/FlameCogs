@@ -16,13 +16,25 @@ Load giftaway: `[p]load giftaway`.
 
 ## Step 2
 
-Go to the [IGDB website](https://api.igdb.com/pricing).  
-Select "Get Started" under the Free Tier and fill in the sign up information to create an account.
+Create a [twitch account](https://dev.twitch.tv/login).
 
 ## Step 3
 
-When signed in, find the box labled "credentials" and copy the `Key`.
+Enable [two factor authentication](https://www.twitch.tv/settings/security) for your twitch account.
 
 ## Step 4
 
-Give the bot your API key with `[p]set api igdb key <your_key>`.
+[Create](https://dev.twitch.tv/console/apps/create) a new application on twitch. Put whatever you want for the application name (although it needs to be unique), 
+enter "`http://localhost`" for the OAuth Redirect URLs field, and select "`Application integration`" for the category.
+
+## Step 5
+
+Click [manage](https://dev.twitch.tv/console/apps) on your newly created app.
+
+## Step 6
+
+Generate a new client secret by clicking "`New secret`".
+
+## Step 7
+
+Give the bot your API ID and secret with `[p]set api igdb id <your_id> secret <your_secret>`.
