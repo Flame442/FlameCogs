@@ -8,6 +8,7 @@ import asyncio
 from datetime import date
 from io import BytesIO
 import logging
+import time
 
 
 _ = Translator('GiftAway', __file__)
@@ -142,20 +143,16 @@ class Gift:
 	
 	async def get_game_data(self):
 		"""Get some data for a game from IGDB"""
-		if hasattr(self.cog.bot, 'get_shared_api_tokens'): #3.2
-			api = await self.cog.bot.get_shared_api_tokens('igdb')
-			key = api.get('key')
-		else: #3.1	
-			api = await self.cog.bot.db.api_tokens.get_raw('igdb', default={'key': None})
-			key = api['key']
-		
-		if not key:
+		client_id, access_token = await self.cog._get_api_keys()
+		if not (client_id and access_token):
 			return
 		
+		URL_BASE = 'https://api.igdb.com/v4'
+		headers = {'Accept': 'application/json', 'Client-ID': client_id, 'Authorization': f'Bearer {access_token}'}
 		async with aiohttp.ClientSession() as session:
 			async with session.post(
-				'https://api-v3.igdb.com/games',
-				headers={'Accept': 'application/json', 'user-key': key},
+				URL_BASE + '/games',
+				headers=headers,
 				data=f'search "{self.game_name}"; fields cover,first_release_date,genres,rating,summary,url,websites; limit 1;'
 			) as response:
 				resp = await response.json(content_type=None)
@@ -181,8 +178,8 @@ class Gift:
 
 			if cover_id:
 				async with session.post(
-					'https://api-v3.igdb.com/covers',
-					headers={'Accept': 'application/json', 'user-key': key},
+					URL_BASE + '/covers',
+					headers=headers,
 					data=f'where id = {cover_id}; fields url; limit 1;'
 				) as response:
 					resp = await response.json(content_type=None)
@@ -192,8 +189,8 @@ class Gift:
 				
 			if genre_ids:
 				async with session.post(
-					'https://api-v3.igdb.com/genres',
-					headers={'Accept': 'application/json', 'user-key': key},
+					URL_BASE + '/genres',
+					headers=headers,
 					data=f'where id = {genre_ids}; fields name;'
 				) as response:
 					resp = await response.json(content_type=None)
@@ -203,8 +200,8 @@ class Gift:
 			
 			if website_ids:
 				async with session.post(
-					'https://api-v3.igdb.com/websites',
-					headers={'Accept': 'application/json', 'user-key': key},
+					URL_BASE + '/websites',
+					headers=headers,
 					data=f'where id = {website_ids} & category = 1; fields url; limit 1;'
 				) as response:
 					resp = await response.json(content_type=None)
@@ -267,6 +264,8 @@ class GiftAway(commands.Cog):
 			giftChannel = None
 		)
 		self.gifts = []
+		self.access_token = None
+		self.token_expire = 0
 		asyncio.create_task(self.setup())
 
 	async def setup(self):
@@ -401,6 +400,39 @@ class GiftAway(commands.Cog):
 		await self.config.guild(ctx.guild).giftChannel.set(None)
 		await ctx.send(_('Removed.'))
 
+	async def _get_api_keys(self):
+		"""Gets an up to date client id and access token."""
+		api = await self.bot.get_shared_api_tokens('igdb')
+		
+		old_key = api.get('key')
+		if old_key:
+			await self.bot.remove_shared_api_tokens('igdb', 'key')
+			await self.bot.send_to_owners(
+				'Hi! You had previously set an api key for `GiftAway` to allow the cog to display info about the game being given away. '
+				'However, that API has recently changed and you need to create a new API key to continue using this functionality. '
+				'Please follow the instructions at <https://github.com/Flame442/FlameCogs/blob/master/giftaway/setup.md> '
+				'if you want to re-enable that functionality, and have a good day! (This message will NOT be sent again)'
+			)
+			return (None, None)
+		
+		client_id = api.get('id')
+		secret = api.get('secret')
+		if not (client_id and secret):
+			return (None, None)
+		if self.access_token and time.time() < self.token_expire:
+			return (client_id, self.access_token)
+		async with aiohttp.ClientSession() as session:
+			async with session.post(
+				f'https://id.twitch.tv/oauth2/token?client_id={client_id}&client_secret={secret}&grant_type=client_credentials'
+			) as response:
+				resp = await response.json(content_type=None)
+		if msg := resp.get('message'):
+			self.log.warning(f'Got an error response getting the access token: {msg}')
+			return (None, None)
+		self.access_token = resp['access_token']
+		self.token_expire = time.time() + resp['expires_in'] - 5
+		return (client_id, self.access_token)		
+		
 	@commands.Cog.listener()
 	async def on_reaction_add(self, reaction, user):
 		if user.bot:
