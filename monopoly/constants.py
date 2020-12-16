@@ -145,9 +145,21 @@ HOUSEPRICE = [
 	-1, 200, 200, -1, 200,
 	-1, -1, 200, -1, 200
 ]
-PROPGROUPS = [
-	[1, 3], [6, 8, 9],
-	[11, 13, 14], [16, 18, 19],
-	[21, 23, 24], [26, 27, 29],
-	[31, 32, 34], [37, 39]
-]
+PROPGROUPS = {
+	'Brown': [1, 3], 'Light Blue': [6, 8, 9],
+	'Pink': [11, 13, 14], 'Orange': [16, 18, 19],
+	'Red': [21, 23, 24], 'Yellow': [26, 27, 29],
+	'Green': [31, 32, 34], 'Dark Blue': [37, 39]
+}
+PROPCOLORS = {
+	1: 'Brown', 3: 'Brown',
+	6: 'Light Blue', 8: 'Light Blue', 9: 'Light Blue',
+	11: 'Pink', 13: 'Pink', 14: 'Pink',
+	16: 'Orange', 18: 'Orange', 19: 'Orange',
+	21: 'Red', 23: 'Red', 24: 'Red',
+	26: 'Yellow', 27: 'Yellow', 29: 'Yellow',
+	31: 'Green', 32: 'Green', 34: 'Green',
+	37: 'Dark Blue', 39: 'Dark Blue',
+	5: 'Railroad', 15: 'Railroad', 25: 'Railroad', 35: 'Railroad', 
+	12: 'Utility', 28: 'Utility'
+}
