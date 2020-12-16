@@ -6,5 +6,6 @@
     "requirements" : [],
     "description" : "Tracks the most commonly used words by every member and in every server.",
     "tags" : ["fun", "utility", "stats"],
-    "min_python_version": [3, 6, 0]
+    "min_python_version": [3, 6, 0],
+    "end_user_data_statement": "This cog persistently stores the number of times every unique word is said per-user per-guild. Data is collected on every message the bot can see unless the guild, channel, or user have opted out. Users can request that their data is deleted using `[p]wordstatsset forgetme` and can request to opt out of data collection using `[p]wordstatsset user no`."
 }
