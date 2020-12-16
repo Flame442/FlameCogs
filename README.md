@@ -560,7 +560,12 @@ Defaults to `True`.
 This command is only usable by the server owner and bot owner.  
 This value is channel specific.
 
-**`[p]wordstatsset channel [value]`**  
+**`[p]wordstatsset user [value]`**  
+Set if wordstats should record stats for you.  
+Defaults to True.  
+This value is user specific.
+
+**`[p]wordstatsset stopwords [value]`**  
 Set if stopwords should be included in outputs.  
 Stopwords are common words such as "a", "it" and "the".  
 Stopwords will still be included in numerical counts, they will only be hidden from list displays.  
@@ -571,6 +576,11 @@ This value is server specific.
 **`[p]wordstatsset convert`**  
 Convert data from config to the SQLite database.  
 This command is only usable by the bot owner.
+
+**`[p]wordstatsset forgetme`**  
+Make wordstats forget all data about you.  
+This is equivalent to `[p]mydata forgetme`, but only for wordstats.  
+This cannot be undone.
 
 **`[p]wordstatsset deleteall`**  
 Delete all wordstats data.  
