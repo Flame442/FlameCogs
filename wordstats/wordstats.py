@@ -30,12 +30,16 @@ class WordStats(commands.Cog):
 	"""Tracks commonly used words."""
 	def __init__(self, bot):
 		self.bot = bot
-		self.ignore_cache = {}
+		self.ignore_cache_guild = {}
+		self.ignore_cache_user = {}
 		self.config = Config.get_conf(self, identifier=7345167905)
 		self.config.register_guild(
 			enableGuild = True,
 			disabledChannels = [],
-			displayStopwords = True
+			displayStopwords = True,
+		)
+		self.config.register_user(
+			enableUser = True,
 		)
 		self._connection = apsw.Connection(str(cog_data_path(self) / 'wordstats.db'))
 		self.cursor = self._connection.cursor()
@@ -623,8 +627,6 @@ class WordStats(commands.Cog):
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
 	
-	@commands.guild_only()
-	@checks.guildowner()
 	@commands.group()
 	async def wordstatsset(self, ctx):
 		"""Config options for wordstats."""
@@ -682,6 +684,8 @@ class WordStats(commands.Cog):
 			self.cursor.execute('COMMIT;')
 		await ctx.send('Done converting.')
 	
+	@commands.guild_only()
+	@checks.guildowner()
 	@wordstatsset.command()
 	async def server(self, ctx, value: bool=None):
 		"""
@@ -702,9 +706,11 @@ class WordStats(commands.Cog):
 				await ctx.send('Stats will now be recorded in this server.')
 			else:
 				await ctx.send('Stats will no longer be recorded in this server.')
-			if ctx.guild.id in self.ignore_cache:
-				del self.ignore_cache[ctx.guild.id]
+			if ctx.guild.id in self.ignore_cache_guild:
+				del self.ignore_cache_guild[ctx.guild.id]
 	
+	@commands.guild_only()
+	@checks.guildowner()
 	@wordstatsset.command()
 	async def channel(self, ctx, value: bool=None):
 		"""
@@ -734,9 +740,49 @@ class WordStats(commands.Cog):
 					v.append(ctx.channel.id)
 					await self.config.guild(ctx.guild).disabledChannels.set(v)
 					await ctx.send('Stats will no longer be recorded in this channel.')
-			if ctx.guild.id in self.ignore_cache:
-				del self.ignore_cache[ctx.guild.id]
+			if ctx.guild.id in self.ignore_cache_guild:
+				del self.ignore_cache_guild[ctx.guild.id]
 	
+	@wordstatsset.command()
+	async def user(self, ctx, value: bool=None):
+		"""
+		Set if wordstats should record stats for you.
+		
+		Defaults to True.
+		This value is user specific.
+		"""
+		if value is None:
+			v = await self.config.user(ctx.author).enableUser()
+			if v:
+				await ctx.send(f'Stats are being recorded for you. Use `{ctx.prefix}wordstatsset user no` to disable.')
+			else:
+				await ctx.send('Stats are not being recorded for you.')
+		else:
+			await self.config.user(ctx.author).enableUser.set(value)
+			if value:
+				await ctx.send('Stats will now be recorded for you.')
+			else:
+				await ctx.send('Stats will no longer be recorded for you.')
+			if ctx.author.id in self.ignore_cache_user:
+				del self.ignore_cache_user[ctx.author.id]
+	
+	@wordstatsset.command()
+	async def forgetme(self, ctx):
+		"""
+		Make wordstats forget all data about you.
+		
+		This is equivalent to `[p]mydata forgetme`, but only for wordstats.
+		This cannot be undone.
+		"""
+		await self.red_delete_data_for_user(requester='user_strict', user_id=ctx.author.id)
+		await ctx.send(
+			'Done!\nThis does **not** prevent wordstats from continuing to track you. '
+			'If you do not want more data to be collected, make sure you run `[p]wordstatsset user no`.'
+		)
+		
+	
+	@commands.guild_only()
+	@checks.guildowner()
 	@wordstatsset.command()
 	async def stopwords(self, ctx, value: bool=None):
 		"""
@@ -763,6 +809,15 @@ class WordStats(commands.Cog):
 	def cog_unload(self):
 		self._executor.shutdown()
 	
+	async def red_delete_data_for_user(self, *, requester, user_id):
+		"""Delete all data from a particular user."""
+		query = (
+			'DELETE FROM member_words '
+			'WHERE user_id = ?;'
+		)
+		self.cursor.execute(query, (user_id,))
+		
+	
 	def safe_write(self, query, data):
 		"""Func for safely writing in another thread."""
 		cursor = self._connection.cursor()
@@ -775,12 +830,16 @@ class WordStats(commands.Cog):
 			return
 		if await self.bot.cog_disabled_in_guild(self, msg.guild):
 			return
-		if msg.guild.id not in self.ignore_cache:
+		if msg.guild.id not in self.ignore_cache_guild:
 			cfg = await self.config.guild(msg.guild).all()
-			self.ignore_cache[msg.guild.id] = cfg
-		enableGuild = self.ignore_cache[msg.guild.id]['enableGuild']
-		disabledChannels = self.ignore_cache[msg.guild.id]['disabledChannels']
-		if not enableGuild or msg.channel.id in disabledChannels:
+			self.ignore_cache_guild[msg.guild.id] = cfg
+		if msg.author.id not in self.ignore_cache_user:
+			cfg = await self.config.user(msg.author).all()
+			self.ignore_cache_user[msg.author.id] = cfg
+		enableGuild = self.ignore_cache_guild[msg.guild.id]['enableGuild']
+		disabledChannels = self.ignore_cache_guild[msg.guild.id]['disabledChannels']
+		enableUser = self.ignore_cache_user[msg.author.id]['enableUser']
+		if not enableGuild or msg.channel.id in disabledChannels or not enableUser:
 			return
 		#Strip any characters besides letters and spaces.
 		words = re.sub(r'[^a-z \n]', '', msg.content.lower()).split()
