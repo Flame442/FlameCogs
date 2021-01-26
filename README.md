@@ -573,6 +573,14 @@ Defaults to `True`.
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
+**`[p]wordstatsset minlength [value]`**  
+Set the minimum length a word has to be in order to be displayed.  
+Shorter words will still be included in numerical counts, they will only be hidden from list displays.  
+Set to 0 to disable.  
+Defaults to `0`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
 **`[p]wordstatsset convert`**  
 Convert data from config to the SQLite database.  
 This command is only usable by the bot owner.
