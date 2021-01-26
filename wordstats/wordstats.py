@@ -37,6 +37,7 @@ class WordStats(commands.Cog):
 			enableGuild = True,
 			disabledChannels = [],
 			displayStopwords = True,
+			minWordLength = 0,
 		)
 		self.config.register_user(
 			enableUser = True,
@@ -168,22 +169,23 @@ class WordStats(commands.Cog):
 				stop = tuple()
 			else:
 				stop = STOPWORDS
+			minWordLength = await self.config.guild(ctx.guild).minWordLength()
 			if member:
 				result = self.cursor.execute(
 					'SELECT word, quantity FROM member_words '
-					f'WHERE guild_id = ? AND user_id = ? AND word NOT IN {stop} '
+					f'WHERE guild_id = ? AND user_id = ? AND word NOT IN {stop} AND length(word) >= ? '
 					'ORDER BY quantity DESC '
 					'LIMIT ? ',
-					(guild.id, member.id, amount)
+					(guild.id, member.id, minWordLength, amount)
 				).fetchall()
 			else:
 				result = self.cursor.execute(
 					'SELECT word, sum(quantity) AS total FROM member_words '
-					f'WHERE guild_id = ? AND word NOT IN {stop} '
+					f'WHERE guild_id = ? AND word NOT IN {stop} AND length(word) >= ? '
 					'GROUP BY word '
 					'ORDER BY total DESC '
 					'LIMIT ? ',
-					(guild.id, amount)
+					(guild.id, minWordLength, amount)
 				).fetchall()
 		if not result:
 			return await ctx.send('No words have been said yet.')
@@ -268,13 +270,14 @@ class WordStats(commands.Cog):
 				stop = tuple()
 			else:
 				stop = STOPWORDS
+			minWordLength = await self.config.guild(ctx.guild).minWordLength()
 			result = self.cursor.execute(
 				'SELECT word, sum(quantity) AS total FROM member_words '
-				f'WHERE word NOT IN {stop} '
+				f'WHERE word NOT IN {stop} AND length(word) >= ? '
 				'GROUP BY word '
 				'ORDER BY total DESC '
 				'LIMIT ? ',
-				(amount,)
+				(minWordLength, amount)
 			).fetchall()
 		if not result:
 			return await ctx.send('No words have been said yet.')
@@ -779,7 +782,6 @@ class WordStats(commands.Cog):
 			'Done!\nThis does **not** prevent wordstats from continuing to track you. '
 			'If you do not want more data to be collected, make sure you run `[p]wordstatsset user no`.'
 		)
-		
 	
 	@commands.guild_only()
 	@checks.guildowner()
@@ -806,6 +808,28 @@ class WordStats(commands.Cog):
 			else:
 				await ctx.send('Stopwords will no longer be included in outputs.')
 	
+	@commands.guild_only()
+	@checks.guildowner()
+	@wordstatsset.command()
+	async def minlength(self, ctx, value: int=None):
+		"""
+		Set the minimum length a word has to be in order to be displayed.
+		
+		Shorter words will still be included in numerical counts, they will only be hidden from list displays.
+		Set to 0 to disable.
+		Defaults to 0.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).minWordLength()
+			await ctx.send(f'The minimum word length is currently {v}.')
+			return
+		if value < 0:
+			await ctx.send('You must provide a number that is 0 or greater.')
+			return
+		await self.config.guild(ctx.guild).minWordLength.set(value)
+		await ctx.send(f'The minimum word length is now set to {value}.')
+	
 	def cog_unload(self):
 		self._executor.shutdown()
 	
@@ -816,7 +840,6 @@ class WordStats(commands.Cog):
 			'WHERE user_id = ?;'
 		)
 		self.cursor.execute(query, (user_id,))
-		
 	
 	def safe_write(self, query, data):
 		"""Func for safely writing in another thread."""
