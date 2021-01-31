@@ -45,7 +45,7 @@ class MonopolyAI():
 			high = max(high, 48)
 		
 		#PROPS
-		for group in PROPGROUPS:
+		for group in PROPGROUPS.values():
 			monopoly = (
 				all(game.ownedby[p] == game.ownedby[group[0]] for p in group)
 				and game.ownedby[group[0]] not in (-1, self.me)
@@ -131,19 +131,20 @@ class MonopolyAI():
 		possible_colors = [
 			all(game.ownedby[p] == self.me for p in group)
 			and not any(game.ismortgaged[p] == 1 for p in group)
-			for group in PROPGROUPS
+			for group in PROPGROUPS.values()
 		]
 		if not any(possible_colors):
 			return False
 		house_costs = {}
 		to_subset_sum = {}
 		n = -1
+		pg = list(PROPGROUPS.values())
 		for idx, possible in enumerate(possible_colors):
 			if not possible:
 				continue
 			n += 1
-			per = HOUSEPRICE[PROPGROUPS[idx][0]]
-			count = min(max_spend // per, (len(PROPGROUPS[idx]) * 5) - sum(game.numhouse[p] for p in PROPGROUPS[idx]))
+			per = HOUSEPRICE[pg[idx][0]]
+			count = min(max_spend // per, (len(pg[idx]) * 5) - sum(game.numhouse[p] for p in pg[idx]))
 			if per not in house_costs:
 				#cannot safely afford a house OR no house spots remain
 				if count == 0:
@@ -166,7 +167,7 @@ class MonopolyAI():
 			to_change = {}
 			#repeat the number of houses this prop group is getting
 			for _ in range(subset_sum[hc]):
-				current_houses = [game.numhouse[p] for p in PROPGROUPS[idx]]
+				current_houses = [game.numhouse[p] for p in pg[idx]]
 				for x in to_change:
 					current_houses[x] = to_change[x]
 				prop_id = current_houses.index(min(current_houses))
@@ -176,7 +177,7 @@ class MonopolyAI():
 						break
 					to_change[prop_id] += 1
 				else:
-					to_change[prop_id] = game.numhouse[PROPGROUPS[idx][prop_id]] + 1
+					to_change[prop_id] = game.numhouse[pg[idx][prop_id]] + 1
 			for x in to_change:
 				result.append(x)
 				result.append(to_change[x])
@@ -195,19 +196,20 @@ class MonopolyAI():
 		possible_colors = [
 			all(game.ownedby[p] == self.me for p in group)
 			and not any(game.ismortgaged[p] for p in group)
-			for group in PROPGROUPS
+			for group in PROPGROUPS.values()
 		]
 		if not any(possible_colors):
 			return False
 		house_costs = {}
 		to_subset_sum = {}
 		n = -1
+		pg = list(PROPGROUPS.values())
 		for idx, possible in enumerate(possible_colors):
 			if not possible:
 				continue
 			n += 1
-			per = HOUSEPRICE[PROPGROUPS[idx][0]] // 2
-			count = sum(game.numhouse[p] for p in PROPGROUPS[idx])
+			per = HOUSEPRICE[pg[idx][0]] // 2
+			count = sum(game.numhouse[p] for p in pg[idx])
 			if per not in house_costs:
 				#no houses in this group
 				if count == 0:
@@ -230,7 +232,7 @@ class MonopolyAI():
 			to_change = {}
 			#repeat the number of houses this prop group is getting
 			for _ in range(subset_sum[hc]):
-				current_houses = [game.numhouse[p] for p in PROPGROUPS[idx]]
+				current_houses = [game.numhouse[p] for p in pg[idx]]
 				for x in to_change:
 					current_houses[x] = to_change[x]
 				prop_id = current_houses.index(max(current_houses))
@@ -240,7 +242,7 @@ class MonopolyAI():
 						break
 					to_change[prop_id] -= 1
 				else:
-					to_change[prop_id] = game.numhouse[PROPGROUPS[idx][prop_id]] - 1
+					to_change[prop_id] = game.numhouse[pg[idx][prop_id]] - 1
 			for x in to_change:
 				result.append(x)
 				result.append(to_change[x])
@@ -335,7 +337,7 @@ class MonopolyAI():
 				value += PRICEBUY[prop]
 				if game.ismortgaged[prop]:
 					value -= TENMORTGAGEPRICE[prop]
-		for group in PROPGROUPS:
+		for group in PROPGROUPS.values():
 			if all(ownedby[p] == player for p in group):
 				value += 1000
 		return value
