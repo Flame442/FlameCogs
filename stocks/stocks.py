@@ -155,8 +155,11 @@ class Stocks(commands.Cog):
 			await ctx.send(f'I couldn\'t find any data for the stock {name}. Please try another stock.')
 			return
 		price = stock_data[name]['price']
+		real = str(price)
+		real = ('0' * (3 - max(len(real), 0))) + real
+		real =  '$' + real[:-2] + '.' + real[-2:]
 		currency = await bank.get_currency_name(ctx.guild)
-		await ctx.send(f'{name}: {price} {currency} per share.')
+		await ctx.send(f'**{name}:** {price} {currency} per share ({real}).')
 
 	async def _fix_stocks(self, user):
 		"""Fix a user's stock data to account for old data and stock splits."""

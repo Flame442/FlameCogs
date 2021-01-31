@@ -1,7 +1,7 @@
 import discord
 from redbot.core.data_manager import bundled_data_path
 from redbot.core.utils.chat_formatting import pagify
-from .constants import TILENAME, PRICEBUY, RENTPRICE, RRPRICE, CCNAME, CHANCENAME, MORTGAGEPRICE, TENMORTGAGEPRICE, HOUSEPRICE, PROPGROUPS
+from .constants import TILENAME, PRICEBUY, RENTPRICE, RRPRICE, CCNAME, CHANCENAME, MORTGAGEPRICE, TENMORTGAGEPRICE, HOUSEPRICE, PROPGROUPS, PROPCOLORS
 from .ai import MonopolyAI
 import asyncio
 import logging
@@ -224,7 +224,7 @@ class MonopolyGame():
 				mention = mem.mention
 			else:
 				mention = mem.display_name
-			self.msg += f'{mention}\'s turn!\n'
+			self.msg += f'{mention}\'s turn! You have ${self.bal[self.p]}.\n'
 			#If they are in debt, handle that first
 			if self.bal[self.p] < 0:
 				await self.debt()
@@ -842,7 +842,7 @@ class MonopolyGame():
 		else: #pay normal rent
 			memown = await self.get_member(self.uid[self.ownedby[self.tile[self.p]]])
 			isMonopoly = False
-			for group in PROPGROUPS:
+			for group in PROPGROUPS.values():
 				if self.tile[self.p] in group:
 					if all(
 						[self.ownedby[self.tile[self.p]] == self.ownedby[prop] for prop in group]
@@ -983,18 +983,6 @@ class MonopolyGame():
 		money_partner = 0
 		goojf_p = 0
 		goojf_partner = 0
-		colors = {
-			1: 'Brown', 3: 'Brown',
-			6: 'Light Blue', 8: 'Light Blue', 9: 'Light Blue',
-			11: 'Pink', 13: 'Pink', 14: 'Pink',
-			16: 'Orange', 18: 'Orange', 19: 'Orange',
-			21: 'Red', 23: 'Red', 24: 'Red',
-			26: 'Yellow', 27: 'Yellow', 29: 'Yellow',
-			31: 'Green', 32: 'Green', 34: 'Green',
-			37: 'Dark Blue', 39: 'Dark Blue',
-			5: 'Railroad', 15: 'Railroad', 25: 'Railroad', 35: 'Railroad', 
-			12: 'Utility', 28: 'Utility'
-		}
 		self.msg += '```\n'
 		for a in range(self.num):
 			if self.isalive[a] and a != self.p:
@@ -1026,7 +1014,7 @@ class MonopolyGame():
 		for a in range(40):
 			#properties cannot be traded if any property in their color group has a house
 			groupHasHouse = False
-			for group in PROPGROUPS:
+			for group in PROPGROUPS.values():
 				if a in group:
 					if any(self.numhouse[prop] not in (-1, 0) for prop in group):
 						groupHasHouse = True
@@ -1043,11 +1031,11 @@ class MonopolyGame():
 			for a in range(len(tradeable_p)):
 				if to_trade_p[a]:
 					self.msg += '{:2}  +  {:10} {}\n'.format(
-						a, colors[tradeable_p[a]], TILENAME[tradeable_p[a]]
+						a, PROPCOLORS[tradeable_p[a]], TILENAME[tradeable_p[a]]
 					)
 				else:
 					self.msg += '{:2}     {:10} {}\n'.format(
-						a, colors[tradeable_p[a]], TILENAME[tradeable_p[a]]
+						a, PROPCOLORS[tradeable_p[a]], TILENAME[tradeable_p[a]]
 					)
 			self.msg += '\n'
 			if money_p != 0:
@@ -1129,11 +1117,11 @@ class MonopolyGame():
 			for a in range(len(tradeable_partner)):
 				if to_trade_partner[a]:
 					self.msg += '{:2}  +  {:10} {}\n'.format(
-						a, colors[tradeable_partner[a]], TILENAME[tradeable_partner[a]]
+						a, PROPCOLORS[tradeable_partner[a]], TILENAME[tradeable_partner[a]]
 					)
 				else:
 					self.msg += '{:2}     {:10} {}\n'.format(
-						a, colors[tradeable_partner[a]], TILENAME[tradeable_partner[a]]
+						a, PROPCOLORS[tradeable_partner[a]], TILENAME[tradeable_partner[a]]
 					)
 			self.msg += '\n'
 			if money_partner != 0:
@@ -1217,7 +1205,7 @@ class MonopolyGame():
 		for a in range(len(tradeable_p)):
 			if to_trade_p[a]:
 				hold_p += '{:10} {}\n'.format(
-					colors[tradeable_p[a]], TILENAME[tradeable_p[a]]
+					PROPCOLORS[tradeable_p[a]], TILENAME[tradeable_p[a]]
 				)
 		hold_p += '\n'
 		if money_p != 0:
@@ -1229,7 +1217,7 @@ class MonopolyGame():
 		for a in range(len(tradeable_partner)):
 			if to_trade_partner[a]:
 				hold_partner += '{:10} {}\n'.format(
-					colors[tradeable_partner[a]], TILENAME[tradeable_partner[a]]
+					PROPCOLORS[tradeable_partner[a]], TILENAME[tradeable_partner[a]]
 				)
 		hold_partner += '\n'
 		if money_partner != 0:
@@ -1311,19 +1299,13 @@ class MonopolyGame():
 	
 	async def house(self):
 		"""Buy and sell houses on monopolies."""
-		colors = {
-			'Brown': [1, 3], 'Light Blue': [6, 8, 9],
-			'Pink': [11, 13, 14], 'Orange': [16, 18, 19],
-			'Red': [21, 23, 24], 'Yellow': [26, 27, 29],
-			'Green': [31, 32, 34], 'Dark Blue': [37, 39]
-		}
 		houseable = []
-		for color in colors:
+		for color in PROPGROUPS:
 			#all owned by the current player
-			if not all(self.ownedby[prop] == self.p for prop in colors[color]):
+			if not all(self.ownedby[prop] == self.p for prop in PROPGROUPS[color]):
 				continue
 			#no props are mortgaged
-			if any(self.ismortgaged[prop] for prop in colors[color]):
+			if any(self.ismortgaged[prop] for prop in PROPGROUPS[color]):
 				continue
 			houseable.append(color)
 		if not houseable:
@@ -1333,7 +1315,7 @@ class MonopolyGame():
 			self.msg += '```\nid price color\n'
 			i = 0
 			for color in houseable:
-				self.msg += '{:2} {:5d} {}\n'.format(i, HOUSEPRICE[colors[color][0]], color)
+				self.msg += '{:2} {:5d} {}\n'.format(i, HOUSEPRICE[PROPGROUPS[color][0]], color)
 				i += 1
 			self.msg += (
 				'```Type the ID of the color group you want to manage.\n'
@@ -1356,7 +1338,7 @@ class MonopolyGame():
 			if choice == 'd':
 				break
 			choice = int(choice)
-			props = colors[houseable[choice]]
+			props = PROPGROUPS[houseable[choice]]
 			#start off with the current values
 			new_values = []
 			for a in props:
@@ -1427,14 +1409,16 @@ class MonopolyGame():
 							plural = 's'
 						if change > 0:
 							await self.ctx.send(
-								f'Are you sure you want to buy {change} house{plural}? (y/n) '
-								f'It will cost ${price} at ${HOUSEPRICE[props[0]]} per house.'
+								f'Are you sure you want to buy {change} house{plural}? (y/n)\n'
+								f'It will cost ${price} at ${HOUSEPRICE[props[0]]} per house. '
+								f'You currently have ${self.bal[self.p]}.'
 							)
 						else:
 							await self.ctx.send(
-								f'Are you sure you want to sell {abs(change)} house{plural}? (y/n) '
+								f'Are you sure you want to sell {abs(change)} house{plural}? (y/n)\n'
 								f'You will get ${price // 2} at '
-								f'${HOUSEPRICE[props[0]] // 2} per house.'
+								f'${HOUSEPRICE[props[0]] // 2} per house. '
+								f'You currently have ${self.bal[self.p]}.'
 							)
 						choice = await self.bot.wait_for(
 							'message',
@@ -1487,7 +1471,7 @@ class MonopolyGame():
 		#properties cannot be mortgaged if any property in their color group has a house
 		for a in mortgageable:
 			groupHasHouse = False
-			for group in PROPGROUPS:
+			for group in PROPGROUPS.values():
 				if a in group:
 					if any(self.numhouse[prop] not in (-1, 0) for prop in group):
 						groupHasHouse = True
@@ -1498,16 +1482,16 @@ class MonopolyGame():
 			self.msg += 'You do not have any properties that are able to be mortgaged.\n'
 			return
 		while True:
-			self.msg += '```\nid isM price name\n'
+			self.msg += '```\nid isM price color      name\n'
 			i = 0
 			for a in mortgageable:
 				if self.ismortgaged[a] == 1:
-					self.msg += '{:2}   + {:5d} {}\n'.format(
-						i, MORTGAGEPRICE[a], TILENAME[a]
+					self.msg += '{:2}   + {:5d} {:10} {}\n'.format(
+						i, MORTGAGEPRICE[a], PROPCOLORS[a], TILENAME[a]
 					)
 				else:
-					self.msg += '{:2}     {:5d} {}\n'.format(
-						i, MORTGAGEPRICE[a], TILENAME[a]
+					self.msg += '{:2}     {:5d} {:10} {}\n'.format(
+						i, MORTGAGEPRICE[a], PROPCOLORS[a], TILENAME[a]
 					)
 				i += 1
 			self.msg += '```Type the ID of the property you want to mortgage or unmortgage.\n`d`: Done\n'
@@ -1532,7 +1516,8 @@ class MonopolyGame():
 				if not self.is_ai(self.p):
 					await self.ctx.send(
 						f'Mortgage {TILENAME[mortgageable[choice]]} for '
-						f'${MORTGAGEPRICE[mortgageable[choice]]}? (y/n) You have ${self.bal[self.p]}.'
+						f'${MORTGAGEPRICE[mortgageable[choice]]}? (y/n)\n'
+						f'You have ${self.bal[self.p]}.'
 					)
 					yes_or_no = await self.bot.wait_for(
 						'message',
@@ -1555,8 +1540,8 @@ class MonopolyGame():
 						await self.ctx.send(
 							f'Unmortgage {TILENAME[mortgageable[choice]]} for '
 							f'${TENMORTGAGEPRICE[mortgageable[choice]]}? (y/n) '
-							f'You have ${self.bal[self.p]}. '
-							f'(${MORTGAGEPRICE[mortgageable[choice]]} + 10% interest)'
+							f'(${MORTGAGEPRICE[mortgageable[choice]]} + 10% interest)\n'
+							f'You have ${self.bal[self.p]}.'
 						)
 						yes_or_no = await self.bot.wait_for(
 							'message',
