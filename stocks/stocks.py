@@ -2,6 +2,7 @@ import discord
 from redbot.core import bank
 from redbot.core import commands
 from redbot.core import Config
+from redbot.core.utils.chat_formatting import humanize_number
 import aiohttp
 
 
@@ -47,9 +48,9 @@ class Stocks(commands.Cog):
 		except ValueError:
 			bal = await bank.get_balance(ctx.author)
 			await ctx.send(
-				f'You cannot afford {shares} share{plural} of {name}. '
-				f'It would cost {price * shares} {currency} ({price} {currency} each). '
-				f'You only have {bal} {currency}.'
+				f'You cannot afford {humanize_number(shares)} share{plural} of {name}. '
+				f'It would cost {humanize_number(price * shares)} {currency} ({humanize_number(price)} {currency} each). '
+				f'You only have {humanize_number(bal)} {currency}.'
 			)
 			return
 		async with self.config.user(ctx.author).stocks() as user_stocks:
@@ -58,8 +59,8 @@ class Stocks(commands.Cog):
 			else:
 				user_stocks[name] = {'count': shares, 'total_count': stock_data[name]['total_count']}
 		await ctx.send(
-			f'You purchased {shares} share{plural} of {name} for {price * shares} {currency} '
-			f'({price} {currency} each).\nYou now have {bal} {currency}.'
+			f'You purchased {humanize_number(shares)} share{plural} of {name} for {price * shares} {currency} '
+			f'({humanize_number(price)} {currency} each).\nYou now have {humanize_number(bal)} {currency}.'
 		)
 	
 	@stocks.command()
@@ -91,7 +92,7 @@ class Stocks(commands.Cog):
 			if shares > user_stocks[name]['count']:
 				await ctx.send(
 					f'You do not have enough shares of {name}. '
-					f'You only have {user_stocks[name]} share{plural}.'
+					f'You only have {humanize_number(user_stocks[name])} share{plural}.'
 				)
 				return
 			user_stocks[name]['count'] -= shares
@@ -100,8 +101,8 @@ class Stocks(commands.Cog):
 		bal = await bank.deposit_credits(ctx.author, shares * price)
 		currency = await bank.get_currency_name(ctx.guild)
 		await ctx.send(
-			f'You sold {shares} share{plural} of {name} for {price * shares} {currency} '
-			f'({price} {currency} each).\nYou now have {bal} {currency}.'
+			f'You sold {humanize_number(shares)} share{plural} of {name} for {humanize_number(price * shares)} {currency} '
+			f'({humanize_number(price)} {currency} each).\nYou now have {humanize_number(bal)} {currency}.'
 		)
 
 	@stocks.command()
@@ -132,9 +133,9 @@ class Stocks(commands.Cog):
 				price = 'Unknown'
 			msg += f'{stock}'
 			msg += ' ' * (name_len - len(stock))
-			msg += f'| {user_stocks[stock]["count"]}'
-			msg +=	' ' * (count_len - len(str(user_stocks[stock]['count'])))
-			msg += f'| {price}\n'
+			msg += f'| {humanize_number(user_stocks[stock]["count"])}'
+			msg +=	' ' * (count_len - len(str(humanize_number(user_stocks[stock]['count']))))
+			msg += f'| {humanize_number(price)}\n'
 		msg += '```'
 		await ctx.send(msg)
 	
@@ -159,7 +160,7 @@ class Stocks(commands.Cog):
 		real = ('0' * (3 - max(len(real), 0))) + real
 		real =  '$' + real[:-2] + '.' + real[-2:]
 		currency = await bank.get_currency_name(ctx.guild)
-		await ctx.send(f'**{name}:** {price} {currency} per share ({real}).')
+		await ctx.send(f'**{name}:** {humanize_number(price)} {currency} per share ({real}).')
 
 	async def _fix_stocks(self, user):
 		"""Fix a user's stock data to account for old data and stock splits."""
