@@ -219,16 +219,16 @@ class GameRoles(commands.Cog):
 
 	@commands.guild_only()
 	@checks.guildowner()
-	@commands.group(aliases=['grset'])
+	@commands.group(aliases=['grset'], invoke_without_command=True)
 	async def gameroleset(self, ctx):
 		"""Config options for gameroles."""
-		if ctx.invoked_subcommand is None:
-			data = await self.config.guild(ctx.guild).all()
-			msg = (
-				'Add roles: {doAdd}\n'
-				'Remove roles: {doRemove}\n'
-			).format_map(data)
-			await ctx.send(f'```py\n{msg}```')
+		await ctx.send_help()
+		data = await self.config.guild(ctx.guild).all()
+		msg = (
+			'Add roles: {doAdd}\n'
+			'Remove roles: {doRemove}\n'
+		).format_map(data)
+		await ctx.send(f'```py\n{msg}```')
 		
 	@gameroleset.command()
 	async def add(self, ctx, value: bool=None):
