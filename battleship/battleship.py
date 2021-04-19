@@ -86,17 +86,17 @@ class Battleship(commands.Cog):
 	
 	@commands.guild_only()
 	@checks.guildowner()
-	@commands.group()
+	@commands.group(invoke_without_command=True)
 	async def battleshipset(self, ctx):
 		"""Config options for battleship."""
-		if ctx.invoked_subcommand is None:
-			cfg = await self.config.guild(ctx.guild).all()
-			msg = (
-				'Extra shot on hit: {extraHit}\n'
-				'Mention on turn: {doMention}\n'
-				'Display the board using an image: {doImage}'
-			).format_map(cfg)
-			await ctx.send(f'```py\n{msg}```')
+		await ctx.send_help()
+		cfg = await self.config.guild(ctx.guild).all()
+		msg = (
+			'Extra shot on hit: {extraHit}\n'
+			'Mention on turn: {doMention}\n'
+			'Display the board using an image: {doImage}'
+		).format_map(cfg)
+		await ctx.send(f'```py\n{msg}```')
 	
 	@battleshipset.command()
 	async def extra(self, ctx, value: bool=None):

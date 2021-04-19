@@ -274,28 +274,28 @@ class Monopoly(commands.Cog):
 	
 	@commands.guild_only()
 	@checks.guildowner()
-	@commands.group()
+	@commands.group(invoke_without_command=True)
 	async def monopolyset(self, ctx):
 		"""Config options for monopoly."""
-		if ctx.invoked_subcommand is None:
-			cfg = await self.config.guild(ctx.guild).all()
-			msg = (
-				'Hold auctions: {doAuction}\n'
-				'Bail price: {bailValue}\n'
-				'Double go: {doDoubleGo}\n'
-				'Free parking reward: {freeParkingValue}\n'
-				'Go reward: {goValue}\n'
-				'Hotel Limit: {hotelLimit}\n'
-				'House limit: {houseLimit}\n'
-				'Income tax: {incomeValue}\n'
-				'Luxury tax: {luxuryValue}\n'
-				'Max jail rolls: {maxJailRolls}\n'
-				'Mention on turn: {doMention}\n'
-				'Minimum auction increase: {minRaise}\n'
-				'Starting cash: {startCash}\n'
-				'Timeout length: {timeoutValue}'
-			).format_map(cfg)
-			await ctx.send(f'```py\n{msg}```')
+		await ctx.send_help()
+		cfg = await self.config.guild(ctx.guild).all()
+		msg = (
+			'Hold auctions: {doAuction}\n'
+			'Bail price: {bailValue}\n'
+			'Double go: {doDoubleGo}\n'
+			'Free parking reward: {freeParkingValue}\n'
+			'Go reward: {goValue}\n'
+			'Hotel Limit: {hotelLimit}\n'
+			'House limit: {houseLimit}\n'
+			'Income tax: {incomeValue}\n'
+			'Luxury tax: {luxuryValue}\n'
+			'Max jail rolls: {maxJailRolls}\n'
+			'Mention on turn: {doMention}\n'
+			'Minimum auction increase: {minRaise}\n'
+			'Starting cash: {startCash}\n'
+			'Timeout length: {timeoutValue}'
+		).format_map(cfg)
+		await ctx.send(f'```py\n{msg}```')
 	
 	@monopolyset.command()
 	async def auction(self, ctx, value: bool=None):

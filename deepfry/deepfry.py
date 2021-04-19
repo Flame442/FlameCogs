@@ -290,17 +290,17 @@ class Deepfry(commands.Cog):
 	
 	@commands.guild_only()
 	@checks.guildowner()
-	@commands.group()
+	@commands.group(invoke_without_command=True)
 	async def deepfryset(self, ctx):
 		"""Config options for deepfry."""
-		if ctx.invoked_subcommand is None:
-			cfg = await self.config.guild(ctx.guild).all()
-			msg = (
-				'Allow all filetypes: {allowAllTypes}\n'
-				'Deepfry chance: {fryChance}\n'
-				'Nuke chance: {nukeChance}'
-			).format_map(cfg)
-			await ctx.send(f'```py\n{msg}```')
+		await ctx.send_help()
+		cfg = await self.config.guild(ctx.guild).all()
+		msg = (
+			'Allow all filetypes: {allowAllTypes}\n'
+			'Deepfry chance: {fryChance}\n'
+			'Nuke chance: {nukeChance}'
+		).format_map(cfg)
+		await ctx.send(f'```py\n{msg}```')
 	
 	@deepfryset.command()	
 	async def frychance(self, ctx, value: int=None):

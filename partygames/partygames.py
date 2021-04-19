@@ -83,7 +83,11 @@ class PartyGames(commands.Cog):
 		await msg.add_reaction('\N{WHITE HEAVY CHECK MARK}')
 		await asyncio.sleep(15)
 		msg = await ctx.channel.fetch_message(msg.id) #get the latest version of the message
-		reaction = [r for r in msg.reactions if r.emoji == '\N{WHITE HEAVY CHECK MARK}'][0]
+		reaction = [r for r in msg.reactions if r.emoji == '\N{WHITE HEAVY CHECK MARK}']
+		#edge case test for the reaction being removed from the message
+		if not reaction:
+			return []
+		reaction = reaction[0]
 		players = []
 		async for user in reaction.users():
 			players.append(user)
@@ -617,6 +621,8 @@ This value is server specific.
 
 	@commands.Cog.listener()
 	async def on_message(self, message):
+		#This func cannot use cog_disabled_in_guild, or the game will continute to running
+		#and send messages w/o any way to stop it.
 		if message.author.bot:
 			return
 		if message.guild is None:
