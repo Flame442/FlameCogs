@@ -434,22 +434,25 @@ class GiftAway(commands.Cog):
 		return (client_id, self.access_token)		
 		
 	@commands.Cog.listener()
-	async def on_reaction_add(self, reaction, user):
-		if user.bot:
+	async def on_raw_reaction_add(self, payload):
+		if payload.member is None:
 			return
-		if reaction.message.guild and await self.bot.cog_disabled_in_guild(self, reaction.message.guild):
+		member = payload.member
+		if member.bot:
 			return
-		if str(reaction.emoji) != '\N{WHITE HEAVY CHECK MARK}':
+		if await self.bot.cog_disabled_in_guild(self, member.guild):
+			return
+		if str(payload.emoji) != '\N{WHITE HEAVY CHECK MARK}':
 			return 
 		gift = None
 		for g in self.gifts:
-			if reaction.message.id in [x.id for x in g.messages]:
+			if payload.message_id in [x.id for x in g.messages]:
 				gift = g
 				break
 		if not gift:
 			return
 		if not gift.keys:
 			return
-		if user.id in gift.claimed_by_id:
+		if member.id in gift.claimed_by_id:
 			return
-		await gift.give_key(user)
+		await gift.give_key(member)
