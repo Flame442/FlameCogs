@@ -57,7 +57,8 @@ class MonopolyAI():
 					high = max(high, 2 * RENTPRICE[prop * 6])
 				else:
 					high = max(high, RENTPRICE[prop * 6 + game.numhouse[prop]])
-		if high >= 1000:
+		#The function below has a max of 1000 at high=2000
+		if high >= 2000:
 			return 1000
 		return int(high - (.00025 * (high ** 2)))
 	
