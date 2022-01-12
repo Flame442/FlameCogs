@@ -125,9 +125,12 @@ class MonopolyAI():
 			result[i] = result.get(i, 0) + 1
 		return result
 	
-	def _buy_houses(self, game, safe):
+	def _buy_houses(self, game, safe, config):
 		"""Prepare the cache to buy houses."""
 		max_spend = game.bal[self.me] - safe
+		max_hotels = config['hotelLimit']
+		max_houses = config['houseLimit']
+		
 		#properties with monopolies
 		possible_colors = [
 			all(game.ownedby[p] == self.me for p in group)
@@ -160,6 +163,12 @@ class MonopolyAI():
 					house_costs[per].append(idx)
 		subset_sum = self._subset_sum(to_subset_sum, max_spend, False)
 		result = []
+		# TODO: This new_numhouse var is used to ensure the bought houses/hotels
+		#       does not exceed max_houses/max_hotels. It does so by canceling
+		#       the AI attempting to buy houses at all if it would buy houses that
+		#       exceed those values. It should be changed to instead only generate
+		#       housing configurations that are under the house/hotel limits.
+		new_numhouse = game.numhouse[:]
 		#ittr over each house price that is getting houses
 		for hc in subset_sum:
 			#pick a random prop group from that price
@@ -179,10 +188,15 @@ class MonopolyAI():
 					to_change[prop_id] += 1
 				else:
 					to_change[prop_id] = game.numhouse[pg[idx][prop_id]] + 1
+				new_numhouse[pg[idx][prop_id]] = to_change[prop_id]
 			for x in to_change:
 				result.append(x)
 				result.append(to_change[x])
 			result.append('c')
+		if max_houses != -1 and sum(x for x in new_numhouse if x in (1, 2, 3, 4)) > max_houses:
+			return False
+		if max_hotels != -1 and sum(1 for x in new_numhouse if x == 5) > max_hotels:
+			return False
 		#no houses are able to be bought
 		if not result:
 			return False
@@ -354,7 +368,7 @@ class MonopolyAI():
 			maybe_unmortgage = self._unmortgage(game, safe)
 			if maybe_unmortgage:
 				return maybe_unmortgage
-			maybe_buy_houses = self._buy_houses(game, safe)
+			maybe_buy_houses = self._buy_houses(game, safe, config)
 			if maybe_buy_houses:
 				return maybe_buy_houses	
 		#if the current balance is lower than 0, try to get money
