@@ -2,6 +2,8 @@ import discord
 from redbot.core import bank
 from redbot.core import commands
 from redbot.core import Config
+from redbot.core.utils.chat_formatting import pagify
+from redbot.core.utils.menus import menu, DEFAULT_CONTROLS, close_menu
 import aiohttp
 
 
@@ -27,7 +29,6 @@ class Stocks(commands.Cog):
 		Enter the ticker symbol for the stock.
 		Conversion rate: $1 = 100 credits.
 		"""
-		await self._fix_stocks(ctx.author)
 		plural = 's' if shares != 1 else ''
 		currency = await bank.get_currency_name(ctx.guild)
 		if shares < 1:
@@ -70,7 +71,6 @@ class Stocks(commands.Cog):
 		Enter the ticker symbol for the stock.
 		Conversion rate: $1 = 100 credits.
 		"""
-		await self._fix_stocks(ctx.author)
 		plural = 's' if shares != 1 else ''
 		if shares < 1:
 			await ctx.send('You cannot sell less than one share.')
@@ -107,7 +107,6 @@ class Stocks(commands.Cog):
 	@stocks.command()
 	async def list(self, ctx):
 		"""List your stocks."""
-		await self._fix_stocks(ctx.author)
 		user_stocks = await self.config.user(ctx.author).stocks()
 		if not user_stocks:
 			await ctx.send('You do not have any stocks.')
@@ -139,6 +138,45 @@ class Stocks(commands.Cog):
 		await ctx.send(msg)
 	
 	@stocks.command()
+	async def leaderboard(self, ctx):
+		"""Show a leaderboard of total stock value by user."""
+		# TODO: convert to buttons whenever I get around to 3.5 support
+		raw = await self.config.all_users()
+		stocks = set()
+		for uid, data in raw.items():
+			stocks = stocks.union(set(data['stocks'].keys()))
+		try:
+			stock_data = await self._get_stock_data(list(stocks))
+		except ValueError as e:
+			return await ctx.send(e)
+		processed = []
+		for uid, data in raw.items():
+			total = 0
+			for ticker, stock in data['stocks'].items():
+				if ticker not in stock_data:
+					continue
+				total += stock['count'] * stock_data[ticker]['price']
+			if not total:
+				continue
+			processed.append((uid, total))
+		processed.sort(key=lambda a: a[1], reverse=True)
+		result = ''
+		for idx, data in enumerate(processed, start=1):
+			uid, total = data
+			user = self.bot.get_user(uid)
+			if user:
+				user = user.name
+			else:
+				user = '<Unknown user `{uid}`>'
+			result += f'{idx}. {total} - {user}\n'
+		pages = [f'```md\n{x}```' for x in pagify(result, shorten_by=10)]
+		if not pages:
+			await ctx.send('Nobody owns any stocks yet!')
+			return
+		c = DEFAULT_CONTROLS if len(pages) > 1 else {"\N{CROSS MARK}": close_menu}
+		await menu(ctx, pages, c)
+	
+	@stocks.command()
 	async def price(self, ctx, name):
 		"""
 		View the price of a stock.
@@ -161,7 +199,11 @@ class Stocks(commands.Cog):
 		currency = await bank.get_currency_name(ctx.guild)
 		await ctx.send(f'**{name}:** {price} {currency} per share ({real}).')
 
-	async def _fix_stocks(self, user):
+	#Currently, this code will almost never be needed since the API does not give total shares
+	#information and the old config spec is over a year old. In case a really old user needs
+	#to be fixed or a new API requires handling share count changes again, this code remains.
+	@stocks.command(hidden=True)
+	async def fix(self, ctx, user: discord.Member):
 		"""Fix a user's stock data to account for old data and stock splits."""
 		async with self.config.user(user).stocks() as user_stocks:
 			try:
@@ -185,6 +227,7 @@ class Stocks(commands.Cog):
 					elif new // old != 0:
 						user_stocks[stock]['count'] *= new // old
 					user_stocks[stock]['total_count'] = new
+		await ctx.send(f'Updated {user.display_name}.')
 	
 	async def _get_stock_data(self, stocks: list):
 		"""
@@ -223,8 +266,9 @@ class Stocks(commands.Cog):
 		stock = {
 			x['symbol']: {
 				'price': max(1, int(x['last'] * 100)),
-				'total_count': None #int(x['marketCap'] / x['last']) if x['marketCap'] else None
-			} for x in r if 'last' in x
+				#New API does not give this info.
+				'total_count': None, #int(x['marketCap'] / x['last']) if x['marketCap'] else None
+			} for x in r if 'last' in x and x['last'] is not None
 		}
 		return stock
 
