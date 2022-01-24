@@ -84,12 +84,12 @@ This cog lets you deepfry and nuke images. It has a configurable chance to deepf
 
 **`[p]deepfry [link]`**  
 Deepfries the attached image.  
-Use the optional parameter `link` to use a **direct link** as the target.  
+The optional parameter `link` can be either a member or a **direct link** to an image.  
 Alias: `[p]df`
 
 **`[p]nuke [link]`**  
 Nukes the attached image.  
-Use the optional parameter `link` to use a **direct link** as the target.
+The optional parameter `link` can be either a member or a **direct link** to an image.
 
 **`[p]deepfryset <argument>`**  
 Config options for deepfry.  
@@ -504,6 +504,9 @@ Conversion rate: $1 = 100 credits.
 
 **`[p]stocks list`**  
 List your stocks.
+
+**`[p]stocks leaderboard`**  
+Show a leaderboard of total stock value by user.
 
 ## Wordstats
 
