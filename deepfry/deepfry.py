@@ -9,6 +9,7 @@ from io import BytesIO
 import functools
 import asyncio
 import urllib
+from typing import Union
 
 
 MAX_SIZE = 8 * 1000 * 1000
@@ -169,7 +170,7 @@ class Deepfry(commands.Cog):
 		temp.seek(0)
 		return temp
 	
-	async def _get_image(self, ctx, link):
+	async def _get_image(self, ctx, link: Union[discord.Member, str]):
 		"""Helper function to find an image."""
 		if ctx.guild:
 			allowAllTypes = await self.config.guild(ctx.message.guild).allowAllTypes()
@@ -192,7 +193,17 @@ class Deepfry(commands.Cog):
 					break
 			if not link:
 				raise ImageFindError('Please provide an attachment.')
-		if link: #linked image
+		# TODO: dpy 2.0 swap to user.avatar
+		if isinstance(link, discord.Member): #member avatar
+			avatar = link.avatar_url_as(static_format="png")
+			# dpy will add a ?size= flag to the end, so for this one case we only need to check gif in
+			if ".gif" in str(avatar):
+				isgif = True
+			else:
+				isgif = False
+			data = await avatar.read()
+			img = Image.open(BytesIO(data))
+		elif link: #linked image
 			path = urllib.parse.urlparse(link).path
 			if any(path.lower().endswith(x) for x in self.imagetypes):
 				isgif = False
@@ -236,11 +247,11 @@ class Deepfry(commands.Cog):
 	
 	@commands.command(aliases=['df'])
 	@commands.bot_has_permissions(attach_files=True)
-	async def deepfry(self, ctx, link: str=None):
+	async def deepfry(self, ctx, link: Union[discord.Member, str]=None):
 		"""
 		Deepfries images.
 		
-		Use the optional parameter "link" to use a **direct link** as the target.
+		The optional parameter "link" can be either a member or a **direct link** to an image.
 		"""
 		async with ctx.typing():
 			try:
@@ -263,11 +274,11 @@ class Deepfry(commands.Cog):
 
 	@commands.command()
 	@commands.bot_has_permissions(attach_files=True)
-	async def nuke(self, ctx, link: str=None):
+	async def nuke(self, ctx, link: Union[discord.Member, str]=None):
 		"""
 		Demolishes images.
 		
-		Use the optional parameter "link" to use a **direct link** as the target.
+		The optional parameter "link" can be either a member or a **direct link** to an image.
 		"""
 		async with ctx.typing():
 			try:
