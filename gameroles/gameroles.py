@@ -282,7 +282,19 @@ class GameRoles(commands.Cog):
 				
 	@commands.Cog.listener()
 	async def on_member_update(self, beforeMem, afterMem):
-		"""Updates a member's roles."""
+		"""Updates a member's roles. dpy 1.7"""
+		if discord.version_info.major == 1:
+			await self.update_gameroles(beforeMem, afterMem)
+	
+	@commands.Cog.listener()
+	async def on_presence_update(self, beforeMem, afterMem):
+		"""Updates a member's roles. dpy 2.0"""
+		# This should never be run on dpy 1.7, but just in case I don't want to try to apply the same change twice.
+		if discord.version_info.major == 2:
+			await self.update_gameroles(beforeMem, afterMem)
+		
+	async def update_gameroles(self, beforeMem, afterMem):
+		"""Update a member's roles."""
 		if beforeMem.activities == afterMem.activities:
 			return
 		if await self.bot.cog_disabled_in_guild(self, afterMem.guild):

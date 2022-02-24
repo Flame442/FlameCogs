@@ -193,9 +193,11 @@ class Deepfry(commands.Cog):
 					break
 			if not link:
 				raise ImageFindError('Please provide an attachment.')
-		# TODO: dpy 2.0 swap to user.avatar
 		if isinstance(link, discord.Member): #member avatar
-			avatar = link.avatar_url_as(static_format="png")
+			if discord.version_info.major == 1:
+				avatar = link.avatar_url_as(static_format="png")
+			else:
+				avatar = link.display_avatar.with_static_format("png").url
 			# dpy will add a ?size= flag to the end, so for this one case we only need to check gif in
 			if ".gif" in str(avatar):
 				isgif = True
