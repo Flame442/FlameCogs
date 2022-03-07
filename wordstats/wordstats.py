@@ -157,10 +157,16 @@ class WordStats(commands.Cog):
 					f'**{count}** {"times" if count != 1 else "time"}.\n'
 					f'It is the {mc} word {mention} has said.'
 				)
-			result = self.cursor.execute(
-				'SELECT sum(quantity), count(DISTINCT word) FROM member_words WHERE guild_id = ? LIMIT 1',
-				(guild.id,)
-			).fetchone()
+			if member:
+				result = self.cursor.execute(
+					'SELECT sum(quantity), count(DISTINCT word) FROM member_words WHERE guild_id = ? AND user_id = ? LIMIT 1',
+					(guild.id, member.id)
+				).fetchone()
+			else:
+				result = self.cursor.execute(
+					'SELECT sum(quantity), count(DISTINCT word) FROM member_words WHERE guild_id = ? LIMIT 1',
+					(guild.id,)
+				).fetchone()
 			if not result[0]:
 				return await ctx.send('No words have been said yet.')
 			total, unique = result

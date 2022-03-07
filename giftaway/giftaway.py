@@ -303,7 +303,7 @@ class GiftAway(commands.Cog):
 		channel = guild.get_channel(cid)
 		if not channel:
 			return await ctx.send(_('That giftaway channel for that guild does not exist.'))
-		if not guild.me.permissions_in(channel).embed_links:
+		if not channel.permissions_for(guild.me).embed_links:
 			return await ctx.send(_('I do not have permission to send embeds in the giftaway channel.'))
 		try:
 			gift = await Gift.create(self, ctx, [channel], game_name, list(keys))
@@ -334,7 +334,7 @@ class GiftAway(commands.Cog):
 			channel = guild.get_channel(cid)
 			if not channel:
 				continue
-			if not guild.me.permissions_in(channel).embed_links:
+			if not channel.permissions_for(guild.me).embed_links:
 				continue
 			guilds.append(channel)
 		try:
@@ -360,7 +360,7 @@ class GiftAway(commands.Cog):
 			await ctx.message.delete()
 		except:
 			pass
-		if not ctx.guild.me.permissions_in(channel).embed_links:
+		if not channel.permissions_for(ctx.guild.me).embed_links:
 			return await ctx.send(_('I do not have permission to send embeds in the giftaway channel.'))
 		try:
 			gift = await Gift.create(self, ctx, [channel], game_name, list(keys))

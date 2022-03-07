@@ -71,7 +71,10 @@ class OnlineStats(commands.Cog):
 			),
 			color=await ctx.embed_color()
 		)
-		embed.set_thumbnail(url=member.avatar_url)
+		if discord.version_info.major == 1:
+			embed.set_thumbnail(url=member.avatar_url)
+		else:
+			embed.set_thumbnail(url=member.display_avatar.url)
 		try:
 			await ctx.send(embed=embed)
 		except discord.errors.Forbidden:
