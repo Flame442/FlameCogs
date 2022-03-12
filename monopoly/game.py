@@ -1,8 +1,9 @@
 import discord
 from redbot.core.data_manager import bundled_data_path
 from redbot.core.utils.chat_formatting import pagify
-from .constants import TILENAME, PRICEBUY, RENTPRICE, RRPRICE, CCNAME, CHANCENAME, MORTGAGEPRICE, TENMORTGAGEPRICE, HOUSEPRICE, PROPGROUPS, PROPCOLORS
 from .ai import MonopolyAI
+from .constants import TILENAME, PRICEBUY, RENTPRICE, RRPRICE, CCNAME, CHANCENAME, MORTGAGEPRICE, TENMORTGAGEPRICE, HOUSEPRICE, PROPGROUPS, PROPCOLORS
+from .views import ConfirmView, JailView, SelectView, TradeView, TurnView
 import asyncio
 import logging
 import os
@@ -197,13 +198,21 @@ class MonopolyGame():
 			raise GetMemberError
 		return mem
 	
-	async def send(self, *, img=False):
+	async def send(self, *, img=False, view=None):
 		"""Safely send the contents of self.msg."""
 		if img and self.ctx.channel.permissions_for(self.ctx.me).attach_files:
 			dm = await self.cog.config.guild(self.ctx.guild).darkMode()
 			await self.ctx.send(file=discord.File(self.bprint(dm)))
-		for page in pagify(self.msg):
-			await self.ctx.send(page)
+		self.msg = self.msg.strip()
+		if not self.msg:
+			self.msg = "Select an option."
+		pages = list(pagify(self.msg))
+		last_page_idx = len(pages) - 1
+		for idx, page in enumerate(pages):
+			if idx == last_page_idx:
+				await self.ctx.send(page, view=view)
+			else:
+				await self.ctx.send(page)
 		self.msg = ''
 	
 	async def run(self):
@@ -234,50 +243,35 @@ class MonopolyGame():
 				if self.jailturn[self.p] == -1:
 					self.jailturn[self.p] = 0
 				self.jailturn[self.p] += 1
-				maxJailRolls = await self.cog.config.guild(self.ctx.guild).maxJailRolls()
-				bailValue = await self.cog.config.guild(self.ctx.guild).bailValue()
+				config = await self.cog.config.guild(self.ctx.guild).all()
+				maxJailRolls = config['maxJailRolls']
+				bailValue = config['bailValue']
+				choices = ['b']
 				if self.jailturn[self.p] > maxJailRolls:
 					self.msg += (
 						f'Your {maxJailRolls} turn{"" if maxJailRolls == 1 else "s"} '
 						f'in jail {"is" if maxJailRolls == 1 else "are"} up. \n'
 					)
 					if self.goojf[self.p] > 0:
-						self.msg += (
-							f'`b`: Post bail (${bailValue})'
-							'\n`g`: Use a "Get Out of Jail Free" card '
-							f'({self.goojf[self.p]} remaining)\n'
-						)
+						choices.append('g')
 					else:
 						self.msg += f'You have to post bail (${bailValue}).\n'
 				else:
-					self.msg += f'`r`: Roll\n`b`: Post bail (${bailValue})\n'
+					choices.append('r')
 					if self.goojf[self.p] > 0:
-						self.msg += (
-							'`g`: Use a "Get Out of Jail Free" '
-							f'card ({self.goojf[self.p]} remaining)\n'
-						)
+						choices.append('g')
+				
 				if self.jailturn[self.p] > maxJailRolls and self.goojf[self.p] == 0:
 					choice = 'b'
 				elif self.is_ai(self.p):
-					choices = ['b']
-					if self.jailturn[self.p] <= maxJailRolls:
-						choices.append('r')
-					if self.goojf[self.p] > 0:
-						choices.append('g')
-					config = await self.cog.config.guild(self.ctx.guild).all()
 					choice = self.uid[self.p].jail_turn(self, config, choices)
 				else:
-					await self.send(img=True)
-					choice = await self.bot.wait_for(
-						'message',
-						timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-						check=lambda m: (
-							m.author.id == self.uid[self.p]
-							and m.channel == self.ctx.channel
-							and m.content.lower() in ('r', 'b', 'g')
-						)
-					)
-					choice = choice.content.lower()
+					view = JailView(self, config, choices)
+					await self.send(img=True, view=view)
+					await view.wait()
+					choice = view.result
+					if choice is None:
+						raise asyncio.TimeoutError()
 				if choice == 'r':
 					if self.jailturn[self.p] > maxJailRolls:
 						continue
@@ -298,21 +292,15 @@ class MonopolyGame():
 						and self.goojf[self.p] == 0
 					):
 						if not self.is_ai(self.p):
+							config = await self.cog.config.guild(self.ctx.guild).all()
+							view = ConfirmView(self, config)
 							await self.ctx.send(
 								'Posting bail will put you in to debt. '
-								'Are you sure you want to do that?'
+								'Are you sure you want to do that?',
+								view=view
 							)
-							choice = await self.bot.wait_for(
-								'message',
-								timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-								check=lambda m: (
-									m.author.id == self.uid[self.p]
-									and m.channel == self.ctx.channel
-									and m.content.lower() in ('y', 'yes', 'n', 'no')
-								)
-							)
-							choice = choice.content[0].lower()
-							if choice == 'n':
+							await view.wait()
+							if not view.result:
 								continue
 					self.bal[self.p] -= bailValue 
 					self.freeparkingsum += bailValue
@@ -348,24 +336,19 @@ class MonopolyGame():
 					await self.land(d1 + d2)
 			#If not in jail, start a normal turn
 			while self.was_doubles and self.isalive[self.p]:
-				self.msg += '`r`: Roll\n`t`: Trade\n`h`: Manage houses\n`m`: Mortgage properties\n'
-				if self.num_doubles == 0:
-					self.msg += '`s`: Save\n'
+				choices = ['r', 't', 'h', 'm']
+				config = await self.cog.config.guild(self.ctx.guild).all()
 				if self.is_ai(self.p):
-					config = await self.cog.config.guild(self.ctx.guild).all()
-					choice = self.uid[self.p].turn(self, config, ('r', 't', 'h', 'm'))
+					choice = self.uid[self.p].turn(self, config, choices)
 				else:
-					await self.send(img=True)
-					choice = await self.bot.wait_for(
-						'message',
-						timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-						check=lambda m: (
-							m.author.id == self.uid[self.p]
-							and m.channel == self.ctx.channel
-							and m.content.lower() in ('r', 't', 'h', 'm', 's')
-						)
-					)
-					choice = choice.content.lower()
+					if self.num_doubles == 0:
+						choices.append('s')
+					view = TurnView(self, config, choices)
+					await self.send(img=True, view=view)
+					await view.wait()
+					choice = view.result
+					if choice is None:
+						raise asyncio.TimeoutError()
 				if choice == 'r':
 					d1 = randint(1, 6)
 					d2 = randint(1, 6)
@@ -402,27 +385,21 @@ class MonopolyGame():
 						if savename in ('delete', 'list'):
 							self.msg = 'You cannot name your save that.\n'
 						elif savename in saves:
+							config = await self.cog.config.guild(self.ctx.guild).all()
+							view = ConfirmView(self, config)
 							await self.ctx.send(
-								'There is already another save with that name. Override it?'
+								'There is already another save with that name. Override it?',
+								view=view
 							)
-							timeout = await self.cog.config.guild(self.ctx.guild).timeoutValue()
-							choice = await self.bot.wait_for(
-								'message',
-								timeout=timeout,
-								check=lambda m: (
-									m.author.id == self.uid[self.p]
-									and m.channel == self.ctx.channel
-								)
-							)
-							if choice.content.lower() not in ('yes', 'y'):
-								self.msg = 'Not overriding.\n'
-							else:
+							await view.wait()
+							if view.result:
 								saves[savename] = self.autosave
 								return await self.ctx.send(
 									f'Your game was saved to `{savename}`.\n'
 									'You can load your save with '
 									f'`{self.ctx.prefix}monopoly {savename}`.'
 								)
+							self.msg = 'Not overriding.\n'		
 						else:
 							saves[savename] = self.autosave
 							return await self.ctx.send(
@@ -432,22 +409,17 @@ class MonopolyGame():
 							)
 			#After roll
 			while self.isalive[self.p]:
-				self.msg += '`t`: Trade\n`h`: Manage houses\n`m`: Mortgage properties\n`d`: Done\n'
+				config = await self.cog.config.guild(self.ctx.guild).all()
+				choices = ['t', 'h', 'm', 'd']
 				if self.is_ai(self.p):
-					config = await self.cog.config.guild(self.ctx.guild).all()
-					choice = self.uid[self.p].turn(self, config, ('t', 'h', 'm', 'd'))
+					choice = self.uid[self.p].turn(self, config, choices)
 				else:
-					await self.send(img=True)
-					choice = await self.bot.wait_for(
-						'message',
-						timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-						check=lambda m: (
-							m.author.id == self.uid[self.p]
-							and m.channel == self.ctx.channel
-							and m.content.lower() in ('t', 'h', 'm', 'd')
-						)
-					)
-					choice = choice.content.lower()
+					view = TurnView(self, config, choices)
+					await self.send(img=True, view=view)
+					await view.wait()
+					choice = view.result
+					if choice is None:
+						raise asyncio.TimeoutError()
 				if choice == 't':
 					await self.trade()
 				elif choice == 'h':
@@ -767,23 +739,16 @@ class MonopolyGame():
 			if self.bal[self.p] >= PRICEBUY[self.tile[self.p]]: #can afford
 				self.msg += (
 					f'Would you like to buy {TILENAME[self.tile[self.p]]} '
-					f'for ${PRICEBUY[self.tile[self.p]]}? (y/n) You have ${self.bal[self.p]}.\n'
+					f'for ${PRICEBUY[self.tile[self.p]]}? You have ${self.bal[self.p]}.\n'
 				)
+				config = await self.cog.config.guild(self.ctx.guild).all()
 				if self.is_ai(self.p):
-					config = await self.cog.config.guild(self.ctx.guild).all()
 					choice = self.uid[self.p].buy_prop(self, config, self.tile[self.p])
 				else:
-					await self.send(img=True)
-					choice = await self.bot.wait_for(
-						'message',
-						timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-						check=lambda m: (
-							m.author.id == self.uid[self.p]
-							and m.channel == self.ctx.channel
-							and m.content.lower() in ('y', 'yes', 'n', 'no')
-						)
-					)
-					choice = choice.content[0].lower()
+					view = ConfirmView(self, config)
+					await self.send(img=True, view=view)
+					await view.wait()
+					choice = 'y' if view.result else 'n'
 				if choice == 'y': #buy property
 					self.bal[self.p] -= PRICEBUY[self.tile[self.p]]
 					self.ownedby[self.tile[self.p]] = self.p
@@ -923,24 +888,19 @@ class MonopolyGame():
 		while self.bal[self.p] < 0 and self.isalive[self.p]:
 			self.msg += (
 				f'You are in debt. You have ${self.bal[self.p]}.\n'
-				'Select an option to get out of debt:\n'
-				'`t`: Trade\n`h`: Manage houses\n`m`: Mortgage properties\n`g`: Give up\n'
+				'Select an option to get out of debt.\n'
 			)
+			config = await self.cog.config.guild(self.ctx.guild).all()
+			choices = ['t', 'h', 'm', 'g']
 			if self.is_ai(self.p):
-				config = await self.cog.config.guild(self.ctx.guild).all()
-				choice = self.uid[self.p].turn(self, config, ('t', 'h', 'm', 'g'))
+				choice = self.uid[self.p].turn(self, config, choices)
 			else:
-				await self.send(img=True)
-				choice = await self.bot.wait_for(
-					'message',
-					timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-					check=lambda m: (
-						m.author.id == self.uid[self.p]
-						and m.channel == self.ctx.channel
-						and m.content.lower() in ('t', 'h', 'm', 'g')
-					)
-				)
-				choice = choice.content.lower()
+				view = TurnView(self, config, choices)
+				await self.send(img=True, view=view)
+				await view.wait()
+				choice = view.result
+				if choice is None:
+					raise asyncio.TimeoutError()
 			if choice == 't':
 				await self.trade()
 			elif choice == 'h':
@@ -949,18 +909,11 @@ class MonopolyGame():
 				await self.mortgage()
 			elif choice == 'g':
 				if not self.is_ai(self.p):
-					await self.ctx.send('Are you sure? (y/n)')
-					choice = await self.bot.wait_for(
-						'message',
-						timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-						check=lambda m: (
-							m.author.id == self.uid[self.p]
-							and m.channel == self.ctx.channel
-							and m.content.lower() in ('y', 'yes', 'n', 'no')
-						)
-					)
-					choice = choice.content[0].lower()
-					if choice == 'n':
+					config = await self.cog.config.guild(self.ctx.guild).all()
+					view = ConfirmView(self, config)
+					await self.ctx.send('Are you sure?', view=view)
+					await view.wait()
+					if not view.result:
 						continue
 				for i in range(40):
 					if self.ownedby[i] == self.p:
@@ -983,34 +936,24 @@ class MonopolyGame():
 		money_partner = 0
 		goojf_p = 0
 		goojf_partner = 0
-		self.msg += '```\n'
+		choices = []
+		valid_partners = []
 		for a in range(self.num):
 			if self.isalive[a] and a != self.p:
 				mem = await self.get_member(self.uid[a])
-				name = mem.display_name
-				self.msg += f'{a} {name}\n'
-		self.msg += '```Select the player you want to trade with.\n`c`: Cancel\n'
-		await self.send(img=True)
-		def tradecheck(m):
-			if m.author.id == self.uid[self.p] and m.channel == self.ctx.channel:
-				try:
-					m = int(m.content)
-				except Exception:
-					if m.content.lower() == 'c':
-						return True
-					return False
-				if 0 <= m < self.num and self.isalive[m] and m != self.p:
-					return True
-			return False
-		choice = await self.bot.wait_for(
-			'message',
-			timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-			check=tradecheck
-		)
-		choice = choice.content.lower()
+				choices.append(mem.display_name)
+				valid_partners.append(a)
+		self.msg += 'Select the player you want to trade with.\n'
+		config = await self.cog.config.guild(self.ctx.guild).all()
+		view = SelectView(self, config, choices, ['c'])
+		await self.send(img=True, view=view)
+		await view.wait()
+		choice = view.result
+		if choice is None:
+			raise asyncio.TimeoutError()
 		if choice == 'c':
 			return
-		partner = int(choice)
+		partner = valid_partners[int(choice)]
 		for a in range(40):
 			#properties cannot be traded if any property in their color group has a house
 			groupHasHouse = False
@@ -1027,39 +970,25 @@ class MonopolyGame():
 		to_trade_p = [False for _ in range(len(tradeable_p))]
 		to_trade_partner = [False for _ in range(len(tradeable_partner))]
 		while True:
-			self.msg += '```\nid sel color      name\n'
+			choices = []
+			enabled = []
 			for a in range(len(tradeable_p)):
-				if to_trade_p[a]:
-					self.msg += '{:2}  +  {:10} {}\n'.format(
-						a, PROPCOLORS[tradeable_p[a]], TILENAME[tradeable_p[a]]
-					)
-				else:
-					self.msg += '{:2}     {:10} {}\n'.format(
-						a, PROPCOLORS[tradeable_p[a]], TILENAME[tradeable_p[a]]
-					)
-			self.msg += '\n'
-			if money_p != 0:
-				self.msg += f'${money_p}\n'
+				choices.append(f'{PROPCOLORS[tradeable_p[a]]:10} {TILENAME[tradeable_p[a]]}')
+				enabled.append(bool(to_trade_p[a]))
+			self.msg += '```\n'
+			self.msg += f'${money_p}\n'
 			if goojf_p == 1:
 				self.msg += '1 get out of jail free card.\n'
-			elif goojf_p != 0:
+			else:
 				self.msg += f'{goojf_p} get out of jail free cards.\n'
-			self.msg += (
-				'```Type the ID of any property you want to toggle trading to them.\n'
-				'`m`: Give money\n`j`: Give get out of jail free cards\n`d`: Done\n`c`: Cancel\n'
-			)
-			await self.send(img=True)
-			valid = [str(x) for x in range(len(tradeable_p))] + ['m', 'j', 'd', 'c']
-			choice = await self.bot.wait_for(
-				'message',
-				timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-				check=lambda m: (
-					m.author.id == self.uid[self.p]
-					and m.channel == self.ctx.channel
-					and m.content.lower() in valid
-				)
-			)
-			choice = choice.content.lower()
+			self.msg += '```What do you want to give to them?.\n'
+			config = await self.cog.config.guild(self.ctx.guild).all()
+			view = TradeView(self, config, choices, enabled)
+			await self.send(img=True, view=view)
+			await view.wait()
+			choice = view.result
+			if choice is None:
+				raise asyncio.TimeoutError()
 			if choice == 'm':
 				await self.ctx.send(f'How much money? You have ${self.bal[self.p]}.')
 				money = await self.bot.wait_for(
@@ -1110,44 +1039,28 @@ class MonopolyGame():
 			elif choice == 'c':
 				return
 			else:
-				choice = int(choice)
-				to_trade_p[choice] = not to_trade_p[choice]
+				for idx in range(len(to_trade_p)):
+					to_trade_p[idx] = idx in choice
 		while True:
-			self.msg += '```\nid sel color      name\n'
+			choices = []
+			enabled = []
 			for a in range(len(tradeable_partner)):
-				if to_trade_partner[a]:
-					self.msg += '{:2}  +  {:10} {}\n'.format(
-						a, PROPCOLORS[tradeable_partner[a]], TILENAME[tradeable_partner[a]]
-					)
-				else:
-					self.msg += '{:2}     {:10} {}\n'.format(
-						a, PROPCOLORS[tradeable_partner[a]], TILENAME[tradeable_partner[a]]
-					)
-			self.msg += '\n'
-			if money_partner != 0:
-				self.msg += f'${money_partner}\n'
+				choices.append(f'{PROPCOLORS[tradeable_partner[a]]:10} {TILENAME[tradeable_partner[a]]}')
+				enabled.append(bool(to_trade_partner[a]))
+			self.msg += '```\n'
+			self.msg += f'${money_partner}\n'
 			if goojf_partner == 1:
 				self.msg += '1 get out of jail free card.\n'
-			elif goojf_partner != 0:
+			else:
 				self.msg += f'{goojf_partner} get out of jail free cards.\n'
-			self.msg += (
-				'```Type the ID of any property you want '
-				'to toggle requesting them to trade to you.\n'
-				'`m`: Request money\n`j`: Request get out of jail free cards\n'
-				'`d`: Done\n`c`: Cancel\n'
-			)
-			await self.send(img=True)
-			valid = [str(x) for x in range(len(tradeable_partner))] + ['m', 'j', 'd', 'c']
-			choice = await self.bot.wait_for(
-				'message',
-				timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-				check=lambda m: (
-					m.author.id == self.uid[self.p]
-					and m.channel == self.ctx.channel
-					and m.content.lower() in valid
-				)
-			)
-			choice = choice.content.lower()
+			self.msg += '```What do you want to get from them?.\n'
+			config = await self.cog.config.guild(self.ctx.guild).all()
+			view = TradeView(self, config, choices, enabled)
+			await self.send(img=True, view=view)
+			await view.wait()
+			choice = view.result
+			if choice is None:
+				raise asyncio.TimeoutError()
 			if choice == 'm':
 				await self.ctx.send(f'How much money? They have ${self.bal[partner]}.')
 				money = await self.bot.wait_for(
@@ -1198,8 +1111,8 @@ class MonopolyGame():
 			elif choice == 'c':
 				return
 			else:
-				choice = int(choice)
-				to_trade_partner[choice] = not to_trade_partner[choice]
+				for idx in range(len(to_trade_p)):
+					to_trade_partner[idx] = idx in choice
 		hold_p = ''
 		hold_partner = ''
 		for a in range(len(tradeable_p)):
@@ -1232,20 +1145,14 @@ class MonopolyGame():
 			hold_partner = 'Nothing :('
 		self.msg += (
 			f'You will give:\n```\n{hold_p}```\nYou will get:\n```\n{hold_partner}```\n'
-			'`a`: Accept\n`c`: Cancel\n'
+			'Do you accept?\n'
 		)
-		await self.send(img=True)
-		choice = await self.bot.wait_for(
-			'message',
-			timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-			check=lambda m: (
-				m.author.id == self.uid[self.p]
-				and m.channel == self.ctx.channel
-				and m.content.lower() in ('a', 'c')
-			)
-		)
-		choice = choice.content.lower()
-		if choice == 'c':
+		config = await self.cog.config.guild(self.ctx.guild).all()
+		view = ConfirmView(self, config)
+		await self.send(img=True, view=view)
+		await view.wait()
+		choice = 'y' if view.result else 'n'
+		if choice == 'n':
 			return
 		doMention = await self.cog.config.guild(self.ctx.guild).doMention()
 		member_p = await self.get_member(self.uid[self.p])
@@ -1257,7 +1164,7 @@ class MonopolyGame():
 		self.msg += (
 			f'{mention}, {member_p.display_name} would like to trade with you. '
 			f'Here is their offer.\n\nYou will give:\n```\n{hold_partner}```\n'
-			f'You will get:\n```\n{hold_p}```\nDo you accept (y/n)?\n'
+			f'You will get:\n```\n{hold_p}```\nDo you accept?\n'
 		)
 		if self.is_ai(partner):
 			temp_p = [x for idx, x in enumerate(tradeable_p) if to_trade_p[idx]]
@@ -1269,17 +1176,11 @@ class MonopolyGame():
 				[money_partner, goojf_partner, temp_partner]
 			)
 		else:
-			await self.send(img=True)
-			choice = await self.bot.wait_for(
-				'message',
-				timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-				check=lambda m: (
-					m.author.id == self.uid[partner]
-					and m.channel == self.ctx.channel
-					and m.content.lower() in ('y', 'yes', 'n', 'no')
-				)
-			)
-			choice = choice.content[0].lower()
+			config = await self.cog.config.guild(self.ctx.guild).all()
+			view = ConfirmView(self, config, pid=partner)
+			await self.send(img=True, view=view)
+			await view.wait()
+			choice = 'y' if view.result else 'n'
 		if choice == 'n':
 			return
 		self.bal[self.p] += money_partner
@@ -1312,29 +1213,23 @@ class MonopolyGame():
 			self.msg += 'You do not have any properties that are eligible for houses.\n'
 			return
 		while True:
-			self.msg += '```\nid price color\n'
-			i = 0
+			choices = []
 			for color in houseable:
-				self.msg += '{:2} {:5d} {}\n'.format(i, HOUSEPRICE[PROPGROUPS[color][0]], color)
-				i += 1
+				choices.append(f'${HOUSEPRICE[PROPGROUPS[color][0]]:5d} | {color}')
 			self.msg += (
-				'```Type the ID of the color group you want to manage.\n'
-				f'You have ${self.bal[self.p]}\n`d`: Done\n'
+				'What color group do you want to manage?\n'
+				f'You have ${self.bal[self.p]}\n'
 			)
 			if self.is_ai(self.p):
 				choice = self.uid[self.p].grab_from_cache()
 			else:
-				await self.send(img=True)
-				choice = await self.bot.wait_for(
-					'message',
-					timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-					check=lambda m: (
-						m.author.id == self.uid[self.p]
-						and m.channel == self.ctx.channel
-						and m.content.lower() in [str(x) for x in range(len(houseable))] + ['d']
-					)
-				)
-				choice = choice.content.lower()
+				config = await self.cog.config.guild(self.ctx.guild).all()
+				view = SelectView(self, config, choices, ['d'])
+				await self.send(img=True, view=view)
+				await view.wait()
+				choice = view.result
+				if choice is None:
+					raise asyncio.TimeoutError()
 			if choice == 'd':
 				break
 			choice = int(choice)
@@ -1344,32 +1239,23 @@ class MonopolyGame():
 			for a in props:
 				new_values.append(self.numhouse[a])
 			while True:
-				self.msg += '```\nid numh name\n'
-				i = 0
-				for a in props:
-					self.msg += '{:2} {:4} {}\n'.format(i, new_values[i], TILENAME[a])
-					i += 1
-				self.msg += (
-					'```Type the ID of the property you want to change.\n'
-					'`c`: Confirm\n`e`: Exit without changing\n'
-				)
+				choices = []
+				for i, a in enumerate(props):
+					choices.append(f'{new_values[i]:4} houses | {TILENAME[a]}\n')
+				self.msg += 'What property do you want to change?\n'
 				if self.is_ai(self.p):
 					choice = self.uid[self.p].grab_from_cache()
 				else:
-					await self.send(img=True)
-					choice = await self.bot.wait_for(
-						'message',
-						timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-						check=lambda m: (
-							m.author.id == self.uid[self.p]
-							and m.channel == self.ctx.channel
-							and m.content.lower() in [str(x) for x in range(len(props))] + ['c', 'e']
-						)
-					)
-					choice = choice.content.lower()
+					config = await self.cog.config.guild(self.ctx.guild).all()
+					view = SelectView(self, config, choices, ['d', 'e'])
+					await self.send(img=True, view=view)
+					await view.wait()
+					choice = view.result
+					if choice is None:
+						raise asyncio.TimeoutError()
 				if choice == 'e':
 					break
-				if choice == 'c':
+				if choice in ('d', 'c'):
 					if max(new_values) - min(new_values) > 1:
 						self.msg += 'That is not a valid house setup.\n'
 						continue
@@ -1407,30 +1293,25 @@ class MonopolyGame():
 							plural = ''
 						else:
 							plural = 's'
+						config = await self.cog.config.guild(self.ctx.guild).all()
+						view = ConfirmView(self, config)
 						if change > 0:
 							await self.ctx.send(
-								f'Are you sure you want to buy {change} house{plural}? (y/n)\n'
+								f'Are you sure you want to buy {change} house{plural}?\n'
 								f'It will cost ${price} at ${HOUSEPRICE[props[0]]} per house. '
-								f'You currently have ${self.bal[self.p]}.'
+								f'You currently have ${self.bal[self.p]}.',
+								view=view
 							)
 						else:
 							await self.ctx.send(
-								f'Are you sure you want to sell {abs(change)} house{plural}? (y/n)\n'
+								f'Are you sure you want to sell {abs(change)} house{plural}?\n'
 								f'You will get ${price // 2} at '
 								f'${HOUSEPRICE[props[0]] // 2} per house. '
-								f'You currently have ${self.bal[self.p]}.'
+								f'You currently have ${self.bal[self.p]}.',
+								view=view
 							)
-						choice = await self.bot.wait_for(
-							'message',
-							timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-							check=lambda m: (
-								m.author.id == self.uid[self.p]
-								and m.channel == self.ctx.channel
-								and m.content.lower() in ('y', 'yes', 'n', 'no')
-							)
-						)
-						choice = choice.content[0].lower()
-						if choice == 'n':
+						await view.wait()
+						if not view.result:
 							continue
 					for a in range(len(new_values)):
 						self.numhouse[props[a]] = new_values[a]
@@ -1482,54 +1363,38 @@ class MonopolyGame():
 			self.msg += 'You do not have any properties that are able to be mortgaged.\n'
 			return
 		while True:
-			self.msg += '```\nid isM price color      name\n'
-			i = 0
+			choices = []
 			for a in mortgageable:
 				if self.ismortgaged[a] == 1:
-					self.msg += '{:2}   + {:5d} {:10} {}\n'.format(
-						i, MORTGAGEPRICE[a], PROPCOLORS[a], TILENAME[a]
-					)
+					choices.append(f'✓ ${MORTGAGEPRICE[a]:5d} | {PROPCOLORS[a]:10} | {TILENAME[a]}')
 				else:
-					self.msg += '{:2}     {:5d} {:10} {}\n'.format(
-						i, MORTGAGEPRICE[a], PROPCOLORS[a], TILENAME[a]
-					)
-				i += 1
-			self.msg += '```Type the ID of the property you want to mortgage or unmortgage.\n`d`: Done\n'
+					choices.append(f'X ${MORTGAGEPRICE[a]:5d} | {PROPCOLORS[a]:10} | {TILENAME[a]}')
+			self.msg += 'What property do you want to mortgage or unmortgage?\n'
 			if self.is_ai(self.p):
 				choice = self.uid[self.p].grab_from_cache()
 			else:
-				await self.send(img=True)
-				choice = await self.bot.wait_for(
-					'message',
-					timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-					check=lambda m: (
-						m.author.id == self.uid[self.p]
-						and m.channel == self.ctx.channel
-						and m.content.lower() in [str(x) for x in range(len(mortgageable))] + ['d']
-					)
-				)
-				choice = choice.content.lower()
+				config = await self.cog.config.guild(self.ctx.guild).all()
+				view = SelectView(self, config, choices, ['d'])
+				await self.send(img=True, view=view)
+				await view.wait()
+				choice = view.result
+				if choice is None:
+					raise asyncio.TimeoutError()
 			if choice == 'd':
 				break
 			choice = int(choice)
 			if self.ismortgaged[mortgageable[choice]] == 0:
 				if not self.is_ai(self.p):
+					config = await self.cog.config.guild(self.ctx.guild).all()
+					view = ConfirmView(self, config)
 					await self.ctx.send(
 						f'Mortgage {TILENAME[mortgageable[choice]]} for '
-						f'${MORTGAGEPRICE[mortgageable[choice]]}? (y/n)\n'
-						f'You have ${self.bal[self.p]}.'
+						f'${MORTGAGEPRICE[mortgageable[choice]]}?\n'
+						f'You have ${self.bal[self.p]}.',
+						view=view
 					)
-					yes_or_no = await self.bot.wait_for(
-						'message',
-						timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-						check=lambda m: (
-							m.author.id == self.uid[self.p]
-							and m.channel == self.ctx.channel
-							and m.content.lower() in ('y', 'yes', 'n', 'no')
-						)
-					)
-					yes_or_no = yes_or_no.content[0].lower()
-					if yes_or_no == 'n':
+					await view.wait()
+					if not view.result:
 						continue
 				self.bal[self.p] += MORTGAGEPRICE[mortgageable[choice]]
 				self.ismortgaged[mortgageable[choice]] = 1
@@ -1537,23 +1402,17 @@ class MonopolyGame():
 			else:
 				if self.bal[self.p] >= TENMORTGAGEPRICE[mortgageable[choice]]:
 					if not self.is_ai(self.p):
+						config = await self.cog.config.guild(self.ctx.guild).all()
+						view = ConfirmView(self, config)
 						await self.ctx.send(
 							f'Unmortgage {TILENAME[mortgageable[choice]]} for '
-							f'${TENMORTGAGEPRICE[mortgageable[choice]]}? (y/n) '
+							f'${TENMORTGAGEPRICE[mortgageable[choice]]}? '
 							f'(${MORTGAGEPRICE[mortgageable[choice]]} + 10% interest)\n'
-							f'You have ${self.bal[self.p]}.'
+							f'You have ${self.bal[self.p]}.',
+							view=view
 						)
-						yes_or_no = await self.bot.wait_for(
-							'message',
-							timeout=await self.cog.config.guild(self.ctx.guild).timeoutValue(),
-							check=lambda m: (
-								m.author.id == self.uid[self.p]
-								and m.channel == self.ctx.channel
-								and m.content.lower() in ('y', 'yes', 'n', 'no')
-							)
-						)
-						yes_or_no = yes_or_no.content[0].lower()
-						if yes_or_no == 'n':
+						await view.wait()
+						if not view.result:
 							continue
 					self.bal[self.p] -= TENMORTGAGEPRICE[mortgageable[choice]]
 					self.ismortgaged[mortgageable[choice]] = 0
