@@ -144,4 +144,3 @@ class TradeView(discord.ui.View):
 			await interaction.response.send_message(content='You are not allowed to interact with this button.', ephemeral=True)
 			return False
 		return True
-diff --git a/monopoly/game.py b/monopoly/game.py
