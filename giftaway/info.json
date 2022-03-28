@@ -6,5 +6,6 @@
     "requirements" : [],
     "description" : "Create grabbable key giveaways.",
     "tags" : ["utility"],
+    "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0]
 }

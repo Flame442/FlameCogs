@@ -6,6 +6,7 @@
     "requirements" : ["pillow"],
     "description" : "Play a game of monopoly with members of your server.",
     "tags" : ["fun", "games", "monopoly"],
+    "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],
     "end_user_data_statement": "This cog stores user ids in order to identify the players in saved games."
 }

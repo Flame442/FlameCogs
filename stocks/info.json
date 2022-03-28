@@ -6,7 +6,7 @@
     "requirements" : [],
     "description" : "Buy and sell stocks with bot currency.",
     "tags" : ["utility", "stock"],
+    "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],
-    "hidden" : false,
     "end_user_data_statement": "This cog stores a user id in order to know what stocks have been purchased by each user. Data is only collected when a user directly interacts with the cog and its commands."
 }

@@ -133,7 +133,7 @@ class Gift:
 				'{author} is gifting {num} keys for **{game}**.'
 			).format(author=self.author.display_name, num=total, game=self.game_name),
 			description=desc,
-			url = self.link_url or discord.Embed.Empty
+			url=self.link_url
 		)
 		for field in self.fields:
 			embed.add_field(name=field[0], value=field[1], inline=False)
