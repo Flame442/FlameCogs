@@ -229,12 +229,16 @@ class Gift:
 	async def give_key(self, member):
 		"""Give one of the keys to a particular user."""
 		key = self.keys.pop(0)
+		try:
+			await member.send(_('Here is your key for `{game}`: `{key}`').format(game=self.game_name, key=key))
+		except discord.HTTPException:
+			self.keys.append(key)
+			return
 		self.claimed_by_id.append(member.id)
 		self.claimed_by_text.append(_(
 			'\n**{name}** in **{guild}**'
 		).format(name=member.display_name, guild=member.guild.name))
 		self.claimed.append(key)
-		await member.send(_('Here is your key for `{game}`: `{key}`').format(game=self.game_name, key=key))
 		await self.refresh_messages()
 		if len(self.keys) == 0:
 			async with self.cog.config.gifts() as gifts:
