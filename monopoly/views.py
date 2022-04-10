@@ -17,17 +17,17 @@ class ConfirmView(discord.ui.View):
 		return True
 
 	@discord.ui.button(label='Yes', style=discord.ButtonStyle.green)
-	async def yes(self, button: discord.ui.Button, interaction: discord.Interaction):
+	async def yes(self, interaction: discord.Interaction, button: discord.ui.Button):
 		await interaction.response.edit_message(view=None)
 		self.result = True
 		self.stop()
 
 	@discord.ui.button(label='No', style=discord.ButtonStyle.red)
-	async def no(self, button: discord.ui.Button, interaction: discord.Interaction):
+	async def no(self, interaction: discord.Interaction, button: discord.ui.Button):
 		await interaction.response.edit_message(view=None)
 		self.stop()
 
-class LabledButton(discord.ui.Button):
+class LabeledButton(discord.ui.Button):
 	def __init__(self, result, **kwargs):
 		super().__init__(**kwargs)
 		self.result = result
@@ -37,12 +37,14 @@ class LabledButton(discord.ui.Button):
 		self.view.result = self.result
 		self.view.stop()
 
-class LabledSelect(discord.ui.Select):
+class LabeledSelect(discord.ui.Select):
 	def __init__(self, *, options: list, enabled: list=None, return_list: bool=False, **kwargs):
 		if enabled is None:
 			enabled = [False for x in options]
 		self.choices = [str(i) for i in range(len(options))]
-		super().__init__(options=[discord.SelectOption(label=x, value=self.choices[idx], default=enabled[idx]) for idx, x in enumerate(options)], **kwargs)
+		self.all_options = [discord.SelectOption(label=x, value=self.choices[idx], default=enabled[idx]) for idx, x in enumerate(options)]
+		self.page = 0
+		super().__init__(options=self.all_options[self.page * 25:(self.page + 1) * 25], **kwargs)
 		self.return_list = return_list
 
 	async def callback(self, interaction):
@@ -56,6 +58,16 @@ class LabledSelect(discord.ui.Select):
 			self.view.result = result
 		self.view.stop()
 
+class NextPageButton(discord.ui.Button):
+	def __init__(self, labeled_select):
+		super().__init__(label="Next Page", style=discord.ButtonStyle.blurple)
+		self.labeled_select = labeled_select
+	
+	async def callback(self, interaction):
+		self.labeled_select.page = (self.labeled_select.page + 1) % 2
+		self.labeled_select.options = self.labeled_select.all_options[self.labeled_select.page * 25:(self.labeled_select.page + 1) * 25]
+		await interaction.response.edit_message(view=self.view)
+
 class JailView(discord.ui.View):
 	def __init__(self, game, config, choices: list):
 		super().__init__(timeout=config['timeoutValue'])
@@ -64,11 +76,11 @@ class JailView(discord.ui.View):
 		self.uid = self.game.uid[self.game.p]
 		self.result = None
 		if 'r' in choices:
-			self.add_item(LabledButton('r', label='Roll', style=discord.ButtonStyle.blurple))
+			self.add_item(LabeledButton('r', label='Roll', style=discord.ButtonStyle.blurple))
 		if 'b' in choices:
-			self.add_item(LabledButton('b', label=f'Post Bail (${config["bailValue"]})', style=discord.ButtonStyle.gray))
+			self.add_item(LabeledButton('b', label=f'Post Bail (${config["bailValue"]})', style=discord.ButtonStyle.gray))
 		if 'g' in choices:
-			self.add_item(LabledButton('g', label=f'Use a "Get Out of Jail Free" card ({self.game.goojf[self.game.p]} left)', style=discord.ButtonStyle.gray))
+			self.add_item(LabeledButton('g', label=f'Use a "Get Out of Jail Free" card ({self.game.goojf[self.game.p]} left)', style=discord.ButtonStyle.gray))
 	
 	async def interaction_check(self, interaction):
 		if interaction.user.id != self.uid:
@@ -84,19 +96,19 @@ class TurnView(discord.ui.View):
 		self.uid = self.game.uid[self.game.p]
 		self.result = None
 		if 'r' in choices:
-			self.add_item(LabledButton('r', label='Roll', style=discord.ButtonStyle.blurple))
+			self.add_item(LabeledButton('r', label='Roll', style=discord.ButtonStyle.blurple))
 		if 'd' in choices:
-			self.add_item(LabledButton('d', label='End turn', style=discord.ButtonStyle.blurple))
+			self.add_item(LabeledButton('d', label='End turn', style=discord.ButtonStyle.blurple))
 		if 'g' in choices:
-			self.add_item(LabledButton('g', label='Give up', style=discord.ButtonStyle.red))
+			self.add_item(LabeledButton('g', label='Give up', style=discord.ButtonStyle.red))
 		if 't' in choices:
-			self.add_item(LabledButton('t', label='Trade', style=discord.ButtonStyle.gray))
+			self.add_item(LabeledButton('t', label='Trade', style=discord.ButtonStyle.gray))
 		if 'h' in choices:
-			self.add_item(LabledButton('h', label='Manage Houses', style=discord.ButtonStyle.gray))
+			self.add_item(LabeledButton('h', label='Manage Houses', style=discord.ButtonStyle.gray))
 		if 'm' in choices:
-			self.add_item(LabledButton('m', label='Mortgage Properties', style=discord.ButtonStyle.gray))
+			self.add_item(LabeledButton('m', label='Mortgage Properties', style=discord.ButtonStyle.gray))
 		if 's' in choices:
-			self.add_item(LabledButton('s', label='Save', style=discord.ButtonStyle.gray))
+			self.add_item(LabeledButton('s', label='Save', style=discord.ButtonStyle.gray))
 	
 	async def interaction_check(self, interaction):
 		if interaction.user.id != self.uid:
@@ -111,13 +123,16 @@ class SelectView(discord.ui.View):
 		self.config = config
 		self.uid = self.game.uid[self.game.p]
 		self.result = None
-		self.add_item(LabledSelect(options=choices))
+		labeled_select = LabeledSelect(options=choices)
+		self.add_item(labeled_select)
 		if 'c' in buttons:
-			self.add_item(LabledButton('c', label='Cancel', style=discord.ButtonStyle.red))
+			self.add_item(LabeledButton('c', label='Cancel', style=discord.ButtonStyle.red))
 		if 'd' in buttons:
-			self.add_item(LabledButton('d', label='Done', style=discord.ButtonStyle.blurple))
+			self.add_item(LabeledButton('d', label='Done', style=discord.ButtonStyle.blurple))
 		if 'e' in buttons:
-			self.add_item(LabledButton('e', label='Exit without saving', style=discord.ButtonStyle.red))
+			self.add_item(LabeledButton('e', label='Exit without saving', style=discord.ButtonStyle.red))
+		if len(choices) > 25:
+			self.add_item(NextPageButton(labeled_select))
 	
 	async def interaction_check(self, interaction):
 		if interaction.user.id != self.uid:
@@ -133,11 +148,13 @@ class TradeView(discord.ui.View):
 		self.uid = self.game.uid[self.game.p]
 		self.result = None
 		if len(choices) > 0:
-			self.add_item(LabledSelect(options=choices, enabled=enabled, return_list=True, max_values=len(choices)))
-		self.add_item(LabledButton('d', label='Done', style=discord.ButtonStyle.blurple))
-		self.add_item(LabledButton('m', label='Modify money', style=discord.ButtonStyle.gray))
-		self.add_item(LabledButton('j', label='Modify get out of jail free cards', style=discord.ButtonStyle.gray))
-		self.add_item(LabledButton('c', label='Cancel', style=discord.ButtonStyle.red))
+			# Trades will not support the up to 3 properties at the end if the user has more than 25.
+			labeled_select = LabeledSelect(options=choices, enabled=enabled, return_list=True, max_values=min(25, len(choices)))
+			self.add_item(labeled_select)
+		self.add_item(LabeledButton('d', label='Done', style=discord.ButtonStyle.blurple))
+		self.add_item(LabeledButton('m', label='Modify money', style=discord.ButtonStyle.gray))
+		self.add_item(LabeledButton('j', label='Modify get out of jail free cards', style=discord.ButtonStyle.gray))
+		self.add_item(LabeledButton('c', label='Cancel', style=discord.ButtonStyle.red))
 	
 	async def interaction_check(self, interaction):
 		if interaction.user.id != self.uid:
