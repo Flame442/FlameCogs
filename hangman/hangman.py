@@ -161,10 +161,7 @@ class Hangman(commands.Cog):
 					game = False
 					continue
 			#guessed entire word
-			if (
-				''.join(c for c in word if c in guessed) == 
-				''.join(c for c in word if c in 'abcdefghijklmnopqrstuvwxyz')
-			):
+			if not (set('abcdefghijklmnopqrstuvwxyz') & set(word)) - set(guessed):
 				p = self._get_message(word, guessed)
 				p = f'```{self.man[fails]}\n{p}```You win!\nThe word was {word}.'
 				if doEdit:
