@@ -1,0 +1,2609 @@
+[{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0091"
+  },
+  "id": 1,
+  "identifier": "stench",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0092"
+  },
+  "id": 2,
+  "identifier": "drizzle",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0093"
+  },
+  "id": 3,
+  "identifier": "speed-boost",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0094"
+  },
+  "id": 4,
+  "identifier": "battle-armor",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0095"
+  },
+  "id": 5,
+  "identifier": "sturdy",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0096"
+  },
+  "id": 6,
+  "identifier": "damp",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0097"
+  },
+  "id": 7,
+  "identifier": "limber",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0098"
+  },
+  "id": 8,
+  "identifier": "sand-veil",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0099"
+  },
+  "id": 9,
+  "identifier": "static",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e009a"
+  },
+  "id": 10,
+  "identifier": "volt-absorb",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e009b"
+  },
+  "id": 11,
+  "identifier": "water-absorb",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e009c"
+  },
+  "id": 12,
+  "identifier": "oblivious",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e009d"
+  },
+  "id": 13,
+  "identifier": "cloud-nine",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e009e"
+  },
+  "id": 14,
+  "identifier": "compound-eyes",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e009f"
+  },
+  "id": 15,
+  "identifier": "insomnia",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00a0"
+  },
+  "id": 16,
+  "identifier": "color-change",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00a1"
+  },
+  "id": 17,
+  "identifier": "immunity",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00a2"
+  },
+  "id": 18,
+  "identifier": "flash-fire",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00a3"
+  },
+  "id": 19,
+  "identifier": "shield-dust",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00a4"
+  },
+  "id": 20,
+  "identifier": "own-tempo",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00a5"
+  },
+  "id": 21,
+  "identifier": "suction-cups",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00a6"
+  },
+  "id": 22,
+  "identifier": "intimidate",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00a7"
+  },
+  "id": 23,
+  "identifier": "shadow-tag",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00a8"
+  },
+  "id": 24,
+  "identifier": "rough-skin",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00a9"
+  },
+  "id": 25,
+  "identifier": "wonder-guard",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00aa"
+  },
+  "id": 26,
+  "identifier": "levitate",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ab"
+  },
+  "id": 27,
+  "identifier": "effect-spore",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ac"
+  },
+  "id": 28,
+  "identifier": "synchronize",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ad"
+  },
+  "id": 29,
+  "identifier": "clear-body",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ae"
+  },
+  "id": 30,
+  "identifier": "natural-cure",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00af"
+  },
+  "id": 31,
+  "identifier": "lightning-rod",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00b0"
+  },
+  "id": 32,
+  "identifier": "serene-grace",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00b1"
+  },
+  "id": 33,
+  "identifier": "swift-swim",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00b2"
+  },
+  "id": 34,
+  "identifier": "chlorophyll",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00b3"
+  },
+  "id": 35,
+  "identifier": "illuminate",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00b4"
+  },
+  "id": 36,
+  "identifier": "trace",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00b5"
+  },
+  "id": 37,
+  "identifier": "huge-power",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00b6"
+  },
+  "id": 38,
+  "identifier": "poison-point",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00b7"
+  },
+  "id": 39,
+  "identifier": "inner-focus",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00b8"
+  },
+  "id": 40,
+  "identifier": "magma-armor",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00b9"
+  },
+  "id": 41,
+  "identifier": "water-veil",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ba"
+  },
+  "id": 42,
+  "identifier": "magnet-pull",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00bb"
+  },
+  "id": 43,
+  "identifier": "soundproof",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00bc"
+  },
+  "id": 44,
+  "identifier": "rain-dish",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00bd"
+  },
+  "id": 45,
+  "identifier": "sand-stream",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00be"
+  },
+  "id": 46,
+  "identifier": "pressure",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00bf"
+  },
+  "id": 47,
+  "identifier": "thick-fat",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00c0"
+  },
+  "id": 48,
+  "identifier": "early-bird",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00c1"
+  },
+  "id": 49,
+  "identifier": "flame-body",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00c2"
+  },
+  "id": 50,
+  "identifier": "run-away",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00c3"
+  },
+  "id": 51,
+  "identifier": "keen-eye",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00c4"
+  },
+  "id": 52,
+  "identifier": "hyper-cutter",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00c5"
+  },
+  "id": 53,
+  "identifier": "pickup",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00c6"
+  },
+  "id": 54,
+  "identifier": "truant",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00c7"
+  },
+  "id": 55,
+  "identifier": "hustle",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00c8"
+  },
+  "id": 56,
+  "identifier": "cute-charm",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00c9"
+  },
+  "id": 57,
+  "identifier": "plus",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ca"
+  },
+  "id": 58,
+  "identifier": "minus",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00cb"
+  },
+  "id": 59,
+  "identifier": "forecast",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00cc"
+  },
+  "id": 60,
+  "identifier": "sticky-hold",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00cd"
+  },
+  "id": 61,
+  "identifier": "shed-skin",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ce"
+  },
+  "id": 62,
+  "identifier": "guts",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00cf"
+  },
+  "id": 63,
+  "identifier": "marvel-scale",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00d0"
+  },
+  "id": 64,
+  "identifier": "liquid-ooze",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00d1"
+  },
+  "id": 65,
+  "identifier": "overgrow",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00d2"
+  },
+  "id": 66,
+  "identifier": "blaze",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00d3"
+  },
+  "id": 67,
+  "identifier": "torrent",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00d4"
+  },
+  "id": 68,
+  "identifier": "swarm",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00d5"
+  },
+  "id": 69,
+  "identifier": "rock-head",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00d6"
+  },
+  "id": 70,
+  "identifier": "drought",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00d7"
+  },
+  "id": 71,
+  "identifier": "arena-trap",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00d8"
+  },
+  "id": 72,
+  "identifier": "vital-spirit",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00d9"
+  },
+  "id": 73,
+  "identifier": "white-smoke",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00da"
+  },
+  "id": 74,
+  "identifier": "pure-power",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00db"
+  },
+  "id": 75,
+  "identifier": "shell-armor",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00dc"
+  },
+  "id": 76,
+  "identifier": "air-lock",
+  "generation_id": 3,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00dd"
+  },
+  "id": 77,
+  "identifier": "tangled-feet",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00de"
+  },
+  "id": 78,
+  "identifier": "motor-drive",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00df"
+  },
+  "id": 79,
+  "identifier": "rivalry",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00e0"
+  },
+  "id": 80,
+  "identifier": "steadfast",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00e1"
+  },
+  "id": 81,
+  "identifier": "snow-cloak",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00e2"
+  },
+  "id": 82,
+  "identifier": "gluttony",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00e3"
+  },
+  "id": 83,
+  "identifier": "anger-point",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00e4"
+  },
+  "id": 84,
+  "identifier": "unburden",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00e5"
+  },
+  "id": 85,
+  "identifier": "heatproof",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00e6"
+  },
+  "id": 86,
+  "identifier": "simple",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00e7"
+  },
+  "id": 87,
+  "identifier": "dry-skin",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00e8"
+  },
+  "id": 88,
+  "identifier": "download",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00e9"
+  },
+  "id": 89,
+  "identifier": "iron-fist",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ea"
+  },
+  "id": 90,
+  "identifier": "poison-heal",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00eb"
+  },
+  "id": 91,
+  "identifier": "adaptability",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ec"
+  },
+  "id": 92,
+  "identifier": "skill-link",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ed"
+  },
+  "id": 93,
+  "identifier": "hydration",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ee"
+  },
+  "id": 94,
+  "identifier": "solar-power",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ef"
+  },
+  "id": 95,
+  "identifier": "quick-feet",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00f0"
+  },
+  "id": 96,
+  "identifier": "normalize",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00f1"
+  },
+  "id": 97,
+  "identifier": "sniper",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00f2"
+  },
+  "id": 98,
+  "identifier": "magic-guard",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00f3"
+  },
+  "id": 99,
+  "identifier": "no-guard",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00f4"
+  },
+  "id": 100,
+  "identifier": "stall",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00f5"
+  },
+  "id": 101,
+  "identifier": "technician",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00f6"
+  },
+  "id": 102,
+  "identifier": "leaf-guard",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00f7"
+  },
+  "id": 103,
+  "identifier": "klutz",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00f8"
+  },
+  "id": 104,
+  "identifier": "mold-breaker",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00f9"
+  },
+  "id": 105,
+  "identifier": "super-luck",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00fa"
+  },
+  "id": 106,
+  "identifier": "aftermath",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00fb"
+  },
+  "id": 107,
+  "identifier": "anticipation",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00fc"
+  },
+  "id": 108,
+  "identifier": "forewarn",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00fd"
+  },
+  "id": 109,
+  "identifier": "unaware",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00fe"
+  },
+  "id": 110,
+  "identifier": "tinted-lens",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e00ff"
+  },
+  "id": 111,
+  "identifier": "filter",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0100"
+  },
+  "id": 112,
+  "identifier": "slow-start",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0101"
+  },
+  "id": 113,
+  "identifier": "scrappy",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0102"
+  },
+  "id": 114,
+  "identifier": "storm-drain",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0103"
+  },
+  "id": 115,
+  "identifier": "ice-body",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0104"
+  },
+  "id": 116,
+  "identifier": "solid-rock",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0105"
+  },
+  "id": 117,
+  "identifier": "snow-warning",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0106"
+  },
+  "id": 118,
+  "identifier": "honey-gather",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0107"
+  },
+  "id": 119,
+  "identifier": "frisk",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0108"
+  },
+  "id": 120,
+  "identifier": "reckless",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0109"
+  },
+  "id": 121,
+  "identifier": "multitype",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e010a"
+  },
+  "id": 122,
+  "identifier": "flower-gift",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e010b"
+  },
+  "id": 123,
+  "identifier": "bad-dreams",
+  "generation_id": 4,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e010c"
+  },
+  "id": 124,
+  "identifier": "pickpocket",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e010d"
+  },
+  "id": 125,
+  "identifier": "sheer-force",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e010e"
+  },
+  "id": 126,
+  "identifier": "contrary",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e010f"
+  },
+  "id": 127,
+  "identifier": "unnerve",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0110"
+  },
+  "id": 128,
+  "identifier": "defiant",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0111"
+  },
+  "id": 129,
+  "identifier": "defeatist",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0112"
+  },
+  "id": 130,
+  "identifier": "cursed-body",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0113"
+  },
+  "id": 131,
+  "identifier": "healer",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0114"
+  },
+  "id": 132,
+  "identifier": "friend-guard",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0115"
+  },
+  "id": 133,
+  "identifier": "weak-armor",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0116"
+  },
+  "id": 134,
+  "identifier": "heavy-metal",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0117"
+  },
+  "id": 135,
+  "identifier": "light-metal",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0118"
+  },
+  "id": 136,
+  "identifier": "multiscale",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0119"
+  },
+  "id": 137,
+  "identifier": "toxic-boost",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e011a"
+  },
+  "id": 138,
+  "identifier": "flare-boost",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e011b"
+  },
+  "id": 139,
+  "identifier": "harvest",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e011c"
+  },
+  "id": 140,
+  "identifier": "telepathy",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e011d"
+  },
+  "id": 141,
+  "identifier": "moody",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e011e"
+  },
+  "id": 142,
+  "identifier": "overcoat",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e011f"
+  },
+  "id": 143,
+  "identifier": "poison-touch",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0120"
+  },
+  "id": 144,
+  "identifier": "regenerator",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0121"
+  },
+  "id": 145,
+  "identifier": "big-pecks",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0122"
+  },
+  "id": 146,
+  "identifier": "sand-rush",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0123"
+  },
+  "id": 147,
+  "identifier": "wonder-skin",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0124"
+  },
+  "id": 148,
+  "identifier": "analytic",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0125"
+  },
+  "id": 149,
+  "identifier": "illusion",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0126"
+  },
+  "id": 150,
+  "identifier": "imposter",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0127"
+  },
+  "id": 151,
+  "identifier": "infiltrator",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0128"
+  },
+  "id": 152,
+  "identifier": "mummy",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0129"
+  },
+  "id": 153,
+  "identifier": "moxie",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e012a"
+  },
+  "id": 154,
+  "identifier": "justified",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e012b"
+  },
+  "id": 155,
+  "identifier": "rattled",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e012c"
+  },
+  "id": 156,
+  "identifier": "magic-bounce",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e012d"
+  },
+  "id": 157,
+  "identifier": "sap-sipper",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e012e"
+  },
+  "id": 158,
+  "identifier": "prankster",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e012f"
+  },
+  "id": 159,
+  "identifier": "sand-force",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0130"
+  },
+  "id": 160,
+  "identifier": "iron-barbs",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0131"
+  },
+  "id": 161,
+  "identifier": "zen-mode",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0132"
+  },
+  "id": 162,
+  "identifier": "victory-star",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0133"
+  },
+  "id": 163,
+  "identifier": "turboblaze",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0134"
+  },
+  "id": 164,
+  "identifier": "teravolt",
+  "generation_id": 5,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0135"
+  },
+  "id": 165,
+  "identifier": "aroma-veil",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0136"
+  },
+  "id": 166,
+  "identifier": "flower-veil",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0137"
+  },
+  "id": 167,
+  "identifier": "cheek-pouch",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0138"
+  },
+  "id": 168,
+  "identifier": "protean",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0139"
+  },
+  "id": 169,
+  "identifier": "fur-coat",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e013a"
+  },
+  "id": 170,
+  "identifier": "magician",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e013b"
+  },
+  "id": 171,
+  "identifier": "bulletproof",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e013c"
+  },
+  "id": 172,
+  "identifier": "competitive",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e013d"
+  },
+  "id": 173,
+  "identifier": "strong-jaw",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e013e"
+  },
+  "id": 174,
+  "identifier": "refrigerate",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e013f"
+  },
+  "id": 175,
+  "identifier": "sweet-veil",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0140"
+  },
+  "id": 176,
+  "identifier": "stance-change",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0141"
+  },
+  "id": 177,
+  "identifier": "gale-wings",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0142"
+  },
+  "id": 178,
+  "identifier": "mega-launcher",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0143"
+  },
+  "id": 179,
+  "identifier": "grass-pelt",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0144"
+  },
+  "id": 180,
+  "identifier": "symbiosis",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0145"
+  },
+  "id": 181,
+  "identifier": "tough-claws",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0146"
+  },
+  "id": 182,
+  "identifier": "pixilate",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0147"
+  },
+  "id": 183,
+  "identifier": "gooey",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0148"
+  },
+  "id": 184,
+  "identifier": "aerilate",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0149"
+  },
+  "id": 185,
+  "identifier": "parental-bond",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e014a"
+  },
+  "id": 186,
+  "identifier": "dark-aura",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e014b"
+  },
+  "id": 187,
+  "identifier": "fairy-aura",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e014c"
+  },
+  "id": 188,
+  "identifier": "aura-break",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e014d"
+  },
+  "id": 189,
+  "identifier": "primordial-sea",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e014e"
+  },
+  "id": 190,
+  "identifier": "desolate-land",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e014f"
+  },
+  "id": 191,
+  "identifier": "delta-stream",
+  "generation_id": 6,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0150"
+  },
+  "id": 192,
+  "identifier": "stamina",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0151"
+  },
+  "id": 193,
+  "identifier": "wimp-out",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0152"
+  },
+  "id": 194,
+  "identifier": "emergency-exit",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0153"
+  },
+  "id": 195,
+  "identifier": "water-compaction",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0154"
+  },
+  "id": 196,
+  "identifier": "merciless",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0155"
+  },
+  "id": 197,
+  "identifier": "shields-down",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0156"
+  },
+  "id": 198,
+  "identifier": "stakeout",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0157"
+  },
+  "id": 199,
+  "identifier": "water-bubble",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0158"
+  },
+  "id": 200,
+  "identifier": "steelworker",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0159"
+  },
+  "id": 201,
+  "identifier": "berserk",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e015a"
+  },
+  "id": 202,
+  "identifier": "slush-rush",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e015b"
+  },
+  "id": 203,
+  "identifier": "long-reach",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e015c"
+  },
+  "id": 204,
+  "identifier": "liquid-voice",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e015d"
+  },
+  "id": 205,
+  "identifier": "triage",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e015e"
+  },
+  "id": 206,
+  "identifier": "galvanize",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e015f"
+  },
+  "id": 207,
+  "identifier": "surge-surfer",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0160"
+  },
+  "id": 208,
+  "identifier": "schooling",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0161"
+  },
+  "id": 209,
+  "identifier": "disguise",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0162"
+  },
+  "id": 210,
+  "identifier": "battle-bond",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0163"
+  },
+  "id": 211,
+  "identifier": "power-construct",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0164"
+  },
+  "id": 212,
+  "identifier": "corrosion",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0165"
+  },
+  "id": 213,
+  "identifier": "comatose",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0166"
+  },
+  "id": 214,
+  "identifier": "queenly-majesty",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0167"
+  },
+  "id": 215,
+  "identifier": "innards-out",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0168"
+  },
+  "id": 216,
+  "identifier": "dancer",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0169"
+  },
+  "id": 217,
+  "identifier": "battery",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e016a"
+  },
+  "id": 218,
+  "identifier": "fluffy",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e016b"
+  },
+  "id": 219,
+  "identifier": "dazzling",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e016c"
+  },
+  "id": 220,
+  "identifier": "soul-heart",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e016d"
+  },
+  "id": 221,
+  "identifier": "tangling-hair",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e016e"
+  },
+  "id": 222,
+  "identifier": "receiver",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e016f"
+  },
+  "id": 223,
+  "identifier": "power-of-alchemy",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0170"
+  },
+  "id": 224,
+  "identifier": "beast-boost",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0171"
+  },
+  "id": 225,
+  "identifier": "rks-system",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0172"
+  },
+  "id": 226,
+  "identifier": "electric-surge",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0173"
+  },
+  "id": 227,
+  "identifier": "psychic-surge",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0174"
+  },
+  "id": 228,
+  "identifier": "misty-surge",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0175"
+  },
+  "id": 229,
+  "identifier": "grassy-surge",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0176"
+  },
+  "id": 230,
+  "identifier": "full-metal-body",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0177"
+  },
+  "id": 231,
+  "identifier": "shadow-shield",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0178"
+  },
+  "id": 232,
+  "identifier": "prism-armor",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0179"
+  },
+  "id": 233,
+  "identifier": "neuroforce",
+  "generation_id": 7,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e017a"
+  },
+  "id": 10001,
+  "identifier": "mountaineer",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e017b"
+  },
+  "id": 10002,
+  "identifier": "wave-rider",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e017c"
+  },
+  "id": 10003,
+  "identifier": "skater",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e017d"
+  },
+  "id": 10004,
+  "identifier": "thrust",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e017e"
+  },
+  "id": 10005,
+  "identifier": "perception",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e017f"
+  },
+  "id": 10006,
+  "identifier": "parry",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0180"
+  },
+  "id": 10007,
+  "identifier": "instinct",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0181"
+  },
+  "id": 10008,
+  "identifier": "dodge",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0182"
+  },
+  "id": 10009,
+  "identifier": "jagged-edge",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0183"
+  },
+  "id": 10010,
+  "identifier": "frostbite",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0184"
+  },
+  "id": 10011,
+  "identifier": "tenacity",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0185"
+  },
+  "id": 10012,
+  "identifier": "pride",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0186"
+  },
+  "id": 10013,
+  "identifier": "deep-sleep",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0187"
+  },
+  "id": 10014,
+  "identifier": "power-nap",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0188"
+  },
+  "id": 10015,
+  "identifier": "spirit",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0189"
+  },
+  "id": 10016,
+  "identifier": "warm-blanket",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e018a"
+  },
+  "id": 10017,
+  "identifier": "gulp",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e018b"
+  },
+  "id": 10018,
+  "identifier": "herbivore",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e018c"
+  },
+  "id": 10019,
+  "identifier": "sandpit",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e018d"
+  },
+  "id": 10020,
+  "identifier": "hot-blooded",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e018e"
+  },
+  "id": 10021,
+  "identifier": "medic",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e018f"
+  },
+  "id": 10022,
+  "identifier": "life-force",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0190"
+  },
+  "id": 10023,
+  "identifier": "lunchbox",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0191"
+  },
+  "id": 10024,
+  "identifier": "nurse",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0192"
+  },
+  "id": 10025,
+  "identifier": "melee",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0193"
+  },
+  "id": 10026,
+  "identifier": "sponge",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0194"
+  },
+  "id": 10027,
+  "identifier": "bodyguard",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0195"
+  },
+  "id": 10028,
+  "identifier": "hero",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0196"
+  },
+  "id": 10029,
+  "identifier": "last-bastion",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0197"
+  },
+  "id": 10030,
+  "identifier": "stealth",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0198"
+  },
+  "id": 10031,
+  "identifier": "vanguard",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e0199"
+  },
+  "id": 10032,
+  "identifier": "nomad",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e019a"
+  },
+  "id": 10033,
+  "identifier": "sequence",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e019b"
+  },
+  "id": 10034,
+  "identifier": "grass-cloak",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e019c"
+  },
+  "id": 10035,
+  "identifier": "celebrate",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e019d"
+  },
+  "id": 10036,
+  "identifier": "lullaby",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e019e"
+  },
+  "id": 10037,
+  "identifier": "calming",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e019f"
+  },
+  "id": 10038,
+  "identifier": "daze",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01a0"
+  },
+  "id": 10039,
+  "identifier": "frighten",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01a1"
+  },
+  "id": 10040,
+  "identifier": "interference",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01a2"
+  },
+  "id": 10041,
+  "identifier": "mood-maker",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01a3"
+  },
+  "id": 10042,
+  "identifier": "confidence",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01a4"
+  },
+  "id": 10043,
+  "identifier": "fortune",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01a5"
+  },
+  "id": 10044,
+  "identifier": "bonanza",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01a6"
+  },
+  "id": 10045,
+  "identifier": "explode",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01a7"
+  },
+  "id": 10046,
+  "identifier": "omnipotent",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01a8"
+  },
+  "id": 10047,
+  "identifier": "share",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01a9"
+  },
+  "id": 10048,
+  "identifier": "black-hole",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01aa"
+  },
+  "id": 10049,
+  "identifier": "shadow-dash",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01ab"
+  },
+  "id": 10050,
+  "identifier": "sprint",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01ac"
+  },
+  "id": 10051,
+  "identifier": "disgust",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01ad"
+  },
+  "id": 10052,
+  "identifier": "high-rise",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01ae"
+  },
+  "id": 10053,
+  "identifier": "climber",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01af"
+  },
+  "id": 10054,
+  "identifier": "flame-boost",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01b0"
+  },
+  "id": 10055,
+  "identifier": "aqua-boost",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01b1"
+  },
+  "id": 10056,
+  "identifier": "run-up",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01b2"
+  },
+  "id": 10057,
+  "identifier": "conqueror",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01b3"
+  },
+  "id": 10058,
+  "identifier": "shackle",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01b4"
+  },
+  "id": 10059,
+  "identifier": "decoy",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e825bd602284d30719e01b5"
+  },
+  "id": 10060,
+  "identifier": "shield",
+  "generation_id": 5,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc926"
+  },
+  "id": 234,
+  "identifier": "libero",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc927"
+  },
+  "id": 235,
+  "identifier": "mirror-armor",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc928"
+  },
+  "id": 236,
+  "identifier": "cotton-down",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc929"
+  },
+  "id": 237,
+  "identifier": "ball-fetch",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc92a"
+  },
+  "id": 238,
+  "identifier": "steam-engine",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc92b"
+  },
+  "id": 239,
+  "identifier": "ripen",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc92c"
+  },
+  "id": 240,
+  "identifier": "sand-spit",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc92d"
+  },
+  "id": 241,
+  "identifier": "gulp-missile",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc92e"
+  },
+  "id": 242,
+  "identifier": "propeller-tail",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc92f"
+  },
+  "id": 243,
+  "identifier": "punk-rock",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc930"
+  },
+  "id": 244,
+  "identifier": "steely-spirit",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc931"
+  },
+  "id": 245,
+  "identifier": "perish-body",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc932"
+  },
+  "id": 246,
+  "identifier": "screen-cleaner",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc933"
+  },
+  "id": 247,
+  "identifier": "wandering-spirit",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc935"
+  },
+  "id": 249,
+  "identifier": "ice-scales",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc936"
+  },
+  "id": 250,
+  "identifier": "power-spot",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc937"
+  },
+  "id": 251,
+  "identifier": "ice-face",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc938"
+  },
+  "id": 252,
+  "identifier": "hunger-switch",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc939"
+  },
+  "id": 253,
+  "identifier": "stalwart",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc93a"
+  },
+  "id": 254,
+  "identifier": "intrepid-sword",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5e879c3b08d5e59188ddc93b"
+  },
+  "id": 255,
+  "identifier": "dauntless-shield",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5f5bef8b5a242697c9b3d5e7"
+  },
+  "generation_id": 8,
+  "id": 256,
+  "identifier": "pastel-veil",
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5f5bef8f5a242697c9b3d5e8"
+  },
+  "generation_id": 8,
+  "id": 257,
+  "identifier": "gorilla-tactics",
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5f5bf3375a242697c9b3d66e"
+  },
+  "generation_id": 8,
+  "id": 258,
+  "identifier": "quick-draw",
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5f5bf4055a242697c9b3d688"
+  },
+  "generation_id": 8,
+  "id": 259,
+  "identifier": "mimicry",
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5f99ee84913ead2f50dd6c8e"
+  },
+  "generation_id": 8,
+  "id": 260,
+  "identifier": "transistor",
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5f99eeb7913ead2f50dd6c8f"
+  },
+  "generation_id": 8,
+  "id": 261,
+  "identifier": "dragons-maw",
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5f99eee4913ead2f50dd6c90"
+  },
+  "generation_id": 8,
+  "id": 262,
+  "identifier": "chilling-neigh",
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5f99ef01913ead2f50dd6c91"
+  },
+  "generation_id": 8,
+  "id": 263,
+  "identifier": "grim-neigh",
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "5fa0b316ea5bf21b5a567009"
+  },
+  "id": 264,
+  "identifier": "as-one-shadow",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "60b43b2d0b9d949fb0648092"
+  },
+  "id": 266,
+  "identifier": "curious-medicine",
+  "generation_id": 8,
+  "is_main_series": 1
+},{
+  "_id": {
+    "$oid": "60ecaf5f1e10e22d7c4fd075"
+  },
+  "id": 265,
+  "identifier": "as-one-ice",
+  "generation_id": 8,
+  "is_main_series": 0
+},{
+  "_id": {
+    "$oid": "617d8fa124a74b38541b1a0e"
+  },
+  "id": 267,
+  "identifier": "unseen-fist",
+  "generation_id": 8,
+  "is_main_series": 1
+}]
