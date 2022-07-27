@@ -20,7 +20,7 @@ class TeambuilderReadException(Exception):
 
 
 class PokemonDuel(commands.Cog):
-    """Fight pokemon in a duel."""
+    """Battle in a Pokemon Duel with another member of your server."""
     def __init__(self, bot):
         self.bot = bot
         self.log = logging.getLogger('red.flamecogs.pokemonduel')

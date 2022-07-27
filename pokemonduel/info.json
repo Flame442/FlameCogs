@@ -1,0 +1,12 @@
+{
+    "author" : ["Flame442 (Flame#2941)"],
+    "install_msg" : "Thanks for installing Pokemon Duels. Use `[p]help pokemonduel` to get started.\nThis cog comes with bundled data.",
+    "name" : "PokemonDuel",
+    "short" : "Battle in a Pokemon Duel with another member of your server.",
+    "requirements" : [],
+    "description" : "Battle in a Pokemon Duel with another member of your server.",
+    "tags" : ["fun", "games", "pokemon"],
+    "min_bot_version": "3.5.0.dev1",
+    "min_python_version": [3, 6, 0],
+    "end_user_data_statement": "This cog stores user ids in order to track your party of pokemon."
+}
