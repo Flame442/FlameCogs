@@ -213,7 +213,7 @@ class GetPlayersView(discord.ui.View):
 	@discord.ui.button(label="Start Game", style=discord.ButtonStyle.green, disabled=True)
 	async def start(self, interaction: discord.Interaction, button: discord.ui.Button):
 		"""Starts the game with less than max_players players."""
-		if interaction.user.id == self.ctx.author.id:
+		if interaction.user.id != self.ctx.author.id:
 			await interaction.response.send_message(content='Only the host can use this button.', ephemeral=True)
 			return
 		await interaction.response.edit_message(view=None)
