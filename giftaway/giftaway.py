@@ -119,7 +119,7 @@ class Gift:
 		total = len(self.keys) + len(self.claimed)
 		if self.keys:
 			desc = _(
-				'Click the reaction below to grab a key.\n\n'
+				'Click the button below to grab a key.\n\n'
 				'Currently available: **{top}/{bottom}**'
 			).format(top=len(self.keys), bottom=total)
 		else:
