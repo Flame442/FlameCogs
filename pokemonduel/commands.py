@@ -31,7 +31,7 @@ class PokemonDuel(commands.Cog):
 		)
 
     @staticmethod
-    async def _get_opponent(ctx, opponent: discord.Member):
+    async def _get_opponent(ctx, opponent: discord.Member, battle_type: str):
         """Confirms acceptence of the duel with the requested member."""
         if opponent.id == ctx.author.id:
             await ctx.send("You cannot duel yourself!")
@@ -39,7 +39,7 @@ class PokemonDuel(commands.Cog):
         if opponent.bot:
             await ctx.send("You cannot duel a bot!")
             return False
-        return await DuelAcceptView(ctx, opponent).wait()
+        return await DuelAcceptView(ctx, opponent, battle_type).wait()
 
     @staticmethod
     async def party_from_teambuilder(ctx, teambuilder):
@@ -310,7 +310,7 @@ class PokemonDuel(commands.Cog):
     
     async def _start_duel(self, ctx, opponent: discord.Member, *, inverse_battle=False):
         """Runs a duel."""
-        if not await self._get_opponent(ctx, opponent):
+        if not await self._get_opponent(ctx, opponent, "an inverse battle" if inverse_battle else "a duel"):
             return
         trainers = []
         for player in (ctx.author, opponent):

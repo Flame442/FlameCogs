@@ -42,7 +42,7 @@ class DuelAcceptView(discord.ui.View):
     
     async def wait(self):
         """Returns True if the duel was accepted, False otherwise."""
-        self.message = await self.ctx.send(f"{self.opponent.mention} You have been challenged to a {self.battle_type} by {self.ctx.author.name}!\n", view=self)
+        self.message = await self.ctx.send(f"{self.opponent.mention} You have been challenged to {self.battle_type} by {self.ctx.author.name}!\n", view=self)
         await super().wait()
         return self.confirm
 
@@ -317,9 +317,10 @@ class SwapPromptView(discord.ui.View):
         if self.battle.turn != self.turn:
             await interaction.response.send_message(content="This button has expired.", ephemeral=True)
             return False
-        if interaction.user.id == self.trainer.id:
-            return True
-        return False
+        if interaction.user.id != self.trainer.id:
+            await interaction.response.send_message(content="You are not allowed to interact with this button.", ephemeral=True)
+            return False
+        return True
 
     async def on_timeout(self):
         self.battle.trainer1.event.set()
