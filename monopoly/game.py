@@ -981,7 +981,7 @@ class MonopolyGame():
 				self.msg += '1 get out of jail free card.\n'
 			else:
 				self.msg += f'{goojf_p} get out of jail free cards.\n'
-			self.msg += '```What do you want to give to them?.\n'
+			self.msg += '```What do you want to **give** to them?\n'
 			config = await self.cog.config.guild(self.ctx.guild).all()
 			view = TradeView(self, config, choices, enabled)
 			await self.send(img=True, view=view)
@@ -1053,7 +1053,7 @@ class MonopolyGame():
 				self.msg += '1 get out of jail free card.\n'
 			else:
 				self.msg += f'{goojf_partner} get out of jail free cards.\n'
-			self.msg += '```What do you want to get from them?.\n'
+			self.msg += '```What do you want to **get** from them?\n'
 			config = await self.cog.config.guild(self.ctx.guild).all()
 			view = TradeView(self, config, choices, enabled)
 			await self.send(img=True, view=view)
@@ -1161,11 +1161,6 @@ class MonopolyGame():
 			mention = member_partner.mention
 		else:
 			mention = member_partner.display_name
-		self.msg += (
-			f'{mention}, {member_p.display_name} would like to trade with you. '
-			f'Here is their offer.\n\nYou will give:\n```\n{hold_partner}```\n'
-			f'You will get:\n```\n{hold_p}```\nDo you accept?\n'
-		)
 		if self.is_ai(partner):
 			temp_p = [x for idx, x in enumerate(tradeable_p) if to_trade_p[idx]]
 			temp_partner = [x for idx, x in enumerate(tradeable_partner) if to_trade_partner[idx]]
@@ -1176,13 +1171,20 @@ class MonopolyGame():
 				[money_partner, goojf_partner, temp_partner]
 			)
 		else:
+			self.msg += (
+				f'{mention}, {member_p.display_name} would like to trade with you. '
+				f'Here is their offer.\n\nYou will give:\n```\n{hold_partner}```\n'
+				f'You will get:\n```\n{hold_p}```\nDo you accept?\n'
+			)
 			config = await self.cog.config.guild(self.ctx.guild).all()
 			view = ConfirmView(self, config, pid=partner)
 			await self.send(img=True, view=view)
 			await view.wait()
 			choice = 'y' if view.result else 'n'
 		if choice == 'n':
+			self.msg += "Rejected...\n"
 			return
+		self.msg += "Accepted!\n"
 		self.bal[self.p] += money_partner
 		self.bal[partner] += money_p
 		self.bal[self.p] -= money_p
