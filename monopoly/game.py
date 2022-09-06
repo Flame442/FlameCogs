@@ -1111,7 +1111,7 @@ class MonopolyGame():
 			elif choice == 'c':
 				return
 			else:
-				for idx in range(len(to_trade_p)):
+				for idx in range(len(to_trade_partner)):
 					to_trade_partner[idx] = idx in choice
 		hold_p = ''
 		hold_partner = ''
