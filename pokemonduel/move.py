@@ -3153,6 +3153,9 @@ class Move():
         # During hail, this bypasses accuracy checks
         if self.effect == 261 and battle.weather.get() == "hail":
             return True
+        # During rain, this bypasses accuracy checks
+        if self.effect in (153, 334) and battle.weather.get() in ("rain", "h-rain"):
+            return True
         # If used by a poison type, this bypasses accuracy checks
         if self.effect == 34 and ElementType.POISON in attacker.type_ids:
             return True
@@ -3180,9 +3183,8 @@ class Move():
             
         
         accuracy = self.accuracy
-        if self.effect in (153, 334) and battle.weather.get() in ("rain", "h-rain"):
-            accuracy = 100
-        if self.effect in (153, 334) and battle.weather.get() == "sun":
+        # When used during harsh sunlight, this has an accuracy of 50%
+        if self.effect in (153, 334) and battle.weather.get() in ("sun", "h-sun"):
             accuracy = 50
         if self.targets_opponent():
             if defender.ability(attacker=attacker, move=self) == Ability.WONDER_SKIN and self.damage_class == DamageClass.STATUS:
