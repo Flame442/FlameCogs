@@ -142,9 +142,9 @@ class BattleshipAI():
 			if 10 - length < idx % 10:
 				canR = False
 			for n in range(length):
-				if idx + n > 99 or board[idx + n] == 1:
+				if idx + n > 99 or board[idx + n] in (1, 3):
 					canR = False
-				if idx + (n * 10) > 99 or board[idx + (n * 10)] == 1:
+				if idx + (n * 10) > 99 or board[idx + (n * 10)] in (1, 3):
 					canD = False
 			cord = self._index_to_cord(idx)
 			if canR:
