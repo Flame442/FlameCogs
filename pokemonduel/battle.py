@@ -2,7 +2,7 @@ import discord
 import asyncio
 import random
 from .buttons import SwapPromptView
-from .data import generate_main_battle_message, find
+from .data import generate_main_battle_message, generate_text_battle_message, find
 from .enums import Ability, DamageClass
 from .misc import ExpiringEffect, Weather, Terrain
 
@@ -435,25 +435,7 @@ class Battle():
         
         Handles the message being too long.
         """
-        page = ""
-        pages = []
-        base_embed = discord.Embed(color=await self.ctx.embed_color())
-        raw = self.msg.strip().split("\n")
-        for part in raw:
-            if len(page + part) > 2000:
-                embed = base_embed.copy()
-                embed.description = page.strip()
-                pages.append(embed)
-                page = ""
-            page += part + "\n"
-        page = page.strip()
-        if page:
-            embed = base_embed.copy()
-            embed.description = page
-            pages.append(embed)
-        for page in pages:
-            await self.ctx.send(embed=page)
-        self.msg = ""
+        await generate_text_battle_message(self)
     
     async def run_swap(self, swapper, othertrainer, *, mid_turn=False):
         """

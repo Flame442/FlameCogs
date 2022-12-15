@@ -79,3 +79,29 @@ async def generate_main_battle_message(battle):
     except RuntimeError:
         pass
     return battle_view
+
+async def generate_text_battle_message(battle):
+    """
+    Send battle.msg in a boilerplate embed.
+    
+    Handles the message being too long.
+    """
+    page = ""
+    pages = []
+    base_embed = discord.Embed(color=await battle.ctx.embed_color())
+    raw = battle.msg.strip().split("\n")
+    for part in raw:
+        if len(page + part) > 2000:
+            embed = base_embed.copy()
+            embed.description = page.strip()
+            pages.append(embed)
+            page = ""
+        page += part + "\n"
+    page = page.strip()
+    if page:
+        embed = base_embed.copy()
+        embed.description = page
+        pages.append(embed)
+    for page in pages:
+        await battle.ctx.send(embed=page)
+    battle.msg = ""
