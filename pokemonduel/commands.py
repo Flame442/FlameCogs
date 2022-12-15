@@ -16,6 +16,7 @@ from .trainer import MemberTrainer, NPCTrainer
 
 
 class TeambuilderReadException(Exception):
+    """Generic exception raised when failing to parse a teambuilder export string."""
     pass
 
 
@@ -183,7 +184,7 @@ class PokemonDuel(commands.Cog):
                 elif line.startswith("Hidden Power:"):
                     pass
                 else:
-                    raise TeambuilderReadException("A data line was not properly formatted.")
+                    raise TeambuilderReadException(f"Data line `{line[:200]}` is not properly formatted.")
             if len(moves) != 4:
                 raise TeambuilderReadException(f"`{pokname}` was given {len(moves)} moves. It must have exactly 4 moves.")
             evsum = sum([hpev, atkev, defev, spatkev, spdefev, speedev])
@@ -287,7 +288,7 @@ class PokemonDuel(commands.Cog):
             pages = paginate(stack)
             for idx, page in enumerate(pages):
                 if idx == 0:
-                    page = f"The duel encountered an error.\n\n" + page
+                    page = "The duel encountered an error.\n\n" + page
                 await battle.ctx.send(
                     f"```py\n{page}\n```"
                 )
@@ -320,7 +321,7 @@ class PokemonDuel(commands.Cog):
                 return
             party = [await DuelPokemon.create(ctx, p) for p in party]
             trainers.append(MemberTrainer(player, party))
-        battle = Battle(ctx, *trainers, inverse_battle=inverse_battle)
+        battle = Battle(ctx, *trainers, inverse_battle=inverse_battle) # pylint: disable=E1120
         preview_view = await generate_team_preview(battle)
         await battle.trainer1.event.wait()
         await battle.trainer2.event.wait()
@@ -330,6 +331,7 @@ class PokemonDuel(commands.Cog):
     @pokemonduel.group()
     async def party(self, ctx):
         """Manage your party of pokemon."""
+        pass
     
     @party.command(name="set")
     async def party_set(self, ctx, *, pokemon_data):
@@ -356,7 +358,7 @@ class PokemonDuel(commands.Cog):
             return
         await self.config.member(ctx.author).party.set(party)
         embed = discord.Embed(
-            title=f"Your new party",
+            title="Your new party",
             color=await ctx.embed_color(),
         )
         embed.set_thumbnail(url=ctx.author.display_avatar.url)
@@ -364,7 +366,7 @@ class PokemonDuel(commands.Cog):
         await ctx.send(embed=embed)
     
     @party.command(name="pokecord", hidden=True)
-    async def party_pokecord(self, ctx, *int):
+    async def party_pokecord(self, ctx, *ids: int):
         """Create a party of pokemon imported from Pokecord."""
         pass
     
@@ -383,7 +385,8 @@ class PokemonDuel(commands.Cog):
         await self.gen_party_embed(ctx, party, embed)
         await ctx.send(embed=embed)
  
-    async def gen_party_embed(self, ctx, party, embed):
+    @staticmethod
+    async def gen_party_embed(ctx, party, embed):
         """Adds fields to the provided `embed` that are rendered descriptors of the pokemon in the provided `party`."""
         for idx, pokemon in enumerate(party):
             pokname = pokemon["pokname"]
@@ -432,7 +435,8 @@ class PokemonDuel(commands.Cog):
             if hitem != "None":
                 desc += f" | Holding `{hitem}`"
             desc += f"\nNature `{nature}` | Happiness `{happiness}`\n"
-            desc += f"IVs `{hpiv:02d}`|`{atkiv:02d}`|`{defiv:02d}`|`{spatkiv:02d}`|`{spdefiv:02d}`|`{speediv:02d}`\n"
-            desc += f"EVs `{hpev}`|`{atkev}`|`{defev}`|`{spatkev}`|`{spdefev}`|`{speedev}`\n"
+            desc += "`    `|` hp`|`atk`|`def`|`spa`|`spd`|`spe`\n"
+            desc += f"`IVs:`|`{hpiv:3d}`|`{atkiv:3d}`|`{defiv:3d}`|`{spatkiv:3d}`|`{spdefiv:3d}`|`{speediv:3d}`\n"
+            desc += f"`EVs:`|`{hpev:3d}`|`{atkev:3d}`|`{defev:3d}`|`{spatkev:3d}`|`{spdefev:3d}`|`{speedev:3d}`\n"
             
             embed.add_field(name=title, value=desc, inline=bool(idx % 2))

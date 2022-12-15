@@ -5,6 +5,7 @@ from .buttons import BattlePromptView, PreviewPromptView
 
 
 async def find(ctx, db, filter):
+    """Fetch all matching rows from a data file."""
     path = str(bundled_data_path(ctx.cog) / db) + ".json"
     with open(path) as f:
         data = json.load(f)
@@ -26,25 +27,36 @@ async def find(ctx, db, filter):
     return results
 
 async def find_one(ctx, db, filter):
+    """Fetch the first matching row from a data file."""
     results = await find(ctx, db, filter)
     if results:
         return results[0]
     return None
 
 async def generate_team_preview(battle):
+    """Generates a message for trainers to preview their team."""
     preview_view = PreviewPromptView(battle)
     await battle.ctx.send("Select a lead pokemon:", view=preview_view)
     return preview_view
 
 async def generate_main_battle_message(battle):
+    """Generates a message representing the current state of the battle."""
     desc = ""
     
+    if battle.weather._weather_type:
+        desc += f"Weather: {battle.weather._weather_type.title()}\n" # TODO: pretty this output
+    if battle.terrain.item:
+        desc += f"Terrain: {battle.terrain.item.title()}\n" # TODO: pretty this output
+    if battle.trick_room.active():
+        desc += "Trick Room: Active\n"
+    
+    desc += "\n"
     desc += f"{battle.trainer1.name}'s {battle.trainer1.current_pokemon.name}\n"
     desc += f"  HP: {battle.trainer1.current_pokemon.hp}/{battle.trainer1.current_pokemon.starting_hp}\n"
     if battle.trainer1.current_pokemon.nv.current:
         desc += f"  Status: {battle.trainer1.current_pokemon.nv.current}\n"
     if battle.trainer1.current_pokemon.substitute:
-        desc += f"  Behind a substitute!\n"
+        desc += "  Behind a substitute!\n"
     
     desc += "\n"
     desc += f"{battle.trainer2.name}'s {battle.trainer2.current_pokemon.name}\n"
@@ -52,18 +64,12 @@ async def generate_main_battle_message(battle):
     if battle.trainer2.current_pokemon.nv.current:
         desc += f"  Status: {battle.trainer2.current_pokemon.nv.current}\n"
     if battle.trainer2.current_pokemon.substitute:
-        desc += f"  Behind a substitute!\n"
+        desc += "  Behind a substitute!\n"
     
-    desc += "\n"
-    if battle.weather._weather_type:
-        desc += f"Weather: {battle.weather._weather_type}\n" # TODO: pretty this output
-    if battle.trick_room.active():
-        desc += f"Trick Room: Active\n"
-    
-    desc = f"```\n{desc}```"
+    desc = f"```\n{desc.strip()}```"
     e = discord.Embed(
         title=f"Battle between {battle.trainer1.name} and {battle.trainer2.name}",
-        color=0xFFB6C1,
+        color=await battle.ctx.embed_color(),
         description = desc,
     )
     e.set_footer(text="Who Wins!?")

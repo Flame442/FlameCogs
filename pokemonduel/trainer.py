@@ -208,6 +208,7 @@ class NPCTrainer(Trainer):
         super().__init__("Trainer John", party)
     
     def move(self, defender, battle):
+        """Request a normal move from this trainer AI."""
         status_code, movedata = self.valid_moves(defender)
         if status_code == "forced":
             self.selected_action = movedata
@@ -219,6 +220,7 @@ class NPCTrainer(Trainer):
         #TODO: npc ai?
     
     def swap(self, defender, battle, *, mid_turn=False):
+        """Request a swap choice from this trainer AI."""
         poke_idx = random.choice(self.valid_swaps(defender, battle, check_trap=False))
         self.switch_poke(poke_idx, mid_turn=mid_turn)
         self.event.set()

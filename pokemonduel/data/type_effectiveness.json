@@ -1,2395 +1,1712 @@
-[{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b4b"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b4c"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b4d"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b4e"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b4f"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b50"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 6,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b51"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b52"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 8,
-  "damage_factor": 0
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b53"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 9,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b54"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 10,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b55"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b56"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 12,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b57"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b58"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b59"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b5a"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b5b"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b5c"
-  },
-  "damage_type_id": 1,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b5d"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 1,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b5e"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b5f"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 3,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b60"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 4,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b61"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b62"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 6,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b63"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 7,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b64"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 8,
-  "damage_factor": 0
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b65"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 9,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b66"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 10,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b67"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b68"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 12,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b69"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b6a"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 14,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b6b"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 15,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b6c"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b6d"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 17,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b6e"
-  },
-  "damage_type_id": 2,
-  "target_type_id": 18,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b6f"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b70"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 2,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b71"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b72"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b73"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b74"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 6,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b75"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 7,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b76"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b77"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 9,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b78"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 10,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b79"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b7a"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 12,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b7b"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 13,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b7c"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b7d"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b7e"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b7f"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b80"
-  },
-  "damage_type_id": 3,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b81"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b82"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b83"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b84"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 4,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b85"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 5,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b86"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 6,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b87"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b88"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 8,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b89"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 9,
-  "damage_factor": 0
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b8a"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 10,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b8b"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b8c"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 12,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b8d"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b8e"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b8f"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b90"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b91"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b92"
-  },
-  "damage_type_id": 4,
-  "target_type_id": 18,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b93"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b94"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b95"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 3,
-  "damage_factor": 0
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b96"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 4,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b97"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b98"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 6,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b99"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 7,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b9a"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b9b"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 9,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b9c"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 10,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b9d"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b9e"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 12,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45b9f"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 13,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ba0"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ba1"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ba2"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ba3"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ba4"
-  },
-  "damage_type_id": 5,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ba5"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ba6"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 2,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ba7"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 3,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ba8"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ba9"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 5,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45baa"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 6,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bab"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 7,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bac"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bad"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 9,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bae"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 10,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45baf"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bb0"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 12,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bb1"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bb2"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bb3"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 15,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bb4"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bb5"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bb6"
-  },
-  "damage_type_id": 6,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bb7"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bb8"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 2,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bb9"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 3,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bba"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 4,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bbb"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bbc"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 6,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bbd"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bbe"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 8,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bbf"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 9,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bc0"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 10,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bc1"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bc2"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 12,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bc3"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bc4"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 14,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bc5"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bc6"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bc7"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 17,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bc8"
-  },
-  "damage_type_id": 7,
-  "target_type_id": 18,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bc9"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 1,
-  "damage_factor": 0
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bca"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bcb"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bcc"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bcd"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bce"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 6,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bcf"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bd0"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 8,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bd1"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 9,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bd2"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 10,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bd3"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bd4"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 12,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bd5"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bd6"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 14,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bd7"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bd8"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bd9"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 17,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bda"
-  },
-  "damage_type_id": 8,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bdb"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bdc"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bdd"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bde"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bdf"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45be0"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 6,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45be1"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45be2"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45be3"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 9,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45be4"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 10,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45be5"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 11,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45be6"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 12,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45be7"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 13,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45be8"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45be9"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 15,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bea"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45beb"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bec"
-  },
-  "damage_type_id": 9,
-  "target_type_id": 18,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bed"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bee"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bef"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bf0"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bf1"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bf2"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 6,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bf3"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 7,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bf4"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bf5"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 9,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bf6"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 10,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bf7"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 11,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bf8"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 12,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bf9"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bfa"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bfb"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 15,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bfc"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 16,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bfd"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bfe"
-  },
-  "damage_type_id": 10,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45bff"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c00"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c01"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c02"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c03"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 5,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c04"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 6,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c05"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c06"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c07"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 9,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c08"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 10,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c09"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 11,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c0a"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 12,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c0b"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c0c"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c0d"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c0e"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 16,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c0f"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c10"
-  },
-  "damage_type_id": 11,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c11"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c12"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c13"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 3,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c14"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 4,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c15"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 5,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c16"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 6,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c17"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 7,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c18"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c19"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 9,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c1a"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 10,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c1b"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 11,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c1c"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 12,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c1d"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c1e"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c1f"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c20"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 16,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c21"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c22"
-  },
-  "damage_type_id": 12,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c23"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c24"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c25"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 3,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c26"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c27"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 5,
-  "damage_factor": 0
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c28"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 6,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c29"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c2a"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c2b"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 9,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c2c"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 10,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c2d"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 11,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c2e"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 12,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c2f"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 13,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c30"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c31"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c32"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 16,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c33"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c34"
-  },
-  "damage_type_id": 13,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c35"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c36"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 2,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c37"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c38"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 4,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c39"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c3a"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 6,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c3b"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c3c"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c3d"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 9,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c3e"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 10,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c3f"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c40"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 12,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c41"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c42"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 14,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c43"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c44"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c45"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 17,
-  "damage_factor": 0
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c46"
-  },
-  "damage_type_id": 14,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c47"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c48"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c49"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 3,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c4a"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c4b"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 5,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c4c"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 6,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c4d"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c4e"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c4f"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 9,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c50"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 10,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c51"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 11,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c52"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 12,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c53"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c54"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c55"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 15,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c56"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 16,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c57"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c58"
-  },
-  "damage_type_id": 15,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c59"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c5a"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c5b"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c5c"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c5d"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c5e"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 6,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c5f"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c60"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c61"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 9,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c62"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 10,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c63"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c64"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 12,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c65"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c66"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c67"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c68"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 16,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c69"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c6a"
-  },
-  "damage_type_id": 16,
-  "target_type_id": 18,
-  "damage_factor": 0
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c6b"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c6c"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 2,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c6d"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c6e"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c6f"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c70"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 6,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c71"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c72"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 8,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c73"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 9,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c74"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 10,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c75"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c76"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 12,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c77"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c78"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 14,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c79"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c7a"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c7b"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 17,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c7c"
-  },
-  "damage_type_id": 17,
-  "target_type_id": 18,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c7d"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 1,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c7e"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 2,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c7f"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c80"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 4,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c81"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c82"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 6,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c83"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c84"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 8,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c85"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 9,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c86"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 10,
-  "damage_factor": 50
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c87"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c88"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 12,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c89"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c8a"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 14,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c8b"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c8c"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 16,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c8d"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 17,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c8e"
-  },
-  "damage_type_id": 18,
-  "target_type_id": 18,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c8f"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 1,
-  "damage_factor": 0
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c90"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 2,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c91"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 3,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c92"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 4,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c93"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 5,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c94"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 6,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c95"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 7,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c96"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 8,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c97"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 9,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c98"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 10,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c99"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 11,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c9a"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 12,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c9b"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 13,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c9c"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 14,
-  "damage_factor": 200
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c9d"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 15,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c9e"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 16,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45c9f"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 17,
-  "damage_factor": 100
-},{
-  "_id": {
-    "$oid": "60c94be689e6fa1780b45ca0"
-  },
-  "damage_type_id": 10002,
-  "target_type_id": 18,
-  "damage_factor": 100
-}]
+[
+  {
+    "damage_type_id": 1,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 6,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 8,
+    "damage_factor": 0
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 9,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 10,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 12,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 1,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 1,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 3,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 4,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 6,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 7,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 8,
+    "damage_factor": 0
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 9,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 10,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 12,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 14,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 15,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 17,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 2,
+    "target_type_id": 18,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 2,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 6,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 7,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 9,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 10,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 12,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 13,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 3,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 4,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 5,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 6,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 8,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 9,
+    "damage_factor": 0
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 10,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 12,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 4,
+    "target_type_id": 18,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 3,
+    "damage_factor": 0
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 4,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 6,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 7,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 9,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 10,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 12,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 13,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 5,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 2,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 3,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 5,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 6,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 7,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 9,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 10,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 12,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 15,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 6,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 2,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 3,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 4,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 6,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 8,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 9,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 10,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 12,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 14,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 17,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 7,
+    "target_type_id": 18,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 1,
+    "damage_factor": 0
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 6,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 8,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 9,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 10,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 12,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 14,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 17,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 8,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 6,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 9,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 10,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 11,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 12,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 13,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 15,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 9,
+    "target_type_id": 18,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 6,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 7,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 9,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 10,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 11,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 12,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 15,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 16,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 5,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 6,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 9,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 10,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 11,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 12,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 16,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 11,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 3,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 4,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 5,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 6,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 7,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 9,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 10,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 11,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 12,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 16,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 12,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 3,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 5,
+    "damage_factor": 0
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 6,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 9,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 10,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 11,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 12,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 13,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 16,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 13,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 2,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 4,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 6,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 9,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 10,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 12,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 14,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 17,
+    "damage_factor": 0
+  },
+  {
+    "damage_type_id": 14,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 3,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 5,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 6,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 9,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 10,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 11,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 12,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 15,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 16,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 15,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 6,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 9,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 10,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 12,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 16,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 16,
+    "target_type_id": 18,
+    "damage_factor": 0
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 2,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 6,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 8,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 9,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 10,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 12,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 14,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 17,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 17,
+    "target_type_id": 18,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 1,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 2,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 4,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 6,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 8,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 9,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 10,
+    "damage_factor": 50
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 12,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 14,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 16,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 17,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 18,
+    "target_type_id": 18,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 1,
+    "damage_factor": 0
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 2,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 3,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 4,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 5,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 6,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 7,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 8,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 9,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 10,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 11,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 12,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 13,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 14,
+    "damage_factor": 200
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 15,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 16,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 17,
+    "damage_factor": 100
+  },
+  {
+    "damage_type_id": 10002,
+    "target_type_id": 18,
+    "damage_factor": 100
+  }
+]

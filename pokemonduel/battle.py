@@ -386,16 +386,32 @@ class Battle():
                 return T1FIRST
             if t2_quick and not t1_quick:
                 return T2FIRST
-            # Stall
-            if self.trainer1.current_pokemon.ability() == Ability.STALL and self.trainer2.current_pokemon.ability() == Ability.STALL:
+            # Move last in prio bracket
+            t1_slow = False
+            t2_slow = False
+            if self.trainer1.current_pokemon.ability() == Ability.STALL:
+                t1_slow = True
+            if (
+                self.trainer1.current_pokemon.ability() == Ability.MYCELIUM_MIGHT
+                and self.trainer1.selected_action.damage_class == DamageClass.STATUS
+            ):
+                t1_slow = True
+            if self.trainer2.current_pokemon.ability() == Ability.STALL:
+                t2_slow = True
+            if (
+                self.trainer2.current_pokemon.ability() == Ability.MYCELIUM_MIGHT
+                and self.trainer2.selected_action.damage_class == DamageClass.STATUS
+            ):
+                t2_slow = True
+            if t1_slow and t2_slow:
                 if speed1 == speed2:
                     return random.choice([T1FIRST, T2FIRST])
                 if speed1 > speed2:
                     return T2FIRST
                 return T1FIRST
-            if self.trainer1.current_pokemon.ability() == Ability.STALL:
+            if t1_slow:
                 return T2FIRST
-            if self.trainer2.current_pokemon.ability() == Ability.STALL:
+            if t2_slow:
                 return T1FIRST
         
         #Equal speed
@@ -421,7 +437,7 @@ class Battle():
         """
         page = ""
         pages = []
-        base_embed = discord.Embed(color=0xFFB6C1)
+        base_embed = discord.Embed(color=await self.ctx.embed_color())
         raw = self.msg.strip().split("\n")
         for part in raw:
             if len(page + part) > 2000:

@@ -311,6 +311,7 @@ class Move():
         
         # Absorbs
         if self.targets_opponent() and self.effect != 459:
+            # Heal
             if current_type == ElementType.ELECTRIC and defender.ability(attacker=attacker, move=self) == Ability.VOLT_ABSORB:
                 msg += f"{defender.name}'s volt absorb absorbed the move!\n"
                 msg += defender.heal(defender.starting_hp // 4, source="absorbing the move")
@@ -323,10 +324,11 @@ class Move():
                 msg += f"{defender.name}'s dry skin absorbed the move!\n"
                 msg += defender.heal(defender.starting_hp // 4, source="absorbing the move")
                 return msg
-            if current_type == ElementType.FIRE and defender.ability(attacker=attacker, move=self) == Ability.FLASH_FIRE:
-                defender.flash_fire = True
-                msg += f"{defender.name} used its flash fire to buff its fire type moves!\n"
+            if current_type == ElementType.GROUND and defender.ability(attacker=attacker, move=self) == Ability.EARTH_EATER:
+                msg += f"{defender.name}'s earth eater absorbed the move!\n"
+                msg += defender.heal(defender.starting_hp // 4, source="absorbing the move")
                 return msg
+            # Stat stage changes
             if current_type == ElementType.ELECTRIC and defender.ability(attacker=attacker, move=self) == Ability.LIGHTNING_ROD:
                 msg += f"{defender.name}'s lightning rod absorbed the move!\n"
                 msg += defender.append_spatk(StatChange(stage_delta=1), attacker=defender, move=self)
@@ -342,6 +344,15 @@ class Move():
             if current_type == ElementType.GRASS and defender.ability(attacker=attacker, move=self) == Ability.SAP_SIPPER:
                 msg += f"{defender.name}'s sap sipper absorbed the move!\n"
                 msg += defender.append_attack(StatChange(stage_delta=1), attacker=defender, move=self)
+                return msg
+            if current_type == ElementType.FIRE and defender.ability(attacker=attacker, move=self) == Ability.WELL_BAKED_BODY:
+                msg += f"{defender.name}'s well baked body absorbed the move!\n"
+                msg += defender.append_defense(StatChange(stage_delta=2), attacker=defender, move=self)
+                return msg
+            # Other
+            if current_type == ElementType.FIRE and defender.ability(attacker=attacker, move=self) == Ability.FLASH_FIRE:
+                defender.flash_fire = True
+                msg += f"{defender.name} used its flash fire to buff its fire type moves!\n"
                 return msg
         
         # Metronome
@@ -1026,6 +1037,8 @@ class Move():
                 pass
             elif defender.ability(attacker=attacker, move=self) == Ability.SUCTION_CUPS:
                 msg += f"{defender.name}'s suction cups kept it in place!\n"
+            elif defender.ability(attacker=attacker, move=self) == Ability.GUARD_DOG:
+                msg += f"{defender.name}'s guard dog kept it in place!\n"
             elif defender.ingrain:
                 msg += f"{defender.name} is ingrained in the ground!\n"
             else:
@@ -1491,6 +1504,7 @@ class Move():
         
         # Charge
         if self.effect == 175:
+            # TODO: Gen 9 makes charge last until an electric move is used
             attacker.charge.set_turns(2)
             msg += f"{attacker.name} charges up electric type moves!\n"
         
@@ -1503,6 +1517,8 @@ class Move():
         if self.effect == 226:
             attacker.owner.tailwind.set_turns(4)
             msg += f"{attacker.owner.name}'s team gets a tailwind!\n"
+            if attacker.ability() == Ability.WIND_RIDER:
+                msg += attacker.append_attack(StatChange(stage_delta=1), attacker=attacker, source="its wind rider")
         
         # Fling
         if self.effect == 234 and attacker.held_item.can_remove():
@@ -2130,6 +2146,8 @@ class Move():
                 damage *= .5
             if defender.ability(attacker=attacker, move=self) == Ability.HEATPROOF and current_type == ElementType.FIRE:
                 damage *= .5
+            if defender.ability(attacker=attacker, move=self) == Ability.PURIFYING_SALT and current_type == ElementType.GHOST:
+                damage *= .5
             if Ability.DARK_AURA in (attacker.ability(), defender.ability(attacker=attacker, move=self)) and current_type == ElementType.DARK:
                 if Ability.AURA_BREAK in (attacker.ability(), defender.ability(attacker=attacker, move=self)):
                     damage *= .75
@@ -2397,6 +2415,8 @@ class Move():
             power *= 1.5
         if attacker.ability() == Ability.MEGA_LAUNCHER and self.is_aura_or_pulse():
             power *= 1.5
+        if attacker.ability() == Ability.SHARPNESS and self.is_slicing():
+            power *= 1.5
         if attacker.ability() == Ability.RECKLESS and self.effect in (46, 49, 199, 254, 263, 270):
             power *= 1.2
         if attacker.ability() == Ability.TOXIC_BOOST and self.damage_class == DamageClass.PHYSICAL and attacker.nv.poison():
@@ -2411,6 +2431,10 @@ class Move():
             power *= 1.3
         if attacker.ability() == Ability.STAKEOUT and defender.swapped_in:
             power *= 2
+        if attacker.ability() == Ability.SUPREME_OVERLORD:
+            fainted = sum(poke.hp == 0 for poke in attacker.owner.party)
+            if fainted:
+                power *= (10 + fainted) / 10
         
         # Type buffing abilities - Some use naive type because the type is changed.
         if attacker.ability() == Ability.AERILATE and self.type == ElementType.NORMAL:
@@ -2442,6 +2466,8 @@ class Move():
         if attacker.ability() == Ability.SAND_FORCE and current_type in (ElementType.ROCK, ElementType.GROUND, ElementType.STEEL) and battle.weather.get() == "sandstorm":
             power *= 1.3
         if attacker.ability() in (Ability.STEELWORKER, Ability.STEELY_SPIRIT) and current_type == ElementType.STEEL:
+            power *= 1.5
+        if attacker.ability() == Ability.ROCKY_PAYLOAD and current_type == ElementType.ROCK:
             power *= 1.5
         
         # Type buffing items
@@ -2993,7 +3019,7 @@ class Move():
             return False
         if self.effect == 188 and battle.terrain.item == "electric" and attacker.grounded(battle):
             return False
-        if self.effect in (340, 351) and not any([ElementType.GRASS in p.type_ids and p.grounded(battle) and not p.dive and not p.dig and not p.fly and not p.shadow_force for p in (attacker, defender)]):
+        if self.effect in (340, 351) and not any(ElementType.GRASS in p.type_ids and p.grounded(battle) and not p.dive and not p.dig and not p.fly and not p.shadow_force for p in (attacker, defender)):
             return False
         if self.effect == 341 and defender.owner.sticky_web:
             return False
@@ -3063,7 +3089,7 @@ class Move():
             return False
         if self.effect == 468 and attacker.victory_dance:
             return False
-        if defender.ability(attacker=attacker, move=self) in (Ability.QUEENLY_MAJESTY, Ability.DAZZLING) and self.get_priority(attacker, defender, battle) > 0:
+        if defender.ability(attacker=attacker, move=self) in (Ability.QUEENLY_MAJESTY, Ability.DAZZLING, Ability.ARMOR_TAIL) and self.get_priority(attacker, defender, battle) > 0:
             return False
         return True
     
@@ -3271,6 +3297,8 @@ class Move():
             # If the attacker used a status move that called this move, even if this move is not a status move then it should still be considered affected by prankster.
             if not isinstance(attacker.owner.selected_action, int) and attacker.owner.selected_action.damage_class == DamageClass.STATUS:
                 return False
+        if defender.ability(attacker=attacker, move=self) == Ability.GOOD_AS_GOLD and self.damage_class == DamageClass.STATUS:
+            return False
         
         # Status moves do not care about type effectiveness - except for thunder wave FOR SOME REASON...
         if self.damage_class == DamageClass.STATUS and self.id != 86:
@@ -3334,6 +3362,17 @@ class Move():
     def is_dance(self):
         """Whether or not this move is a dance move."""
         return self.id in [14, 80, 297, 298, 349, 461, 483, 552, 686]
+    
+    def is_slicing(self):
+        """Whether or not this move is a slicing move."""
+        return self.id in [
+            15, 75, 163, 210, 314, 332, 348, 400, 403, 404, 427, 440, 533, 534, 669, 749, 830, 845
+        ]
+        # TODO: 'aqua-cutter', 'bitter-blade', 'kowtow-cleave', 'population-bomb'
+    
+    def is_wind(self):
+        """Whether or not this move is a wind move."""
+        return self.id in [16, 18, 59, 196, 201, 239, 257, 314, 366, 542, 572, 584, 829, 842, 844, 849]
     
     def is_affected_by_magic_coat(self):
         """Whether or not this move can be reflected by magic coat and magic bounce."""
@@ -3485,6 +3524,7 @@ class Move():
         return random.choice(newtypes)
     
     def copy(self):
+        """Generate a copy of this move."""
         return Move(
             id=self.id,
             identifier=self.name,
@@ -3504,6 +3544,7 @@ class Move():
     
     @classmethod
     def struggle(cls):
+        """Generate an instance of the move struggle."""
         return cls(
             id=165,
             identifier="struggle",
@@ -3523,6 +3564,7 @@ class Move():
     
     @classmethod
     def confusion(cls):
+        """Generate an instance of the move confusion."""
         return cls(
             id=0xCFCF,
             identifier="confusion",
@@ -3542,6 +3584,7 @@ class Move():
     
     @classmethod
     def present(cls, power):
+        """Generate an instance of the move present."""
         return cls(
             id=217,
             identifier="present",

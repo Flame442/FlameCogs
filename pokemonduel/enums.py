@@ -270,10 +270,42 @@ class Ability(IntEnum):
     AS_ONE_ICE = 265
     CURIOUS_MEDICINE = 266
     UNSEEN_FIST = 267
+    LINGERING_AROMA = 268
+    SEED_SOWER = 269
+    THERMAL_EXCHANGE = 270
+    ANGER_SHELL = 271
+    PURIFYING_SALT = 272
+    WELL_BAKED_BODY = 273
+    WIND_RIDER = 274
+    GUARD_DOG = 275
+    ROCKY_PAYLOAD = 276
+    WIND_POWER = 277
+    ZERO_TO_HERO = 278
+    COMMANDER = 279
+    ELECTROMORPHOSIS = 280
+    PROTOSYNTHESIS = 281
+    QUARK_DRIVE = 282
+    GOOD_AS_GOLD = 283
+    VESSEL_OF_RUIN = 284
+    SWORD_OF_RUIN = 285
+    TABLETS_OF_RUIN = 286
+    BEADS_OF_RUIN = 287
+    ORICHALCUM_PULSE = 288
+    HADRON_ENGINE = 289
+    OPPORTUNIST = 290
+    CUD_CHEW = 291
+    SHARPNESS = 292
+    SUPREME_OVERLORD = 293
+    COSTAR = 294
+    TOXIC_DEBRIS = 295
+    ARMOR_TAIL = 296
+    EARTH_EATER = 297
+    MYCELIUM_MIGHT = 298
     
     @property
     def pretty_name(self):
-        return self.name.lower().replace("_", " ")
+        """Formats the ability name for outputs."""
+        return self.name.lower().replace("_", " ") # pylint: disable=E1101
     
 
 class DamageClass(IntEnum):
