@@ -1736,7 +1736,7 @@ class DuelPokemon():
         if self.held_item == "thick-club" and self._name in ("Cubone", "Marowak", "Marowak-alola"):
             attack *= 2
         for poke in (battle.trainer1.current_pokemon, battle.trainer2.current_pokemon):
-            if poke is not self and poke.ability() == Ability.TABLETS_OF_RUIN:
+            if poke is not None and poke is not self and poke.ability() == Ability.TABLETS_OF_RUIN:
                 attack *= .75
         if (
             (self.ability() == Ability.PROTOSYNTHESIS and (battle.weather.get() in ("sun", "h-sun") or self.held_item == "booster-energy"))
@@ -1763,7 +1763,7 @@ class DuelPokemon():
         if self.held_item == "eviolite" and self.can_still_evolve:
             defense *= 1.5
         for poke in (battle.trainer1.current_pokemon, battle.trainer2.current_pokemon):
-            if poke is not self and poke.ability() == Ability.SWORD_OF_RUIN:
+            if poke is not None and poke is not self and poke.ability() == Ability.SWORD_OF_RUIN:
                 defense *= .75
         if (
             (self.ability() == Ability.PROTOSYNTHESIS and (battle.weather.get() in ("sun", "h-sun") or self.held_item == "booster-energy"))
@@ -1794,7 +1794,7 @@ class DuelPokemon():
         if self.held_item == "light-ball" and self._name == "Pikachu":
             spatk *= 2
         for poke in (battle.trainer1.current_pokemon, battle.trainer2.current_pokemon):
-            if poke is not self and poke.ability() == Ability.VESSEL_OF_RUIN:
+            if poke is not None and poke is not self and poke.ability() == Ability.VESSEL_OF_RUIN:
                 spatk *= .75
         if (
             (self.ability() == Ability.PROTOSYNTHESIS and (battle.weather.get() in ("sun", "h-sun") or self.held_item == "booster-energy"))
@@ -1826,7 +1826,7 @@ class DuelPokemon():
         if self.held_item == "eviolite" and self.can_still_evolve:
             spdef *= 1.5
         for poke in (battle.trainer1.current_pokemon, battle.trainer2.current_pokemon):
-            if poke is not self and poke.ability() == Ability.BEADS_OF_RUIN:
+            if poke is not None and poke is not self and poke.ability() == Ability.BEADS_OF_RUIN:
                 spdef *= .75
         if (
             (self.ability() == Ability.PROTOSYNTHESIS and (battle.weather.get() in ("sun", "h-sun") or self.held_item == "booster-energy"))
@@ -1992,7 +1992,7 @@ class DuelPokemon():
             # TODO: fix this hacky way of doing this, but probably not until multi battles...
             battle = self.held_item.battle
             for poke in (battle.trainer1.current_pokemon, battle.trainer2.current_pokemon):
-                if poke is not self and poke.ability() == Ability.OPPORTUNIST and check_looping:
+                if poke is not None and poke is not self and poke.ability() == Ability.OPPORTUNIST and check_looping:
                     msg += f"{poke.name} seizes the opportunity to boost its stat with its opportunist!\n"
                     copied_stat_change = StatChange(stage_delta=stat_change.stage_delta)
                     if stat == "attack":
