@@ -4,10 +4,7 @@ from redbot.core import Config
 import asyncio
 import aiohttp
 import logging
-import random
-import time
 import traceback
-from datetime import datetime, timedelta
 from .battle import Battle
 from .buttons import DuelAcceptView
 from .pokemon import DuelPokemon
@@ -183,6 +180,8 @@ class PokemonDuel(commands.Cog):
                     moves.append(move)
                 elif line.startswith("Hidden Power:"):
                     pass
+                elif line.startswith("Tera Type:"):
+                    pass # TODO: figure out how to handle teras
                 else:
                     raise TeambuilderReadException(f"Data line `{line[:200]}` is not properly formatted.")
             if len(moves) != 4:
@@ -264,7 +263,7 @@ class PokemonDuel(commands.Cog):
         self.games[int(battle.ctx.message.id)] = battle
         try:
             winner = await battle.run()
-        except (aiohttp.client_exceptions.ClientOSError, asyncio.TimeoutError) as e:
+        except (aiohttp.client_exceptions.ClientOSError, asyncio.TimeoutError):
             await battle.ctx.send(
                 "The bot encountered an unexpected network issue, "
                 "and the duel could not continue. "
@@ -352,7 +351,7 @@ class PokemonDuel(commands.Cog):
         except TeambuilderReadException as e:
             await ctx.send(f"Couldn't validate your team.\n{e}")
             return
-        except Exception as e:
+        except Exception:
             await ctx.send("Couldn't properly parse your team. Make sure you follow the format provided by Showdown's Team Builder. An error has been logged to console to debug this issue.")
             self.log.exception("Failed to read a teambuilder team string.")
             return
