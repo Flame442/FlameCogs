@@ -1,6 +1,6 @@
 import random
 from .enums import Ability, DamageClass, ElementType, MoveTarget
-from .misc import LockedMove, StatChange, BatonPass, ExpiringEffect, ExpiringItem
+from .misc import LockedMove, BatonPass, ExpiringEffect, ExpiringItem
 
 
 class Move():
@@ -214,9 +214,9 @@ class Move():
         elif self.effect in (40, 76, 146, 152, 156, 256, 257, 264, 273, 332, 333, 366, 451) and attacker.locked_move:
             if attacker.locked_move.turn != 1:
                 if self.effect == 146:
-                    msg += attacker.append_defense(StatChange(stage_delta=1), attacker=attacker, move=self)
+                    msg += attacker.append_defense(1, attacker=attacker, move=self)
                 elif self.effect == 451:
-                    msg += attacker.append_spatk(StatChange(stage_delta=1), attacker=attacker, move=self)
+                    msg += attacker.append_spatk(1, attacker=attacker, move=self)
                 else:
                     msg += "It's charging up!\n"
                     # Gulp Missile
@@ -331,23 +331,23 @@ class Move():
             # Stat stage changes
             if current_type == ElementType.ELECTRIC and defender.ability(attacker=attacker, move=self) == Ability.LIGHTNING_ROD:
                 msg += f"{defender.name}'s lightning rod absorbed the move!\n"
-                msg += defender.append_spatk(StatChange(stage_delta=1), attacker=defender, move=self)
+                msg += defender.append_spatk(1, attacker=defender, move=self)
                 return msg
             if current_type == ElementType.ELECTRIC and defender.ability(attacker=attacker, move=self) == Ability.MOTOR_DRIVE:
                 msg += f"{defender.name}'s motor drive absorbed the move!\n"
-                msg += defender.append_speed(StatChange(stage_delta=1), attacker=defender, move=self)
+                msg += defender.append_speed(1, attacker=defender, move=self)
                 return msg
             if current_type == ElementType.WATER and defender.ability(attacker=attacker, move=self) == Ability.STORM_DRAIN:
                 msg += f"{defender.name}'s storm drain absorbed the move!\n"
-                msg += defender.append_spatk(StatChange(stage_delta=1), attacker=defender, move=self)
+                msg += defender.append_spatk(1, attacker=defender, move=self)
                 return msg
             if current_type == ElementType.GRASS and defender.ability(attacker=attacker, move=self) == Ability.SAP_SIPPER:
                 msg += f"{defender.name}'s sap sipper absorbed the move!\n"
-                msg += defender.append_attack(StatChange(stage_delta=1), attacker=defender, move=self)
+                msg += defender.append_attack(1, attacker=defender, move=self)
                 return msg
             if current_type == ElementType.FIRE and defender.ability(attacker=attacker, move=self) == Ability.WELL_BAKED_BODY:
                 msg += f"{defender.name}'s well baked body absorbed the move!\n"
-                msg += defender.append_defense(StatChange(stage_delta=2), attacker=defender, move=self)
+                msg += defender.append_defense(2, attacker=defender, move=self)
                 return msg
             # Other
             if current_type == ElementType.FIRE and defender.ability(attacker=attacker, move=self) == Ability.FLASH_FIRE:
@@ -397,41 +397,41 @@ class Move():
         
         # Spectral Thief
         if self.effect == 410:
-            atk_stage = defender.calculate_stat_stage(defender.atk_changes)
-            def_stage = defender.calculate_stat_stage(defender.def_changes)
-            spatk_stage = defender.calculate_stat_stage(defender.spatk_changes)
-            spdef_stage = defender.calculate_stat_stage(defender.spdef_changes)
-            speed_stage = defender.calculate_stat_stage(defender.speed_changes)
-            evasion_stage = defender.calculate_stat_stage(defender.evasion_changes)
-            accuracy_stage = defender.calculate_stat_stage(defender.accuracy_changes)
-            if atk_stage > 0:
-                defender.atk_changes = []
+            if defender.attack_stage > 0:
+                stage = defender.attack_stage
+                defender.attack_stage = 0
                 msg += f"{defender.name}'s attack stage was reset!\n"
-                msg += attacker.append_attack(StatChange(stage_delta=atk_stage), attacker=attacker, move=self)
-            if def_stage > 0:
-                defender.def_changes = []
+                msg += attacker.append_attack(stage, attacker=attacker, move=self)
+            if defender.defense_stage > 0:
+                stage = defender.defense_stage
+                defender.defense_stage = 0
                 msg += f"{defender.name}'s defense stage was reset!\n"
-                msg += attacker.append_defense(StatChange(stage_delta=def_stage), attacker=attacker, move=self)
-            if spatk_stage > 0:
-                defender.spatk_changes = []
+                msg += attacker.append_defense(stage, attacker=attacker, move=self)
+            if defender.spatk_stage > 0:
+                stage = defender.spatk_stage
+                defender.spatk_stage = 0
                 msg += f"{defender.name}'s special attack stage was reset!\n"
-                msg += attacker.append_spatk(StatChange(stage_delta=spatk_stage), attacker=attacker, move=self)
-            if spdef_stage > 0:
-                defender.spdef_changes = []
+                msg += attacker.append_spatk(stage, attacker=attacker, move=self)
+            if defender.spdef_stage > 0:
+                stage = defender.spdef_stage
+                defender.spdef_stage = 0
                 msg += f"{defender.name}'s special defense stage was reset!\n"
-                msg += attacker.append_spdef(StatChange(stage_delta=spdef_stage), attacker=attacker, move=self)
-            if speed_stage > 0:
-                defender.speed_changes = []
+                msg += attacker.append_spdef(stage, attacker=attacker, move=self)
+            if defender.speed_stage > 0:
+                stage = defender.speed_stage
+                defender.speed_stage = 0
                 msg += f"{defender.name}'s speed stage was reset!\n"
-                msg += attacker.append_speed(StatChange(stage_delta=speed_stage), attacker=attacker, move=self)
-            if evasion_stage > 0:
-                defender.evasion_changes = []
+                msg += attacker.append_speed(stage, attacker=attacker, move=self)
+            if defender.evasion_stage > 0:
+                stage = defender.evasion_stage
+                defender.evasion_stage = 0
                 msg += f"{defender.name}'s evasion stage was reset!\n"
-                msg += attacker.append_evasion(StatChange(stage_delta=evasion_stage), attacker=attacker, move=self)
-            if accuracy_stage > 0:
-                defender.accuracy_changes = []
+                msg += attacker.append_evasion(stage, attacker=attacker, move=self)
+            if defender.accuracy_stage > 0:
+                stage = defender.accuracy_stage
+                defender.accuracy_stage = 0
                 msg += f"{defender.name}'s accuracy stage was reset!\n"
-                msg += attacker.append_accuracy(StatChange(stage_delta=accuracy_stage), attacker=attacker, move=self) 
+                msg += attacker.append_accuracy(stage, attacker=attacker, move=self) 
         
         # Future Sight
         if self.effect == 149:
@@ -582,8 +582,8 @@ class Move():
             attacker.stockpile += 1
             msg += f"{attacker.name} stores energy!\n"
         if self.effect == 162:
-            msg += attacker.append_defense(StatChange(stage_delta=-attacker.stockpile), attacker=attacker, move=self)
-            msg += attacker.append_spdef(StatChange(stage_delta=-attacker.stockpile), attacker=attacker, move=self)
+            msg += attacker.append_defense(-attacker.stockpile, attacker=attacker, move=self)
+            msg += attacker.append_spdef(-attacker.stockpile, attacker=attacker, move=self)
             attacker.stockpile = 0
 
         # Healing
@@ -610,8 +610,8 @@ class Move():
             msg += f"{defender.name} was seeded!\n"
         if self.effect == 163:
             msg += attacker.heal(attacker.starting_hp // {1: 4, 2: 2, 3: 1}[attacker.stockpile], source="stockpiled energy")
-            msg += attacker.append_defense(StatChange(stage_delta=-attacker.stockpile), attacker=attacker, move=self)
-            msg += attacker.append_spdef(StatChange(stage_delta=-attacker.stockpile), attacker=attacker, move=self)
+            msg += attacker.append_defense(-attacker.stockpile, attacker=attacker, move=self)
+            msg += attacker.append_spdef(-attacker.stockpile, attacker=attacker, move=self)
             attacker.stockpile = 0
         if self.effect == 180:
             attacker.owner.wish.set(attacker.starting_hp // 2)
@@ -703,197 +703,197 @@ class Move():
         # Stage changes
         # +1
         if self.effect in (11, 209, 213, 278, 313, 323, 328, 392, 414, 427, 468, 472):
-            msg += attacker.append_attack(StatChange(stage_delta=1), attacker=attacker, move=self)
+            msg += attacker.append_attack(1, attacker=attacker, move=self)
         if self.effect in (12, 157, 161, 207, 209, 323, 367, 414, 427, 467, 468, 472):
-            msg += attacker.append_defense(StatChange(stage_delta=1), attacker=attacker, move=self)
+            msg += attacker.append_defense(1, attacker=attacker, move=self)
         if self.effect in (14, 212, 291, 328, 392, 414, 427, 472):
-            msg += attacker.append_spatk(StatChange(stage_delta=1), attacker=attacker, move=self)
+            msg += attacker.append_spatk(1, attacker=attacker, move=self)
         if self.effect in (161, 175, 207, 212, 291, 367, 414, 427, 472):
-            msg += attacker.append_spdef(StatChange(stage_delta=1), attacker=attacker, move=self)
+            msg += attacker.append_spdef(1, attacker=attacker, move=self)
         if self.effect in (130, 213, 291, 296, 414, 427, 442, 469):
-            msg += attacker.append_speed(StatChange(stage_delta=1), attacker=attacker, move=self)
+            msg += attacker.append_speed(1, attacker=attacker, move=self)
         if self.effect in (17, 467, 471):
-            msg += attacker.append_evasion(StatChange(stage_delta=1), attacker=attacker, move=self)
+            msg += attacker.append_evasion(1, attacker=attacker, move=self)
         if self.effect in (278, 323):
-            msg += attacker.append_accuracy(StatChange(stage_delta=1), attacker=attacker, move=self)
+            msg += attacker.append_accuracy(1, attacker=attacker, move=self)
         if self.effect == 139:
             if random.randint(1, 100) <= effect_chance:
-                msg += attacker.append_defense(StatChange(stage_delta=1), attacker=attacker, move=self)
+                msg += attacker.append_defense(1, attacker=attacker, move=self)
         if self.effect in (140, 375):
             if random.randint(1, 100) <= effect_chance:
-                msg += attacker.append_attack(StatChange(stage_delta=1), attacker=attacker, move=self)
+                msg += attacker.append_attack(1, attacker=attacker, move=self)
         if self.effect == 277:
             if random.randint(1, 100) <= effect_chance:
-                msg += attacker.append_spatk(StatChange(stage_delta=1), attacker=attacker, move=self)
+                msg += attacker.append_spatk(1, attacker=attacker, move=self)
         if self.effect == 433:
             if random.randint(1, 100) <= effect_chance:
-                msg += attacker.append_speed(StatChange(stage_delta=1), attacker=attacker, move=self)
+                msg += attacker.append_speed(1, attacker=attacker, move=self)
         if self.effect == 167:
-            msg += defender.append_spatk(StatChange(stage_delta=1), attacker=attacker, move=self)
+            msg += defender.append_spatk(1, attacker=attacker, move=self)
         # +2
         if self.effect in (51, 309):
-            msg += attacker.append_attack(StatChange(stage_delta=2), attacker=attacker, move=self)
+            msg += attacker.append_attack(2, attacker=attacker, move=self)
         if self.effect in (52, 453):
-            msg += attacker.append_defense(StatChange(stage_delta=2), attacker=attacker, move=self)
+            msg += attacker.append_defense(2, attacker=attacker, move=self)
         if self.effect in (53, 285, 309, 313, 366):
-            msg += attacker.append_speed(StatChange(stage_delta=2), attacker=attacker, move=self)
+            msg += attacker.append_speed(2, attacker=attacker, move=self)
         if self.effect in (54, 309, 366):
-            msg += attacker.append_spatk(StatChange(stage_delta=2), attacker=attacker, move=self)
+            msg += attacker.append_spatk(2, attacker=attacker, move=self)
         if self.effect in (55, 366):
-            msg += attacker.append_spdef(StatChange(stage_delta=2), attacker=attacker, move=self)
+            msg += attacker.append_spdef(2, attacker=attacker, move=self)
         if self.effect == 109:
-            msg += attacker.append_evasion(StatChange(stage_delta=2), attacker=attacker, move=self)
+            msg += attacker.append_evasion(2, attacker=attacker, move=self)
         if self.effect in (119, 432):
-            msg += defender.append_attack(StatChange(stage_delta=2), attacker=attacker, move=self)
+            msg += defender.append_attack(2, attacker=attacker, move=self)
         if self.effect == 432:
-            msg += defender.append_spatk(StatChange(stage_delta=2), attacker=attacker, move=self)
+            msg += defender.append_spatk(2, attacker=attacker, move=self)
         if self.effect == 359:
             if random.randint(1, 100) <= effect_chance:
-                msg += attacker.append_defense(StatChange(stage_delta=2), attacker=attacker, move=self)
+                msg += attacker.append_defense(2, attacker=attacker, move=self)
         # -1
         if self.effect in (19, 206, 344, 347, 357, 365, 388, 412):
-            msg += defender.append_attack(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += defender.append_attack(-1, attacker=attacker, move=self)
         if self.effect in (20, 206):
-            msg += defender.append_defense(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += defender.append_defense(-1, attacker=attacker, move=self)
         if self.effect in (344, 347, 358, 412):
-            msg += defender.append_spatk(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += defender.append_spatk(-1, attacker=attacker, move=self)
         if self.effect == 428:
-            msg += defender.append_spdef(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += defender.append_spdef(-1, attacker=attacker, move=self)
         if self.effect in (331, 390):
-            msg += defender.append_speed(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += defender.append_speed(-1, attacker=attacker, move=self)
         if self.effect == 24:
-            msg += defender.append_accuracy(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += defender.append_accuracy(-1, attacker=attacker, move=self)
         if self.effect in (25, 259):
-            msg += defender.append_evasion(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += defender.append_evasion(-1, attacker=attacker, move=self)
         if self.effect in (69, 396):
             if random.randint(1, 100) <= effect_chance:
-                msg += defender.append_attack(StatChange(stage_delta=-1), attacker=attacker, move=self)
+                msg += defender.append_attack(-1, attacker=attacker, move=self)
         if self.effect in (70, 397, 435):
             if random.randint(1, 100) <= effect_chance:
-                msg += defender.append_defense(StatChange(stage_delta=-1), attacker=attacker, move=self)
+                msg += defender.append_defense(-1, attacker=attacker, move=self)
         if self.effect in (21, 71, 477):
             if random.randint(1, 100) <= effect_chance:
-                msg += defender.append_speed(StatChange(stage_delta=-1), attacker=attacker, move=self)
+                msg += defender.append_speed(-1, attacker=attacker, move=self)
         if self.effect == 72:
             if random.randint(1, 100) <= effect_chance:
-                msg += defender.append_spatk(StatChange(stage_delta=-1), attacker=attacker, move=self)
+                msg += defender.append_spatk(-1, attacker=attacker, move=self)
         if self.effect == 73:
             if random.randint(1, 100) <= effect_chance:
-                msg += defender.append_spdef(StatChange(stage_delta=-1), attacker=attacker, move=self)
+                msg += defender.append_spdef(-1, attacker=attacker, move=self)
         if self.effect == 74:
             if random.randint(1, 100) <= effect_chance:
-                msg += defender.append_accuracy(StatChange(stage_delta=-1), attacker=attacker, move=self)
+                msg += defender.append_accuracy(-1, attacker=attacker, move=self)
         if self.effect == 183:
-            msg += attacker.append_attack(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += attacker.append_attack(-1, attacker=attacker, move=self)
         if self.effect in (183, 230, 309, 335, 405, 438, 442):
-            msg += attacker.append_defense(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += attacker.append_defense(-1, attacker=attacker, move=self)
         if self.effect in (230, 309, 335):
-            msg += attacker.append_spdef(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += attacker.append_spdef(-1, attacker=attacker, move=self)
         if self.effect in (219, 335, 463):
-            msg += attacker.append_speed(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += attacker.append_speed(-1, attacker=attacker, move=self)
         # -2
         if self.effect in (59, 169):
-            msg += defender.append_attack(StatChange(stage_delta=-2), attacker=attacker, move=self)
+            msg += defender.append_attack(-2, attacker=attacker, move=self)
         if self.effect == 60:
-            msg += defender.append_defense(StatChange(stage_delta=-2), attacker=attacker, move=self)
+            msg += defender.append_defense(-2, attacker=attacker, move=self)
         if self.effect == 61:
-            msg += defender.append_speed(StatChange(stage_delta=-2), attacker=attacker, move=self)
+            msg += defender.append_speed(-2, attacker=attacker, move=self)
         if self.effect in (62, 169, 266):
-            msg += defender.append_spatk(StatChange(stage_delta=-2), attacker=attacker, move=self)
+            msg += defender.append_spatk(-2, attacker=attacker, move=self)
         if self.effect == 63:
-            msg += defender.append_spdef(StatChange(stage_delta=-2), attacker=attacker, move=self)
+            msg += defender.append_spdef(-2, attacker=attacker, move=self)
         if self.effect in (272, 297):
             if random.randint(1, 100) <= effect_chance:
-                msg += defender.append_spdef(StatChange(stage_delta=-2), attacker=attacker, move=self)
+                msg += defender.append_spdef(-2, attacker=attacker, move=self)
         if self.effect == 205:
-            msg += attacker.append_spatk(StatChange(stage_delta=-2), attacker=attacker, move=self)
+            msg += attacker.append_spatk(-2, attacker=attacker, move=self)
         # other
         if self.effect == 26:
-            attacker.atk_changes = []
-            attacker.def_changes = []
-            attacker.spatk_changes = []
-            attacker.spdef_changes = []
-            attacker.speed_changes = []
-            attacker.evasion_changes = []
-            attacker.accuracy_changes = []
-            defender.atk_changes = []
-            defender.def_changes = []
-            defender.spatk_changes = []
-            defender.spdef_changes = []
-            defender.speed_changes = []
-            defender.evasion_changes = []
-            defender.accuracy_changes = []
+            attacker.attack_stage = 0
+            attacker.defense_stage = 0
+            attacker.spatk_stage = 0
+            attacker.spdef_stage = 0
+            attacker.speed_stage = 0
+            attacker.accuracy_stage = 0
+            attacker.evasion_stage = 0
+            defender.attack_stage = 0
+            defender.defense_stage = 0
+            defender.spatk_stage = 0
+            defender.spdef_stage = 0
+            defender.speed_stage = 0
+            defender.accuracy_stage = 0
+            defender.evasion_stage = 0
             msg += "All pokemon had their stat stages reset!\n"
         if self.effect == 305:
-            defender.atk_changes = []
-            defender.def_changes = []
-            defender.spatk_changes = []
-            defender.spdef_changes = []
-            defender.speed_changes = []
-            defender.evasion_changes = []
-            defender.accuracy_changes = []
+            defender.attack_stage = 0
+            defender.defense_stage = 0
+            defender.spatk_stage = 0
+            defender.spdef_stage = 0
+            defender.speed_stage = 0
+            defender.accuracy_stage = 0
+            defender.evasion_stage = 0
             msg += f"{defender.name} had their stat stages reset!\n"
         if self.effect == 141 or (self.effect == 474 and attacker._name == "Enamorus"):
             if random.randint(1, 100) <= effect_chance:
-                msg += attacker.append_attack(StatChange(stage_delta=1), attacker=attacker, move=self)
-                msg += attacker.append_defense(StatChange(stage_delta=1), attacker=attacker, move=self)
-                msg += attacker.append_spatk(StatChange(stage_delta=1), attacker=attacker, move=self)
-                msg += attacker.append_spdef(StatChange(stage_delta=1), attacker=attacker, move=self)
-                msg += attacker.append_speed(StatChange(stage_delta=1), attacker=attacker, move=self)
+                msg += attacker.append_attack(1, attacker=attacker, move=self)
+                msg += attacker.append_defense(1, attacker=attacker, move=self)
+                msg += attacker.append_spatk(1, attacker=attacker, move=self)
+                msg += attacker.append_spdef(1, attacker=attacker, move=self)
+                msg += attacker.append_speed(1, attacker=attacker, move=self)
         if self.effect == 143:
             msg += attacker.damage(attacker.starting_hp // 2, battle)
-            msg += attacker.append_attack(StatChange(stage_delta=12), attacker=attacker, move=self)
+            msg += attacker.append_attack(12, attacker=attacker, move=self)
         if self.effect == 317:
             amount = 1
             if battle.weather.get() in ("sun", "h-sun"):
                 amount = 2
-            msg += attacker.append_attack(StatChange(stage_delta=amount), attacker=attacker, move=self)
-            msg += attacker.append_spatk(StatChange(stage_delta=amount), attacker=attacker, move=self)
+            msg += attacker.append_attack(amount, attacker=attacker, move=self)
+            msg += attacker.append_spatk(amount, attacker=attacker, move=self)
         if self.effect == 364 and defender.nv.poison():
-            msg += defender.append_attack(StatChange(stage_delta=-1), attacker=attacker, move=self)
-            msg += defender.append_spatk(StatChange(stage_delta=-1), attacker=attacker, move=self)
-            msg += defender.append_speed(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += defender.append_attack(-1, attacker=attacker, move=self)
+            msg += defender.append_spatk(-1, attacker=attacker, move=self)
+            msg += defender.append_speed(-1, attacker=attacker, move=self)
         if self.effect == 329:
-            msg += attacker.append_defense(StatChange(stage_delta=3), attacker=attacker, move=self)
+            msg += attacker.append_defense(3, attacker=attacker, move=self)
         if self.effect == 322:
-            msg += attacker.append_spatk(StatChange(stage_delta=3), attacker=attacker, move=self)
+            msg += attacker.append_spatk(3, attacker=attacker, move=self)
         if self.effect == 227:
             valid_stats = []
-            if attacker.calculate_stat_stage(attacker.atk_changes) < 6:
+            if attacker.attack_stage < 6:
                 valid_stats.append(attacker.append_attack)
-            if attacker.calculate_stat_stage(attacker.def_changes) < 6:
+            if attacker.defense_stage < 6:
                 valid_stats.append(attacker.append_defense)
-            if attacker.calculate_stat_stage(attacker.spatk_changes) < 6:
+            if attacker.spatk_stage < 6:
                 valid_stats.append(attacker.append_spatk)
-            if attacker.calculate_stat_stage(attacker.spdef_changes) < 6:
+            if attacker.spdef_stage < 6:
                 valid_stats.append(attacker.append_spdef)
-            if attacker.calculate_stat_stage(attacker.speed_changes) < 6:
+            if attacker.speed_stage < 6:
                 valid_stats.append(attacker.append_speed)
-            if attacker.calculate_stat_stage(attacker.evasion_changes) < 6:
+            if attacker.evasion_stage < 6:
                 valid_stats.append(attacker.append_evasion)
-            if attacker.calculate_stat_stage(attacker.accuracy_changes) < 6:
+            if attacker.accuracy_stage < 6:
                 valid_stats.append(attacker.append_accuracy)
             if valid_stats:
                 stat_raise_func = random.choice(valid_stats)
-                msg += stat_raise_func(StatChange(stage_delta=2), attacker=attacker, move=self)
+                msg += stat_raise_func(2, attacker=attacker, move=self)
             else:
                 msg += f"None of {attacker.name}'s stats can go any higher!\n"
         if self.effect == 473:
             raw_atk = attacker.get_raw_attack() + attacker.get_raw_spatk()
             raw_def = attacker.get_raw_defense() + attacker.get_raw_spdef()
             if raw_atk > raw_def:
-                msg += attacker.append_attack(StatChange(stage_delta=1), attacker=attacker, move=self)
-                msg += attacker.append_spatk(StatChange(stage_delta=1), attacker=attacker, move=self)
+                msg += attacker.append_attack(1, attacker=attacker, move=self)
+                msg += attacker.append_spatk(1, attacker=attacker, move=self)
             else:
-                msg += attacker.append_defense(StatChange(stage_delta=1), attacker=attacker, move=self)
-                msg += attacker.append_spdef(StatChange(stage_delta=1), attacker=attacker, move=self)
+                msg += attacker.append_defense(1, attacker=attacker, move=self)
+                msg += attacker.append_spdef(1, attacker=attacker, move=self)
         if self.effect == 474 and attacker._name == "Enamorus-therian":
             if random.randint(1, 100) <= effect_chance:
-                msg += defender.append_defense(StatChange(stage_delta=-1), attacker=attacker, move=self)
-                msg += defender.append_spdef(StatChange(stage_delta=-1), attacker=attacker, move=self)
+                msg += defender.append_defense(-1, attacker=attacker, move=self)
+                msg += defender.append_spdef(-1, attacker=attacker, move=self)
         if self.effect == 475:
-            msg += defender.append_defense(StatChange(stage_delta=-1), attacker=attacker, move=self)
-            msg += defender.append_spdef(StatChange(stage_delta=-1), attacker=attacker, move=self)
+            msg += defender.append_defense(-1, attacker=attacker, move=self)
+            msg += defender.append_spdef(-1, attacker=attacker, move=self)
         
         # Flinch
         if not defender.has_moved:
@@ -1200,13 +1200,13 @@ class Move():
         
         # Psych Up
         if self.effect == 144:
-            attacker.atk_changes = [change.copy() for change in defender.atk_changes]
-            attacker.def_changes = [change.copy() for change in defender.def_changes]
-            attacker.spatk_changes = [change.copy() for change in defender.spatk_changes]
-            attacker.spdef_changes = [change.copy() for change in defender.spdef_changes]
-            attacker.speed_changes = [change.copy() for change in defender.speed_changes]
-            attacker.accuracy_changes = [change.copy() for change in defender.accuracy_changes]
-            attacker.evasion_changes = [change.copy() for change in defender.evasion_changes]
+            attacker.attack_stage = defender.attack_stage
+            attacker.defense_stage = defender.defense_stage
+            attacker.spatk_stage = defender.spatk_stage
+            attacker.spdef_stage = defender.spdef_stage
+            attacker.speed_stage = defender.speed_stage
+            attacker.accuracy_stage = defender.accuracy_stage
+            attacker.evasion_stage = defender.evasion_stage
             attacker.focus_energy = defender.focus_energy
             msg += "It psyched itself up!\n"
         
@@ -1413,25 +1413,25 @@ class Move():
         
         # Heart Swap
         if self.effect == 251:
-            attacker.atk_changes, defender.atk_changes = defender.atk_changes, attacker.atk_changes
-            attacker.def_changes, defender.def_changes = defender.def_changes, attacker.def_changes
-            attacker.spatk_changes, defender.spatk_changes = defender.spatk_changes, attacker.spatk_changes
-            attacker.spdef_changes, defender.spdef_changes = defender.spdef_changes, attacker.spdef_changes
-            attacker.speed_changes, defender.speed_changes = defender.speed_changes, attacker.speed_changes
-            attacker.accuracy_changes, defender.accuracy_changes = defender.accuracy_changes, attacker.accuracy_changes
-            attacker.evasion_changes, defender.evasion_changes = defender.evasion_changes, attacker.evasion_changes
+            attacker.attack_stage, defender.attack_stage = defender.attack_stage, attacker.attack_stage
+            attacker.defense_stage, defender.defense_stage = defender.defense_stage, attacker.defense_stage
+            attacker.spatk_stage, defender.spatk_stage = defender.spatk_stage, attacker.spatk_stage
+            attacker.spdef_stage, defender.spdef_stage = defender.spdef_stage, attacker.spdef_stage
+            attacker.speed_stage, defender.speed_stage = defender.speed_stage, attacker.speed_stage
+            attacker.accuracy_stage, defender.accuracy_stage = defender.accuracy_stage, attacker.accuracy_stage
+            attacker.evasion_stage, defender.evasion_stage = defender.evasion_stage, attacker.evasion_stage
             msg += f"{attacker.name} switched stat changes with {defender.name}!\n"
         
         # Power Swap
         if self.effect == 244:
-            attacker.atk_changes, defender.atk_changes = defender.atk_changes, attacker.atk_changes
-            attacker.spatk_changes, defender.spatk_changes = defender.spatk_changes, attacker.spatk_changes
+            attacker.attack_stage, defender.attack_stage = defender.attack_stage, attacker.attack_stage
+            attacker.spatk_stage, defender.spatk_stage = defender.spatk_stage, attacker.spatk_stage
             msg += f"{attacker.name} switched attack and special attack stat changes with {defender.name}!\n"
         
         # Guard Swap
         if self.effect == 245:
-            attacker.def_changes, defender.def_changes = defender.def_changes, attacker.def_changes
-            attacker.spdef_changes, defender.spdef_changes = defender.spdef_changes, attacker.spdef_changes
+            attacker.defense_stage, defender.defense_stage = defender.defense_stage, attacker.defense_stage
+            attacker.spdef_stage, defender.spdef_stage = defender.spdef_stage, attacker.spdef_stage
             msg += f"{attacker.name} switched defense and special defense stat changes with {defender.name}!\n"
         
         # Aqua Ring
@@ -1518,7 +1518,7 @@ class Move():
             attacker.owner.tailwind.set_turns(4)
             msg += f"{attacker.owner.name}'s team gets a tailwind!\n"
             if attacker.ability() == Ability.WIND_RIDER:
-                msg += attacker.append_attack(StatChange(stage_delta=1), attacker=attacker, source="its wind rider")
+                msg += attacker.append_attack(1, attacker=attacker, source="its wind rider")
         
         # Fling
         if self.effect == 234 and attacker.held_item.can_remove():
@@ -1547,16 +1547,13 @@ class Move():
                 elif item == "toxic-orb":
                     msg += defender.nv.apply_status("b-poison", battle, attacker=attacker, move=self)
                 elif item == "white-herb":
-                    if defender.calculate_stat_stage(defender.atk_changes) < 0:
-                        defender.atk_changes = []
-                    if defender.calculate_stat_stage(defender.def_changes) < 0:
-                        defender.def_changes = []
-                    if defender.calculate_stat_stage(defender.spatk_changes) < 0:
-                        defender.spatk_changes = []
-                    if defender.calculate_stat_stage(defender.spdef_changes) < 0:
-                        defender.spdef_changes = []
-                    if defender.calculate_stat_stage(defender.speed_changes) < 0:
-                        defender.speed_changes = []
+                    defender.attack_stage = max(0, defender.attack_stage)
+                    defender.defense_stage = max(0, defender.defense_stage)
+                    defender.spatk_stage = max(0, defender.spatk_stage)
+                    defender.spdef_stage = max(0, defender.spdef_stage)
+                    defender.speed_stage = max(0, defender.speed_stage)
+                    defender.accuracy_stage = max(0, defender.accuracy_stage)
+                    defender.evasion_stage = max(0, defender.evasion_stage)
                     msg += f"{defender.name} feels refreshed!\n"
         
         # Thief
@@ -1638,8 +1635,8 @@ class Move():
                     continue
                 if p.dive or p.dig or p.fly or p.shadow_force:
                     continue
-                msg += p.append_attack(StatChange(stage_delta=1), attacker=attacker, move=self)
-                msg += p.append_spatk(StatChange(stage_delta=1), attacker=attacker, move=self)
+                msg += p.append_attack(1, attacker=attacker, move=self)
+                msg += p.append_spatk(1, attacker=attacker, move=self)
         
         # Flower Shield
         if self.effect == 351:
@@ -1650,7 +1647,7 @@ class Move():
                     continue
                 if p.dive or p.dig or p.fly or p.shadow_force:
                     continue
-                msg += p.append_defense(StatChange(stage_delta=1), attacker=attacker, move=self)
+                msg += p.append_defense(1, attacker=attacker, move=self)
         
         # Ion Deluge
         if self.effect == 345:
@@ -1659,17 +1656,13 @@ class Move():
         
         # Topsy Turvy
         if self.effect == 348:
-            for stattype in (
-                defender.atk_changes,
-                defender.def_changes,
-                defender.spatk_changes,
-                defender.spdef_changes,
-                defender.speed_changes,
-                defender.accuracy_changes,
-                defender.evasion_changes
-            ):
-                for stat in stattype:
-                    stat.stage_delta = -stat.stage_delta
+            defender.attack_stage = -defender.attack_stage
+            defender.defense_stage = -defender.defense_stage
+            defender.spatk_stage = -defender.spatk_stage
+            defender.spdef_stage = -defender.spdef_stage
+            defender.speed_stage = -defender.speed_stage
+            defender.accuracy_stage = -defender.accuracy_stage
+            defender.evasion_stage = -defender.evasion_stage
             msg += f"{defender.name}'s stat stages were inverted!\n"
 
         # Electrify
@@ -1744,9 +1737,9 @@ class Move():
                 defender.curse = True
                 msg += f"{defender.name} was cursed!\n"
             else:
-                msg += attacker.append_speed(StatChange(stage_delta=-1), attacker=attacker, move=self)
-                msg += attacker.append_attack(StatChange(stage_delta=1), attacker=attacker, move=self)
-                msg += attacker.append_defense(StatChange(stage_delta=1), attacker=attacker, move=self)
+                msg += attacker.append_speed(-1, attacker=attacker, move=self)
+                msg += attacker.append_attack(1, attacker=attacker, move=self)
+                msg += attacker.append_defense(1, attacker=attacker, move=self)
 
         # Autotomize
         if self.effect == 285:
@@ -1755,7 +1748,7 @@ class Move():
 
         # Fell Stinger
         if self.effect == 342 and defender.hp == 0:
-            msg += attacker.append_attack(StatChange(stage_delta=3), attacker=attacker, move=self)
+            msg += attacker.append_attack(3, attacker=attacker, move=self)
         
         # Fairy Lock
         if self.effect == 355:
@@ -1862,14 +1855,14 @@ class Move():
                 if battle.terrain.item == "grassy":
                     msg += defender.nv.apply_status("sleep", battle, attacker=attacker, move=self)
                 elif battle.terrain.item == "misty":
-                    msg += defender.append_spatk(StatChange(stage_delta=-1), attacker=attacker, move=self)
+                    msg += defender.append_spatk(-1, attacker=attacker, move=self)
                 elif battle.terrain.item == "psychic":
-                    msg += defender.append_speed(StatChange(stage_delta=-1), attacker=attacker, move=self)
+                    msg += defender.append_speed(-1, attacker=attacker, move=self)
                 else:
                     msg += defender.nv.apply_status("paralysis", battle, attacker=attacker, move=self)
         
         if self.is_sound_based() and attacker.held_item == "throat-spray":
-            msg += attacker.append_spatk(StatChange(stage_delta=1), attacker=attacker, source="it's throat spray")
+            msg += attacker.append_spatk(1, attacker=attacker, source="it's throat spray")
             attacker.held_item.use()
         
         # Victory Dance
@@ -2213,8 +2206,8 @@ class Move():
         
         # Weakness Policy
         if effectiveness > 1 and defender.held_item == "weakness-policy" and not defender.substitute:
-            msg += defender.append_attack(StatChange(stage_delta=2), attacker=defender, move=self, source="its weakness policy")
-            msg += defender.append_spatk(StatChange(stage_delta=2), attacker=defender, move=self, source="its weakness policy")
+            msg += defender.append_attack(2, attacker=defender, move=self, source="its weakness policy")
+            msg += defender.append_spatk(2, attacker=defender, move=self, source="its weakness policy")
             defender.held_item.use()
         
         return (msg, hits)
@@ -2312,11 +2305,11 @@ class Move():
         # Power increases against targets with more raised stats, up to a maximum of 200.
         elif self.effect == 246:
             delta = 0
-            delta += max(0, defender.calculate_stat_stage(defender.atk_changes))
-            delta += max(0, defender.calculate_stat_stage(defender.def_changes))
-            delta += max(0, defender.calculate_stat_stage(defender.spatk_changes))
-            delta += max(0, defender.calculate_stat_stage(defender.spdef_changes))
-            delta += max(0, defender.calculate_stat_stage(defender.speed_changes))
+            delta += max(0, defender.attack_stage)
+            delta += max(0, defender.defense_stage)
+            delta += max(0, defender.spatk_stage)
+            delta += max(0, defender.spdef_stage)
+            delta += max(0, defender.speed_stage)
             power = min(200, 60 + (delta * 20))
         elif self.effect == 294:
             delta = attacker.get_speed(battle) // defender.get_speed(battle)
@@ -2333,13 +2326,13 @@ class Move():
         # Power is higher the more the user's stats have been raised.
         elif self.effect == 306:
             delta = 1
-            delta += max(0, attacker.calculate_stat_stage(attacker.atk_changes))
-            delta += max(0, attacker.calculate_stat_stage(attacker.def_changes))
-            delta += max(0, attacker.calculate_stat_stage(attacker.spatk_changes))
-            delta += max(0, attacker.calculate_stat_stage(attacker.spdef_changes))
-            delta += max(0, attacker.calculate_stat_stage(attacker.speed_changes))
-            delta += max(0, attacker.calculate_stat_stage(attacker.accuracy_changes))
-            delta += max(0, attacker.calculate_stat_stage(attacker.evasion_changes))
+            delta += max(0, attacker.attack_stage)
+            delta += max(0, attacker.defense_stage)
+            delta += max(0, attacker.spatk_stage)
+            delta += max(0, attacker.spdef_stage)
+            delta += max(0, attacker.speed_stage)
+            delta += max(0, attacker.accuracy_stage)
+            delta += max(0, attacker.evasion_stage)
             power = 20 * delta
         # Power doubles every turn this move is used in succession after the first, maxing out after five turns.
         elif self.effect == 120:
@@ -2913,7 +2906,7 @@ class Move():
             return False
         if self.effect == 180 and attacker.owner.wish.active():
             return False
-        if self.effect == 388 and defender.calculate_stat_stage(defender.atk_changes) == -6:
+        if self.effect == 388 and defender.attack_stage == -6:
             return False
         if self.effect == 143 and attacker.hp <= attacker.starting_hp // 2:
             return False
@@ -3154,11 +3147,11 @@ class Move():
             return False, msg
         if defender.king_shield and self.damage_class != DamageClass.STATUS:
             if self.makes_contact(attacker):
-                msg += attacker.append_attack(StatChange(stage_delta=-1), attacker=defender, move=self)
+                msg += attacker.append_attack(-1, attacker=defender, move=self)
             return False, msg
         if defender.obstruct and self.damage_class != DamageClass.STATUS:
             if self.makes_contact(attacker):
-                msg += attacker.append_defense(StatChange(stage_delta=-2), attacker=defender, move=self)
+                msg += attacker.append_defense(-2, attacker=defender, move=self)
             return False, msg
         if defender.quick_guard and self.get_priority(attacker, defender, battle) > 0:
             return False, msg

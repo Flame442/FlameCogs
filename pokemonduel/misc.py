@@ -264,16 +264,16 @@ class Terrain(ExpiringItem):
                 t = ElementType(element).name.lower()
                 msg += f"{poke.name} became a {t} type using its mimicry!\n"
             if poke.held_item == "electric-seed" and item == "electric":
-                msg += poke.append_defense(StatChange(stage_delta=1), attacker=poke, source="its electric seed")
+                msg += poke.append_defense(1, attacker=poke, source="its electric seed")
                 poke.held_item.use()
             if poke.held_item == "psychic-seed" and item == "psychic":
-                msg += poke.append_spdef(StatChange(stage_delta=1), attacker=poke, source="its psychic seed")
+                msg += poke.append_spdef(1, attacker=poke, source="its psychic seed")
                 poke.held_item.use()
             if poke.held_item == "misty-seed" and item == "misty":
-                msg += poke.append_spdef(StatChange(stage_delta=1), attacker=poke, source="its misty seed")
+                msg += poke.append_spdef(1, attacker=poke, source="its misty seed")
                 poke.held_item.use()
             if poke.held_item == "grassy-seed" and item == "grassy":
-                msg += poke.append_defense(StatChange(stage_delta=1), attacker=poke, source="its grassy seed")
+                msg += poke.append_defense(1, attacker=poke, source="its grassy seed")
                 poke.held_item.use()
         return msg
     
@@ -473,16 +473,6 @@ class NonVolatileEffect():
         self.sleep_timer.set_turns(0)
         self.pokemon.nightmare = False
 
-
-# TODO: remove this awkward relic of the past and refactor to a single `int` stage for each stat
-class StatChange():
-    """Represents a stage change to a stat."""
-    def __init__(self, stage_delta: int=0):
-        self.stage_delta = stage_delta
-    
-    def copy(self):
-        """Creates and returns a copy of this stat change."""
-        return StatChange(stage_delta=self.stage_delta)
 
 class Metronome():
     """Holds recent move status for the held item metronome."""
@@ -702,21 +692,21 @@ class HeldItem():
             msg += consumer.heal((ripe * consumer.starting_hp) // 3, source="eating its berry")
             flavor = "sour"
         elif self == "apicot-berry":
-            msg += consumer.append_spdef(StatChange(stage_delta=ripe * 1), attacker=attacker, move=move, source="eating its berry")
+            msg += consumer.append_spdef(ripe * 1, attacker=attacker, move=move, source="eating its berry")
         elif self == "ganlon-berry":
-            msg += consumer.append_defense(StatChange(stage_delta=ripe * 1), attacker=attacker, move=move, source="eating its berry")
+            msg += consumer.append_defense(ripe * 1, attacker=attacker, move=move, source="eating its berry")
         elif self == "lansat-berry":
             consumer.lansat_berry_ate = True
             msg += f"{consumer.name} is powered up by eating its berry.\n"
         elif self == "liechi-berry":
-            msg += consumer.append_attack(StatChange(stage_delta=ripe * 1), attacker=attacker, move=move, source="eating its berry")
+            msg += consumer.append_attack(ripe * 1, attacker=attacker, move=move, source="eating its berry")
         elif self == "micle-berry":
             consumer.micle_berry_ate = True
             msg += f"{consumer.name} is powered up by eating its berry.\n"
         elif self == "petaya-berry":
-            msg += consumer.append_spatk(StatChange(stage_delta=ripe * 1), attacker=attacker, move=move, source="eating its berry")
+            msg += consumer.append_spatk(ripe * 1, attacker=attacker, move=move, source="eating its berry")
         elif self == "salac-berry":
-            msg += consumer.append_speed(StatChange(stage_delta=ripe * 1), attacker=attacker, move=move, source="eating its berry")
+            msg += consumer.append_speed(ripe * 1, attacker=attacker, move=move, source="eating its berry")
         elif self == "starf-berry":
             funcs = [
                 consumer.append_attack,
@@ -726,7 +716,7 @@ class HeldItem():
                 consumer.append_speed,
             ]
             func = random.choice(funcs)
-            msg += func(StatChange(stage_delta=ripe * 2), attacker=attacker, move=move, source="eating its berry")
+            msg += func(ripe * 2, attacker=attacker, move=move, source="eating its berry")
         elif self == "aspear-berry":
             if consumer.nv.freeze():
                 consumer.nv.reset()
@@ -806,13 +796,13 @@ class HeldItem():
 class BatonPass():
     """Stores the necessary data from a pokemon to baton pass to another pokemon."""
     def __init__(self, poke):
-        self.atk_changes = poke.atk_changes
-        self.def_changes = poke.def_changes
-        self.spatk_changes = poke.spatk_changes
-        self.spdef_changes = poke.spdef_changes
-        self.speed_changes = poke.speed_changes
-        self.evasion_changes = poke.evasion_changes
-        self.accuracy_changes = poke.accuracy_changes
+        self.attack_stage = poke.attack_stage
+        self.defense_stage = poke.defense_stage
+        self.spatk_stage = poke.spatk_stage
+        self.spdef_stage = poke.spdef_stage
+        self.speed_stage = poke.speed_stage
+        self.evasion_stage = poke.evasion_stage
+        self.accuracy_stage = poke.accuracy_stage
         self.confusion = poke.confusion
         self.focus_energy = poke.focus_energy
         self.mind_reader = poke.mind_reader
@@ -832,13 +822,13 @@ class BatonPass():
     def apply(self, poke):
         """Push this objects data to a poke."""
         if poke.ability() != Ability.CURIOUS_MEDICINE:
-            poke.atk_changes = self.atk_changes
-            poke.def_changes = self.def_changes
-            poke.spatk_changes = self.spatk_changes
-            poke.spdef_changes = self.spdef_changes
-            poke.speed_changes = self.speed_changes
-            poke.evasion_changes = self.evasion_changes
-            poke.accuracy_changes = self.accuracy_changes
+            poke.attack_stage = self.attack_stage
+            poke.defense_stage = self.defense_stage
+            poke.spatk_stage = self.spatk_stage
+            poke.spdef_stage = self.spdef_stage
+            poke.speed_stage = self.speed_stage
+            poke.evasion_stage = self.evasion_stage
+            poke.accuracy_stage = self.accuracy_stage
         poke.confusion = self.confusion
         poke.focus_energy = self.focus_energy
         poke.mind_reader = self.mind_reader
