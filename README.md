@@ -646,5 +646,7 @@ The helpful support staff at the [Redbot discord](https://discord.gg/red),
 [Preda](https://github.com/PredaaA) for translating Partygames,  
 Red for creating the sprites used in Battleship,  
 Mistery#3287 for requesting and translating GiftAway,  
-[Tradier](https://tradier.com/) for the API used in Stocks.
-And [The Pokémon Company](https://www.pokemon.com/us/) (Nintendo, Game Freak, Creatures) for creating the games that PokemonDuel is based off of.
+[Tradier](https://tradier.com/) for the API used in Stocks,  
+[The Pokémon Company](https://www.pokemon.com/us/) (Nintendo, Game Freak, Creatures) for creating the games that PokemonDuel is based off of,  
+And Cruithne, skylarr, ConCon, vKoIIextionz, Bloomlake, Dylee, KYPspikes, De Ultimate Gamer, Snowy Wolfie, RadioactiveRenegade, Falcon, Blotch,
+Chichiri12345, ampplaca, xxmoonlotusxx, Silver5mith, and Starregi for helping to keep the data files of PokemonDuel updated and accurate.  
