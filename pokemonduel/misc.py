@@ -767,7 +767,8 @@ class HeldItem():
         consumer.ate_berry = True
         # TODO: right now HeldItem does not support `recover`ing/setting from anything other than another HeldItem object.
         #       this should probably be modified to be an `ExpiringItem` w/ that item for cases where `last_item` gets reset.
-        consumer.cud_chew.set_turns(2)
+        if consumer.ability(attacker=attacker, move=move) == Ability.CUD_CHEW:
+            consumer.cud_chew.set_turns(2)
         if consumer is self.owner:
             self.use()
         else:

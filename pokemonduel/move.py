@@ -267,7 +267,7 @@ class Move():
             msg += "It had no effect...\n"
             if self.effect == 120:
                 attacker.fury_cutter = 0
-            if self.effect == 46:
+            if self.effect in (46, 478):
                 msg += attacker.damage(attacker.starting_hp // 2, battle, source="recoil")
             if self.effect in (28, 81, 118):
                 attacker.locked_move = None
@@ -279,7 +279,7 @@ class Move():
             msg += f"{defender.name} avoided the attack!\n"
             if self.effect == 120:
                 attacker.fury_cutter = 0
-            if self.effect == 46:
+            if self.effect in (46, 478):
                 msg += attacker.damage(attacker.starting_hp // 2, battle, source="recoil")
             if self.effect in (28, 81, 118):
                 attacker.locked_move = None
@@ -292,7 +292,7 @@ class Move():
             msg += msgdelta
             if self.effect == 120:
                 attacker.fury_cutter = 0
-            if self.effect == 46:
+            if self.effect in (46, 478):
                 msg += attacker.damage(attacker.starting_hp // 2, battle, source="recoil")
             if self.effect in (28, 81, 118):
                 attacker.locked_move = None
@@ -303,7 +303,7 @@ class Move():
             msg += "But it missed!\n"
             if self.effect == 120:
                 attacker.fury_cutter = 0
-            if self.effect == 46:
+            if self.effect in (46, 478):
                 msg += attacker.damage(attacker.starting_hp // 2, battle, source="recoil")
             if self.effect in (28, 81, 118):
                 attacker.locked_move = None
@@ -686,7 +686,7 @@ class Move():
         # This checks if attacker.locked_move is not None as locked_move is cleared if the poke dies to rocky helmet or similar items
         if self.effect == 28 and attacker.locked_move is not None and attacker.locked_move.is_last_turn():
             msg += attacker.confuse()
-        if self.effect in (77, 268, 334):
+        if self.effect in (77, 268, 334, 478):
             if random.randint(1, 100) <= effect_chance:
                 msg += defender.confuse(attacker=attacker, move=self)
         if self.effect in (194, 457, 471, 472):
@@ -3324,13 +3324,14 @@ class Move():
         """Whether or not this move is sound based."""
         return self.id in [
             45, 46, 47, 48, 103, 173, 195, 215, 253, 304, 319, 320, 336, 405, 448, 496, 497, 547,
-            555, 568, 574, 575, 586, 590, 664, 691, 728, 744, 753, 826
+            555, 568, 574, 575, 586, 590, 664, 691, 728, 744, 753, 826, 871
         ]
     
     def is_punching(self):
         """Whether or not this move is a punching move."""
         return self.id in [
-            4, 5, 7, 8, 9, 146, 183, 223, 264, 309, 325, 327, 359, 409, 418, 612, 665, 721, 729, 764, 765
+            4, 5, 7, 8, 9, 146, 183, 223, 264, 309, 325, 327, 359, 409, 418, 612, 665, 721, 729,
+            764, 765, 834, 857, 889
         ]
     
     def is_biting(self):
@@ -3341,7 +3342,7 @@ class Move():
         """Whether or not this move is a ball or bomb move."""
         return self.id in [
             121, 140, 188, 190, 192, 247, 296, 301, 311, 331, 350, 360, 396, 402, 411, 412, 426,
-            439, 443, 486, 491, 545, 676, 690, 748, 802
+            439, 443, 486, 491, 545, 676, 690, 748
         ]
     
     def is_aura_or_pulse(self):
@@ -3354,14 +3355,14 @@ class Move():
     
     def is_dance(self):
         """Whether or not this move is a dance move."""
-        return self.id in [14, 80, 297, 298, 349, 461, 483, 552, 686]
+        return self.id in [14, 80, 297, 298, 349, 461, 483, 552, 686, 744, 846, 872]
     
     def is_slicing(self):
         """Whether or not this move is a slicing move."""
         return self.id in [
-            15, 75, 163, 210, 314, 332, 348, 400, 403, 404, 427, 440, 533, 534, 669, 749, 830, 845
+            15, 75, 163, 210, 314, 332, 348, 400, 403, 404, 427, 440, 533, 534, 669, 749, 830, 845,
+            860, 869, 891, 895
         ]
-        # TODO: 'aqua-cutter', 'bitter-blade', 'kowtow-cleave', 'population-bomb'
     
     def is_wind(self):
         """Whether or not this move is a wind move."""
@@ -3370,10 +3371,11 @@ class Move():
     def is_affected_by_magic_coat(self):
         """Whether or not this move can be reflected by magic coat and magic bounce."""
         return self.id in [
-            18, 28, 39, 43, 45, 46, 47, 48, 50, 73, 77, 78, 79, 81, 86, 92, 95, 103, 108, 109, 137,
-            139, 147, 178, 180, 184, 186, 191, 204, 207, 212, 213, 227, 230, 259, 260, 261, 269, 281,
-            297, 313, 319, 321, 335, 380, 390, 432, 446, 487, 493, 494, 505, 564, 567, 568, 571, 575,
-            576, 589, 590, 598, 599, 600, 608, 668, 685, 715, 736, 737
+            18, 28, 39, 43, 45, 46, 47, 48, 50, 73, 77, 78, 79, 81, 86, 92, 95, 103, 108, 109, 134,
+            137, 139, 142, 147, 148, 169, 178, 180, 184, 186, 191, 193, 204, 207, 212, 213, 227, 230,
+            259, 260, 261, 269, 281, 297, 313, 316, 319, 320, 321, 335, 357, 373, 377, 380, 388, 390,
+            432, 445, 446, 464, 477, 487, 493, 494, 505, 564, 567, 568, 571, 575, 576, 589, 590, 598,
+            599, 600, 608, 666, 668, 671, 672, 685, 715, 736, 737, 810
         ]
     
     def is_affected_by_heal_block(self):
@@ -3386,8 +3388,8 @@ class Move():
     def is_affected_by_substitute(self):
         """Whether or not this move is able to bypass a substitute."""
         return self.id not in [
-            18, 45, 46, 47, 48, 50, 102, 103, 114, 166, 173, 174, 176, 180, 193, 194, 195, 213, 215,
-            227, 244, 253, 259, 269, 270, 272, 285, 286, 288, 304, 316, 319, 320, 357, 382, 384, 385,
+            18, 45, 46, 47, 48, 50, 102, 103, 114, 166, 173, 174, 176, 180, 193, 195, 213, 215, 227,
+            244, 253, 259, 269, 270, 272, 285, 286, 304, 312, 316, 319, 320, 357, 367, 382, 384, 385,
             391, 405, 448, 495, 496, 497, 513, 516, 547, 555, 568, 574, 575, 586, 587, 589, 590, 593,
             597, 600, 602, 607, 621, 664, 674, 683, 689, 691, 712, 728, 753, 826
         ]
@@ -3436,7 +3438,8 @@ class Move():
             560, 565, 566, 577, 583, 609, 610, 611, 612, 620, 658, 660, 663, 665, 667, 669, 675,
             677, 679, 680, 681, 684, 688, 692, 693, 696, 699, 701, 706, 707, 709, 710, 712, 713,
             716, 718, 721, 724, 729, 730, 733, 741, 742, 745, 747, 749, 750, 752, 756, 760, 764,
-            765, 766, 779, 799, 803, 812, 813, 827, 830, 832, 834, 841, 845, 848
+            765, 766, 779, 799, 803, 806, 812, 813, 821, 830, 832, 834, 840, 845, 848, 853, 857,
+            859, 860, 861, 862, 866, 869, 872, 873, 878, 879, 884, 885, 887, 889, 891, 892, 894
         ] and not attacker.ability() == Ability.LONG_REACH
     
     def selectable_by_mirror_move(self):
@@ -3456,28 +3459,28 @@ class Move():
     def selectable_by_sleep_talk(self):
         """Whether or not this move can be selected by sleep talk."""
         return self.id not in [
-            13, 19, 76, 91, 98, 117, 118, 119, 130, 143, 214, 253, 264, 274, 291, 340, 382, 383,
-            448, 467, 507
+            13, 19, 76, 91, 102, 117, 118, 119, 130, 143, 166, 253, 264, 274, 291, 340, 382, 383,
+            467, 507, 553, 554, 562, 566, 601, 669, 690, 704, 731
         ]
     
     def selectable_by_assist(self):
         """Whether or not this move can be selected by assist."""
         return self.id not in [
-            18, 19, 46, 68, 91, 102, 118, 119, 144, 165, 166, 168, 181, 182, 194, 197, 203, 214,
-            243, 264, 266, 270, 271, 274, 289, 291, 343, 364, 382, 383, 415, 448, 467, 469, 501,
-            509, 525, 566
+            18, 19, 46, 68, 91, 102, 118, 119, 144, 165, 166, 168, 182, 194, 197, 203, 214, 243,
+            264, 266, 267, 270, 271, 289, 291, 340, 343, 364, 382, 383, 415, 448, 467, 476, 507,
+            509, 516, 525, 561, 562, 566, 588, 596, 606, 607, 661, 671, 690, 704
         ]
     
     def selectable_by_mimic(self):
         """Whether or not this move can be selected by mimic."""
-        return self.id not in [102, 118, 165, 166, 448]
+        return self.id not in [102, 118, 165, 166, 448, 896]
     
     def selectable_by_instruct(self):
         """Whether or not this move can be selected by instruct."""
         return self.id not in [
             13, 19, 63, 76, 91, 102, 117, 118, 119, 130, 143, 144, 165, 166, 214, 264, 267, 274,
             289, 291, 307, 308, 338, 340, 382, 383, 408, 416, 439, 459, 467, 507, 553, 554, 566,
-            588, 601, 669, 689, 690, 704, 711, 761, 762
+            588, 601, 669, 689, 690, 704, 711, 761, 762, 896
         ]
     
     def selectable_by_snatch(self):
@@ -3487,7 +3490,7 @@ class Move():
             156, 159, 160, 164, 187, 208, 215, 219, 234, 235, 236, 254, 256, 268, 273, 275, 278,
             286, 287, 293, 294, 303, 312, 322, 334, 336, 339, 347, 349, 355, 361, 366, 379, 381,
             392, 393, 397, 417, 455, 456, 461, 468, 469, 475, 483, 489, 501, 504, 508, 526, 538,
-            561, 602, 659, 673, 674, 694, 836, 0xCFCF
+            561, 602, 659, 673, 674, 694, 0xCFCF
         ]
     
     @staticmethod

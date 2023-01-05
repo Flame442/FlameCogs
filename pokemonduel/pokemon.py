@@ -935,7 +935,7 @@ class DuelPokemon():
         if self.encore.active() and self.encore.item.pp == 0:
             self.encore.end()
             msg += f"{self.name}'s encore is over!\n"
-        if self.cud_chew.next_turn() and self.held_item.last_used.name.endswith("-berry"):
+        if self.cud_chew.next_turn() and self.held_item.last_used is not None and self.held_item.last_used.name.endswith("-berry"):
             self.held_item.recover(self.held_item)
             msg += self.held_item.eat_berry()
         
@@ -1128,7 +1128,7 @@ class DuelPokemon():
         if self.ability() == Ability.FLOWER_GIFT and self._name == "Cherrim" and battle.weather.get() in ("sun", "h-sun"):
             self.form("Cherrim-sunshine")
         if self.ability() == Ability.FLOWER_GIFT and self._name == "Cherrim-sunshine" and battle.weather.get() not in ("sun", "h-sun"):
-            self.form("Cherrim")  
+            self.form("Cherrim")
         
         #Bad Dreams
         if otherpoke is not None and otherpoke.ability() == Ability.BAD_DREAMS and self.nv.sleep():
@@ -1638,7 +1638,8 @@ class DuelPokemon():
         """
         return round((((2 * base + iv + (ev / 4)) * self.level) / 100) + 5) * nature
     
-    def calculate_stat(self, stat, stat_stage, *, crop=False):
+    @staticmethod
+    def calculate_stat(stat, stat_stage, *, crop=False):
         """Calculates a stat based on that stat's stage changes."""
         if crop == "bottom":
             stat_stage = max(stat_stage, 0)
