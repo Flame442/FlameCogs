@@ -938,6 +938,7 @@ class DuelPokemon():
         if self.cud_chew.next_turn() and self.held_item.last_used is not None and self.held_item.last_used.name.endswith("-berry"):
             self.held_item.recover(self.held_item)
             msg += self.held_item.eat_berry()
+            self.held_item.last_used = None
         
         # Held Items
         if self.held_item == "white-herb":
