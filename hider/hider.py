@@ -41,7 +41,7 @@ class Hider(commands.Cog):
 				return await ctx.send('That command was not being hidden.')
 			hidden.remove(command)
 		result = self.bot.get_command(command)
-		if result and not isinstance(result, commands.commands._AlwaysAvailableCommand):
+		if result and not isinstance(result, commands.commands._AlwaysAvailableMixin):
 			result.hidden = False
 		await ctx.tick()
 	
@@ -61,7 +61,7 @@ class Hider(commands.Cog):
 		"""Hides every command configured to be hidden."""
 		for command in await self.config.hidden():
 			result = self.bot.get_command(command)
-			if result and not isinstance(result, commands.commands._AlwaysAvailableCommand):
+			if result and not isinstance(result, commands.commands._AlwaysAvailableMixin):
 				result.hidden = True
 
 	async def red_delete_data_for_user(self, **kwargs):
