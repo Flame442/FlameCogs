@@ -221,6 +221,8 @@ class DuelPokemon():
         self.quick_guard = False
         #Boolean - stores whether this poke is protected by obstruct this turn.
         self.obstruct = False
+        #Boolean - stores whether this poke is protected by silk trap this turn.
+        self.silk_trap = False
         #ExpiringEffect - stores whether this poke will always crit due to laser focus.
         self.laser_focus = ExpiringEffect(0)
         #Boolean - stores whether this poke is coated with powder and will explode if it uses a fire type move.
@@ -283,6 +285,8 @@ class DuelPokemon():
         self.micle_berry_ate = False
         #Boolean - stores whether or not fire type moves are 2x effective on this pokemon from tar shot.
         self.tar_shot = False
+        #Int - stores the number of times this pokemon has been hit this battle, and does NOT reset when switching out.
+        self.num_hits = 0
 
         # Abilities
         #Boolean - stores whether this poke's fire moves are boosted by flash fire.
@@ -335,6 +339,11 @@ class DuelPokemon():
             msg += f"{self.name} carries on the baton!\n"
             self.owner.baton_pass.apply(self)
             self.owner.baton_pass = None
+        
+        #Shed Tail
+        if self.owner.next_substitute:
+            self.substitute = self.owner.next_substitute
+            self.owner.next_substitute = 0
         
         #Entry hazards
         #Special case for clearing toxic spikes, still happens even with heavy duty boots
@@ -810,6 +819,7 @@ class DuelPokemon():
         self.baneful_bunker = False
         self.quick_guard = False
         self.obstruct = False
+        self.silk_trap = False
         self.laser_focus = ExpiringEffect(0)
         self.powdered = False
         self.snatching = False
@@ -881,6 +891,7 @@ class DuelPokemon():
         self.baneful_bunker = False
         self.quick_guard = False
         self.obstruct = False
+        self.silk_trap = False
         self.laser_focus.next_turn()
         self.powdered = False
         self.snatching = False
@@ -1233,6 +1244,7 @@ class DuelPokemon():
                     source="its soul heart"
                 )
         self.owner.retaliate.set_turns(2)
+        self.owner.num_fainted += 1
         msg += self.remove(battle, fainted=True)
         return msg
     
@@ -1319,6 +1331,7 @@ class DuelPokemon():
         if source:
             source = f" from {source}"
         msg += f"{self.name} took {damage} damage{source}!\n"
+        self.num_hits += 1
         
         # Drain
         if drain_heal_ratio is not None and attacker is not None:

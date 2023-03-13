@@ -32,7 +32,7 @@ class Move():
         Returns a formatted message.
         """
         msg = ""
-        if self.effect == 129 and (isinstance(defender.owner.selected_action, int) or defender.owner.selected_action.effect in (128, 154, 229, 347)):
+        if self.effect == 129 and (isinstance(defender.owner.selected_action, int) or defender.owner.selected_action.effect in (128, 154, 229, 347, 493)):
             msg += self.use(attacker, defender, battle)
         if self.effect == 171:
             msg += f"{attacker.name} is focusing on its attack!\n"
@@ -661,7 +661,7 @@ class Move():
         if self.effect in (3, 78, 210, 447, 461):
             if random.randint(1, 100) <= effect_chance:
                 msg += defender.nv.apply_status("poison", battle, attacker=attacker, move=self)
-        if self.effect in (67, 390):
+        if self.effect in (67, 390, 486):
             msg += defender.nv.apply_status("poison", battle, attacker=attacker, move=self)
         if self.effect == 203:
             if random.randint(1, 100) <= effect_chance:
@@ -702,7 +702,7 @@ class Move():
         
         # Stage changes
         # +1
-        if self.effect in (11, 209, 213, 278, 313, 323, 328, 392, 414, 427, 468, 472):
+        if self.effect in (11, 209, 213, 278, 313, 323, 328, 392, 414, 427, 468, 472, 487):
             msg += attacker.append_attack(1, attacker=attacker, move=self)
         if self.effect in (12, 157, 161, 207, 209, 323, 367, 414, 427, 467, 468, 472):
             msg += attacker.append_defense(1, attacker=attacker, move=self)
@@ -710,7 +710,7 @@ class Move():
             msg += attacker.append_spatk(1, attacker=attacker, move=self)
         if self.effect in (161, 175, 207, 212, 291, 367, 414, 427, 472):
             msg += attacker.append_spdef(1, attacker=attacker, move=self)
-        if self.effect in (130, 213, 291, 296, 414, 427, 442, 469):
+        if self.effect in (130, 213, 291, 296, 414, 427, 442, 469, 487):
             msg += attacker.append_speed(1, attacker=attacker, move=self)
         if self.effect in (17, 467, 471):
             msg += attacker.append_evasion(1, attacker=attacker, move=self)
@@ -743,7 +743,7 @@ class Move():
             msg += attacker.append_spdef(2, attacker=attacker, move=self)
         if self.effect == 109:
             msg += attacker.append_evasion(2, attacker=attacker, move=self)
-        if self.effect in (119, 432):
+        if self.effect in (119, 432, 483):
             msg += defender.append_attack(2, attacker=attacker, move=self)
         if self.effect == 432:
             msg += defender.append_spatk(2, attacker=attacker, move=self)
@@ -787,6 +787,8 @@ class Move():
             msg += attacker.append_attack(-1, attacker=attacker, move=self)
         if self.effect in (183, 230, 309, 335, 405, 438, 442):
             msg += attacker.append_defense(-1, attacker=attacker, move=self)
+        if self.effect == 480:
+            msg += attacker.append_spatk(-1, attacker=attacker, move=self)
         if self.effect in (230, 309, 335):
             msg += attacker.append_spdef(-1, attacker=attacker, move=self)
         if self.effect in (219, 335, 463):
@@ -794,7 +796,7 @@ class Move():
         # -2
         if self.effect in (59, 169):
             msg += defender.append_attack(-2, attacker=attacker, move=self)
-        if self.effect == 60:
+        if self.effect in (60, 483):
             msg += defender.append_defense(-2, attacker=attacker, move=self)
         if self.effect == 61:
             msg += defender.append_speed(-2, attacker=attacker, move=self)
@@ -807,6 +809,8 @@ class Move():
                 msg += defender.append_spdef(-2, attacker=attacker, move=self)
         if self.effect == 205:
             msg += attacker.append_spatk(-2, attacker=attacker, move=self)
+        if self.effect == 479:
+            msg += attacker.append_speed(-2, attacker=attacker, move=self)
         # other
         if self.effect == 26:
             attacker.attack_stage = 0
@@ -894,6 +898,11 @@ class Move():
         if self.effect == 475:
             msg += defender.append_defense(-1, attacker=attacker, move=self)
             msg += defender.append_spdef(-1, attacker=attacker, move=self)
+        if self.effect == 485:
+            msg += attacker.damage(attacker.starting_hp // 2, battle)
+            msg += attacker.append_attack(2, attacker=attacker, move=self)
+            msg += attacker.append_spatk(2, attacker=attacker, move=self)
+            msg += attacker.append_speed(2, attacker=attacker, move=self)
         
         # Flinch
         if not defender.has_moved:
@@ -977,7 +986,7 @@ class Move():
             msg += battle.terrain.set("psychic", attacker)
         
         # Protection
-        if self.effect in (112, 117, 279, 356, 362, 384, 454):
+        if self.effect in (112, 117, 279, 356, 362, 384, 454, 488):
             attacker.protection_used = True
             attacker.protection_chance *= 3
         if self.effect == 112:
@@ -1009,6 +1018,9 @@ class Move():
             msg += f"{attacker.name} guards itself!\n"
         if self.effect == 454:
             attacker.obstruct = True
+            msg += f"{attacker.name} protected itself!\n"
+        if self.effect == 488:
+            attacker.silk_trap = True
             msg += f"{attacker.name} protected itself!\n"
         
         # Life orb
@@ -1230,6 +1242,11 @@ class Move():
         if self.effect == 398:
             attacker.type_ids.remove(ElementType.FIRE)
             msg += f"{attacker.name} lost its fire type!\n"
+
+        # Double shock
+        if self.effect == 481:
+            attacker.type_ids.remove(ElementType.ELECTRIC)
+            msg += f"{attacker.name} lost its electric type!\n"
         
         # Forest's Curse
         if self.effect == 376:
@@ -1367,6 +1384,17 @@ class Move():
             attacker.substitute = hp
             attacker.bind = ExpiringEffect(0)
             msg += f"{attacker.name} made a substitute!\n"
+        
+        # Shed Tail
+        if self.effect == 493:
+            hp = attacker.starting_hp // 4
+            msg += attacker.damage(attacker.starting_hp // 2, battle, attacker=attacker, source="building a substitute")
+            attacker.owner.next_substitute = hp
+            attacker.bind = ExpiringEffect(0)
+            msg += f"{attacker.name} left behind a substitute!\n"
+            msg += attacker.remove(battle)
+            # This NEEDS to be here to set it to *False* rather than *None*
+            attacker.owner.current_pokemon = False
         
         # Throat Chop
         if self.effect == 393 and not defender.silenced.active():
@@ -1692,8 +1720,8 @@ class Move():
             defender.powdered = True
             msg += f"{defender.name} was coated in powder!\n"
 
-        # Rapid Spin
-        if self.effect == 130:
+        # Rapid/Mortal Spin
+        if self.effect in (130, 486):
             attacker.bind.set_turns(0)
             attacker.splinters.set_turns(0)
             attacker.trapping = False
@@ -1830,7 +1858,7 @@ class Move():
                     msg += f"{attacker.name} gulped up a pikachu!\n"
         
         # Steel Roller
-        if self.effect == 448:
+        if self.effect in (418, 448) and battle.terrain.item is not None:
             battle.terrain.end()
             msg += "The terrain was cleared!\n"
         
@@ -1875,6 +1903,20 @@ class Move():
             defender.tar_shot = True
             msg += f"{defender.name} is covered in sticky tar!\n"
         
+        # Tidy Up
+        if self.effect == 487:
+            defender.owner.spikes = 0
+            defender.owner.toxic_spikes = 0
+            defender.owner.stealth_rock = False
+            defender.owner.sticky_web = False
+            defender.substitute = 0
+            attacker.owner.spikes = 0
+            attacker.owner.toxic_spikes = 0
+            attacker.owner.stealth_rock = False
+            attacker.owner.sticky_web = False
+            attacker.substitute = 0
+            msg += f"{attacker.name} tidied up!\n"
+        
         # Dancer Ability - Runs at the end of move usage
         if defender.ability(attacker=attacker, move=self) == Ability.DANCER and self.is_dance() and use_pp:
             hm = defender.has_moved
@@ -1911,11 +1953,19 @@ class Move():
         if self.effect == 361 and attacker._name == "Greninja-ash":
             hits = 3
         elif min_hits is not None and max_hits is not None:
+            # Handle hit range overrides
+            if attacker.ability() == Ability.SKILL_LINK:
+                min_hits = max_hits
+            elif attacker.held_item == "loaded-dice" and max_hits >= 4 and (min_hits < 4 or self.effect == 484):
+                min_hits = 4
+            # Randomly select number of hits
             if min_hits == 2 and max_hits == 5:
-                if attacker.ability() == Ability.SKILL_LINK:
-                    hits = 5
-                else:
-                    hits = random.choice([2, 2, 2, 3, 3, 3, 4, 5])
+                hits = random.choice([
+                    2, 2, 2, 2, 2, 2, 2,
+                    3, 3, 3, 3, 3, 3, 3,
+                    4, 4, 4,
+                    5, 5, 5
+                ])
             else:
                 hits = random.randint(min_hits, max_hits)
         else:
@@ -2050,16 +2100,23 @@ class Move():
             if power is None:
                 raise ValueError(f"{self.name} has no power and no override.")
             
-            # Each hit has to check hit, but damage increases with each success
-            if hit > 0 and self.effect == 105:
-                if not attacker.ability() == Ability.SKILL_LINK and not self.check_hit(attacker, defender, battle):
-                    # Reset the number of hits to the number of ACTUAL hits
-                    hits = hit
-                    # WARNING: If there is something BEFORE this in the loop which adds to msg (like "A critical hit")
-                    # it MUST be after this block, or it will appear even after "misses" from this move.
-                    break
-                # x2 then x3
-                power *= 1 + hit
+            # Check accuracy on each hit
+            # WARNING: If there is something BEFORE this in the loop which adds to msg (like "A critical hit")
+            # it MUST be after this block, or it will appear even after "misses" from this move.
+            if hit > 0 and not attacker.ability() == Ability.SKILL_LINK:
+                # Increasing damage each hit
+                if self.effect == 105:
+                    if not self.check_hit(attacker, defender, battle):
+                        # Reset the number of hits to the number of ACTUAL hits
+                        hits = hit
+                        break
+                    # x2 then x3
+                    power *= 1 + hit
+                # Only checks if loaded dice did not activate
+                if self.effect == 484 and attacker.held_item != "loaded-dice":
+                    if not self.check_hit(attacker, defender, battle):
+                        hits = hit
+                        break
             
             damage = 2 * attacker.level
             damage /= 5
@@ -2311,6 +2368,7 @@ class Move():
             delta += max(0, defender.spdef_stage)
             delta += max(0, defender.speed_stage)
             power = min(200, 60 + (delta * 20))
+        # Power is higher when the user has greater Speed than the target, up to a maximum of 150.
         elif self.effect == 294:
             delta = attacker.get_speed(battle) // defender.get_speed(battle)
             if delta <= 0:
@@ -2589,7 +2647,7 @@ class Move():
         if self.effect == 320 and attacker.owner.retaliate.active():
             power *= 2
         # Has double power against, and can hit, Pokémon attempting to switch out.
-        if self.effect == 129 and (isinstance(defender.owner.selected_action, int) or defender.owner.selected_action.effect in (128, 154, 229, 347)):
+        if self.effect == 129 and (isinstance(defender.owner.selected_action, int) or defender.owner.selected_action.effect in (128, 154, 229, 347, 493)):
             power *= 2
         # Power is doubled if the target has already received damage this turn.
         if self.effect == 232 and defender.dmg_this_turn:
@@ -2633,6 +2691,15 @@ class Move():
         # Power is doubled if the defender has a non volatile status effect.
         if self.effect in (461, 462, 465) and defender.nv.current:
             power *= 2
+        # Deals 4/3x damage if supereffective.
+        if self.effect == 482 and defender.effectiveness(current_type, battle, attacker=attacker, move=self) > 1:
+            power *= 4/3
+        # Power is multiplied by (1 + number of fainted party members)x, capping at 101x (100 faints).
+        if self.effect == 490:
+            power *= 1 + min(attacker.owner.num_fainted, 100)
+        # Power is multiplied by (1 + number of times hit)x, capping at 7x (6 hits).
+        if self.effect == 491:
+            power *= 1 + min(attacker.num_hits, 6)
 
         # Terrains
         if battle.terrain.item == "psychic" and attacker.grounded(battle) and current_type == ElementType.PSYCHIC:
@@ -2806,6 +2873,13 @@ class Move():
                 return ElementType.FAIRY
             if battle.terrain.item == "psychic":
                 return ElementType.PSYCHIC
+        if self.id == 873:
+            if attacker._name == "Tauros-paldea":
+                return ElementType.FIGHTING
+            if attacker._name == "Tauros-aqua-paldea":
+                return ElementType.WATER
+            if attacker._name == "Tauros-blaze-paldea":
+                return ElementType.FIRE
         
         return self.type
            
@@ -2892,13 +2966,15 @@ class Move():
             return False
         if self.effect == 29 and not defender.owner.valid_swaps(attacker, battle, check_trap=False):
             return False
+        if self.effect in (128, 154, 493) and not attacker.owner.valid_swaps(defender, battle, check_trap=False):
+            return False
         if self.effect == 161 and attacker.stockpile >= 3:
             return False
-        if self.effect == 228 and attacker.last_move_damage is None:
+        if self.effect in (90, 145, 228, 408) and attacker.last_move_damage is None:
             return False
-        if self.effect == 145 and (attacker.last_move_damage is None or attacker.last_move_damage[1] != DamageClass.SPECIAL):
+        if self.effect == 145 and attacker.last_move_damage[1] != DamageClass.SPECIAL:
             return False
-        if self.effect in (90, 408) and (attacker.last_move_damage is None or attacker.last_move_damage[1] != DamageClass.PHYSICAL):
+        if self.effect in (90, 408) and attacker.last_move_damage[1] != DamageClass.PHYSICAL:
             return False
         if self.effect in (10, 243) and (defender.last_move is None or not defender.last_move.selectable_by_mirror_move()):
             return False
@@ -2908,7 +2984,11 @@ class Move():
             return False
         if self.effect == 388 and defender.attack_stage == -6:
             return False
-        if self.effect == 143 and attacker.hp <= attacker.starting_hp // 2:
+        if self.effect in (143, 485, 493) and attacker.hp <= attacker.starting_hp // 2:
+            return False
+        if self.effect == 414 and attacker.hp < attacker.starting_hp // 3:
+            return False
+        if self.effect == 80 and attacker.hp <= attacker.starting_hp // 4:
             return False
         if self.effect == 48 and attacker.focus_energy:
             return False
@@ -2940,9 +3020,11 @@ class Move():
             return False
         if self.effect == 47 and attacker.owner.mist.active():
             return False
-        if self.effect == 80 and (attacker.substitute or attacker.hp <= attacker.starting_hp // 4):
+        if self.effect in (80, 493) and attacker.substitute:
             return False
         if self.effect == 398 and ElementType.FIRE not in attacker.type_ids:
+            return False
+        if self.effect == 481 and ElementType.ELECTRIC not in attacker.type_ids:
             return False
         if self.effect == 376 and ElementType.GRASS in defender.type_ids:
             return False
@@ -2988,7 +3070,7 @@ class Move():
             return False
         if self.effect == 181 and attacker.get_assist_move() is None:
             return False
-        if self.effect in (112, 117, 184, 195, 196, 279, 307, 345, 350, 354, 356, 362, 378, 384, 454) and defender.has_moved:
+        if self.effect in (112, 117, 184, 195, 196, 279, 307, 345, 350, 354, 356, 362, 378, 384, 454, 488) and defender.has_moved:
             return False
         if self.effect == 192 and not (attacker.ability_changeable() and attacker.ability_giveable() and defender.ability_changeable() and defender.ability_giveable()):
             return False
@@ -3016,7 +3098,7 @@ class Move():
             return False
         if self.effect == 341 and defender.owner.sticky_web:
             return False
-        if self.effect in (112, 117, 356, 362, 384, 454) and random.randint(1, attacker.protection_chance) != 1:
+        if self.effect in (112, 117, 356, 362, 384, 454, 488) and random.randint(1, attacker.protection_chance) != 1:
             return False
         if self.effect == 403 and (defender.last_move is None or defender.last_move.pp == 0 or not defender.last_move.selectable_by_instruct() or defender.locked_move is not None):
             return False
@@ -3035,10 +3117,6 @@ class Move():
         if self.effect == 217 and defender.miracle_eye:
             return False
         if self.effect == 38 and (attacker.nv.sleep() or attacker.hp == attacker.starting_hp or attacker._name == "Minior"):
-            return False
-        if self.effect in (128, 154) and not attacker.owner.valid_swaps(defender, battle, check_trap=False):
-            return False
-        if self.effect == 414 and attacker.hp < attacker.starting_hp // 3:
             return False
         if self.effect == 427 and attacker.no_retreat:
             return False
@@ -3120,7 +3198,7 @@ class Move():
         if not self.targets_opponent():
             return True, msg
         # Moves which bypass all protection.
-        if self.effect in (149, 224, 273, 360, 438):
+        if self.effect in (149, 224, 273, 360, 438, 489):
             return True, msg
         if attacker.ability() == Ability.UNSEEN_FIST and self.makes_contact(attacker):
             return True, msg
@@ -3152,6 +3230,10 @@ class Move():
         if defender.obstruct and self.damage_class != DamageClass.STATUS:
             if self.makes_contact(attacker):
                 msg += attacker.append_defense(-2, attacker=defender, move=self)
+            return False, msg
+        if defender.silk_trap and self.damage_class != DamageClass.STATUS:
+            if self.makes_contact(attacker):
+                msg += attacker.append_speed(-1, attacker=defender, move=self)
             return False, msg
         if defender.quick_guard and self.get_priority(attacker, defender, battle) > 0:
             return False, msg
