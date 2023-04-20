@@ -52,7 +52,7 @@ This cog will let you play battleship against another member of your server.
 Begin a game of battleship.
 
 **`[p]battleshipboard <channel>`**  
-View your current board in an ongoing game.  
+View your current board from an ongoing game in your DMs.  
 Use `channel` to specify the channel ID of the channel the game is in.
 
 **`[p]battleshipset <argument>`**  

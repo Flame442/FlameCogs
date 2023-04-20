@@ -56,13 +56,15 @@ class Battleship(commands.Cog):
 			await ctx.send('There is no ongoing game in this channel.')
 	
 	@commands.command()
-	async def battleshipboard(self, ctx, channel: int):
+	async def battleshipboard(self, ctx, channel: discord.TextChannel=None):
 		"""
-		View your current board in an ongoing game.
+		View your current board from an ongoing game in your DMs.
 		
 		Specify the channel ID of the channel the game is in.
 		"""
-		game = [game for game in self.games if game.ctx.channel.id == channel]
+		if channel is None:
+			channel = ctx.channel
+		game = [game for game in self.games if game.ctx.channel.id == channel.id]
 		if not game:
 			return await ctx.send(
 				'There is no game in that channel or that channel does not exist.'
@@ -72,7 +74,7 @@ class Battleship(commands.Cog):
 			return await ctx.send('You are not in that game.')
 		game = game[0]
 		p = [m.id for m in game.player].index(ctx.author.id)
-		await game.send_board(p, 1, ctx, '')
+		await game.send_board(p, 1, ctx.author, '')
 	
 	@commands.guild_only()
 	@checks.guildowner()
