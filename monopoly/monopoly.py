@@ -124,7 +124,7 @@ class Monopoly(commands.Cog):
 		await ctx.send(msg)
 	
 	@commands.guild_only()
-	@commands.group(invoke_without_command=True) 
+	@commands.group(invoke_without_command=True, hidden=True) 
 	async def monopolyconvert(self, ctx, savefile: str):
 		"""Convert a savefile to work with the latest version of this cog."""
 		if savefile in ('delete', 'list'):
