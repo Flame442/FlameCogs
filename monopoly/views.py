@@ -45,7 +45,7 @@ class GetPlayersView(discord.ui.View):
 	@discord.ui.button(label="Add an AI", style=discord.ButtonStyle.blurple)
 	async def ai(self, interaction: discord.Interaction, button: discord.ui.Button):
 		"""Fills the next player slot with an AI player."""
-		self.players.append(MonopolyAI(len(self.players) + 1, f'[AI] ({len(self.players) + 1})'))
+		self.players.append(MonopolyAI(len(self.players), f'[AI] ({len(self.players) + 1})'))
 		self.start.disabled = False
 		if len(self.players) >= self.max_players:
 			view = None
