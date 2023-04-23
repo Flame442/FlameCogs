@@ -4,7 +4,6 @@ from redbot.core import Config
 import asyncio
 import aiohttp
 import logging
-import traceback
 from .battle import Battle
 from .buttons import DuelAcceptView
 from .pokemon import DuelPokemon
@@ -271,26 +270,15 @@ class PokemonDuel(commands.Cog):
                 "Note: Do not report this as a bug."
             )
             return None
-        except Exception as e:
-            self.log.exception("The duel encountered an error.")
-            def paginate(text: str):
-                """Paginates arbatrary length text."""
-                last = 0
-                pages = []
-                for curr in range(0, len(text), 1900):
-                    pages.append(text[last:curr])
-                    last = curr
-                pages.append(text[last : len(text)])
-                pages = list(filter(lambda a: a != "", pages))
-                return pages
-            stack = ''.join(traceback.TracebackException.from_exception(e).format())
-            pages = paginate(stack)
-            for idx, page in enumerate(pages):
-                if idx == 0:
-                    page = "The duel encountered an error.\n\n" + page
-                await battle.ctx.send(
-                    f"```py\n{page}\n```"
-                )
+        except Exception as exc:
+            msg = 'Error in PokemonDuel.\n'
+            self.log.exception(msg)
+            self.bot.dispatch('flamecogs_game_error', self, exc)
+            await battle.ctx.send(
+                'A fatal error has occurred, shutting down.\n'
+                'Please have the bot owner copy the error from console '
+                'and post it in the support channel of <https://discord.gg/bYqCjvu>.'
+            )
             return None
         else:
             if int(battle.ctx.message.id) in self.games:
