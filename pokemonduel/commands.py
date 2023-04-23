@@ -273,7 +273,7 @@ class PokemonDuel(commands.Cog):
         except Exception as exc:
             msg = 'Error in PokemonDuel.\n'
             self.log.exception(msg)
-            self.bot.dispatch('flamecogs_game_error', self, exc)
+            self.bot.dispatch('flamecogs_game_error', battle, exc)
             await battle.ctx.send(
                 'A fatal error has occurred, shutting down.\n'
                 'Please have the bot owner copy the error from console '
