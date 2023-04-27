@@ -579,6 +579,7 @@ class HeldItem():
         if not self.can_remove():
             raise ValueError(f"{self.name} cannot be removed.")
         self.last_used = self.item
+        self.owner.choice_move = None
         self.remove()
     
     def transfer(self, other):
@@ -597,6 +598,8 @@ class HeldItem():
         if not other.can_remove():
             raise ValueError(f"{other.name} cannot be removed.")
         self.item, other.item = other.item, self.item
+        self.owner.choice_move = None
+        other.owner.choice_move = None
         self.ever_had_item = self.ever_had_item or self.item is not None
     
     def recover(self, other):
