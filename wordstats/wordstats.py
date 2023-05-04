@@ -670,7 +670,7 @@ class WordStats(commands.Cog):
 		await ctx.send('Wordstats data has been reset.')
 	
 	@checks.is_owner()
-	@wordstatsset.command()
+	@wordstatsset.command(hidden=True)
 	async def convert(self, ctx):
 		"""Convert data from config to the SQLite database."""
 		await ctx.send('Begining conversion, this may take a while.')

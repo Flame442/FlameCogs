@@ -54,6 +54,23 @@ CHARS = {
 
 _ = Translator('PartyGames', __file__)
 
+
+class JoinGameView(discord.ui.View):
+	"""View to allow members to join a game."""
+	def __init__(self):
+		super().__init__(timeout=60)
+		self.joined = []
+	
+	@discord.ui.button(label="Join the game", style=discord.ButtonStyle.blurple)
+	async def callback(self, interaction, button):
+		"""Adds a user to the game."""
+		if interaction.user in self.joined:
+			await interaction.response.send_message(_("You already joined this game! Wait for it to start."), ephemeral=True)
+			return
+		await interaction.response.send_message(_("You have joined the game! Please wait for it to begin."), ephemeral=True)
+		self.joined.append(interaction.user)
+
+
 @cog_i18n(_)
 class PartyGames(commands.Cog):
 	"""Chat games focused on coming up with words from 3 letters."""
@@ -77,21 +94,15 @@ class PartyGames(commands.Cog):
 
 	async def _get_players(self, ctx):
 		"""Helper function to set up a game."""
+		view = JoinGameView()
 		msg = await ctx.send(
-			_('React to this message to join. The game will start in 15 seconds.')
+			_('Click the button to join. The game will start in 15 seconds.'),
+			view=view,
 		)
-		await msg.add_reaction('\N{WHITE HEAVY CHECK MARK}')
 		await asyncio.sleep(15)
-		msg = await ctx.channel.fetch_message(msg.id) #get the latest version of the message
-		reaction = [r for r in msg.reactions if r.emoji == '\N{WHITE HEAVY CHECK MARK}']
-		#edge case test for the reaction being removed from the message
-		if not reaction:
-			return []
-		reaction = reaction[0]
-		players = []
-		async for user in reaction.users():
-			players.append(user)
-		return [p for p in players if not p.bot]
+		await msg.edit(view=None)
+		view.stop()
+		return [p for p in view.joined if not p.bot]
 
 	async def _get_wordlist(self, ctx):
 		"""Get the proper wordlist for the current locale."""
@@ -102,7 +113,7 @@ class PartyGames(commands.Cog):
 			if locale.lower() == char.lower():
 				locale = char #convert case to the one used by the file
 				break
-		if locale not in CHARS: #now case insensitive 
+		else:
 			await ctx.send(_('Your locale is not available. Using `en-US`.'))
 			locale = 'en-US'
 		with open(bundled_data_path(self) / f'{locale}.json') as f:

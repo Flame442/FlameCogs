@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "damage_class_id": "",
+    "identifier": "hp",
+    "is_battle_only": 0,
+    "game_index": 1
+  },
+  {
+    "id": 2,
+    "damage_class_id": 2,
+    "identifier": "attack",
+    "is_battle_only": 0,
+    "game_index": 2
+  },
+  {
+    "id": 3,
+    "damage_class_id": 2,
+    "identifier": "defense",
+    "is_battle_only": 0,
+    "game_index": 3
+  },
+  {
+    "id": 4,
+    "damage_class_id": 3,
+    "identifier": "special-attack",
+    "is_battle_only": 0,
+    "game_index": 5
+  },
+  {
+    "id": 5,
+    "damage_class_id": 3,
+    "identifier": "special-defense",
+    "is_battle_only": 0,
+    "game_index": 6
+  },
+  {
+    "id": 6,
+    "damage_class_id": "",
+    "identifier": "speed",
+    "is_battle_only": 0,
+    "game_index": 4
+  },
+  {
+    "id": 7,
+    "damage_class_id": "",
+    "identifier": "accuracy",
+    "is_battle_only": 1,
+    "game_index": ""
+  },
+  {
+    "id": 8,
+    "damage_class_id": "",
+    "identifier": "evasion",
+    "is_battle_only": 1,
+    "game_index": ""
+  }
+]

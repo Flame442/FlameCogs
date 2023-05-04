@@ -6,7 +6,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 from typing import Union
 import asyncio, os
 from .game import MonopolyGame
-from .ai import MonopolyAI
+from .views import GetPlayersView
 
 #temp imports for backwards compatibility
 from redbot.core.data_manager import cog_data_path
@@ -65,50 +65,18 @@ class Monopoly(commands.Cog):
 			game = MonopolyGame(ctx, self, data=data)
 			self.games.append(game)
 		else:
-			uid = [ctx.author.id]
-			await ctx.send('Welcome to Monopoly. How many players?')
-			def check(m):
-				if m.author != ctx.author or m.channel != ctx.channel:
-					return False
-				try:
-					v = int(m.content)
-				except ValueError:
-					return False
-				return True
-			while True:
-				try:
-					num = await self.bot.wait_for('message', timeout=60, check=check)
-				except asyncio.TimeoutError:
-					return await ctx.send('You took too long to respond.')
-				num = int(num.content)
-				if num < 2 or num > 8:
-					await ctx.send('Please select a number between 2 and 8.')
-					continue
-				break
-			check = lambda m: (
-				not m.author.bot
-				and m.channel == ctx.channel
-				and (
-					(m.author.id not in uid and m.content.lower() == 'i')
-					or (m.author == ctx.message.author and m.content.lower() == 'ai')
-				)
-			)
-			ai_count = 1
-			for a in range(1, num):
-				await ctx.send(f'Player {a+1}, say I.\nOr say AI to add an AI opponent.')
-				try:
-					joinmsg = await self.bot.wait_for(
-						'message',
-						timeout=60,
-						check=check
-					)
-				except asyncio.TimeoutError:
-					return await ctx.send('You took too long to respond.')
-				if joinmsg.content.lower() == 'ai':
-					uid.append(MonopolyAI(a, f'[AI] ({ai_count})'))
-					ai_count += 1
+			view = GetPlayersView(ctx, 8)
+			await ctx.send(view.generate_message(), view=view)
+			await view.wait()
+			players = view.players
+			if len(players) < 2:
+				return await ctx.send('Nobody else wants to play, shutting down.')
+			uid = []
+			for player in players[:8]:
+				if isinstance(player, discord.Member):
+					uid.append(player.id)
 				else:
-					uid.append(joinmsg.author.id)
+					uid.append(player)
 			if [game for game in self.games if game.ctx.channel == ctx.channel]:
 				return await ctx.send('Another game started in this channel while setting up.')
 			game = MonopolyGame(ctx, self, startCash=startCash, uid=uid)
@@ -156,7 +124,7 @@ class Monopoly(commands.Cog):
 		await ctx.send(msg)
 	
 	@commands.guild_only()
-	@commands.group(invoke_without_command=True) 
+	@commands.group(invoke_without_command=True, hidden=True) 
 	async def monopolyconvert(self, ctx, savefile: str):
 		"""Convert a savefile to work with the latest version of this cog."""
 		if savefile in ('delete', 'list'):

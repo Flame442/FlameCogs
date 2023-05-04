@@ -7,5 +7,5 @@ __red_end_user_data_statement__ = (
 	'and can request to opt out of data collection using `[p]wordstatsset user no`.'
 )
 
-def setup(bot):
-	bot.add_cog(WordStats(bot))
+async def setup(bot):
+	await bot.add_cog(WordStats(bot))

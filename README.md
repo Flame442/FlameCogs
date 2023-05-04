@@ -37,6 +37,7 @@ Name | Description
 [Monopoly](../master/README.md#monopoly) | Play monopoly with up to 7 other people in your server.
 [Onlinestats](../master/README.md#onlinestats) | Information about what devices people are using to run discord.
 [Partygames](../master/README.md#partygames) | Chat games focused on coming up with words from 3 letters.
+[PokemonDuel](../master/README.md#pokemonduel) | Play a pokemon battle against another member of your server.
 [SimpleEmbed](../master/README.md#simpleembed) | Simply create embeds.
 [Stocks](../master/README.md#stocks) | Buy and sell stocks with bot currency.
 [Wordstats](../master/README.md#wordstats) | Track commonly used words by server and member.
@@ -51,7 +52,7 @@ This cog will let you play battleship against another member of your server.
 Begin a game of battleship.
 
 **`[p]battleshipboard <channel>`**  
-View your current board in an ongoing game.  
+View your current board from an ongoing game in your DMs.  
 Use `channel` to specify the channel ID of the channel the game is in.
 
 **`[p]battleshipset <argument>`**  
@@ -463,6 +464,33 @@ Use `reset` to remove the override.
 This command is only usable by the bot owner.  
 This value is global.
 
+## PokemonDuel
+
+This cog will let you play a Pokemon battle against another member of your server, similar to Pokemon Showdown. All pokemon, moves, and abilities are coded, but only some items are. It is based off of generation 8, or the last generation a pokemon, move, ability, or item was included.
+
+### Usage
+
+**`[p]pokemonduel <opponent>`**  
+Battle in a Pokemon Duel with another member of your server.  
+Alias `[p]pokeduel <opponent>`
+
+**`[p]pokemonduel inverse <opponent>`**  
+Battle in an Inverse Duel with another member of your server.
+
+**`[p]pokemonduel party set <pokemon_data>`**  
+Set your party of pokemon.  
+In order to set your party, you will need to create a team on Pokemon Showdown Team Builder.  
+1. Go to the [Team Builder site](https://play.pokemonshowdown.com/teambuilder).  
+2. Click the "New Team" button.  
+3. Use the "Add Pokemon" button to create a new pokemon.  
+4. Pick its moves, ability, gender, level, etc.  
+5. Repeat steps 3 and 4 for up to 6 total pokemon  
+6. On the team view, select the "Import/Export" button at the TOP.  
+7. Copy the text provided, and pass that to this command.
+
+**`[p]pokemonduel party list`**  
+View the pokemon currently in your party.
+
 ## SimpleEmbed
 
 This cog will let you send embedded messages quickly and easily.
@@ -618,4 +646,7 @@ The helpful support staff at the [Redbot discord](https://discord.gg/red),
 [Preda](https://github.com/PredaaA) for translating Partygames,  
 Red for creating the sprites used in Battleship,  
 Mistery#3287 for requesting and translating GiftAway,  
-And [Tradier](https://tradier.com/) for the API used in Stocks.
+[Tradier](https://tradier.com/) for the API used in Stocks,  
+[The Pokémon Company](https://www.pokemon.com/us/) (Nintendo, Game Freak, Creatures) for creating the games that PokemonDuel is based off of,  
+And Cruithne, skylarr, ConCon, vKoIIextionz, Bloomlake, Dylee, KYPspikes, De Ultimate Gamer, Snowy Wolfie, RadioactiveRenegade, Falcon, Blotch,
+Chichiri12345, ampplaca, xxmoonlotusxx, Silver5mith, and Starregi for helping to keep the data files of PokemonDuel updated and accurate.  

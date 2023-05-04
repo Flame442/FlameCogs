@@ -60,10 +60,10 @@ class Gift:
 			raise GiftError(_('No channels provided.'))
 		await obj.get_game_data()
 		embed = obj.gen_embed()
-		messages = await asyncio.gather(*(channel.send(embed=embed) for channel in channels), return_exceptions=True)
+		messages = await asyncio.gather(*(channel.send(embed=embed, view=cog.view) for channel in channels), return_exceptions=True)
 		#filter exceptions
 		obj.messages = [x for x in messages if isinstance(x, discord.Message)]
-		asyncio.gather(*(message.add_reaction('\N{WHITE HEAVY CHECK MARK}') for message in obj.messages), return_exceptions=True)
+		#asyncio.gather(*(message.add_reaction('\N{WHITE HEAVY CHECK MARK}') for message in obj.messages), return_exceptions=True)
 		return obj
 	
 	@classmethod
@@ -119,7 +119,7 @@ class Gift:
 		total = len(self.keys) + len(self.claimed)
 		if self.keys:
 			desc = _(
-				'Click the reaction below to grab a key.\n\n'
+				'Click the button below to grab a key.\n\n'
 				'Currently available: **{top}/{bottom}**'
 			).format(top=len(self.keys), bottom=total)
 		else:
@@ -133,7 +133,7 @@ class Gift:
 				'{author} is gifting {num} keys for **{game}**.'
 			).format(author=self.author.display_name, num=total, game=self.game_name),
 			description=desc,
-			url = self.link_url or discord.Embed.Empty
+			url=self.link_url
 		)
 		for field in self.fields:
 			embed.add_field(name=field[0], value=field[1], inline=False)
@@ -229,12 +229,16 @@ class Gift:
 	async def give_key(self, member):
 		"""Give one of the keys to a particular user."""
 		key = self.keys.pop(0)
+		try:
+			await member.send(_('Here is your key for `{game}`: `{key}`').format(game=self.game_name, key=key))
+		except discord.HTTPException:
+			self.keys.append(key)
+			return
 		self.claimed_by_id.append(member.id)
 		self.claimed_by_text.append(_(
 			'\n**{name}** in **{guild}**'
 		).format(name=member.display_name, guild=member.guild.name))
 		self.claimed.append(key)
-		await member.send(_('Here is your key for `{game}`: `{key}`').format(game=self.game_name, key=key))
 		await self.refresh_messages()
 		if len(self.keys) == 0:
 			async with self.cog.config.gifts() as gifts:
@@ -248,6 +252,42 @@ class Gift:
 		"""Edits all existing messages to match the current state of the gift."""
 		embed = self.gen_embed()
 		await asyncio.gather(*(message.edit(embed=embed) for message in self.messages))
+
+
+class GiftAwayView(discord.ui.View):
+	"""Simple view to add the button to claim a key."""
+	def __init__(self, cog):
+		super().__init__(timeout=None)
+		self.cog = cog
+	
+	@discord.ui.button(label=_('Claim key'), style=discord.ButtonStyle.primary, custom_id='giftaway_key_button')
+	async def callback(self, interaction, button):
+		"""Claim a key from a gift."""
+		if not interaction.message or not interaction.user:
+			return
+		if interaction.user.bot:
+			return
+		if await self.cog.bot.cog_disabled_in_guild(self.cog, interaction.message.guild):
+			await interaction.response.send_message(_('This cog is currently disabled.'), ephemeral=True)
+			return
+		
+		gift = None
+		for g in self.cog.gifts:
+			if interaction.message.id in [x.id for x in g.messages]:
+				gift = g
+				break
+		if not gift:
+			await interaction.response.send_message(_('I could not find a gift for this message.'), ephemeral=True)
+			return
+		if not gift.keys:
+			await interaction.response.send_message(_('This gift has run out of keys, sorry!'), ephemeral=True)
+			return
+		if interaction.user.id in gift.claimed_by_id:
+			await interaction.response.send_message(_('You already claimed a key from this gift!'), ephemeral=True)
+			return
+		
+		await interaction.response.send_message(_('Claiming key...'), ephemeral=True)
+		await gift.give_key(interaction.user)
 
 
 @cog_i18n(_)
@@ -266,6 +306,8 @@ class GiftAway(commands.Cog):
 		self.gifts = []
 		self.access_token = None
 		self.token_expire = 0
+		self.view = GiftAwayView(self)
+		bot.add_view(self.view)
 		asyncio.create_task(self.setup())
 
 	async def setup(self):
@@ -277,7 +319,7 @@ class GiftAway(commands.Cog):
 					gift = await Gift.from_dict(self, invoke_id, data[invoke_id])
 				except GiftError as e:
 					self.log.warning(
-						f'Game {data[invoke_id]["game_name"]} by {data[invoke_id]["author"]} '
+						f'Gift {data[invoke_id]["game_name"]} by {data[invoke_id]["author"]} '
 						'could not be created and has been deleted.'
 					)
 					to_del.append(invoke_id)
@@ -456,3 +498,7 @@ class GiftAway(commands.Cog):
 		if member.id in gift.claimed_by_id:
 			return
 		await gift.give_key(member)
+	
+	def cog_unload(self):
+		"""Removes the persistent button handler."""
+		self.view.stop()

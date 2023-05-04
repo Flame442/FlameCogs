@@ -6,6 +6,7 @@
     "requirements" : ["pillow"],
     "description" : "Deepfry or nuke images passively and actively.",
     "tags" : ["fun", "deepfry", "nuke", "fry"],
+    "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],
     "end_user_data_statement": "This cog does not store user data."
 }
