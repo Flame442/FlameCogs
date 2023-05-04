@@ -303,7 +303,7 @@ class PokemonDuel(commands.Cog):
         trainers = []
         for player in (ctx.author, opponent):
             party = await self.config.member(player).party()
-            if party is None:
+            if not party:
                 await ctx.send(f"{player} has not setup their party yet!\nSet one with `{ctx.prefix}pokemonduels party set`.")
                 return
             party = [await DuelPokemon.create(ctx, p) for p in party]
