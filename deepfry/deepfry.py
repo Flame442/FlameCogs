@@ -197,7 +197,7 @@ class Deepfry(commands.Cog):
 			if discord.version_info.major == 1:
 				avatar = link.avatar_url_as(static_format="png")
 			else:
-				avatar = link.display_avatar
+				avatar = link.display_avatar.with_static_format("png")
 			# dpy will add a ?size= flag to the end, so for this one case we only need to check gif in
 			if ".gif" in str(avatar):
 				isgif = True
