@@ -36,7 +36,7 @@ async def find_one(ctx, db, filter):
 async def generate_team_preview(battle):
     """Generates a message for trainers to preview their team."""
     preview_view = PreviewPromptView(battle)
-    await battle.ctx.send("Select a lead pokemon:", view=preview_view)
+    await battle.channel.send("Select a lead pokemon:", view=preview_view)
     return preview_view
 
 async def generate_main_battle_message(battle):
@@ -75,7 +75,7 @@ async def generate_main_battle_message(battle):
     e.set_footer(text="Who Wins!?")
     try: #aiohttp 3.7 introduced a bug in dpy which causes this to error when rate limited. This catch just lets the bot continue when that happens.
         battle_view = BattlePromptView(battle)
-        await battle.ctx.send(embed=e, view=battle_view)
+        await battle.channel.send(embed=e, view=battle_view)
     except RuntimeError:
         pass
     return battle_view
@@ -103,5 +103,5 @@ async def generate_text_battle_message(battle):
         embed.description = page
         pages.append(embed)
     for page in pages:
-        await battle.ctx.send(embed=page)
+        await battle.channel.send(embed=page)
     battle.msg = ""

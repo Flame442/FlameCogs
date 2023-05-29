@@ -12,8 +12,9 @@ class Battle():
     
     This object holds all necessary information for a battle & runs the battle.
     """
-    def __init__(self, ctx, trainer1, trainer2, *, inverse_battle=False):
+    def __init__(self, ctx, channel, trainer1, trainer2, *, inverse_battle=False):
         self.ctx = ctx
+        self.channel = channel
         self.trainer1 = trainer1
         for poke in trainer1.party:
             poke.held_item.battle = self
@@ -143,7 +144,7 @@ class Battle():
             
             # Check for forfeits
             if self.trainer1.selected_action is None and self.trainer2.selected_action is None:
-                await self.ctx.send("Both players forfeited...")
+                await self.channel.send("Both players forfeited...")
                 return #TODO: ???
             if self.trainer1.selected_action is None:
                 self.msg += f"{self.trainer1.name} forfeited, {self.trainer2.name} wins!\n"
@@ -449,7 +450,7 @@ class Battle():
         swapper.event.clear()
         if swapper.is_human():
             swap_view = SwapPromptView(swapper, othertrainer, self, mid_turn=mid_turn)
-            await self.ctx.send(
+            await self.channel.send(
                 f"{swapper.name}, pick a pokemon to swap to!",
                 view=swap_view
             )

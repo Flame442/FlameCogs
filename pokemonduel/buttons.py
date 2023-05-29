@@ -8,13 +8,12 @@ BUTTON_TIMEOUT = 60
 
 class DuelAcceptView(discord.ui.View):
     """View to accept a duel."""
-    def __init__(self, ctx: "commands.Context", opponent: discord.Member, battle_type: str):
+    def __init__(self, ctx: "commands.Context", opponent: discord.Member):
         super().__init__(timeout=BUTTON_TIMEOUT)
         self.ctx = ctx
         self.confirm = False
         self.event = asyncio.Event()
         self.opponent = opponent
-        self.battle_type = battle_type
 
     @discord.ui.button(label="Accept", style=discord.ButtonStyle.green)
     async def accept(self, interaction, button):
@@ -39,12 +38,6 @@ class DuelAcceptView(discord.ui.View):
     
     async def on_error(self, interaction, error, item):
         await self.ctx.cog.log.error("Exception in a button.", exc_info=error)
-    
-    async def wait(self):
-        """Returns True if the duel was accepted, False otherwise."""
-        self.message = await self.ctx.send(f"{self.opponent.mention} You have been challenged to {self.battle_type} by {self.ctx.author.name}!\n", view=self)
-        await super().wait()
-        return self.confirm
 
 
 class PreviewPromptView(discord.ui.View):

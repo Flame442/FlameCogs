@@ -35,7 +35,8 @@ class Monopoly(commands.Cog):
 			timeoutValue = 60,
 			minRaise = 1,
 			darkMode = False,
-			saves = {}
+			useThreads = False,
+			saves = {},
 		)
 
 	@commands.guild_only()
@@ -46,8 +47,9 @@ class Monopoly(commands.Cog):
 		
 		Use the optional parameter "savefile" to load a saved game.
 		"""
-		if [game for game in self.games if game.ctx.channel == ctx.channel]:
+		if [game for game in self.games if game.channel == ctx.channel]:
 			return await ctx.send('A game is already running in this channel.')
+		channel = ctx.channel
 		startCash = await self.config.guild(ctx.guild).startCash()
 		if savefile is not None:
 			saves = await self.config.guild(ctx.guild).saves()
@@ -61,16 +63,32 @@ class Monopoly(commands.Cog):
 			data = saves[savefile]
 			if ctx.author.id not in data['uid']:
 				return await ctx.send('You are not a player in that game!')
-			await ctx.send(f'Using save file `{savefile}`')
-			game = MonopolyGame(ctx, self, data=data)
+			initial_message = await ctx.send(f'Using save file `{savefile}`')
+			if (
+				await self.config.guild(ctx.guild).useThreads()
+				and ctx.channel.permissions_for(ctx.guild.me).create_public_threads
+			):
+				channel = await initial_message.create_thread(
+					name='Monopoly',
+					reason='Automated thread for Monopoly.',
+				)
+			game = MonopolyGame(ctx, channel, data=data)
 			self.games.append(game)
 		else:
 			view = GetPlayersView(ctx, 8)
-			await ctx.send(view.generate_message(), view=view)
+			initial_message = await ctx.send(view.generate_message(), view=view)
+			if (
+				await self.config.guild(ctx.guild).useThreads()
+				and ctx.channel.permissions_for(ctx.guild.me).create_public_threads
+			):
+				channel = await initial_message.create_thread(
+					name='Monopoly',
+					reason='Automated thread for Monopoly.',
+				)
 			await view.wait()
 			players = view.players
 			if len(players) < 2:
-				return await ctx.send('Nobody else wants to play, shutting down.')
+				return await channel.send('Nobody else wants to play, shutting down.')
 			uid = []
 			for player in players[:8]:
 				if isinstance(player, discord.Member):
@@ -78,8 +96,8 @@ class Monopoly(commands.Cog):
 				else:
 					uid.append(player)
 			if [game for game in self.games if game.ctx.channel == ctx.channel]:
-				return await ctx.send('Another game started in this channel while setting up.')
-			game = MonopolyGame(ctx, self, startCash=startCash, uid=uid)
+				return await channel.send('Another game started in this channel while setting up.')
+			game = MonopolyGame(ctx, channel, startCash=startCash, uid=uid)
 			self.games.append(game)
 	
 	@monopoly.command(name='list')
@@ -232,7 +250,7 @@ class Monopoly(commands.Cog):
 	async def monopolystop(self, ctx):
 		"""Stop the game of monopoly in this channel."""
 		wasGame = False
-		for game in [g for g in self.games if g.ctx.channel == ctx.channel]:
+		for game in [g for g in self.games if g.channel == ctx.channel]:
 			game._task.cancel()
 			wasGame = True
 		if wasGame: #prevents multiple messages if more than one game exists for some reason
@@ -261,7 +279,9 @@ class Monopoly(commands.Cog):
 			'Mention on turn: {doMention}\n'
 			'Minimum auction increase: {minRaise}\n'
 			'Starting cash: {startCash}\n'
-			'Timeout length: {timeoutValue}'
+			'Timeout length: {timeoutValue}\n'
+			'Dark mode: {darkMode}\n'
+			'Game contained to a thread: {useThreads}\n'
 		).format_map(cfg)
 		await ctx.send(f'```py\n{msg}```')
 	
@@ -300,6 +320,27 @@ class Monopoly(commands.Cog):
 		else:
 			await self.config.guild(ctx.guild).bailValue.set(value)
 			await ctx.send(f'Bail will now cost ${value}.')
+	
+	@monopolyset.command()
+	async def darkmode(self, ctx, value: bool=None):
+		"""
+		Set if the board should be a darker varient.
+		
+		Defaults to False.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).darkMode()
+			if v:
+				await ctx.send('The board is currently the darker version.')
+			else:
+				await ctx.send('The board is currently the lighter version.')
+		else:
+			await self.config.guild(ctx.guild).darkMode.set(value)
+			if value:
+				await ctx.send('The board will now be the darker version.')
+			else:
+				await ctx.send('The board will now be the lighter version.')
 	
 	@monopolyset.command()
 	async def doublego(self, ctx, value: bool=None):
@@ -528,6 +569,27 @@ class Monopoly(commands.Cog):
 			await ctx.send(f'Players will start with ${value}.')
 
 	@monopolyset.command()
+	async def thread(self, ctx, value: bool=None):
+		"""
+		Set if a thread should be created per-game to contain game messages.
+		
+		Defaults to False.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).useThreads()
+			if v:
+				await ctx.send('The game is currently run in a per-game thread.')
+			else:
+				await ctx.send('The game is not currently run in a thread.')
+		else:
+			await self.config.guild(ctx.guild).useThreads.set(value)
+			if value:
+				await ctx.send('The game will now be run in a per-game thread.')
+			else:
+				await ctx.send('The game will not be run in a thread.')
+	
+	@monopolyset.command()
 	async def timeout(self, ctx, value: int=None):
 		"""
 		Set the amount of time before the game times out.
@@ -552,27 +614,6 @@ class Monopoly(commands.Cog):
 			else:
 				await self.config.guild(ctx.guild).timeoutValue.set(value)
 				await ctx.send(f'The timeout is now set to {value} seconds.')
-
-	@monopolyset.command()
-	async def darkmode(self, ctx, value: bool=None):
-		"""
-		Set if the board should be a darker varient.
-		
-		Defaults to False.
-		This value is server specific.
-		"""
-		if value is None:
-			v = await self.config.guild(ctx.guild).darkMode()
-			if v:
-				await ctx.send('The board is currently the darker version.')
-			else:
-				await ctx.send('The board is currently the lighter version.')
-		else:
-			await self.config.guild(ctx.guild).darkMode.set(value)
-			if value:
-				await ctx.send('The board will now be the darker version.')
-			else:
-				await ctx.send('The board will now be the lighter version.')
 
 	def cog_unload(self):
 		return [game._task.cancel() for game in self.games]

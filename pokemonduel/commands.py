@@ -26,17 +26,9 @@ class PokemonDuel(commands.Cog):
         self.config.register_member(
 			party = [],
 		)
-
-    @staticmethod
-    async def _get_opponent(ctx, opponent: discord.Member, battle_type: str):
-        """Confirms acceptence of the duel with the requested member."""
-        if opponent.id == ctx.author.id:
-            await ctx.send("You cannot duel yourself!")
-            return False
-        if opponent.bot:
-            await ctx.send("You cannot duel a bot!")
-            return False
-        return await DuelAcceptView(ctx, opponent, battle_type).wait()
+        self.config.register_guild(
+            useThreads = False,
+        )
 
     @staticmethod
     async def party_from_teambuilder(ctx, teambuilder):
@@ -263,7 +255,7 @@ class PokemonDuel(commands.Cog):
         try:
             winner = await battle.run()
         except (aiohttp.client_exceptions.ClientOSError, asyncio.TimeoutError):
-            await battle.ctx.send(
+            await battle.channel.send(
                 "The bot encountered an unexpected network issue, "
                 "and the duel could not continue. "
                 "Please try again in a few moments.\n"
@@ -274,7 +266,7 @@ class PokemonDuel(commands.Cog):
             msg = 'Error in PokemonDuel.\n'
             self.log.exception(msg)
             self.bot.dispatch('flamecogs_game_error', battle, exc)
-            await battle.ctx.send(
+            await battle.channel.send(
                 'A fatal error has occurred, shutting down.\n'
                 'Please have the bot owner copy the error from console '
                 'and post it in the support channel of <https://discord.gg/bYqCjvu>.'
@@ -298,17 +290,41 @@ class PokemonDuel(commands.Cog):
     
     async def _start_duel(self, ctx, opponent: discord.Member, *, inverse_battle=False):
         """Runs a duel."""
-        if not await self._get_opponent(ctx, opponent, "an inverse battle" if inverse_battle else "a duel"):
+        if opponent.id == ctx.author.id:
+            await ctx.send("You cannot duel yourself!")
+            return
+        if opponent.bot:
+            await ctx.send("You cannot duel a bot!")
+            return
+        
+        view = DuelAcceptView(ctx, opponent)
+        battle_type = "an inverse battle" if inverse_battle else "a duel"
+        initial_message = await ctx.send(
+            f"{opponent.mention} You have been challenged to {battle_type} by {ctx.author.name}!\n",
+            view=view
+        )
+        view.message = initial_message
+        channel = ctx.channel
+        if (
+            await self.config.guild(ctx.guild).useThreads()
+            and ctx.channel.permissions_for(ctx.guild.me).create_public_threads
+        ):
+            channel = await initial_message.create_thread(
+                name='PokemonDuel',
+                reason='Automated thread for PokemonDuel.',
+            )
+        await view.wait()
+        if not view.confirm:
             return
         trainers = []
         for player in (ctx.author, opponent):
             party = await self.config.member(player).party()
             if not party:
-                await ctx.send(f"{player} has not setup their party yet!\nSet one with `{ctx.prefix}pokemonduels party set`.")
+                await channel.send(f"{player} has not setup their party yet!\nSet one with `{ctx.prefix}pokemonduels party set`.")
                 return
             party = [await DuelPokemon.create(ctx, p) for p in party]
             trainers.append(MemberTrainer(player, party))
-        battle = Battle(ctx, *trainers, inverse_battle=inverse_battle) # pylint: disable=E1120
+        battle = Battle(ctx, channel, *trainers, inverse_battle=inverse_battle) # pylint: disable=E1120
         preview_view = await generate_team_preview(battle)
         await battle.trainer1.event.wait()
         await battle.trainer2.event.wait()
@@ -428,3 +444,36 @@ class PokemonDuel(commands.Cog):
             desc += f"`EVs:`|`{hpev:3d}`|`{atkev:3d}`|`{defev:3d}`|`{spatkev:3d}`|`{spdefev:3d}`|`{speedev:3d}`\n"
             
             embed.add_field(name=title, value=desc, inline=bool(idx % 2))
+
+    @commands.guild_only()
+    @commands.guildowner()
+    @commands.group(invoke_without_command=True)
+    async def pokemonduelset(self, ctx):
+        """Config options for pokemon duels."""
+        await ctx.send_help()
+        cfg = await self.config.guild(ctx.guild).all()
+        msg = (
+            "Game contained to a thread: {useThreads}\n"
+        ).format_map(cfg)
+        await ctx.send(f"```py\n{msg}```")
+
+    @pokemonduelset.command()
+    async def thread(self, ctx, value: bool=None):
+        """
+        Set if a thread should be created per-game to contain game messages.
+        
+        Defaults to False.
+        This value is server specific.
+        """
+        if value is None:
+            v = await self.config.guild(ctx.guild).useThreads()
+            if v:
+                await ctx.send("The game is currently run in a per-game thread.")
+            else:
+                await ctx.send("The game is not currently run in a thread.")
+        else:
+            await self.config.guild(ctx.guild).useThreads.set(value)
+            if value:
+                await ctx.send("The game will now be run in a per-game thread.")
+            else:
+                await ctx.send("The game will not be run in a thread.")

@@ -77,6 +77,12 @@ Defaults to `True`.
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
+**`[p]battleshipset thread [value]`**  
+Set if a thread should be created per-game to contain game messages.  
+Defaults to `False`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
 ## Deepfry
 
 This cog lets you deepfry and nuke images. It has a configurable chance to deepfry any image posted automatically and users can choose to deepfry or nuke images.  
@@ -392,6 +398,12 @@ Defaults to `1500`.
 This command is only usable by the server owner and bot owner.  
 This value is server specific.
 
+**`[p]monopolyset thread [value]`**  
+Set if a thread should be created per-game to contain game messages.  
+Defaults to `False`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
 **`[p]monopolyset timeout [value]`**  
 Set the amount of time before the game times out.  
 Value is in seconds.  
@@ -490,6 +502,16 @@ In order to set your party, you will need to create a team on Pokemon Showdown T
 
 **`[p]pokemonduel party list`**  
 View the pokemon currently in your party.
+
+**`[p]pokemonduelset <argument>`**  
+Config options for pokemon duel.  
+This command is only usable by the server owner and bot owner.
+
+**`[p]pokemonduelset thread [value]`**  
+Set if a thread should be created per-game to contain game messages.  
+Defaults to `False`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
 
 ## SimpleEmbed
 

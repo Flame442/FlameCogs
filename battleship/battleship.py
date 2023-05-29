@@ -16,29 +16,39 @@ class Battleship(commands.Cog):
 		self.config.register_guild(
 			extraHit = True,
 			doMention = False,
-			doImage = True
+			doImage = True,
+			useThreads = False,
 		)
 	
 	@commands.guild_only()
 	@commands.command()
 	async def battleship(self, ctx):
 		"""Start a game of battleship."""
-		if [game for game in self.games if game.ctx.channel == ctx.channel]:
+		if [game for game in self.games if game.channel == ctx.channel]:
 			return await ctx.send('A game is already running in this channel.')
 		view = GetPlayersView(ctx, 2)
-		await ctx.send(view.generate_message(), view=view)
+		initial_message = await ctx.send(view.generate_message(), view=view)
+		channel = ctx.channel
+		if (
+			await self.config.guild(ctx.guild).useThreads()
+			and ctx.channel.permissions_for(ctx.guild.me).create_public_threads
+		):
+			channel = await initial_message.create_thread(
+				name='Battleship',
+				reason='Automated thread for Battleship.',
+			)
 		await view.wait()
 		players = view.players
 		if len(players) < 2:
-			return await ctx.send('Nobody else wants to play, shutting down.')
+			return await channel.send('Nobody else wants to play, shutting down.')
 		players = players[:2]
-		if [game for game in self.games if game.ctx.channel == ctx.channel]:
-			return await ctx.send('Another game started in this channel while setting up.')
-		await ctx.send(
+		if [game for game in self.games if game.channel == channel]:
+			return await channel.send('Another game started in this channel while setting up.')
+		await channel.send(
 			'A game of battleship will be played between '
 			f'{" and ".join(p.display_name for p in players)}.'
 		)
-		game = BattleshipGame(ctx, self.bot, self, *players)
+		game = BattleshipGame(ctx, channel, *players)
 		self.games.append(game)
 	
 	@commands.guild_only()
@@ -47,7 +57,7 @@ class Battleship(commands.Cog):
 	async def battleshipstop(self, ctx):
 		"""Stop the game of battleship in this channel."""
 		wasGame = False
-		for game in [g for g in self.games if g.ctx.channel == ctx.channel]:
+		for game in [g for g in self.games if g.channel == ctx.channel]:
 			game._task.cancel()
 			wasGame = True
 		if wasGame: #prevent multiple messages if more than one game exists for some reason
@@ -64,7 +74,7 @@ class Battleship(commands.Cog):
 		"""
 		if channel is None:
 			channel = ctx.channel
-		game = [game for game in self.games if game.ctx.channel.id == channel.id]
+		game = [game for game in self.games if game.channel.id == channel.id]
 		if not game:
 			return await ctx.send(
 				'There is no game in that channel or that channel does not exist.'
@@ -86,7 +96,8 @@ class Battleship(commands.Cog):
 		msg = (
 			'Extra shot on hit: {extraHit}\n'
 			'Mention on turn: {doMention}\n'
-			'Display the board using an image: {doImage}'
+			'Display the board using an image: {doImage}\n'
+			'Game contained to a thread: {useThreads}\n'
 		).format_map(cfg)
 		await ctx.send(f'```py\n{msg}```')
 	
@@ -153,6 +164,27 @@ class Battleship(commands.Cog):
 			else:
 				await ctx.send('The board will now be displayed using text.')
 	
+	@battleshipset.command()
+	async def thread(self, ctx, value: bool=None):
+		"""
+		Set if a thread should be created per-game to contain game messages.
+		
+		Defaults to False.
+		This value is server specific.
+		"""
+		if value is None:
+			v = await self.config.guild(ctx.guild).useThreads()
+			if v:
+				await ctx.send('The game is currently run in a per-game thread.')
+			else:
+				await ctx.send('The game is not currently run in a thread.')
+		else:
+			await self.config.guild(ctx.guild).useThreads.set(value)
+			if value:
+				await ctx.send('The game will now be run in a per-game thread.')
+			else:
+				await ctx.send('The game will not be run in a thread.')
+	
 	def cog_unload(self):
 		return [game._task.cancel() for game in self.games]
 	
@@ -173,7 +205,10 @@ class GetPlayersView(discord.ui.View):
 		msg = ""
 		for idx, player in enumerate(self.players, start=1):
 			msg += f"Player {idx} - {player.display_name}\n"
-		msg += f"\nClick the `Join Game` button to join. Up to {self.max_players} players can join. To start with less than that many, use the `Start Game` button to begin."
+		msg += (
+			f"\nClick the `Join Game` button to join. Up to {self.max_players} players can join. "
+			"To start with less than that many, use the `Start Game` button to begin."
+		)
 		return msg
 	
 	async def interaction_check(self, interaction):
@@ -181,7 +216,10 @@ class GetPlayersView(discord.ui.View):
 			await interaction.response.send_message(content='The game is full.', ephemeral=True)
 			return False
 		if interaction.user.id != self.ctx.author.id and interaction.user in self.players:
-			await interaction.response.send_message(content='You have already joined the game. Please wait for others to join or for the game to be started.', ephemeral=True)
+			await interaction.response.send_message(
+				content='You have already joined the game. Please wait for others to join or for the game to be started.',
+				ephemeral=True,
+			)
 			return False
 		return True
 	
@@ -189,7 +227,10 @@ class GetPlayersView(discord.ui.View):
 	async def join(self, interaction: discord.Interaction, button: discord.ui.Button):
 		"""Allows a user not currently added to join."""
 		if interaction.user.id == self.ctx.author.id:
-			await interaction.response.send_message(content='You have already joined the game. You can add AI players or start the game early with the other two buttons.', ephemeral=True)
+			await interaction.response.send_message(
+				content='You have already joined the game. You can add AI players or start the game early with the other two buttons.',
+				ephemeral=True,
+			)
 			return
 		self.players.append(interaction.user)
 		self.start.disabled = False
@@ -216,7 +257,10 @@ class GetPlayersView(discord.ui.View):
 	async def start(self, interaction: discord.Interaction, button: discord.ui.Button):
 		"""Starts the game with less than max_players players."""
 		if interaction.user.id != self.ctx.author.id:
-			await interaction.response.send_message(content='Only the host can use this button.', ephemeral=True)
+			await interaction.response.send_message(
+				content='Only the host can use this button.',
+				ephemeral=True,
+			)
 			return
 		await interaction.response.edit_message(view=None)
 		self.stop()
