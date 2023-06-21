@@ -838,6 +838,7 @@ class WordStats(commands.Cog):
 	
 	def cog_unload(self):
 		self._executor.shutdown()
+		self._connection.close()
 	
 	async def red_delete_data_for_user(self, *, requester, user_id):
 		"""Delete all data from a particular user."""
