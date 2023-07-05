@@ -4,7 +4,7 @@
     "name" : "WordStats",
     "short" : "Tracks commonly used words.",
     "requirements" : [],
-    "description" : "Tracks the most commonly used words by every member and in every server.",
+    "description" : "Tracks the most commonly used words by every member and in every server. The number of times a word has been said by a particular member, server, or globally can be retrived from [p]wordstats. The users with the most words said in a particular server or globally can be retrieved from [p]topchatters. The users who have said a word more frequently compared to other users in a particular server or globally can be retrieved from [p]topratio.",
     "tags" : ["fun", "utility", "stats"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],

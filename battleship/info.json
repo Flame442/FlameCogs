@@ -1,10 +1,10 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing battleship. Use `[p]battleship` to play.\nThis cog comes with bundled data.",
     "name" : "Battleship",
     "short" : "Play battleship with a friend.",
     "requirements" : ["pillow"],
-    "description" : "Play battleship with a friend.",
+    "description" : "Play battleship against a friend or an AI opponent. Generates an image to represent the board state. Run [p]battleship to play!",
     "tags" : ["fun", "games", "battleship"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],

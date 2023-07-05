@@ -1,10 +1,10 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing gameroles. Use `[p]help gameroles` for further help.",
     "name" : "GameRoles",
     "short" : "Grant roles when a user is playing a specific game.",
     "requirements" : [],
-    "description" : "Grant roles when a user is playing a specific game.",
+    "description" : "Grant roles when a user is playing a specific game, and take them away when they stop. This can be used to create channels that can only be accessed by people who are currently playing a certain game, or who have ever played a certain game. This cog detects games by checking the status of the user, so users who use the privacy setting to disable statuses will not be granted roles. Run [p]gameroles to configure!",
     "tags" : ["utility", "role"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],

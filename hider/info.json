@@ -1,10 +1,10 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing hider. Commands are all under the group command `[p]hider`.",
     "name" : "Hider",
     "short" : "Hide commands from users in help.",
     "requirements" : [],
-    "description" : "Hide commands from users in help.",
+    "description" : "Hide commands from users in help. Running [p]hider hide allows a particular command to be hidden from the output of [p]help. This does not prevent the command from being run, use [p]command disable for that instead. If [p]helpset showhidden is enabled, this cog will be unable to hide commands.",
     "tags" : ["utility"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],

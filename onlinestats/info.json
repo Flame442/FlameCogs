@@ -1,10 +1,10 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing onlinestats. Commands are `[p]onlinestats` and `[p]onlineinfo`.",
     "name" : "OnlineStats",
-    "short" : "Information about what devices people are using to run discord.",
+    "short" : "View information about whether users on your server are using discord on desktop or mobile.",
     "requirements" : [],
-    "description" : "Information about what devices people are using to run discord.",
+    "description" : "View information about whether users on your server are using discord on desktop or mobile, or what device a particular user is using. Run [p]onlinestats or [p]onlineinfo to see this information.",
     "tags" : ["utility", "online"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],

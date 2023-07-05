@@ -1,11 +1,11 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing SimpleEmbed. Use `[p]sendembed` to send embeds.",
     "name" : "SimpleEmbed",
     "short" : "Simply send embeds.",
     "requirements" : [],
-    "description" : "Simply send embeds.",
-    "tags" : ["utility", "embed"],
+    "description" : "Create and send simple embeds through the bot. Only the description, color, and large image fields of the embed can be modified. Run [p]sendembed to create an embed!",
+    "tags" : ["utility", "embed", "say"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],
     "end_user_data_statement": "This cog does not store user data."

@@ -1,10 +1,10 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing Pokemon Duels. Use `[p]help pokemonduel` to get started.\nThis cog comes with bundled data.",
     "name" : "PokemonDuel",
     "short" : "Battle in a Pokemon Duel with another member of your server.",
     "requirements" : [],
-    "description" : "Battle in a Pokemon Duel with another member of your server.",
+    "description" : "Battle in a Pokemon Duel with another member of your server. Supports all moves, abilities, and pokemon from generation 8, with partial item support and partial support for generation 9 additions. Also supports the inverse type effectiveness format. Run [p]pokemonduel to play!",
     "tags" : ["fun", "games", "pokemon"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],

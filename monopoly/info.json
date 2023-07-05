@@ -1,10 +1,10 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing monopoly. Use `[p]monopoly` to play.\nThis cog comes with bundled data.",
     "name" : "Monopoly",
     "short" : "Play a game of monopoly.",
     "requirements" : ["pillow"],
-    "description" : "Play a game of monopoly with members of your server.",
+    "description" : "Play a game of monopoly with members of your server, or against AI opponents. Generates an image to represent the board state. Many house rules can be configured to match any ruleset. Run [p]monopoly to play!",
     "tags" : ["fun", "games", "monopoly"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],

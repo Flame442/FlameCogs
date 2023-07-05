@@ -1,10 +1,10 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing giftaway. Use `[p]help GiftAway`.",
     "name" : "GiftAway",
     "short" : "Create first come, first serve key giveaways.",
     "requirements" : [],
-    "description" : "Create first come, first serve key giveaways.",
+    "description" : "Create first come, first serve key giveaways. The command [p]giftaway can be used used with the name of a game and a list of keys to generate an embed that allows users to click a button to be granted one of the listed keys. The keys are given immediately to the first users that request them, they are not raffled off. If an IGDB api key is set, the embed will contain a description of the game and its box art.",
     "tags" : ["utility"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0]

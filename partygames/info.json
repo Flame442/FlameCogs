@@ -1,10 +1,10 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing partygames. Use `[p]help partygames` for more info.\nThis cog comes with bundled data.",
     "name" : "PartyGames",
     "short" : "Chat games focused on coming up with words from 3 letters.",
     "requirements" : [],
-    "description" : "Chat games focused on coming up with words from 3 letters.",
+    "description" : "Chat games focused on coming up with words from 3 letters. Contains gamemodes for writing a word the fastest, writing the longest word, writing the most words, or being able to keep writing words without getting three strikes. Run [p]partygames to play!",
     "tags" : ["fun", "games", "chat"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],

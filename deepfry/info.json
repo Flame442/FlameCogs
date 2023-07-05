@@ -1,10 +1,10 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing deepfry. Use `[p]deepfry` or `[p]nuke`.",
     "name" : "Deepfry",
     "short" : "Deepfry or nuke images.",
     "requirements" : ["pillow"],
-    "description" : "Deepfry or nuke images passively and actively.",
+    "description" : "Apply filters to an image to deepfry or nuke it. Supports frying images automatically as they are sent, the most recent image, a linked image, an attached image, and profile pictures. Run [p]deepfry and [p]nuke to fry!",
     "tags" : ["fun", "deepfry", "nuke", "fry"],
     "min_bot_version": "3.5.0.dev1",
     "min_python_version": [3, 6, 0],
