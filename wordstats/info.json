@@ -1,5 +1,5 @@
 {
-    "author" : ["Flame442 (Flame#2941)"],
+    "author" : ["Flame442"],
     "install_msg" : "Thanks for installing wordstats. Use `[p]wordstats`.\n**WARNING**: This cog has the potential to create a lot of data and have a high I/O usage if your bot is in a large number of servers. Please remove this cog if you do not consent to that.",
     "name" : "WordStats",
     "short" : "Tracks commonly used words.",
