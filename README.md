@@ -40,6 +40,7 @@ Name | Description
 [PokemonDuel](../master/README.md#pokemonduel) | Play a pokemon battle against another member of your server.
 [SimpleEmbed](../master/README.md#simpleembed) | Simply create embeds.
 [Stocks](../master/README.md#stocks) | Buy and sell stocks with bot currency.
+[UTTT](../master/README.md#uttt) | Play ultimate tic tac toe against another member of your server.
 [Wordstats](../master/README.md#wordstats) | Track commonly used words by server and member.
 
 ## Battleship
@@ -557,6 +558,22 @@ List your stocks.
 
 **`[p]stocks leaderboard`**  
 Show a leaderboard of total stock value by user.
+
+## UTTT
+
+Play ultimate tic tac toe against another member of your server.
+
+### Usage
+
+**`[p]uttt`**  
+Play a game of ultimate tic tac toe.  
+You may only play in the sub board that corresponds to the last spot your opponent played.  
+If you are sent to a sub board that has been finished, you can choose any sub board.  
+First to win three sub boards in a row wins.
+
+**`[p]utttstop`**  
+Stop the game of ultimate tic tac toe in the current channel.  
+This command is only usable by the server owner and bot owner.
 
 ## Wordstats
 
