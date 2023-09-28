@@ -320,7 +320,7 @@ class PokemonDuel(commands.Cog):
         for player in (ctx.author, opponent):
             party = await self.config.member(player).party()
             if not party:
-                await channel.send(f"{player} has not setup their party yet!\nSet one with `{ctx.prefix}pokemonduels party set`.")
+                await channel.send(f"{player} has not setup their party yet!\nSet one with `{ctx.prefix}pokemonduel party set`.")
                 return
             party = [await DuelPokemon.create(ctx, p) for p in party]
             trainers.append(MemberTrainer(player, party))
@@ -379,7 +379,7 @@ class PokemonDuel(commands.Cog):
         """View the pokemon currently in your party."""
         party = await self.config.member(ctx.author).party()
         if len(party) == 0:
-            await ctx.send(f"You haven't setup your party yet!\nSet one with `{ctx.prefix}pokemonduels party set`.")
+            await ctx.send(f"You haven't setup your party yet!\nSet one with `{ctx.prefix}pokemonduel party set`.")
             return
         embed = discord.Embed(
             title=f"{ctx.author.display_name}'s Party",
