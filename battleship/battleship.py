@@ -32,11 +32,15 @@ class Battleship(commands.Cog):
 		if (
 			await self.config.guild(ctx.guild).useThreads()
 			and ctx.channel.permissions_for(ctx.guild.me).create_public_threads
+			and ctx.channel.type is discord.ChannelType.text
 		):
-			channel = await initial_message.create_thread(
-				name='Battleship',
-				reason='Automated thread for Battleship.',
-			)
+			try:
+				channel = await initial_message.create_thread(
+					name='Battleship',
+					reason='Automated thread for Battleship.',
+				)
+			except discord.HTTPException:
+				pass
 		await view.wait()
 		players = view.players
 		if len(players) < 2:

@@ -67,11 +67,15 @@ class Monopoly(commands.Cog):
 			if (
 				await self.config.guild(ctx.guild).useThreads()
 				and ctx.channel.permissions_for(ctx.guild.me).create_public_threads
+				and ctx.channel.type is discord.ChannelType.text
 			):
-				channel = await initial_message.create_thread(
-					name='Monopoly',
-					reason='Automated thread for Monopoly.',
-				)
+				try:
+					channel = await initial_message.create_thread(
+						name='Monopoly',
+						reason='Automated thread for Monopoly.',
+					)
+				except discord.HTTPException:
+					pass
 			game = MonopolyGame(ctx, channel, data=data)
 			self.games.append(game)
 		else:
@@ -80,11 +84,15 @@ class Monopoly(commands.Cog):
 			if (
 				await self.config.guild(ctx.guild).useThreads()
 				and ctx.channel.permissions_for(ctx.guild.me).create_public_threads
+				and ctx.channel.type is discord.ChannelType.text
 			):
-				channel = await initial_message.create_thread(
-					name='Monopoly',
-					reason='Automated thread for Monopoly.',
-				)
+				try:
+					channel = await initial_message.create_thread(
+						name='Monopoly',
+						reason='Automated thread for Monopoly.',
+					)
+				except discord.HTTPException:
+					pass
 			await view.wait()
 			players = view.players
 			if len(players) < 2:

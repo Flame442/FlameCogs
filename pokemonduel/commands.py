@@ -308,11 +308,15 @@ class PokemonDuel(commands.Cog):
         if (
             await self.config.guild(ctx.guild).useThreads()
             and ctx.channel.permissions_for(ctx.guild.me).create_public_threads
+            and ctx.channel.type is discord.ChannelType.text
         ):
-            channel = await initial_message.create_thread(
-                name='PokemonDuel',
-                reason='Automated thread for PokemonDuel.',
-            )
+            try:
+                channel = await initial_message.create_thread(
+                    name='PokemonDuel',
+                    reason='Automated thread for PokemonDuel.',
+                )
+            except discord.HTTPException:
+                pass
         await view.wait()
         if not view.confirm:
             return
