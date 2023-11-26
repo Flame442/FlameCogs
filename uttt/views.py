@@ -1,6 +1,30 @@
 import discord
 
 
+class ConfirmView(discord.ui.View):
+	def __init__(self, member: discord.Member):
+		super().__init__(timeout=60)
+		self.member = member
+		self.result = False
+
+	async def interaction_check(self, interaction):
+		if interaction.user.id != self.member.id:
+			await interaction.response.send_message(content='You are not allowed to interact with this button.', ephemeral=True)
+			return False
+		return True
+
+	@discord.ui.button(label='Accept', style=discord.ButtonStyle.green)
+	async def yes(self, interaction: discord.Interaction, button: discord.ui.Button):
+		await interaction.response.edit_message(view=None)
+		self.result = True
+		self.stop()
+
+	@discord.ui.button(label='Deny', style=discord.ButtonStyle.red)
+	async def no(self, interaction: discord.Interaction, button: discord.ui.Button):
+		await interaction.response.edit_message(view=None)
+		self.stop()
+
+
 class GetPlayersView(discord.ui.View):
     """View to gather the players that will play in a game."""
     def __init__(self, ctx, max_players):
@@ -56,6 +80,12 @@ class GetPlayersView(discord.ui.View):
     #@discord.ui.button(label="Add an AI", style=discord.ButtonStyle.blurple)
     #async def ai(self, interaction: discord.Interaction, button: discord.ui.Button):
     #    """Fills the next player slot with an AI player."""
+    #    if interaction.user.id != self.ctx.author.id:
+    #        await interaction.response.send_message(
+    #            content='Only the host can use this button.',
+    #            ephemeral=True,
+    #        )
+    #        return
     #    self.players.append(<AISubclass>(self.ctx.guild.me.display_name))
     #    self.start.disabled = False
     #    if len(self.players) >= self.max_players:

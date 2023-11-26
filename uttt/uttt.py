@@ -3,7 +3,7 @@ from redbot.core import commands
 import asyncio
 import logging
 from .game import UTTTGame
-from .views import GetPlayersView
+from .views import ConfirmView, GetPlayersView
 
 
 class UTTT(commands.Cog):
@@ -15,7 +15,7 @@ class UTTT(commands.Cog):
     
     @commands.guild_only()
     @commands.command()
-    async def uttt(self, ctx):
+    async def uttt(self, ctx, opponent: discord.Member=None):
         """
         Play a game of ultimate tic tac toe.
         
@@ -28,11 +28,20 @@ class UTTT(commands.Cog):
             await ctx.send('A game is already running in this channel.')
             return
         
-        view = GetPlayersView(ctx, 2)
-        initial_message = await ctx.send(view.generate_message(), view=view)
-        await view.wait()
+        if opponent is None:
+            view = GetPlayersView(ctx, 2)
+            initial_message = await ctx.send(view.generate_message(), view=view)
+            await view.wait()
+            players = view.players
+        else:
+            view = ConfirmView(opponent)
+            await ctx.send(f'{opponent.mention} You have been challenged to a game of UTTT by {ctx.author.display_name}!', view=view)
+            await view.wait()
+            if not view.result:
+                await ctx.send(f'{opponent.display_name} does not want to play, shutting down.')
+                return
+            players = [ctx.author, opponent]
         
-        players = view.players
         if len(players) < 2:
             await ctx.send('Nobody else wants to play, shutting down.')
             return

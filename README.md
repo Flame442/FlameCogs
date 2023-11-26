@@ -49,7 +49,7 @@ This cog will let you play battleship against another member of your server.
 
 ### Usage
 
-**`[p]battleship`**  
+**`[p]battleship [opponent]`**  
 Begin a game of battleship.
 
 **`[p]battleshipboard <channel>`**  
@@ -565,7 +565,7 @@ Play ultimate tic tac toe against another member of your server.
 
 ### Usage
 
-**`[p]uttt`**  
+**`[p]uttt [opponent]`**  
 Play a game of ultimate tic tac toe.  
 You may only play in the sub board that corresponds to the last spot your opponent played.  
 If you are sent to a sub board that has been finished, you can choose any sub board.  

@@ -5,6 +5,7 @@ from redbot.core import checks
 import asyncio
 from .game import BattleshipGame
 from .ai import BattleshipAI
+from .views import ConfirmView, GetPlayersView
 
 
 class Battleship(commands.Cog):
@@ -22,12 +23,18 @@ class Battleship(commands.Cog):
 	
 	@commands.guild_only()
 	@commands.command()
-	async def battleship(self, ctx):
+	async def battleship(self, ctx, opponent: discord.Member=None):
 		"""Start a game of battleship."""
 		if [game for game in self.games if game.channel == ctx.channel]:
 			return await ctx.send('A game is already running in this channel.')
-		view = GetPlayersView(ctx, 2)
-		initial_message = await ctx.send(view.generate_message(), view=view)
+		
+		if opponent is None:
+			view = GetPlayersView(ctx, 2)
+			initial_message = await ctx.send(view.generate_message(), view=view)
+		else:
+			view = ConfirmView(opponent)
+			initial_message = await ctx.send(f'{opponent.mention} You have been challenged to a game of Battleship by {ctx.author.display_name}!', view=view)
+
 		channel = ctx.channel
 		if (
 			await self.config.guild(ctx.guild).useThreads()
@@ -41,13 +48,24 @@ class Battleship(commands.Cog):
 				)
 			except discord.HTTPException:
 				pass
+
 		await view.wait()
-		players = view.players
+
+		if opponent is None:
+			players = view.players
+		else:
+			if not view.result:
+				await channel.send(f'{opponent.display_name} does not want to play, shutting down.')
+				return
+			players = [ctx.author, opponent]
+
 		if len(players) < 2:
 			return await channel.send('Nobody else wants to play, shutting down.')
 		players = players[:2]
+		
 		if [game for game in self.games if game.channel == channel]:
 			return await channel.send('Another game started in this channel while setting up.')
+		
 		await channel.send(
 			'A game of battleship will be played between '
 			f'{" and ".join(p.display_name for p in players)}.'
@@ -195,76 +213,3 @@ class Battleship(commands.Cog):
 	async def red_delete_data_for_user(self, **kwargs):
 		"""Nothing to delete."""
 		return
-
-class GetPlayersView(discord.ui.View):
-	"""View to gather the players that will play in a game."""
-	def __init__(self, ctx, max_players):
-		super().__init__(timeout=60)
-		self.ctx = ctx
-		self.max_players = max_players
-		self.players = [ctx.author]
-	
-	def generate_message(self):
-		"""Generates a message to show the players currently added to the game."""
-		msg = ""
-		for idx, player in enumerate(self.players, start=1):
-			msg += f"Player {idx} - {player.display_name}\n"
-		msg += (
-			f"\nClick the `Join Game` button to join. Up to {self.max_players} players can join. "
-			"To start with less than that many, use the `Start Game` button to begin."
-		)
-		return msg
-	
-	async def interaction_check(self, interaction):
-		if len(self.players) >= self.max_players:
-			await interaction.response.send_message(content='The game is full.', ephemeral=True)
-			return False
-		if interaction.user.id != self.ctx.author.id and interaction.user in self.players:
-			await interaction.response.send_message(
-				content='You have already joined the game. Please wait for others to join or for the game to be started.',
-				ephemeral=True,
-			)
-			return False
-		return True
-	
-	@discord.ui.button(label="Join Game", style=discord.ButtonStyle.blurple)
-	async def join(self, interaction: discord.Interaction, button: discord.ui.Button):
-		"""Allows a user not currently added to join."""
-		if interaction.user.id == self.ctx.author.id:
-			await interaction.response.send_message(
-				content='You have already joined the game. You can add AI players or start the game early with the other two buttons.',
-				ephemeral=True,
-			)
-			return
-		self.players.append(interaction.user)
-		self.start.disabled = False
-		if len(self.players) >= self.max_players:
-			view = None
-			self.stop()
-		else:
-			view = self
-		await interaction.response.edit_message(content=self.generate_message(), view=view)
-	
-	@discord.ui.button(label="Add an AI", style=discord.ButtonStyle.blurple)
-	async def ai(self, interaction: discord.Interaction, button: discord.ui.Button):
-		"""Fills the next player slot with an AI player."""
-		self.players.append(BattleshipAI(self.ctx.guild.me.display_name))
-		self.start.disabled = False
-		if len(self.players) >= self.max_players:
-			view = None
-			self.stop()
-		else:
-			view = self
-		await interaction.response.edit_message(content=self.generate_message(), view=view)
-	
-	@discord.ui.button(label="Start Game", style=discord.ButtonStyle.green, disabled=True)
-	async def start(self, interaction: discord.Interaction, button: discord.ui.Button):
-		"""Starts the game with less than max_players players."""
-		if interaction.user.id != self.ctx.author.id:
-			await interaction.response.send_message(
-				content='Only the host can use this button.',
-				ephemeral=True,
-			)
-			return
-		await interaction.response.edit_message(view=None)
-		self.stop()
