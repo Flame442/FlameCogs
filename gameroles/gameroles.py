@@ -159,10 +159,10 @@ class GameRoles(commands.Cog):
 	@gameroles.command()
 	async def currentactivity(self, ctx):
 		"""Get your current activity."""
-		if ctx.message.author.activity is None:
+		if not ctx.message.author.activities:
 			activity = 'None'
 		else:
-			activity = ctx.message.author.activity.name
+			activity = '\n'.join(a.name for a in ctx.message.author.activities)
 		await ctx.send(f'```\n{activity}```')
 
 	@gameroles.command()
