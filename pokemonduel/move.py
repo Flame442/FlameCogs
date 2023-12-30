@@ -2931,9 +2931,9 @@ class Move():
             return False
         if self.is_powder_or_spore() and (ElementType.GRASS in defender.type_ids or defender.ability(attacker=attacker, move=self) == Ability.OVERCOAT or defender.held_item == "safety-goggles"):
             return False
-        if battle.weather.get() == "h-sun" and self.get_type(attacker, defender, battle) == ElementType.WATER:
+        if battle.weather.get() == "h-sun" and self.get_type(attacker, defender, battle) == ElementType.WATER and self.damage_class != DamageClass.STATUS:
             return False
-        if battle.weather.get() == "h-rain" and self.get_type(attacker, defender, battle) == ElementType.FIRE:
+        if battle.weather.get() == "h-rain" and self.get_type(attacker, defender, battle) == ElementType.FIRE and self.damage_class != DamageClass.STATUS:
             return False
         if attacker.disable.active() and attacker.disable.item is self:
             return False
