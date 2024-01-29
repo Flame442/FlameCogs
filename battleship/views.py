@@ -1,4 +1,5 @@
 import discord
+from .ai import BattleshipAI
 
 
 class ConfirmView(discord.ui.View):
