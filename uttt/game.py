@@ -89,7 +89,7 @@ class UTTTGame():
         )
 
     def generate_board(self):
-        board = ''
+        board = '--------=UltimateTicTacToe=--------\n'
         sub_tile = 0 # Which row in each sub board is being printed
         # 9 game tile rows + 8 separator rows
         for n in range(1, 18):
