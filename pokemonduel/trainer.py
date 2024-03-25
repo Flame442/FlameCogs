@@ -117,25 +117,29 @@ class Trainer():
         
     def valid_swaps(self, defender, battle, *, check_trap=True):
         """Returns a list of indexes of pokes in the party that can be swapped to."""
-        if self.current_pokemon is not None and ElementType.GHOST in self.current_pokemon.type_ids:
-            check_trap = False
-        if check_trap and self.current_pokemon is not None:
-            if self.current_pokemon.trapping:
-                return []
-            if self.current_pokemon.ingrain:
-                return []
-            if self.current_pokemon.fairy_lock.active() or defender.fairy_lock.active():
-                return []
-            if self.current_pokemon.no_retreat:
-                return []
-            if self.current_pokemon.bind.active() and not self.current_pokemon.substitute:
-                return []
-            if defender.ability() == Ability.SHADOW_TAG and not self.current_pokemon.ability() == Ability.SHADOW_TAG:
-                return []
-            if defender.ability() == Ability.MAGNET_PULL and ElementType.STEEL in self.current_pokemon.type_ids:
-                return []
-            if defender.ability() == Ability.ARENA_TRAP and self.current_pokemon.grounded(battle):
-                return []
+        if self.current_pokemon is not None:
+            if ElementType.GHOST in self.current_pokemon.type_ids:
+                check_trap = False
+            if self.current_pokemon.held_item == "shed-shell":
+                check_trap = False
+
+            if check_trap:
+                if self.current_pokemon.trapping:
+                    return []
+                if self.current_pokemon.ingrain:
+                    return []
+                if self.current_pokemon.fairy_lock.active() or defender.fairy_lock.active():
+                    return []
+                if self.current_pokemon.no_retreat:
+                    return []
+                if self.current_pokemon.bind.active() and not self.current_pokemon.substitute:
+                    return []
+                if defender.ability() == Ability.SHADOW_TAG and not self.current_pokemon.ability() == Ability.SHADOW_TAG:
+                    return []
+                if defender.ability() == Ability.MAGNET_PULL and ElementType.STEEL in self.current_pokemon.type_ids:
+                    return []
+                if defender.ability() == Ability.ARENA_TRAP and self.current_pokemon.grounded(battle):
+                    return []
         result = [idx for idx, poke in enumerate(self.party) if poke.hp > 0]
         if self.last_idx in result:
             result.remove(self.last_idx)

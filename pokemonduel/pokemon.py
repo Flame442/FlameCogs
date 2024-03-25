@@ -258,7 +258,7 @@ class DuelPokemon():
         #Boolean - stores whether this poke is unable to use its held item for the rest of the battle due to corrosive gas.
         self.corrosive_gas = False
         #Boolean - stores whether this poke has had a stat increase this turn.
-        self.stat_incresed = False
+        self.stat_increased = False
         #Boolean - stores whether this poke has had a stat decrease this turn.
         self.stat_decreased = False
         #Boolean - stores whether this poke has had its flying type surpressed this turn.
@@ -841,7 +841,7 @@ class DuelPokemon():
         self.flash_fire = False
         self.truant_turn = 0
         self.cud_chew = ExpiringEffect(0)
-        self.stat_incresed = False
+        self.stat_increased = False
         self.stat_decreased = False
         self.roost = False
         self.octolock = False
@@ -911,7 +911,7 @@ class DuelPokemon():
         self.fairy_lock.next_turn()
         self.flinched = False
         self.truant_turn += 1
-        self.stat_incresed = False
+        self.stat_increased = False
         self.stat_decreased = False
         self.roost = False
         
@@ -1965,6 +1965,7 @@ class DuelPokemon():
         else:
             raise ValueError(f"invalid stat {stat}")
         
+        # Cap stat stages within -6 to 6
         if delta < 0:
             #-6 -5 -4 ..  2
             # 0 -1 -2 .. -8
@@ -1979,6 +1980,8 @@ class DuelPokemon():
             delta = min(delta, cap)
             if delta == 0:
                 return f"{self.name}'s {stat} won't go any higher!\n"
+        
+        # Prevent stat changes
         if delta < 0 and attacker is not self:
             if self.ability(attacker=attacker, move=move) in (Ability.CLEAR_BODY, Ability.WHITE_SMOKE, Ability.FULL_METAL_BODY):
                 ability_name = Ability(self.ability_id).pretty_name
@@ -1991,24 +1994,16 @@ class DuelPokemon():
                 return f"{self.name}'s defense stayed strong because of its big pecks!\n"
             if self.owner.mist.active() and (attacker is None or attacker.ability() != Ability.INFILTRATOR):
                 return f"The mist around {self.name}'s feet prevented its {stat} from being lowered!\n"
-            if self.ability(attacker=attacker, move=move) == Ability.DEFIANT:
-                msg += self.append_attack(2, attacker=self, source="its defiance")
-            if self.ability(attacker=attacker, move=move) == Ability.COMPETITIVE:
-                msg += self.append_spatk(2, attacker=self, source="its competitiveness")
             if self.ability(attacker=attacker, move=move) == Ability.FLOWER_VEIL and ElementType.GRASS in self.type_ids:
                 return ""
             if self.ability(attacker=attacker, move=move) == Ability.MIRROR_ARMOR and attacker is not None and check_looping:
                 msg += f"{self.name} reflected the stat change with its mirror armor!\n"
                 msg += attacker.append_stat(delta, self, None, stat, "", check_looping=False)
                 return msg
+        
+        # Remember if stats were changed for certain moves
         if delta > 0:
-            self.stat_incresed = True
-            # TODO: fix this hacky way of doing this, but probably not until multi battles...
-            battle = self.held_item.battle
-            for poke in (battle.trainer1.current_pokemon, battle.trainer2.current_pokemon):
-                if poke is not None and poke is not self and poke.ability() == Ability.OPPORTUNIST and check_looping:
-                    msg += f"{poke.name} seizes the opportunity to boost its stat with its opportunist!\n"
-                    msg += poke.append_stat(delta, poke, None, stat, "", check_looping=False)
+            self.stat_increased = True
         elif delta < 0:
             self.stat_decreased = True
         
@@ -2031,6 +2026,31 @@ class DuelPokemon():
         
         formatted_delta = min(max(delta, -3), 3)
         msg += delta_msgs[formatted_delta]
+
+        # TODO: fix this hacky way of doing this, but probably not until multi battles...
+        battle = self.held_item.battle
+
+        # Effects that happen after a pokemon gains stats
+        if delta < 0:
+            if attacker is not self:
+                if self.ability(attacker=attacker, move=move) == Ability.DEFIANT:
+                    msg += self.append_attack(2, attacker=self, source="its defiance")
+                if self.ability(attacker=attacker, move=move) == Ability.COMPETITIVE:
+                    msg += self.append_spatk(2, attacker=self, source="its competitiveness")
+            if self.held_item == "eject-pack":
+                # This assumes that neither attacker or poke are needed if not checking traps
+                swaps = self.owner.valid_swaps(..., ..., check_trap=False)
+                if swaps:
+                    msg += f"{self.name} is switched out by its eject pack!\n"
+                    self.held_item.use()
+                    msg += self.remove(battle)
+                    # This NEEDS to be here to set it to *False* rather than *None*
+                    self.owner.current_pokemon = False
+        elif delta > 0:
+            for poke in (battle.trainer1.current_pokemon, battle.trainer2.current_pokemon):
+                if poke is not None and poke is not self and poke.ability() == Ability.OPPORTUNIST and check_looping:
+                    msg += f"{poke.name} seizes the opportunity to boost its stat with its opportunist!\n"
+                    msg += poke.append_stat(delta, poke, None, stat, "", check_looping=False)
         return msg
     
     def grounded(self, battle, *, attacker=None, move=None):

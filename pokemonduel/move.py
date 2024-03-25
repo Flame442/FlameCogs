@@ -355,6 +355,21 @@ class Move():
                 msg += f"{defender.name} used its flash fire to buff its fire type moves!\n"
                 return msg
         
+        # Stat stage from type items
+        if not defender.substitute:
+            if current_type == ElementType.WATER and defender.held_item == "absorb-bulb":
+                msg += defender.append_spatk(1, attacker=defender, move=self, source="its absorb bulb")
+                defender.held_item.use()
+            if current_type == ElementType.ELECTRIC and defender.held_item == "cell-battery":
+                msg += defender.append_attack(1, attacker=defender, move=self, source="its cell battery")
+                defender.held_item.use()
+            if current_type == ElementType.WATER and defender.held_item == "luminous-moss":
+                msg += defender.append_spdef(1, attacker=defender, move=self, source="its luminous moss")
+                defender.held_item.use()
+            if current_type == ElementType.ICE and defender.held_item == "snowball":
+                msg += defender.append_attack(1, attacker=defender, move=self, source="its snowball")
+                defender.held_item.use()
+
         # Metronome
         if self.effect == 84:
             attacker.has_moved = False
@@ -640,7 +655,7 @@ class Move():
                 msg += defender.nv.apply_status("burn", battle, attacker=attacker, move=self)
         if self.effect == 168:
             msg += defender.nv.apply_status("burn", battle, attacker=attacker, move=self)
-        if self.effect == 429 and defender.stat_incresed:
+        if self.effect == 429 and defender.stat_increased:
             msg += defender.nv.apply_status("burn", battle, attacker=attacker, move=self)
         if self.effect == 37:
             status = random.choice(["burn", "freeze", "paralysis"])
@@ -1034,15 +1049,7 @@ class Move():
             msg += attacker.damage(attacker.starting_hp // 10, battle, source="its life orb")
         
         # Swap outs
-        if self.effect in (128, 154, 229, 347):
-            swaps = attacker.owner.valid_swaps(defender, battle, check_trap=False)
-            if swaps:
-                msg += f"{attacker.name} went back!\n"
-                if self.effect == 128:
-                    attacker.owner.baton_pass = BatonPass(attacker)
-                msg += attacker.remove(battle)
-                # This NEEDS to be here to set it to *False* rather than *None*
-                attacker.owner.current_pokemon = False
+        # A poke is force-swapped out before activating red-card
         if self.effect in (29, 314):
             swaps = defender.owner.valid_swaps(attacker, battle, check_trap=False)
             if not swaps:
@@ -1062,6 +1069,39 @@ class Move():
                 # Safety in case the poke dies on send out.
                 if defender.owner.current_pokemon is not None:
                     defender.owner.current_pokemon.has_moved = True
+        # A red-card forces the attacker to swap to a random poke, even if they used a switch out move
+        if defender.held_item == "red-card" and defender.hp > 0 and self.damage_class != DamageClass.STATUS:
+            swaps = attacker.owner.valid_swaps(defender, battle, check_trap=False)
+            if not swaps:
+                pass
+            elif attacker.ability(attacker=defender, move=self) == Ability.SUCTION_CUPS:
+                msg += f"{attacker.name}'s suction cups kept it in place from {defender.name}'s red card!\n"
+                defender.held_item.use()
+            elif attacker.ability(attacker=defender, move=self) == Ability.GUARD_DOG:
+                msg += f"{attacker.name}'s guard dog kept it in place from {defender.name}'s red card!\n"
+                defender.held_item.use()
+            elif attacker.ingrain:
+                msg += f"{attacker.name} is ingrained in the ground from {defender.name}'s red card!\n"
+                defender.held_item.use()
+            else:
+                msg += f"{defender.name} held up its red card against {attacker.name}!\n"
+                defender.held_item.use()
+                msg += attacker.remove(battle)
+                idx = random.choice(swaps)
+                attacker.owner.switch_poke(idx, mid_turn=True)
+                msg += attacker.owner.current_pokemon.send_out(defender, battle)
+                # Safety in case the poke dies on send out.
+                if attacker.owner.current_pokemon is not None:
+                    attacker.owner.current_pokemon.has_moved = True
+        if self.effect in (128, 154, 229, 347):
+            swaps = attacker.owner.valid_swaps(defender, battle, check_trap=False)
+            if swaps:
+                msg += f"{attacker.name} went back!\n"
+                if self.effect == 128:
+                    attacker.owner.baton_pass = BatonPass(attacker)
+                msg += attacker.remove(battle)
+                # This NEEDS to be here to set it to *False* rather than *None*
+                attacker.owner.current_pokemon = False
         
         # Trapping
         if self.effect in (107, 374, 385, 449, 452) and not defender.trapping:
@@ -2544,6 +2584,8 @@ class Move():
             power *= 1.2
         if attacker.held_item == "metal-coat" and current_type == ElementType.STEEL:
             power *= 1.2
+        if attacker.held_item == "sharp-beak" and current_type == ElementType.FLYING:
+            power *= 1.2
         if attacker.held_item == "draco-plate" and current_type == ElementType.DRAGON:
             power *= 1.2
         if attacker.held_item == "dread-plate" and current_type == ElementType.DARK:
@@ -3210,11 +3252,11 @@ class Move():
         if defender.protect:
             return False, msg
         if defender.spiky_shield:
-            if self.makes_contact(attacker):
+            if self.makes_contact(attacker) and attacker.held_item != "protective-pads":
                 msg += attacker.damage(attacker.starting_hp // 8, battle, source=f"{defender.name}'s spiky shield")
             return False, msg
         if defender.baneful_bunker:
-            if self.makes_contact(attacker):
+            if self.makes_contact(attacker) and attacker.held_item != "protective-pads":
                 msg += attacker.nv.apply_status("poison", battle, attacker=defender, source=f"{defender.name}'s baneful bunker")
             return False, msg
         if defender.wide_guard and self.targets_multiple():
@@ -3224,15 +3266,15 @@ class Move():
         if defender.mat_block and self.damage_class != DamageClass.STATUS:
             return False, msg
         if defender.king_shield and self.damage_class != DamageClass.STATUS:
-            if self.makes_contact(attacker):
+            if self.makes_contact(attacker) and attacker.held_item != "protective-pads":
                 msg += attacker.append_attack(-1, attacker=defender, move=self)
             return False, msg
         if defender.obstruct and self.damage_class != DamageClass.STATUS:
-            if self.makes_contact(attacker):
+            if self.makes_contact(attacker) and attacker.held_item != "protective-pads":
                 msg += attacker.append_defense(-2, attacker=defender, move=self)
             return False, msg
         if defender.silk_trap and self.damage_class != DamageClass.STATUS:
-            if self.makes_contact(attacker):
+            if self.makes_contact(attacker) and attacker.held_item != "protective-pads":
                 msg += attacker.append_speed(-1, attacker=defender, move=self)
             return False, msg
         if defender.quick_guard and self.get_priority(attacker, defender, battle) > 0:

@@ -7712,7 +7712,7 @@
     "identifier": "eject-pack",
     "category_id": 34,
     "cost": 0,
-    "fling_power": "",
+    "fling_power": 50,
     "fling_effect_id": ""
   },
   {
@@ -7728,7 +7728,7 @@
     "identifier": "room-service",
     "category_id": 34,
     "cost": 0,
-    "fling_power": "",
+    "fling_power": 100,
     "fling_effect_id": ""
   },
   {
