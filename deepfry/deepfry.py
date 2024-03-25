@@ -403,7 +403,7 @@ class Deepfry(commands.Cog):
 		return
 
 	@commands.Cog.listener()
-	async def on_message(self, msg):
+	async def on_message_without_command(self, msg):
 		"""Passively deepfries random images."""
 		#CHECKS
 		if msg.author.bot:
@@ -416,14 +416,12 @@ class Deepfry(commands.Cog):
 			return
 		if not msg.channel.permissions_for(msg.guild.me).attach_files:
 			return
-		if any([msg.content.startswith(x) for x in await self.bot.get_prefix(msg)]):
-			return
 		if msg.attachments[0].size > msg.guild.filesize_limit:
 			return
-		ext = msg.attachments[0].url.split('.')[-1].lower()
-		if ext in self.imagetypes:
+		path = urllib.parse.urlparse(msg.attachments[0].url).path
+		if any(path.lower().endswith(x) for x in self.imagetypes):
 			isgif = False
-		elif ext in self.videotypes:
+		elif any(path.lower().endswith(x) for x in self.videotypes):
 			isgif = True
 		else:
 			return
@@ -432,10 +430,9 @@ class Deepfry(commands.Cog):
 		vnuke = await self.config.guild(msg.guild).nukeChance()
 		#NUKE
 		if vnuke != 0:
-			l = randint(1,vnuke)
+			l = randint(1, vnuke)
 			if l == 1:
 				temp = BytesIO()
-				temp.filename = f'nuked.{ext}'
 				await msg.attachments[0].save(temp)
 				temp.seek(0)
 				img = Image.open(temp)
@@ -456,10 +453,9 @@ class Deepfry(commands.Cog):
 				return #prevent a nuke and a fry
 		#FRY
 		if vfry != 0:
-			l = randint(1,vfry)
+			l = randint(1, vfry)
 			if l == 1:
 				temp = BytesIO()
-				temp.filename = f'deepfried.{ext}'
 				await msg.attachments[0].save(temp)
 				temp.seek(0)
 				img = Image.open(temp)
