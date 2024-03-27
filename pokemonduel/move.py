@@ -1070,7 +1070,7 @@ class Move():
                 if defender.owner.current_pokemon is not None:
                     defender.owner.current_pokemon.has_moved = True
         # A red-card forces the attacker to swap to a random poke, even if they used a switch out move
-        if defender.held_item == "red-card" and defender.hp > 0 and self.damage_class != DamageClass.STATUS:
+        elif defender.held_item == "red-card" and defender.hp > 0 and self.damage_class != DamageClass.STATUS:
             swaps = attacker.owner.valid_swaps(defender, battle, check_trap=False)
             if not swaps:
                 pass
@@ -1093,15 +1093,15 @@ class Move():
                 # Safety in case the poke dies on send out.
                 if attacker.owner.current_pokemon is not None:
                     attacker.owner.current_pokemon.has_moved = True
-        if self.effect in (128, 154, 229, 347):
+        elif self.effect in (128, 154, 229, 347):
             swaps = attacker.owner.valid_swaps(defender, battle, check_trap=False)
             if swaps:
                 msg += f"{attacker.name} went back!\n"
                 if self.effect == 128:
                     attacker.owner.baton_pass = BatonPass(attacker)
                 msg += attacker.remove(battle)
-                # This NEEDS to be here to set it to *False* rather than *None*
-                attacker.owner.current_pokemon = False
+                # Force this pokemon to immediately return to be attacked
+                attacker.owner.mid_turn_remove = True
         
         # Trapping
         if self.effect in (107, 374, 385, 449, 452) and not defender.trapping:
@@ -1433,8 +1433,8 @@ class Move():
             attacker.bind = ExpiringEffect(0)
             msg += f"{attacker.name} left behind a substitute!\n"
             msg += attacker.remove(battle)
-            # This NEEDS to be here to set it to *False* rather than *None*
-            attacker.owner.current_pokemon = False
+            # Force this pokemon to immediately return to be attacked
+            attacker.owner.mid_turn_remove = True
         
         # Throat Chop
         if self.effect == 393 and not defender.silenced.active():

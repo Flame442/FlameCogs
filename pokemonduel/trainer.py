@@ -21,6 +21,9 @@ class Trainer():
             poke.owner = self
         self.event = asyncio.Event()
         self.selected_action = None
+        #Boolean - True if this trainer's pokemon was removed in such a way that it needs to return mid-turn.
+        self.mid_turn_remove = False
+        #Optional[BatonPass] - Holds data baton passed from the previous pokemon to the next, if applicable.
         self.baton_pass = None
         #Int - Stacks of spikes on this trainer's side of the field
         self.spikes = 0
@@ -72,6 +75,7 @@ class Trainer():
         """
         msg = ""
         self.selected_action = None
+        self.mid_turn_remove = False
         hp = self.wish.next_turn()
         if hp and self.current_pokemon is not None:
             msg += self.current_pokemon.heal(hp, source="its wish")
@@ -107,6 +111,7 @@ class Trainer():
         if not self.party[slot].hp > 0:
             raise ValueError("no hp")
         self.current_pokemon = self.party[slot]
+        self.mid_turn_remove = False
         self.last_idx = slot
         if mid_turn:
             self.current_pokemon.swapped_in = True

@@ -206,15 +206,10 @@ class Battle():
                 break
             
             # Pokes who die do NOT get attacked, but pokes who retreat *do*
-            if t1.current_pokemon is False:
-                t1.current_pokemon = None
+            if t1.mid_turn_remove:
                 winner = await self.run_swap(t1, t2, mid_turn=True)
                 if winner:
                     break
-                    
-            # EDGE CASE - Poke uses a switch-out move like baton pass on a poke with magic bounce
-            if t2.current_pokemon is False:
-                t2.current_pokemon = None
             
             # EDGE CASE - Moves that DO NOT target the opponent (and swapping) SHOULD run 
             # even if there is no other poke on the field. Right now everything is hardcoded
@@ -255,17 +250,12 @@ class Battle():
                 break
             
             self.msg += "\n"
-            if t2.current_pokemon is False:
-                t2.current_pokemon = None
+            if t2.mid_turn_remove:
                 # This DOES need to be here, otherwise end of turn effects aren't handled right
                 winner = await self.run_swap(t2, t1, mid_turn=True)
                 if winner:
                     break
-           
-           #EDGE CASE - poke uses a switch-out move like baton pass on a poke with magic bounce
-            if t1.current_pokemon is False:
-                t1.current_pokemon = None
-            
+
             if not t2.has_alive_pokemon():
                 self.msg += f"{t1.name} wins!\n"
                 winner = t1

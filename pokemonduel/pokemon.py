@@ -2044,8 +2044,8 @@ class DuelPokemon():
                     msg += f"{self.name} is switched out by its eject pack!\n"
                     self.held_item.use()
                     msg += self.remove(battle)
-                    # This NEEDS to be here to set it to *False* rather than *None*
-                    self.owner.current_pokemon = False
+                    # Force this pokemon to immediately return to be attacked
+                    self.owner.mid_turn_remove = True
         elif delta > 0:
             for poke in (battle.trainer1.current_pokemon, battle.trainer2.current_pokemon):
                 if poke is not None and poke is not self and poke.ability() == Ability.OPPORTUNIST and check_looping:
