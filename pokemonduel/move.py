@@ -64,7 +64,7 @@ class Move():
         effect_chance = self.get_effect_chance(attacker, defender, battle)
         msg = ""
 
-        if self.effect in (5, 126, 168, 254, 336, 398, 458) and attacker.nv.freeze():
+        if self.effect in (5, 126, 168, 254, 336, 398, 458, 500) and attacker.nv.freeze():
             attacker.nv.reset()
             msg += f"{attacker.name} thawed out!\n"
         if attacker.nv.freeze():
@@ -169,6 +169,9 @@ class Move():
             # During sun, this move does not need to charge
             if self.effect == 152 and battle.weather.get() not in ("sun", "h-sun"):
                 attacker.locked_move = LockedMove(self, 2)
+            # During rain, this move does not need to charge
+            if self.effect == 502 and battle.weather.get() not in ("rain", "h-rain"):
+                attacker.locked_move = LockedMove(self, 2)
             if self.effect in (40, 76, 81, 146, 156, 256, 257, 264, 273, 332, 333, 366, 451):
                 attacker.locked_move = LockedMove(self, 2)
             # 3 turn moves
@@ -211,11 +214,11 @@ class Move():
                 return msg
         
         # Turn 2 hit moves
-        elif self.effect in (40, 76, 146, 152, 156, 256, 257, 264, 273, 332, 333, 366, 451) and attacker.locked_move:
+        elif self.effect in (40, 76, 146, 152, 156, 256, 257, 264, 273, 332, 333, 366, 451, 502) and attacker.locked_move:
             if attacker.locked_move.turn != 1:
                 if self.effect == 146:
                     msg += attacker.append_defense(1, attacker=attacker, move=self)
-                elif self.effect == 451:
+                elif self.effect in (451, 502):
                     msg += attacker.append_spatk(1, attacker=attacker, move=self)
                 else:
                     msg += "It's charging up!\n"
@@ -494,7 +497,7 @@ class Move():
                 msg += msgadd
                 
         # Turn 2 hit moves
-        elif self.effect in (40, 76, 146, 152, 156, 256, 257, 264, 273, 332, 333, 366, 451) and attacker.locked_move:
+        elif self.effect in (40, 76, 146, 152, 156, 256, 257, 264, 273, 332, 333, 366, 451, 502) and attacker.locked_move:
             if attacker.locked_move.turn == 1:
                 if self.damage_class in (DamageClass.PHYSICAL, DamageClass.SPECIAL):
                     msgadd, numhits = self.attack(attacker, defender, battle)
@@ -650,7 +653,7 @@ class Move():
             msg += attacker.heal(attacker.starting_hp // 2)
 
         # Status effects
-        if self.effect in (5, 126, 201, 254, 274, 333, 458, 465):
+        if self.effect in (5, 126, 201, 254, 274, 333, 458, 465, 500):
             if random.randint(1, 100) <= effect_chance:
                 msg += defender.nv.apply_status("burn", battle, attacker=attacker, move=self)
         if self.effect == 168:
@@ -704,6 +707,8 @@ class Move():
         if self.effect in (77, 268, 334, 478):
             if random.randint(1, 100) <= effect_chance:
                 msg += defender.confuse(attacker=attacker, move=self)
+        if self.effect == 497 and defender.stat_increased:
+            msg += defender.confuse(attacker=attacker, move=self)
         if self.effect in (194, 457, 471, 472):
             attacker.nv.reset()
             msg += f"{attacker.name}'s status was cleared!\n"
@@ -711,9 +716,6 @@ class Move():
             if defender.nv.burn():
                 defender.nv.reset()
                 msg += f"{defender.name}'s burn was healed!\n"
-        if self.effect == 458 and defender.nv.freeze():
-            defender.nv.reset()
-            msg += f"{defender.name} thawed out!\n"
         
         # Stage changes
         # +1
@@ -924,7 +926,7 @@ class Move():
             for _ in range(numhits):
                 if defender.flinched:
                     break
-                if self.effect in (32, 76, 93, 147, 151, 159, 274, 275, 276, 425):
+                if self.effect in (32, 76, 93, 147, 151, 159, 274, 275, 276, 425, 501):
                     if random.randint(1, 100) <= effect_chance:
                         msg += defender.flinch(move=self, attacker=attacker)
                 elif self.damage_class in (DamageClass.PHYSICAL, DamageClass.SPECIAL):
@@ -979,6 +981,12 @@ class Move():
             else:
                 defender.heal_block.set_turns(5)
                 msg += f"{defender.name} is blocked from healing!\n"
+        if self.effect == 496:
+            if defender.ability(attacker=attacker, move=self) == Ability.AROMA_VEIL:
+                msg += f"{defender.name}'s aroma veil protects it from being heal blocked!\n"
+            else:
+                defender.heal_block.set_turns(2)
+                msg += f"{defender.name} is blocked from healing!\n"
         
         # Weather changing
         if self.effect == 116:
@@ -1001,7 +1009,7 @@ class Move():
             msg += battle.terrain.set("psychic", attacker)
         
         # Protection
-        if self.effect in (112, 117, 279, 356, 362, 384, 454, 488):
+        if self.effect in (112, 117, 279, 356, 362, 384, 454, 488, 499):
             attacker.protection_used = True
             attacker.protection_chance *= 3
         if self.effect == 112:
@@ -1036,6 +1044,9 @@ class Move():
             msg += f"{attacker.name} protected itself!\n"
         if self.effect == 488:
             attacker.silk_trap = True
+            msg += f"{attacker.name} protected itself!\n"
+        if self.effect == 499:
+            attacker.burning_bulwark = True
             msg += f"{attacker.name} protected itself!\n"
         
         # Life orb
@@ -1957,6 +1968,11 @@ class Move():
             attacker.substitute = 0
             msg += f"{attacker.name} tidied up!\n"
         
+        # Syrup Bomb
+        if self.effect == 503:
+            defender.syrup_bomb.set_turns(4)
+            msg += f"{defender.name} got covered in sticky candy syrup!\n"
+        
         # Dancer Ability - Runs at the end of move usage
         if defender.ability(attacker=attacker, move=self) == Ability.DANCER and self.is_dance() and use_pp:
             hm = defender.has_moved
@@ -2283,7 +2299,7 @@ class Move():
             
             # Drain ratios
             drain_heal_ratio = None
-            if self.effect in (4, 9, 346):
+            if self.effect in (4, 9, 346, 500):
                 drain_heal_ratio = 1/2
             elif self.effect == 349:
                 drain_heal_ratio = 3/4
@@ -2396,9 +2412,11 @@ class Move():
                 power = 50
             else:
                 power = 40
-        # Power increases against targets with more HP remaining, up to a maximum of 121 power.
+        # Power increases against targets with more HP remaining, up to a maximum of 120|100 power.
         elif self.effect == 238:
-            power = int(1 + (120 * (defender.hp / defender.starting_hp)))
+            power = max(1, int(120 * (defender.hp / defender.starting_hp)))
+        elif self.effect == 495:
+            power = max(1, int(100 * (defender.hp / defender.starting_hp)))
         # Power increases against targets with more raised stats, up to a maximum of 200.
         elif self.effect == 246:
             delta = 0
@@ -2742,6 +2760,9 @@ class Move():
         # Power is multiplied by (1 + number of times hit)x, capping at 7x (6 hits).
         if self.effect == 491:
             power *= 1 + min(attacker.num_hits, 6)
+        # Has a 30% chance to double power
+        if self.effect == 498 and random.random() <= 0.3:
+            power *= 2
 
         # Terrains
         if battle.terrain.item == "psychic" and attacker.grounded(battle) and current_type == ElementType.PSYCHIC:
@@ -2982,7 +3003,7 @@ class Move():
         if attacker is not defender and defender.imprison and self.id in [x.id for x in defender.moves]:
             return False
         #Since we only have single battles, these moves always fail
-        if self.effect in (173, 301, 308, 316, 363, 445):
+        if self.effect in (173, 301, 308, 316, 363, 445, 494):
             return False
         if self.effect in (93, 98) and not attacker.nv.sleep():
             return False
@@ -3112,7 +3133,7 @@ class Move():
             return False
         if self.effect == 181 and attacker.get_assist_move() is None:
             return False
-        if self.effect in (112, 117, 184, 195, 196, 279, 307, 345, 350, 354, 356, 362, 378, 384, 454, 488) and defender.has_moved:
+        if self.effect in (112, 117, 184, 195, 196, 279, 307, 345, 350, 354, 356, 362, 378, 384, 454, 488, 499) and defender.has_moved:
             return False
         if self.effect == 192 and not (attacker.ability_changeable() and attacker.ability_giveable() and defender.ability_changeable() and defender.ability_giveable()):
             return False
@@ -3140,7 +3161,7 @@ class Move():
             return False
         if self.effect == 341 and defender.owner.sticky_web:
             return False
-        if self.effect in (112, 117, 356, 362, 384, 454, 488) and random.randint(1, attacker.protection_chance) != 1:
+        if self.effect in (112, 117, 356, 362, 384, 454, 488, 499) and random.randint(1, attacker.protection_chance) != 1:
             return False
         if self.effect == 403 and (defender.last_move is None or defender.last_move.pp == 0 or not defender.last_move.selectable_by_instruct() or defender.locked_move is not None):
             return False
@@ -3201,6 +3222,8 @@ class Move():
         if self.effect == 83 and self not in attacker.moves:
             return False
         if self.effect == 468 and attacker.victory_dance:
+            return False
+        if self.effect == 501 and (defender.has_moved or isinstance(defender.owner.selected_action, int) or defender.owner.selected_action.get_priority(defender, attacker, battle) <= 0):
             return False
         if defender.ability(attacker=attacker, move=self) in (Ability.QUEENLY_MAJESTY, Ability.DAZZLING, Ability.ARMOR_TAIL) and self.get_priority(attacker, defender, battle) > 0:
             return False
@@ -3267,15 +3290,19 @@ class Move():
             return False, msg
         if defender.king_shield and self.damage_class != DamageClass.STATUS:
             if self.makes_contact(attacker) and attacker.held_item != "protective-pads":
-                msg += attacker.append_attack(-1, attacker=defender, move=self)
+                msg += attacker.append_attack(-1, attacker=defender, move=self, source=f"{defender.name}'s silk trap")
             return False, msg
         if defender.obstruct and self.damage_class != DamageClass.STATUS:
             if self.makes_contact(attacker) and attacker.held_item != "protective-pads":
-                msg += attacker.append_defense(-2, attacker=defender, move=self)
+                msg += attacker.append_defense(-2, attacker=defender, move=self, source=f"{defender.name}'s silk trap")
             return False, msg
         if defender.silk_trap and self.damage_class != DamageClass.STATUS:
             if self.makes_contact(attacker) and attacker.held_item != "protective-pads":
-                msg += attacker.append_speed(-1, attacker=defender, move=self)
+                msg += attacker.append_speed(-1, attacker=defender, move=self, source=f"{defender.name}'s silk trap")
+            return False, msg
+        if defender.burning_bulwark and self.damage_class != DamageClass.STATUS:
+            if self.makes_contact(attacker) and attacker.held_item != "protective-pads":
+                msg += attacker.nv.apply_status("burn", battle, attacker=defender, source=f"{defender.name}'s burning bulwark")
             return False, msg
         if defender.quick_guard and self.get_priority(attacker, defender, battle) > 0:
             return False, msg
@@ -3448,7 +3475,7 @@ class Move():
         """Whether or not this move is sound based."""
         return self.id in [
             45, 46, 47, 48, 103, 173, 195, 215, 253, 304, 319, 320, 336, 405, 448, 496, 497, 547,
-            555, 568, 574, 575, 586, 590, 664, 691, 728, 744, 753, 826, 871
+            555, 568, 574, 575, 586, 590, 664, 691, 728, 744, 753, 826, 871, 1005, 1006
         ]
     
     def is_punching(self):
@@ -3466,7 +3493,7 @@ class Move():
         """Whether or not this move is a ball or bomb move."""
         return self.id in [
             121, 140, 188, 190, 192, 247, 296, 301, 311, 331, 350, 360, 396, 402, 411, 412, 426,
-            439, 443, 486, 491, 545, 676, 690, 748
+            439, 443, 486, 491, 545, 676, 690, 748, 1017
         ]
     
     def is_aura_or_pulse(self):
@@ -3485,7 +3512,7 @@ class Move():
         """Whether or not this move is a slicing move."""
         return self.id in [
             15, 75, 163, 210, 314, 332, 348, 400, 403, 404, 427, 440, 533, 534, 669, 749, 830, 845,
-            860, 869, 891, 895
+            860, 869, 891, 895, 1013, 1014
         ]
     
     def is_wind(self):
@@ -3515,7 +3542,7 @@ class Move():
             18, 45, 46, 47, 48, 50, 102, 103, 114, 166, 173, 174, 176, 180, 193, 195, 213, 215, 227,
             244, 253, 259, 269, 270, 272, 285, 286, 304, 312, 316, 319, 320, 357, 367, 382, 384, 385,
             391, 405, 448, 495, 496, 497, 513, 516, 547, 555, 568, 574, 575, 586, 587, 589, 590, 593,
-            597, 600, 602, 607, 621, 664, 674, 683, 689, 691, 712, 728, 753, 826
+            597, 600, 602, 607, 621, 664, 674, 683, 689, 691, 712, 728, 753, 826, 871, 1005, 1006
         ]
     
     def targets_opponent(self):
@@ -3563,11 +3590,16 @@ class Move():
             677, 679, 680, 681, 684, 688, 692, 693, 696, 699, 701, 706, 707, 709, 710, 712, 713,
             716, 718, 721, 724, 729, 730, 733, 741, 742, 745, 747, 749, 750, 752, 756, 760, 764,
             765, 766, 779, 799, 803, 806, 812, 813, 821, 830, 832, 834, 840, 845, 848, 853, 857,
-            859, 860, 861, 862, 866, 869, 872, 873, 878, 879, 884, 885, 887, 889, 891, 892, 894
+            859, 860, 861, 862, 866, 869, 872, 873, 878, 879, 884, 885, 887, 889, 891, 892, 894,
+            1003, 1010, 1012, 1013
         ] and not attacker.ability() == Ability.LONG_REACH
     
     def selectable_by_mirror_move(self):
         """Whether or not this move can be selected by mirror move."""
+        return self.targets_opponent()
+        # Previously, this was a hardcoded list of values.
+        # I don't think there is any factor besides whether or not the move can target opponents (for single battles).
+        """
         return self.id not in [
             10, 14, 54, 68, 74, 96, 97, 100, 102, 104, 105, 106, 107, 110, 111, 112, 113, 114, 115,
             116, 117, 118, 119, 133, 135, 144, 150, 151, 156, 159, 160, 164, 165, 166, 174, 176,
@@ -3577,8 +3609,9 @@ class Move():
             349, 353, 355, 356, 361, 366, 367, 379, 381, 382, 383, 390, 392, 393, 397, 417, 446,
             455, 456, 461, 468, 469, 470, 471, 475, 476, 483, 489, 495, 501, 502, 504, 505, 508,
             513, 515, 526, 538, 561, 562, 563, 564, 569, 578, 579, 580, 581, 596, 597, 601, 602,
-            603, 604, 606, 607
+            603, 604, 606, 607, 1000
         ]
+        """
     
     def selectable_by_sleep_talk(self):
         """Whether or not this move can be selected by sleep talk."""

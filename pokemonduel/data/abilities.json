@@ -2146,5 +2146,35 @@
     "identifier": "shield",
     "generation_id": 5,
     "is_main_series": 0
+  },
+  {
+    "id": 10061,
+    "identifier": "hospitality",
+    "generation_id": 9,
+    "is_main_series": 1
+  },
+  {
+    "id": 10062,
+    "identifier": "supersweet-syrup",
+    "generation_id": 9,
+    "is_main_series": 1
+  },
+  {
+    "id": 10063,
+    "identifier": "toxic-chain",
+    "generation_id": 9,
+    "is_main_series": 1
+  },
+  {
+    "id": 10064,
+    "identifier": "poison-puppeteer",
+    "generation_id": 9,
+    "is_main_series": 1
+  },
+  {
+    "id": 10065,
+    "identifier": "tera-shift",
+    "generation_id": 9,
+    "is_main_series": 1
   }
 ]

@@ -223,6 +223,8 @@ class DuelPokemon():
         self.obstruct = False
         #Boolean - stores whether this poke is protected by silk trap this turn.
         self.silk_trap = False
+        #Boolean - stores whether this poke is protected by burning bulwark this turn.
+        self.burning_bulwark = False
         #ExpiringEffect - stores whether this poke will always crit due to laser focus.
         self.laser_focus = ExpiringEffect(0)
         #Boolean - stores whether this poke is coated with powder and will explode if it uses a fire type move.
@@ -285,6 +287,8 @@ class DuelPokemon():
         self.micle_berry_ate = False
         #Boolean - stores whether or not fire type moves are 2x effective on this pokemon from tar shot.
         self.tar_shot = False
+        #ExpiringEffect - stores the number of turns this pokemon is lowering the opponent's speed at the end of every turn.
+        self.syrup_bomb = ExpiringEffect(0)
         #Int - stores the number of times this pokemon has been hit this battle, and does NOT reset when switching out.
         self.num_hits = 0
 
@@ -820,6 +824,7 @@ class DuelPokemon():
         self.quick_guard = False
         self.obstruct = False
         self.silk_trap = False
+        self.burning_bulwark = False
         self.laser_focus = ExpiringEffect(0)
         self.powdered = False
         self.snatching = False
@@ -852,6 +857,7 @@ class DuelPokemon():
         self.splinters = ExpiringEffect(0)
         self.victory_dance = False
         self.tar_shot = False
+        self.syrup_bomb = ExpiringEffect(0)
         self.held_item.ever_had_item = self.held_item.item is not None
 
         return msg
@@ -892,6 +898,7 @@ class DuelPokemon():
         self.quick_guard = False
         self.obstruct = False
         self.silk_trap = False
+        self.burning_bulwark = False
         self.laser_focus.next_turn()
         self.powdered = False
         self.snatching = False
@@ -914,6 +921,7 @@ class DuelPokemon():
         self.stat_increased = False
         self.stat_decreased = False
         self.roost = False
+        self.syrup_bomb.next_turn()
         
         msg += self.nv.next_turn(battle)
         
@@ -1152,6 +1160,9 @@ class DuelPokemon():
         #Curse
         if self.curse:
             msg += self.damage(self.starting_hp // 4, battle, source="its curse")
+        #Syrup bomb
+        if self.syrup_bomb.active() and otherpoke is not None:
+            msg += self.append_speed(-1, attacker=otherpoke, source="its syrup coating")
         
         #Weather damages
         if self.ability() == Ability.OVERCOAT:
@@ -1281,6 +1292,7 @@ class DuelPokemon():
             and move is not None and move.is_affected_by_substitute() and not move.is_sound_based()
             and (attacker is None or attacker.ability() != Ability.INFILTRATOR)
         ):
+            # is_affected_by_substitute should be a superset of is_sound_based, but it's better to check both to be sure.
             msg += f"{self.name}'s substitute took {damage} damage{source}!\n"
             new_hp = max(0, self.substitute - damage)
             true_damage = self.substitute - new_hp
@@ -1372,6 +1384,9 @@ class DuelPokemon():
                 msg += attacker.damage(previous_hp, battle, attacker=self, source=f"{self.name}'s innards out")
         elif move is not None and move_type is not None:
             if move_type == ElementType.FIRE and self.nv.freeze():
+                self.nv.reset()
+                msg += f"{self.name} thawed out!\n"
+            if move.effect in (458, 500) and self.nv.freeze():
                 self.nv.reset()
                 msg += f"{self.name} thawed out!\n"
             if self.ability() == Ability.COLOR_CHANGE and move_type not in self.type_ids:
