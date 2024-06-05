@@ -170,8 +170,12 @@ class Move():
             if self.effect == 152 and battle.weather.get() not in ("sun", "h-sun"):
                 attacker.locked_move = LockedMove(self, 2)
             # During rain, this move does not need to charge
-            if self.effect == 502 and battle.weather.get() not in ("rain", "h-rain"):
-                attacker.locked_move = LockedMove(self, 2)
+            if self.effect == 502:
+                if battle.weather.get() not in ("rain", "h-rain"):
+                    attacker.locked_move = LockedMove(self, 2)
+                else:
+                    # If this move isn't charging, the spatk increase has to happen manually
+                    msg += attacker.append_spatk(1, attacker=attacker, move=self)
             if self.effect in (40, 76, 81, 146, 156, 256, 257, 264, 273, 332, 333, 366, 451):
                 attacker.locked_move = LockedMove(self, 2)
             # 3 turn moves
