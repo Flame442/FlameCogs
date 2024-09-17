@@ -2978,6 +2978,8 @@ class Move():
             return 100
         if defender.ability(attacker=attacker, move=self) == Ability.SHIELD_DUST:
             return 0
+        if defender.held_item == "covert-cloak":
+            return 0
         if attacker.ability() == Ability.SHEER_FORCE:
             return 0
         if attacker.ability() == Ability.SERENE_GRACE:
