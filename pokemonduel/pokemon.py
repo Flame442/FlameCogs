@@ -275,10 +275,6 @@ class DuelPokemon():
         self.defense_split = None
         #Optional[Int] - stores the raw special defense value this poke's special defense is split with.
         self.spdef_split = None
-        #ExpiringEffect - stores the number of turns splinters are active on this pokemon.
-        self.splinters = ExpiringEffect(0)
-        #Boolean - stores whether this poke has used victory dance since entering the field.
-        self.victory_dance = False
         #Int - stores the number of times autotomize has been used since switching out.
         self.autotomize = 0
         #Boolean - stores whether or not this pokemon's critical hit ratio is increased from eating a lansat berry.
@@ -338,7 +334,6 @@ class DuelPokemon():
             otherpoke.trapping = False
             otherpoke.octolock = False
             otherpoke.bind.set_turns(0)
-            otherpoke.splinters.set_turns(0)
         
         #Baton Pass
         if self.owner.baton_pass is not None:
@@ -857,8 +852,6 @@ class DuelPokemon():
         self.spatk_split = None
         self.defense_split = None
         self.spdef_split = None
-        self.splinters = ExpiringEffect(0)
-        self.victory_dance = False
         self.tar_shot = False
         self.syrup_bomb = ExpiringEffect(0)
         self.held_item.ever_had_item = self.held_item.item is not None
@@ -1214,11 +1207,6 @@ class DuelPokemon():
         #Grassy Terrain
         if battle.terrain.item == "grassy" and self.grounded(battle) and not self.heal_block.active():
             msg += self.heal(self.starting_hp // 16, source="grassy terrain")
-        #Splinters
-        if self.splinters.next_turn():
-            msg += f"{self.name}'s splinters wore off!\n"
-        elif self.splinters.active() and otherpoke is not None:
-            msg += self.damage(self.starting_hp // 8, battle, source=f"{otherpoke.name}'s splinters")
         
         #Goes at the end so everything in this func that checks it handles it correctly
         self.swapped_in = False

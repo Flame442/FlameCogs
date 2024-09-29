@@ -609,7 +609,7 @@ class Move():
             attacker.stockpile = 0
 
         # Healing
-        if self.effect in (33, 215, 471):
+        if self.effect in (33, 215):
             msg += attacker.heal(attacker.starting_hp // 2)
         if self.effect in (434, 457):
             msg += attacker.heal(attacker.starting_hp // 4)
@@ -657,7 +657,7 @@ class Move():
             msg += attacker.heal(attacker.starting_hp // 2)
 
         # Status effects
-        if self.effect in (5, 126, 201, 254, 274, 333, 458, 465, 500):
+        if self.effect in (5, 126, 201, 254, 274, 333, 365, 458, 465, 500):
             if random.randint(1, 100) <= effect_chance:
                 msg += defender.nv.apply_status("burn", battle, attacker=attacker, move=self)
         if self.effect == 168:
@@ -672,10 +672,10 @@ class Move():
             status = random.choice(["poison", "paralysis", "sleep"])
             if random.randint(1, 100) <= effect_chance:
                 msg += defender.nv.apply_status(status, battle, attacker=attacker, move=self)
-        if self.effect in (6, 261, 275, 380, 462):
+        if self.effect in (6, 261, 275, 380):
             if random.randint(1, 100) <= effect_chance:
                 msg += defender.nv.apply_status("freeze", battle, attacker=attacker, move=self)
-        if self.effect in (7, 153, 263, 264, 276, 332, 372):
+        if self.effect in (7, 153, 263, 264, 276, 332, 372, 396):
             if random.randint(1, 100) <= effect_chance:
                 msg += defender.nv.apply_status("paralysis", battle, attacker=attacker, move=self)
         if self.effect == 68:
@@ -713,7 +713,7 @@ class Move():
                 msg += defender.confuse(attacker=attacker, move=self)
         if self.effect == 497 and defender.stat_increased:
             msg += defender.confuse(attacker=attacker, move=self)
-        if self.effect in (194, 457, 471, 472):
+        if self.effect in (194, 457, 472):
             attacker.nv.reset()
             msg += f"{attacker.name}'s status was cleared!\n"
         if self.effect == 386:
@@ -731,9 +731,9 @@ class Move():
             msg += attacker.append_spatk(1, attacker=attacker, move=self)
         if self.effect in (161, 175, 207, 212, 291, 367, 414, 427, 472):
             msg += attacker.append_spdef(1, attacker=attacker, move=self)
-        if self.effect in (130, 213, 291, 296, 414, 427, 442, 469, 487):
+        if self.effect in (130, 213, 291, 296, 414, 427, 442, 468, 469, 487):
             msg += attacker.append_speed(1, attacker=attacker, move=self)
-        if self.effect in (17, 467, 471):
+        if self.effect in (17, 467):
             msg += attacker.append_evasion(1, attacker=attacker, move=self)
         if self.effect in (278, 323):
             msg += attacker.append_accuracy(1, attacker=attacker, move=self)
@@ -792,7 +792,11 @@ class Move():
         if self.effect in (70, 397, 435):
             if random.randint(1, 100) <= effect_chance:
                 msg += defender.append_defense(-1, attacker=attacker, move=self)
-        if self.effect in (21, 71, 477):
+        if self.effect == 475:
+            # This one has two different chance percents, one has to be hardcoded
+            if random.randint(1, 100) <= 50:
+                msg += defender.append_defense(-1, attacker=attacker, move=self)
+        if self.effect in (21, 71, 357, 477):
             if random.randint(1, 100) <= effect_chance:
                 msg += defender.append_speed(-1, attacker=attacker, move=self)
         if self.effect == 72:
@@ -812,7 +816,7 @@ class Move():
             msg += attacker.append_spatk(-1, attacker=attacker, move=self)
         if self.effect in (230, 309, 335):
             msg += attacker.append_spdef(-1, attacker=attacker, move=self)
-        if self.effect in (219, 335, 463):
+        if self.effect in (219, 335):
             msg += attacker.append_speed(-1, attacker=attacker, move=self)
         # -2
         if self.effect in (59, 169):
@@ -858,7 +862,7 @@ class Move():
             defender.accuracy_stage = 0
             defender.evasion_stage = 0
             msg += f"{defender.name} had their stat stages reset!\n"
-        if self.effect == 141 or (self.effect == 474 and attacker._name == "Enamorus"):
+        if self.effect == 141:
             if random.randint(1, 100) <= effect_chance:
                 msg += attacker.append_attack(1, attacker=attacker, move=self)
                 msg += attacker.append_defense(1, attacker=attacker, move=self)
@@ -912,13 +916,6 @@ class Move():
             else:
                 msg += attacker.append_defense(1, attacker=attacker, move=self)
                 msg += attacker.append_spdef(1, attacker=attacker, move=self)
-        if self.effect == 474 and attacker._name == "Enamorus-therian":
-            if random.randint(1, 100) <= effect_chance:
-                msg += defender.append_defense(-1, attacker=attacker, move=self)
-                msg += defender.append_spdef(-1, attacker=attacker, move=self)
-        if self.effect == 475:
-            msg += defender.append_defense(-1, attacker=attacker, move=self)
-            msg += defender.append_spdef(-1, attacker=attacker, move=self)
         if self.effect == 485:
             msg += attacker.damage(attacker.starting_hp // 2, battle)
             msg += attacker.append_attack(2, attacker=attacker, move=self)
@@ -930,7 +927,7 @@ class Move():
             for _ in range(numhits):
                 if defender.flinched:
                     break
-                if self.effect in (32, 76, 93, 147, 151, 159, 274, 275, 276, 425, 501):
+                if self.effect in (32, 76, 93, 147, 151, 159, 274, 275, 276, 425, 475, 501):
                     if random.randint(1, 100) <= effect_chance:
                         msg += defender.flinch(move=self, attacker=attacker)
                 elif self.damage_class in (DamageClass.PHYSICAL, DamageClass.SPECIAL):
@@ -1416,11 +1413,6 @@ class Move():
                 defender.bind.set_turns(random.randint(4, 5))
             msg += f"{defender.name} was squeezed!\n"
         
-        # Splinters
-        if self.effect == 470:
-            defender.splinters.set_turns(4)
-            msg += f"Splinters prod into {defender.name}'s body!\n"
-        
         # Sketch
         if self.effect == 96:
             m = defender.last_move.copy()
@@ -1778,7 +1770,6 @@ class Move():
         # Rapid/Mortal Spin
         if self.effect in (130, 486):
             attacker.bind.set_turns(0)
-            attacker.splinters.set_turns(0)
             attacker.trapping = False
             attacker.leech_seed = False
             attacker.owner.spikes = 0
@@ -1894,7 +1885,7 @@ class Move():
             msg += defender.held_item.eat_berry(consumer=attacker)
         
         # Focus energy
-        if self.effect in (48, 475):
+        if self.effect == 48:
             attacker.focus_energy = True
             msg += f"{attacker.name} focuses on its target!\n"
 
@@ -1947,11 +1938,6 @@ class Move():
         if self.is_sound_based() and attacker.held_item == "throat-spray":
             msg += attacker.append_spatk(1, attacker=attacker, source="it's throat spray")
             attacker.held_item.use()
-        
-        # Victory Dance
-        if self.effect == 468:
-            attacker.victory_dance = True
-            msg += f"{attacker.name} ushers in victory!\n"
         
         # Tar Shot
         if self.effect == 477 and not defender.tar_shot:
@@ -2318,8 +2304,10 @@ class Move():
                     msg += attacker.damage(damage // 4, battle, source="recoil")
                 if self.effect in (199, 254, 263, 469):
                     msg += attacker.damage(damage // 3, battle, source="recoil")
-                if self.effect in (270, 463):
+                if self.effect == 270:
                     msg += attacker.damage(damage // 2, battle, source="recoil")
+                if self.effect == 463:
+                    msg += attacker.damage(attacker.starting_hp // 2, battle, source="recoil")
         
         # Weakness Policy
         if effectiveness > 1 and defender.held_item == "weakness-policy" and not defender.substitute:
@@ -2671,7 +2659,7 @@ class Move():
             power *= 2
             defender.nv.reset()
         # If the target is poisoned, this move has double power.
-        if self.effect == 284 and defender.nv.poison():
+        if self.effect in (284, 461) and defender.nv.poison():
             power *= 2
         # If the target is sleeping, this move has double power, and the target wakes up.
         if self.effect == 218 and defender.nv.sleep():
@@ -2753,7 +2741,7 @@ class Move():
         if self.effect == 450 and attacker.stat_decreased:
             power *= 2
         # Power is doubled if the defender has a non volatile status effect.
-        if self.effect in (461, 462, 465) and defender.nv.current:
+        if self.effect == 465 and defender.nv.current:
             power *= 2
         # Deals 4/3x damage if supereffective.
         if self.effect == 482 and defender.effectiveness(current_type, battle, attacker=attacker, move=self) > 1:
@@ -2787,10 +2775,6 @@ class Move():
             power //= 3
         if (attacker.owner.water_sport.active() or defender.owner.water_sport.active()) and current_type == ElementType.FIRE:
             power //= 3
-        if attacker.victory_dance:
-            # This is a DELIBERATE CHOICE to make this move more reasonable given that it comes from a game where
-            # stage changes are only applied once and go away after a few turns.
-            power *= 1.25
 
         return int(power)
     
@@ -3227,8 +3211,6 @@ class Move():
             return False
         if self.effect == 83 and self not in attacker.moves:
             return False
-        if self.effect == 468 and attacker.victory_dance:
-            return False
         if self.effect == 501 and (defender.has_moved or isinstance(defender.owner.selected_action, int) or defender.owner.selected_action.get_priority(defender, attacker, battle) <= 0):
             return False
         if defender.ability(attacker=attacker, move=self) in (Ability.QUEENLY_MAJESTY, Ability.DAZZLING, Ability.ARMOR_TAIL) and self.get_priority(attacker, defender, battle) > 0:
@@ -3330,7 +3312,7 @@ class Move():
         if self.effect == 261 and battle.weather.get() == "hail":
             return True
         # During rain, this bypasses accuracy checks
-        if self.effect in (153, 334) and battle.weather.get() in ("rain", "h-rain"):
+        if self.effect in (153, 334, 357, 365, 396) and battle.weather.get() in ("rain", "h-rain"):
             return True
         # If used by a poison type, this bypasses accuracy checks
         if self.effect == 34 and ElementType.POISON in attacker.type_ids:
