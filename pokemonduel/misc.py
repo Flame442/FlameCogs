@@ -394,7 +394,7 @@ class NonVolatileEffect():
             return f"{self.pokemon.name}'s purifying salt protects it from being inflicted with {status}!\n"
         if self.pokemon.ability(attacker=attacker, move=move) == Ability.LEAF_GUARD and battle.weather.get() in ("sun", "h-sun"):
             return f"{self.pokemon.name}'s leaf guard protects it from being inflicted with {status}!\n"
-        if self.pokemon.substitute and attacker is not self.pokemon and ((not status == 'sleep' and not self.pokemon.yawn.next_turn())\
+        if self.pokemon.substitute and attacker is not self.pokemon and ((not status == 'sleep' and not self.pokemon.yawn.active())\
         or (move != None and move.id in (464, 827, 320, 95, 142, 375, 547, 156, 290, 47, 79, 147, 897, 281))):
         #^ Handling the edge case when the pokemon has drowsinees and hit by a move that can also inflict sleep(or else the sleep effect of move will work through sub)
             return f"{self.pokemon.name}'s substitute protects it from being inflicted with {status}!\n" 
