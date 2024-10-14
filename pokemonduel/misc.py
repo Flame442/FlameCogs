@@ -394,7 +394,7 @@ class NonVolatileEffect():
             return f"{self.pokemon.name}'s purifying salt protects it from being inflicted with {status}!\n"
         if self.pokemon.ability(attacker=attacker, move=move) == Ability.LEAF_GUARD and battle.weather.get() in ("sun", "h-sun"):
             return f"{self.pokemon.name}'s leaf guard protects it from being inflicted with {status}!\n"
-        if self.pokemon.substitute and attacker is not self.pokemon:
+        if self.pokemon.substitute and attacker is not self.pokemon and (move is None or move.is_affected_by_substitute()):
             return f"{self.pokemon.name}'s substitute protects it from being inflicted with {status}!\n"
         if self.pokemon.owner.safeguard.active() and attacker is not self.pokemon and (attacker is None or attacker.ability() != Ability.INFILTRATOR):
             return f"{self.pokemon.name}'s safeguard protects it from being inflicted with {status}!\n"

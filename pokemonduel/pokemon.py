@@ -942,7 +942,7 @@ class DuelPokemon():
         if self.embargo.next_turn():
             msg += f"{self.name}'s embargo was lifted!\n"
         if self.yawn.next_turn():
-            msg += self.nv.apply_status("sleep", battle, source="drowsiness")
+            msg += self.nv.apply_status("sleep", battle, attacker=self, source="drowsiness")
         if self.encore.next_turn():
             msg += f"{self.name}'s encore is over!\n"
         if self.perish_song.next_turn():
@@ -1491,16 +1491,16 @@ class DuelPokemon():
             # Affects ATTACKER
             if attacker.held_item != "protective-pads":
                 if self.beak_blast:
-                    msg += attacker.nv.apply_status("burn", battle, attacker=self, source=f"{self.name}'s charging beak blast")
+                    msg += attacker.nv.apply_status("burn", battle, attacker=attacker, source=f"{self.name}'s charging beak blast")
                 if self.ability() == Ability.STATIC:
                     if random.randint(1, 100) <= 30:
-                        msg += attacker.nv.apply_status("paralysis", battle, attacker=self, source=f"{self.name}'s static")
+                        msg += attacker.nv.apply_status("paralysis", battle, attacker=attacker, source=f"{self.name}'s static")
                 if self.ability() == Ability.POISON_POINT:
                     if random.randint(1, 100) <= 30:
-                        msg += attacker.nv.apply_status("poison", battle, attacker=self, source=f"{self.name}'s poison point")
+                        msg += attacker.nv.apply_status("poison", battle, attacker=attacker, source=f"{self.name}'s poison point")
                 if self.ability() == Ability.FLAME_BODY:
                     if random.randint(1, 100) <= 30:
-                        msg += attacker.nv.apply_status("burn", battle, attacker=self, source=f"{self.name}'s flame body")
+                        msg += attacker.nv.apply_status("burn", battle, attacker=attacker, source=f"{self.name}'s flame body")
                 if self.ability() == Ability.ROUGH_SKIN and self.owner.has_alive_pokemon():
                     msg += attacker.damage(attacker.starting_hp // 8, battle, source=f"{self.name}'s rough skin")
                 if self.ability() == Ability.IRON_BARBS and self.owner.has_alive_pokemon():
@@ -1513,7 +1513,7 @@ class DuelPokemon():
                         and random.randint(1, 100) <= 30
                     ):
                         status = random.choice(["paralysis", "poison", "sleep"])
-                        msg += attacker.nv.apply_status(status, battle, attacker=self)
+                        msg += attacker.nv.apply_status(status, battle, attacker=attacker)
                 if self.ability() == Ability.CUTE_CHARM and random.randint(1, 100) <= 30:
                     msg += attacker.infatuate(self, source=f"{self.name}'s cute charm")
                 if self.ability() == Ability.MUMMY and attacker.ability() != Ability.MUMMY and attacker.ability_changeable():
@@ -1594,7 +1594,7 @@ class DuelPokemon():
         
         Returns a formatted message.
         """ 
-        if self.substitute:
+        if self.substitute and (move is None or move.is_affected_by_substitute()):
             return ""
         if self.confusion.active():
             return ""
@@ -1615,7 +1615,7 @@ class DuelPokemon():
         Returns a formatted message.
         """
         msg = ""
-        if self.substitute:
+        if self.substitute and (move is None or move.is_affected_by_substitute()):
             return ""
         if self.ability(move=move, attacker=attacker) == Ability.INNER_FOCUS:
             return f"{self.name} resisted the urge to flinch with its inner focus!\n"
@@ -1957,7 +1957,7 @@ class DuelPokemon():
         Returns a formatted string describing the stat change.
         """
         msg = ""
-        if self.substitute and attacker is not self and attacker is not None:
+        if self.substitute and attacker is not self and attacker is not None and (move is None or move.is_affected_by_substitute()):
             return ""
         if source:
             source = f" from {source}"
