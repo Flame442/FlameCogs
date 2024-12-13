@@ -631,7 +631,7 @@ class WordStats(commands.Cog):
 			guild = ctx.guild
 		await self._topratio(ctx, word, amount, min_total, guild=guild, raw=False)
 	
-	@topratio.command(name='global')
+	@topchance.command(name='global')
 	async def topchance_global(self, ctx, word: str, amount: int=10, min_total: int=0):
 		"""
 		Prints the members with the highest observed probability that their next word would be the specified word across all guilds.
