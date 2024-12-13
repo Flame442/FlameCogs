@@ -489,6 +489,91 @@ class WordStats(commands.Cog):
 			)
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
+
+	async def _topratio(
+		self,
+		ctx: commands.GuildContext,
+		word: str,
+		amount: int,
+        min_total: int,
+		*,
+		guild: Optional[discord.Guild],
+        raw: bool
+	):
+		if amount <= 0:
+			return await ctx.send('At least one member needs to be displayed.')
+		if amount > 100:
+			return await ctx.send('You cannot request more than 100 members.')
+		if min_total < 0:
+			min_total = 0
+		word = word.lower()
+		worddict = {}
+		async with ctx.typing():
+			if guild:
+				cursor = self.cursor.execute(
+					'SELECT user_id, word, quantity FROM member_words '
+					'WHERE guild_id = ? ',
+					(guild.id,)
+				)
+			else:
+				cursor = self.cursor.execute(
+					'SELECT user_id, word, quantity FROM member_words'
+				)
+			for user_id, w, quantity in cursor:
+				if user_id not in worddict:
+					worddict[user_id] = {}
+				try:
+					worddict[user_id][w] += quantity
+				except KeyError:
+					worddict[user_id][w] = quantity
+			sumdict = {}
+			for user_id in worddict:
+				if word in worddict[user_id] and sum(worddict[user_id].values()) >= min_total:
+					if raw:
+						sumdict[user_id] = worddict[user_id][word] / sum(worddict[user_id].values())
+					else:
+						# Laplace's rule of succession
+						sumdict[user_id] = (worddict[user_id][word] + 1) / (sum(worddict[user_id].values()) + 2)
+			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
+		if sumdict == {}:
+			return await ctx.send('No one has chatted yet.')
+		result = ''
+		n = 0
+		for memid in order:
+			mem = (guild or ctx.guild).get_member(memid)
+			if mem is None:
+				name = f'<removed member {memid}>'
+			else:
+				name = mem.display_name
+			result += (
+				'{:4f} {}\n'.format(sumdict[memid], name)
+			)
+			n += 1
+			if n == amount:
+				break
+		if n == 1:
+			memberprint = 'member'
+			have_has = 'has'
+		else:
+			memberprint = f'**{n}** members'
+			have_has = 'have'
+		if guild == ctx.guild:
+			guildprint = 'in this server'
+		elif guild is None:
+			guildprint = 'globally'
+		else:
+			guildprint = f'in {guild.name}'
+		min_words_msg = ''
+		if min_total > 0:
+			min_words_msg = f'that {have_has} said at least **{min_total}** messages '
+		try:
+			await ctx.send(
+				f'The {memberprint} {guildprint} {min_words_msg}who {have_has} '
+				f'said the word **{word}** the most compared to other words '
+				f'{"is" if n == 1 else "are"}:\n```{result}```'
+			)
+		except discord.errors.HTTPException:
+			await ctx.send('The result is too long to send.')
 	
 	@commands.guild_only()
 	@commands.group(invoke_without_command=True)
@@ -508,67 +593,9 @@ class WordStats(commands.Cog):
 		Use the optional parameter "amount" to change the number of members that are displayed.
 		Use the optional parameter "min_total" to change the minimum number of words a user needs to have said to be shown.
 		"""
-		if amount <= 0:
-			return await ctx.send('At least one member needs to be displayed.')
-		if amount > 100:
-			return await ctx.send('You cannot request more than 100 members.')
-		if min_total < 0:
-			min_total = 0
 		if guild is None:
 			guild = ctx.guild
-		word = word.lower()
-		worddict = {}
-		async with ctx.typing():
-			for user_id, w, quantity in self.cursor.execute(
-				'SELECT user_id, word, quantity FROM member_words '
-				'WHERE guild_id = ? ',
-				(guild.id,)
-			):
-				if user_id not in worddict:
-					worddict[user_id] = {}
-				worddict[user_id][w] = quantity
-			sumdict = {}
-			for user_id in worddict:
-				if word in worddict[user_id] and sum(worddict[user_id].values()) >= min_total:
-					sumdict[user_id] = worddict[user_id][word] / sum(worddict[user_id].values())
-			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
-		if sumdict == {}:
-			return await ctx.send('No one has chatted yet.')
-		result = ''
-		n = 0
-		for memid in order:
-			mem = guild.get_member(memid)
-			if mem is None:
-				name = f'<removed member {memid}>'
-			else:
-				name = mem.display_name
-			result += (
-				'{:4f} {}\n'.format(sumdict[memid], name)
-			)
-			n += 1
-			if n == amount:
-				break
-		if n == 1:
-			memberprint = 'member'
-			have_has = 'has'
-		else:
-			memberprint = f'**{n}** members'
-			have_has = 'have'
-		if guild == ctx.guild:
-			guildprint = 'this server'
-		else:
-			guildprint = guild.name
-		min_words_msg = ''
-		if min_total > 0:
-			min_words_msg = f'that {have_has} said at least **{min_total}** messages '
-		try:
-			await ctx.send(
-				f'The {memberprint} in {guildprint} {min_words_msg}who {have_has} '
-				f'said the word **{word}** the most compared to other words '
-				f'{"is" if n == 1 else "are"}:\n```{result}```'
-			)
-		except discord.errors.HTTPException:
-			await ctx.send('The result is too long to send.')
+		await self._topratio(ctx, word, amount, min_total, guild=guild, raw=True)
 	
 	@topratio.command(name='global')
 	async def topratio_global(self, ctx, word: str, amount: int=10, min_total: int=0):
@@ -579,62 +606,42 @@ class WordStats(commands.Cog):
 		Use the optional parameter "amount" to change the number of members that are displayed.
 		Use the optional parameter "min_total" to change the minimum number of words a user needs to have said to be shown.
 		"""
-		if amount <= 0:
-			return await ctx.send('At least one user needs to be displayed.')
-		if amount > 100:
-			return await ctx.send('You cannot request more than 100 users.')
-		if min_total < 0:
-			min_total = 0
-		word = word.lower()
-		worddict = {}
-		async with ctx.typing():
-			for user_id, w, quantity in self.cursor.execute(
-				'SELECT user_id, word, quantity FROM member_words'
-			):
-				if user_id not in worddict:
-					worddict[user_id] = {}
-				if w not in worddict[user_id]:
-					worddict[user_id][w] = quantity
-				else:
-					worddict[user_id][w] += quantity
-			sumdict = {}
-			for user_id in worddict:
-				if word in worddict[user_id] and sum(worddict[user_id].values()) >= min_total:
-					sumdict[user_id] = worddict[user_id][word] / sum(worddict[user_id].values())
-			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
-		if sumdict == {}:
-			return await ctx.send('No one has chatted yet.')
-		result = ''
-		n = 0
-		for memid in order:
-			mem = ctx.guild.get_member(memid)
-			if mem is None:
-				name = f'<removed member {memid}>'
-			else:
-				name = mem.display_name
-			result += (
-				'{:4f} {}\n'.format(sumdict[memid], name)
-			)
-			n += 1
-			if n == amount:
-				break
-		if n == 1:
-			memberprint = 'member'
-			have_has = 'has'
-		else:
-			memberprint = f'**{n}** members'
-			have_has = 'have'
-		min_words_msg = ''
-		if min_total > 0:
-			min_words_msg = f'that {have_has} said at least **{min_total}** messages '
-		try:
-			await ctx.send(
-				f'The {memberprint} {min_words_msg}who {have_has} '
-				f'globally said the word **{word}** the most compared to other words '
-				f'{"is" if n == 1 else "are"}:\n```{result}```'
-			)
-		except discord.errors.HTTPException:
-			await ctx.send('The result is too long to send.')
+		await self._topratio(ctx, word, amount, min_total, guild=None, raw=True)
+	
+	@commands.guild_only()
+	@commands.group(invoke_without_command=True)
+	async def topchance(
+		self,
+		ctx,
+		word: str,
+		guild: Optional[GuildConvert]=None,
+		amount: int=10,
+		min_total: int=0
+	):
+		"""
+		Prints the members with the highest observed probability that their next word would be the specified word.
+		Compared to [p]topratio, this will naturally "float" users who spoke more words towards the top of the listing.
+		
+		Use the parameter "word" to set the word to compare.
+		Use the optional parameter "guild" to see the ratio in a specific guild.
+		Use the optional parameter "amount" to change the number of members that are displayed.
+		Use the optional parameter "min_total" to change the minimum number of words a user needs to have said to be shown.
+		"""
+		if guild is None:
+			guild = ctx.guild
+		await self._topratio(ctx, word, amount, min_total, guild=guild, raw=False)
+	
+	@topratio.command(name='global')
+	async def topchance_global(self, ctx, word: str, amount: int=10, min_total: int=0):
+		"""
+		Prints the members with the highest observed probability that their next word would be the specified word across all guilds.
+		Compared to [p]topratio, this will naturally "float" users who spoke more words towards the top of the listing.
+		
+		Use the parameter "word" to set the word to compare.
+		Use the optional parameter "amount" to change the number of members that are displayed.
+		Use the optional parameter "min_total" to change the minimum number of words a user needs to have said to be shown.
+		"""
+		await self._topratio(ctx, word, amount, min_total, guild=None, raw=False)
 	
 	@commands.group()
 	async def wordstatsset(self, ctx):
