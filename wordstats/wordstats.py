@@ -557,6 +557,10 @@ class WordStats(commands.Cog):
 		else:
 			memberprint = f'**{n}** members'
 			have_has = 'have'
+		if raw:
+			said = 'said'
+		else:
+			said = 'the highest chance of saying'
 		if guild == ctx.guild:
 			guildprint = 'in this server'
 		elif guild is None:
@@ -569,7 +573,7 @@ class WordStats(commands.Cog):
 		try:
 			await ctx.send(
 				f'The {memberprint} {guildprint} {min_words_msg}who {have_has} '
-				f'said the word **{word}** the most compared to other words '
+				f'{said} the word **{word}** the most compared to other words '
 				f'{"is" if n == 1 else "are"}:\n```{result}```'
 			)
 		except discord.errors.HTTPException:
