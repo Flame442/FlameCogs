@@ -495,10 +495,10 @@ class WordStats(commands.Cog):
 		ctx: commands.GuildContext,
 		word: str,
 		amount: int,
-        min_total: int,
+		min_total: int,
 		*,
 		guild: Optional[discord.Guild],
-        raw: bool
+		raw: bool
 	):
 		if amount <= 0:
 			return await ctx.send('At least one member needs to be displayed.')
@@ -624,8 +624,8 @@ class WordStats(commands.Cog):
 	):
 		"""
 		Prints the members with the highest observed probability that their next word would be the specified word.
-		Compared to [p]topratio, this will naturally "float" users who spoke more words towards the top of the listing.
 		
+		Compared to `[p]topratio`, this will naturally "float" users who spoke more words towards the top of the listing.
 		Use the parameter "word" to set the word to compare.
 		Use the optional parameter "guild" to see the ratio in a specific guild.
 		Use the optional parameter "amount" to change the number of members that are displayed.
@@ -639,8 +639,8 @@ class WordStats(commands.Cog):
 	async def topchance_global(self, ctx, word: str, amount: int=10, min_total: int=0):
 		"""
 		Prints the members with the highest observed probability that their next word would be the specified word across all guilds.
-		Compared to [p]topratio, this will naturally "float" users who spoke more words towards the top of the listing.
 		
+		Compared to `[p]topratio`, this will naturally "float" users who spoke more words towards the top of the listing.
 		Use the parameter "word" to set the word to compare.
 		Use the optional parameter "amount" to change the number of members that are displayed.
 		Use the optional parameter "min_total" to change the minimum number of words a user needs to have said to be shown.
