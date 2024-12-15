@@ -8,6 +8,7 @@ import apsw
 import asyncio
 import concurrent.futures
 import functools
+import math
 import re
 
 
@@ -490,6 +491,19 @@ class WordStats(commands.Cog):
 		except discord.errors.HTTPException:
 			await ctx.send('The result is too long to send.')
 
+	@staticmethod
+	def _wilsonscore(positive: int, n: int):
+		# Wilson score confidence interval, 95% confidence, lower bound
+		# From https://www.evanmiller.org/how-not-to-sort-by-average-rating.html
+		z = 1.96
+		z_squared = 3.8416
+		ratio = positive / n
+		return (
+			ratio
+			+ z_squared / (2 * n)
+			- z * math.sqrt((ratio * (1 - ratio) + z_squared / (4 * n)) / n)
+		) / (1 + z_squared / n)
+
 	async def _topratio(
 		self,
 		ctx: commands.GuildContext,
@@ -532,8 +546,7 @@ class WordStats(commands.Cog):
 					if raw:
 						sumdict[user_id] = worddict[user_id][word] / sum(worddict[user_id].values())
 					else:
-						# Laplace's rule of succession
-						sumdict[user_id] = (worddict[user_id][word] + 1) / (sum(worddict[user_id].values()) + 2)
+						sumdict[user_id] = self._wilsonscore(worddict[user_id][word], sum(worddict[user_id].values()))
 			order = list(reversed(sorted(sumdict, key=lambda x: sumdict[x])))
 		if sumdict == {}:
 			return await ctx.send('No one has chatted yet.')
