@@ -636,7 +636,7 @@ class WordStats(commands.Cog):
 		min_total: int=0
 	):
 		"""
-		Prints the members with the highest observed probability that their next word would be the specified word.
+		Prints the members with the highest estimated probability that their next word would be the specified word.
 		
 		Compared to `[p]topratio`, this will naturally "float" users who spoke more words towards the top of the listing.
 		Use the parameter "word" to set the word to compare.
@@ -651,7 +651,7 @@ class WordStats(commands.Cog):
 	@topchance.command(name='global')
 	async def topchance_global(self, ctx, word: str, amount: int=10, min_total: int=0):
 		"""
-		Prints the members with the highest observed probability that their next word would be the specified word across all guilds.
+		Prints the members with the highest estimated probability that their next word would be the specified word across all guilds.
 		
 		Compared to `[p]topratio`, this will naturally "float" users who spoke more words towards the top of the listing.
 		Use the parameter "word" to set the word to compare.
