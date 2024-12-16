@@ -429,6 +429,9 @@ class NonVolatileEffect():
             self.current = status
             self.sleep_timer.set_turns(turns)
             msg += f"{self.pokemon.name} fell asleep{source}!\n"
+            if self.pokemon.last_move.effect == 38:
+                    self.pokemon.hp = self.pokemon.starting_hp
+                    msg += f"{self.pokemon.name}'s slumber restores its health back to full!\n"
         if status in ("poison", "b-poison"):
             if attacker is None or attacker.ability() != Ability.CORROSION:
                 if ElementType.STEEL in self.pokemon.type_ids:
