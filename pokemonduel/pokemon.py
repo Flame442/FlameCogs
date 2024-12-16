@@ -422,7 +422,30 @@ class DuelPokemon():
         if self.held_item == "grassy-seed" and battle.terrain.item == "grassy":
             msg += self.append_defense(1, attacker=self, source="its grassy seed")
             self.held_item.use()
-        
+        if (self.held_item == "booster-energy" 
+            and (
+                (self.ability() == Ability.PROTOSYNTHESIS 
+                and battle.weather.get() not in ("sun", "h-sun"))
+                or 
+                (self.ability() == Ability.QUARK_DRIVE 
+                and battle.terrain.item != "electric")
+            )):
+            ab = "Protosynthesis" if self.ability() == Ability.PROTOSYNTHESIS else "Quark Drive" 
+            stats = {
+                "attack": self.get_raw_attack(),
+                "defense": self.get_raw_defense(),
+                "special attack": self.get_raw_spatk(),
+                "special defense": self.get_raw_spdef(),
+                "speed": self.get_raw_speed(),
+            }
+            highest_stat = max(stats, key=stats.get).title()
+            msg += (
+                f"{self.name}'s {ab} activated from Booster Energy.\n"
+                f"{self.name}'s {highest_stat.title()} was heightened!"
+            )
+            self.held_item.use()
+            self.booster_energy = True
+            
         return msg
     
     def send_out_ability(self, otherpoke, battle):
@@ -693,6 +716,23 @@ class DuelPokemon():
             msg += f"{self.name} transformed into a {t} type using its mimicry!\n"
         if self.ability() == Ability.WIND_RIDER and self.owner.tailwind.active():
             msg += self.append_attack(1, attacker=self, source="its wind rider")
+        if ((self.ability() == Ability.PROTOSYNTHESIS and battle.weather.get() in ("sun", "h-sun"))
+            or 
+            (self.ability() == Ability.QUARK_DRIVE and battle.terrain.item == "electric")):
+            ab = "Protosynthesis" if self.ability() == Ability.PROTOSYNTHESIS else "Quark Drive" 
+            cause = "Electric Terrain" if battle.terrain.item == "electric" else "Sunlight"
+            stats = {
+                "attack": self.get_raw_attack(),
+                "defense": self.get_raw_defense(),
+                "special attack": self.get_raw_spatk(),
+                "special defense": self.get_raw_spdef(),
+                "speed": self.get_raw_speed(),
+            }
+            highest_stat = max(stats, key=stats.get).title()
+            msg += (
+                f"{self.name}'s {ab} activated from {cause}.\n"
+                f"{self.name}'s {highest_stat.title()} was heightened!"
+            )
         
         return msg
     
@@ -1762,11 +1802,6 @@ class DuelPokemon():
                 or (self.ability() == Ability.QUARK_DRIVE and (battle.terrain.item == "electric" or self.booster_energy))
             ):
                 attack *= 1.3
-            elif self.ability() in (Ability.PROTOSYNTHESIS, Ability.QUARK_DRIVE) and self.held_item == "booster-energy":
-                self.held_item.use()
-                self.booster_energy = True
-                attack *= 1.3
-
         return attack
     
     def get_defense(self, battle, *, critical=False, ignore_stages=False, attacker=None, move=None):
@@ -1796,10 +1831,6 @@ class DuelPokemon():
                 (self.ability() == Ability.PROTOSYNTHESIS and (battle.weather.get() in ("sun", "h-sun") or self.booster_energy))
                 or (self.ability() == Ability.QUARK_DRIVE and (battle.terrain.item == "electric" or self.booster_energy))
             ):
-                defense *= 1.3
-            elif self.ability() in (Ability.PROTOSYNTHESIS, Ability.QUARK_DRIVE) and self.held_item == "booster-energy":
-                self.held_item.use()
-                self.booster_energy = True
                 defense *= 1.3
         return defense
     
@@ -1832,10 +1863,6 @@ class DuelPokemon():
                 or (self.ability() == Ability.QUARK_DRIVE and (battle.terrain.item == "electric" or self.booster_energy))
             ):
                 spatk *= 1.3
-            elif self.ability() in (Ability.PROTOSYNTHESIS, Ability.QUARK_DRIVE) and self.held_item == "booster-energy":
-                self.held_item.use()
-                self.booster_energy = True
-                spatk *= 1.3
         return spatk
     
     def get_spdef(self, battle, *, critical=False, ignore_stages=False, attacker=None, move=None):
@@ -1867,10 +1894,6 @@ class DuelPokemon():
                 (self.ability() == Ability.PROTOSYNTHESIS and (battle.weather.get() in ("sun", "h-sun") or self.booster_energy))
                 or (self.ability() == Ability.QUARK_DRIVE and (battle.terrain.item == "electric" or self.booster_energy))
             ):
-                spdef *= 1.3
-            elif self.ability() in (Ability.PROTOSYNTHESIS, Ability.QUARK_DRIVE) and self.held_item == "booster-energy":
-                self.held_item.use()
-                self.booster_energy = True
                 spdef *= 1.3
         return spdef
     
@@ -1907,10 +1930,6 @@ class DuelPokemon():
                 (self.ability() == Ability.PROTOSYNTHESIS and (battle.weather.get() in ("sun", "h-sun") or self.booster_energy))
                 or (self.ability() == Ability.QUARK_DRIVE and (battle.terrain.item == "electric" or self.booster_energy))
             ):
-                speed *= 1.5
-            elif self.ability() in (Ability.PROTOSYNTHESIS, Ability.QUARK_DRIVE) and self.held_item == "booster-energy":
-                self.held_item.use()
-                self.booster_energy = True
                 speed *= 1.5
         return speed
     
