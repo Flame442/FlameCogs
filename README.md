@@ -614,6 +614,19 @@ Use the parameter `word` to set the word to compare.
 Use the optional parameter `amount` to change the number of members that are displayed (default `10`).  
 Use the optional parameter `min_total` to change the minimum number of words a user needs to have said to be shown.
 
+**`[p]topchance <word> [guild] [amount] [min_total]`**  
+Prints the members with the highest estimated probability that their next word would be the specified word.  
+Use the parameter `word` to set the word to compare.  
+Use the optional parameter `guild` to see the ratio in a specific guild.  
+Use the optional parameter `amount` to change the number of members that are displayed (default `10`).  
+Use the optional parameter `min_total` to change the minimum number of words a user needs to have said to be shown.
+
+**`[p]topchance global <word> [amount] [min_total]`**  
+Prints the members with the highest estimated probability that their next word would be the specified word across all guilds.  
+Use the parameter `word` to set the word to compare.  
+Use the optional parameter `amount` to change the number of members that are displayed (default `10`).  
+Use the optional parameter `min_total` to change the minimum number of words a user needs to have said to be shown.
+
 **`[p]wordstatsset <argument>`**  
 Config options for wordstats.  
 This command is only usable by the server owner and bot owner.  
