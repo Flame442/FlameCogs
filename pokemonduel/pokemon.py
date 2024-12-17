@@ -301,6 +301,8 @@ class DuelPokemon():
         self.cud_chew = ExpiringEffect(0)
         #Boolean - stores whether booster_energy has been consumed this send out to activate the effects of Protosynthesis / Quark Drive.
         self.booster_energy = False
+        # Bool to check if effect of Protosynthesis / Quark Drive is currently active 
+        self.ability_effect_activated = False
 
     def send_out(self, otherpoke, battle):
         """
@@ -410,18 +412,6 @@ class DuelPokemon():
         # Items
         if self.held_item == "air-balloon" and not self.grounded(battle):
             msg += f"{self.name} floats in the air with its air balloon!\n"
-        if self.held_item == "electric-seed" and battle.terrain.item == "electric":
-            msg += self.append_defense(1, attacker=self, source="its electric seed")
-            self.held_item.use()
-        if self.held_item == "psychic-seed" and battle.terrain.item == "psychic":
-            msg += self.append_spdef(1, attacker=self, source="its psychic seed")
-            self.held_item.use()
-        if self.held_item == "misty-seed" and battle.terrain.item == "misty":
-            msg += self.append_spdef(1, attacker=self, source="its misty seed")
-            self.held_item.use()
-        if self.held_item == "grassy-seed" and battle.terrain.item == "grassy":
-            msg += self.append_defense(1, attacker=self, source="its grassy seed")
-            self.held_item.use()
         if (self.held_item == "booster-energy" 
             and (
                 (self.ability() == Ability.PROTOSYNTHESIS 
@@ -445,6 +435,9 @@ class DuelPokemon():
             )
             self.held_item.use()
             self.booster_energy = True
+        # checking effects for abilities/item after the pokemon has switched in 
+        msg += battle.weather.check_extra_effects()
+        msg += battle.terrain.check_extra_effects()
             
         return msg
     
@@ -682,59 +675,9 @@ class DuelPokemon():
                 msg += f"{self.name} transformed into a {t} type using its rks system!\n"
         if self.ability() == Ability.TRUANT:
             self.truant_turn = 0
-        if self.ability() == Ability.FORECAST and self._name in ("Castform", "Castform-snowy", "Castform-rainy", "Castform-sunny"):
-            weather = battle.weather.get()
-            element = None
-            if weather == "hail" and self._name != "Castform-snowy":
-                if self.form("Castform-snowy"):
-                    element = ElementType.ICE
-            elif weather in ("sandstorm", "h-wind", None) and self._name != "Castform":
-                if self.form("Castform"):
-                    element = ElementType.NORMAL
-            elif weather in ("rain", "h-rain") and self._name != "Castform-rainy":
-                if self.form("Castform-rainy"):
-                    element = ElementType.WATER
-            elif weather in ("sun", "h-sun") and self._name != "Castform-sunny":
-                if self.form("Castform-sunny"):
-                    element = ElementType.FIRE
-            if element is not None:
-                self.type_ids = [element]
-                t = ElementType(element).name.lower()
-                msg += f"{self.name} transformed into a {t} type using its forecast!\n"
-        if self.ability() == Ability.MIMICRY and battle.terrain.item:
-            terrain = battle.terrain.item
-            if terrain == "electric":
-                element = ElementType.ELECTRIC
-            elif terrain == "grassy":
-                element = ElementType.GRASS
-            elif terrain == "misty":
-                element = ElementType.FAIRY
-            elif terrain == "psychic":
-                element = ElementType.PSYCHIC
-            self.type_ids = [element]
-            t = ElementType(element).name.lower()
-            msg += f"{self.name} transformed into a {t} type using its mimicry!\n"
         if self.ability() == Ability.WIND_RIDER and self.owner.tailwind.active():
             msg += self.append_attack(1, attacker=self, source="its wind rider")
-        if ((self.ability() == Ability.PROTOSYNTHESIS and battle.weather.get() in ("sun", "h-sun"))
-            or 
-            (self.ability() == Ability.QUARK_DRIVE and battle.terrain.item == "electric")):
-            ab = "Protosynthesis" if self.ability() == Ability.PROTOSYNTHESIS else "Quark Drive" 
-            cause = "Electric Terrain" if battle.terrain.item == "electric" else "Sunlight"
-            stats = {
-                "attack": self.get_raw_attack(),
-                "defense": self.get_raw_defense(),
-                "special attack": self.get_raw_spatk(),
-                "special defense": self.get_raw_spdef(),
-                "speed": self.get_raw_speed(),
-            }
-            highest_stat = max(stats, key=stats.get).title()
-            msg += (
-                f"{self.name}'s {ab} activated from {cause}.\n"
-                f"{self.name}'s {highest_stat.title()} was heightened!"
-            )
 
-        
         return msg
     
     def remove(self, battle, *, fainted=False):
@@ -896,6 +839,7 @@ class DuelPokemon():
         self.tar_shot = False
         self.syrup_bomb = ExpiringEffect(0)
         self.held_item.ever_had_item = self.held_item.item is not None
+        self.ability_effect_activated = False
 
         return msg
 
