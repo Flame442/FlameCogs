@@ -223,6 +223,9 @@ class Battle():
                 winner = await self.run_swap(t1, t2, mid_turn=True)
                 if winner:
                     break
+            # checking effects for abilities/item after the first pokemon has moved/switched
+            self.msg += self.weather.check_extra_effects()
+            self.msg += self.terrain.check_extra_effects()
             
             self.msg += "\n"
             
@@ -255,6 +258,9 @@ class Battle():
                 winner = await self.run_swap(t2, t1, mid_turn=True)
                 if winner:
                     break
+            # checking effects for abilities/item after the second pokemon has moved/switched
+            self.msg += self.weather.check_extra_effects()
+            self.msg += self.terrain.check_extra_effects()
 
             if not t2.has_alive_pokemon():
                 self.msg += f"{t1.name} wins!\n"
