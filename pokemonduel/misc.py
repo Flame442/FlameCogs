@@ -62,9 +62,6 @@ class Weather(ExpiringEffect):
             if poke.ability() == Ability.FORECAST and poke._name in ("Castform-snowy", "Castform-rainy", "Castform-sunny"):
                 if poke.form("Castform"):
                     poke.type_ids = [ElementType.NORMAL]
-            # Protosynthesis 
-            if poke.ability() == Ability.PROTOSYNTHESIS and self.get() not in ("sun", "h-sun") and poke.ability_effect_activated == True:
-                poke.ability_effect_activated = False
             
         self._weather_type = ""
     
@@ -108,6 +105,8 @@ class Weather(ExpiringEffect):
 
             # Abilities
             # Protosynthesis
+            if poke.ability() == Ability.PROTOSYNTHESIS and self.get() not in ("sun", "h-sun") and poke.ability_effect_activated == True:
+                poke.ability_effect_activated = False
             if poke.ability() == Ability.PROTOSYNTHESIS and self.get() in ("sun", "h-sun") and poke.ability_effect_activated == False and poke.booster_energy == False:
                 stats = {
                     "attack": poke.get_raw_attack(),
@@ -259,6 +258,8 @@ class Terrain(ExpiringItem):
             # Abilities 
 
             # Quark Drive 
+            if poke.ability() == Ability.QUARK_DRIVE and self.item != "electric" and poke.ability_effect_activated == True:
+                poke.ability_effect_activated = False
             if (poke.ability() == Ability.QUARK_DRIVE and self.item == "electric") and poke.ability_effect_activated == False and poke.booster_energy == False:
                 stats = {
                     "attack": poke.get_raw_attack(),
@@ -322,9 +323,6 @@ class Terrain(ExpiringItem):
         for poke in (self.battle.trainer1.current_pokemon, self.battle.trainer2.current_pokemon):
             if poke is None:
                 continue
-            # Quark Drive 
-            if poke.ability() == Ability.QUARK_DRIVE and self.item != "electric" and poke.ability_effect_activated == True:
-                poke.ability_effect_activated = False
             # Mimicry
             if poke.ability() == Ability.MIMICRY:
                 poke.type_ids = poke.starting_type_ids.copy()
