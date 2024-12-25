@@ -55,7 +55,6 @@ class Weather(ExpiringEffect):
 
     def _expire_weather(self):
         """Clear the current weather and update Castform forms."""
-        self._weather_type = ""
         for poke in (self.battle.trainer1.current_pokemon, self.battle.trainer2.current_pokemon):
             if poke is None:
                 continue
@@ -63,6 +62,8 @@ class Weather(ExpiringEffect):
             if poke.ability() == Ability.FORECAST and poke._name in ("Castform-snowy", "Castform-rainy", "Castform-sunny"):
                 if poke.form("Castform"):
                     poke.type_ids = [ElementType.NORMAL]
+            
+        self._weather_type = ""
     
     def next_turn(self):
         """Progresses the weather a turn."""
@@ -98,6 +99,49 @@ class Weather(ExpiringEffect):
                 return ""
         return self._weather_type
     
+    def check_extra_effects(self):
+        msg = ""
+        for poke in [self.battle.trainer1.current_pokemon, self.battle.trainer2.current_pokemon]:
+            if poke == None:
+                continue
+            # Abilities
+            # Protosynthesis
+            if poke.ability() == Ability.PROTOSYNTHESIS and self.get() not in ("sun", "h-sun") and poke.ability_effect_activated == True:
+                poke.ability_effect_activated = False
+            if poke.ability() == Ability.PROTOSYNTHESIS and self.get() in ("sun", "h-sun") and poke.ability_effect_activated == False and poke.booster_energy == False:
+                stats = {
+                    "attack": poke.get_raw_attack(),
+                    "defense": poke.get_raw_defense(),
+                    "special attack": poke.get_raw_spatk(),
+                    "special defense": poke.get_raw_spdef(),
+                    "speed": poke.get_raw_speed(),
+                }
+                highest_stat = max(stats, key=stats.get).title()
+                poke.ability_effect_activated = True
+                msg += f"{poke.name}'s Protosynthesis activated from sunlight.\n{poke.name}'s {highest_stat.title()} was heightened!\n"
+            # Forecast
+            elif poke.ability() == Ability.FORECAST:
+                element = None
+                castform_type_map = {
+                    "hail": (ElementType.ICE, "Castform-snowy"),
+                    "sandstorm": (ElementType.NORMAL, "Castform"),
+                    "rain": (ElementType.WATER, "Castform-rainy"),
+                    "sun": (ElementType.FIRE, "Castform-sunny"),
+                    "h-rain": (ElementType.WATER, "Castform-rainy"),
+                    "h-sun": (ElementType.FIRE, "Castform-sunny"),
+                    "h-wind": (ElementType.NORMAL, "Castform")
+                }
+                if self.get() in castform_type_map:
+                    element, castform = castform_type_map[self.get()]
+                    t = ElementType(element).name.lower()
+                    if poke._name != castform:
+                        if poke.form(castform):
+                            poke.type_ids = [element]
+                            msg += f"{poke.name} transformed into a {t} type using its forecast!\n"
+
+            # Items
+        return msg
+
     def set(self, weather: str, pokemon):
         """
         Set the weather, lasting a certain number of turns.
@@ -106,8 +150,6 @@ class Weather(ExpiringEffect):
         """
         msg = ""
         turns = None
-        element = None
-        castform = None
         if self._weather_type == weather:
             return ""
         if weather == "hail":
@@ -118,8 +160,6 @@ class Weather(ExpiringEffect):
             else:
                 turns = 5
             msg += "It starts to hail!\n"
-            element = ElementType.ICE
-            castform = "Castform-snowy"
         elif weather == "sandstorm":
             if self._weather_type in ("h-rain", "h-sun", "h-wind"):
                 return ""
@@ -128,8 +168,6 @@ class Weather(ExpiringEffect):
             else:
                 turns = 5
             msg += "A sandstorm is brewing up!\n"
-            element = ElementType.NORMAL
-            castform = "Castform"
         elif weather == "rain":
             if self._weather_type in ("h-rain", "h-sun", "h-wind"):
                 return ""
@@ -138,8 +176,6 @@ class Weather(ExpiringEffect):
             else:
                 turns = 5
             msg += "It starts to rain!\n"
-            element = ElementType.WATER
-            castform = "Castform-rainy"
         elif weather == "sun":
             if self._weather_type in ("h-rain", "h-sun", "h-wind"):
                 return ""
@@ -148,33 +184,15 @@ class Weather(ExpiringEffect):
             else:
                 turns = 5
             msg += "The sunlight is strong!\n"
-            element = ElementType.FIRE
-            castform = "Castform-sunny"
         elif weather == "h-rain":
             msg += "Heavy rain begins to fall!\n"
-            element = ElementType.WATER
-            castform = "Castform-rainy"
         elif weather == "h-sun":
             msg += "The sunlight is extremely harsh!\n"
-            element = ElementType.FIRE
-            castform = "Castform-sunny"
         elif weather == "h-wind":
             msg += "The winds are extremely strong!\n"
-            element = ElementType.NORMAL
-            castform = "Castform"
         else:
             raise ValueError("unexpected weather")
-        
-        # Forecast
-        t = ElementType(element).name.lower()
-        for poke in (self.battle.trainer1.current_pokemon, self.battle.trainer2.current_pokemon):
-            if poke is None:
-                continue
-            if poke.ability() == Ability.FORECAST and poke._name != castform:
-                if poke.form(castform):
-                    poke.type_ids = [element]
-                    msg += f"{poke.name} transformed into a {t} type using its forecast!\n"
-        
+
         self._weather_type = weather
         self._remaining_turns = turns
         return msg
@@ -235,6 +253,60 @@ class Terrain(ExpiringItem):
             self.end()
         return expired
     
+    def check_extra_effects(self):
+        msg = ""
+        for poke in [self.battle.trainer1.current_pokemon, self.battle.trainer2.current_pokemon]:
+            if poke == None:
+                continue
+            # Abilities 
+
+            # Quark Drive 
+            if poke.ability() == Ability.QUARK_DRIVE and self.item != "electric" and poke.ability_effect_activated == True:
+                poke.ability_effect_activated = False
+            if (poke.ability() == Ability.QUARK_DRIVE and self.item == "electric") and poke.ability_effect_activated == False and poke.booster_energy == False:
+                stats = {
+                    "attack": poke.get_raw_attack(),
+                    "defense": poke.get_raw_defense(),
+                    "special attack": poke.get_raw_spatk(),
+                    "special defense": poke.get_raw_spdef(),
+                    "speed": poke.get_raw_speed(),
+                }
+                highest_stat = max(stats, key=stats.get).title()
+                poke.ability_effect_activated = True
+                msg += f"{poke.name}'s Quark Drive activated from Electric Terrain.\n{poke.name}'s {highest_stat.title()} was heightened!\n"
+            # Mimicry 
+            elif poke.ability() == Ability.MIMICRY and self.item:
+                element = None
+                if self.item == "electric":
+                    element = ElementType.ELECTRIC
+                elif self.item == "grassy":
+                    element = ElementType.GRASS
+                elif self.item == "misty":
+                    element = ElementType.FAIRY
+                elif self.item == "psychic":
+                    element = ElementType.PSYCHIC
+                if poke.type_ids != [element]:
+                    poke.type_ids = [element]
+                    t = ElementType(element).name.lower()
+                    msg += f"{poke.name} became a {t} type using its mimicry!\n"
+
+            # Items
+            # Terrain-Seeds
+            if poke.held_item == "electric-seed" and self.item == "electric":
+                msg += poke.append_defense(1, attacker=poke, source="its electric seed")
+                poke.held_item.use()
+            elif poke.held_item == "psychic-seed" and self.item == "psychic":
+                msg += poke.append_spdef(1, attacker=poke, source="its psychic seed")
+                poke.held_item.use()
+            elif poke.held_item == "misty-seed" and self.item == "misty":
+                msg += poke.append_spdef(1, attacker=poke, source="its misty seed")
+                poke.held_item.use()
+            elif poke.held_item == "grassy-seed" and self.item == "grassy":
+                msg += poke.append_defense(1, attacker=poke, source="its grassy seed")
+                poke.held_item.use()       
+
+        return msg
+    
     def set(self, item, attacker):
         """
         Set the terrain and turns until expiration.
@@ -246,46 +318,18 @@ class Terrain(ExpiringItem):
         turns = 8 if attacker.held_item == "terrain-extender" else 5
         super().set(item, turns)
         msg = f"{attacker.name} creates a{'n' if item == 'electric' else ''} {item} terrain!\n"
-        # Mimicry
-        element = None
-        if item == "electric":
-            element = ElementType.ELECTRIC
-        elif item == "grassy":
-            element = ElementType.GRASS
-        elif item == "misty":
-            element = ElementType.FAIRY
-        elif item == "psychic":
-            element = ElementType.PSYCHIC
-        for poke in (self.battle.trainer1.current_pokemon, self.battle.trainer2.current_pokemon):
-            if poke is None:
-                continue
-            if poke.ability() == Ability.MIMICRY:
-                poke.type_ids = [element]
-                t = ElementType(element).name.lower()
-                msg += f"{poke.name} became a {t} type using its mimicry!\n"
-            if poke.held_item == "electric-seed" and item == "electric":
-                msg += poke.append_defense(1, attacker=poke, source="its electric seed")
-                poke.held_item.use()
-            if poke.held_item == "psychic-seed" and item == "psychic":
-                msg += poke.append_spdef(1, attacker=poke, source="its psychic seed")
-                poke.held_item.use()
-            if poke.held_item == "misty-seed" and item == "misty":
-                msg += poke.append_spdef(1, attacker=poke, source="its misty seed")
-                poke.held_item.use()
-            if poke.held_item == "grassy-seed" and item == "grassy":
-                msg += poke.append_defense(1, attacker=poke, source="its grassy seed")
-                poke.held_item.use()
+
         return msg
     
     def end(self):
         """Ends the terrain."""
-        super().end()
-        # Mimicry
         for poke in (self.battle.trainer1.current_pokemon, self.battle.trainer2.current_pokemon):
             if poke is None:
                 continue
+            # Mimicry
             if poke.ability() == Ability.MIMICRY:
                 poke.type_ids = poke.starting_type_ids.copy()
+        super().end()
 
 
 class ExpiringWish(ExpiringEffect):
