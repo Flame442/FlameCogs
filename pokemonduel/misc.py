@@ -102,7 +102,8 @@ class Weather(ExpiringEffect):
     def check_extra_effects(self):
         msg = ""
         for poke in [self.battle.trainer1.current_pokemon, self.battle.trainer2.current_pokemon]:
-
+            if poke == None:
+                continue
             # Abilities
             # Protosynthesis
             if poke.ability() == Ability.PROTOSYNTHESIS and self.get() not in ("sun", "h-sun") and poke.ability_effect_activated == True:
@@ -255,6 +256,8 @@ class Terrain(ExpiringItem):
     def check_extra_effects(self):
         msg = ""
         for poke in [self.battle.trainer1.current_pokemon, self.battle.trainer2.current_pokemon]:
+            if poke == None:
+                continue
             # Abilities 
 
             # Quark Drive 
