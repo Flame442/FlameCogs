@@ -3352,7 +3352,12 @@ class Move():
             stage = 0
         else:
             stage = attacker.get_accuracy(battle)
-        if not (self.effect == 304 or defender.foresight or defender.miracle_eye or attacker.ability() == Ability.UNAWARE):
+        if not (
+            self.effect == 304
+            or defender.foresight
+            or defender.miracle_eye
+            or attacker.ability() in [Ability.UNAWARE, Ability.KEEN_EYE, Ability.MINDS_EYE]
+        ):
             stage -= defender.get_evasion(battle)
         stage = min(6, max(-6, stage))
         stage_multiplier = {

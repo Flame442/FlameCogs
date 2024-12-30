@@ -301,6 +301,8 @@ class DuelPokemon():
         self.cud_chew = ExpiringEffect(0)
         #Boolean - stores whether booster_energy has been consumed this send out to activate the effects of Protosynthesis / Quark Drive.
         self.booster_energy = False
+        #Boolean - stores whether supersweet_syrup has been consumed to lower the evasion of its opponent. NOT reset on switch out.
+        self.supersweet_syrup = False
 
     def send_out(self, otherpoke, battle):
         """
@@ -693,6 +695,8 @@ class DuelPokemon():
             msg += f"{self.name} transformed into a {t} type using its mimicry!\n"
         if self.ability() == Ability.WIND_RIDER and self.owner.tailwind.active():
             msg += self.append_attack(1, attacker=self, source="its wind rider")
+        if self.ability() == Ability.SUPERSWEET_SYRUP and not self.supersweet_syrup and otherpoke is not None:
+            msg += otherpoke.append_evasion(-1, attacker=self, source=f"{self.name}'s supersweet syrup")
         
         return msg
     
@@ -1458,6 +1462,8 @@ class DuelPokemon():
                 if attacker.ability() == Ability.MAGICIAN and not attacker.held_item.has_item() and self.held_item.can_remove():
                     self.held_item.transfer(attacker.held_item)
                     msg += f"{attacker.name} stole {attacker.held_item.name} using its magician!\n"
+                if attacker.ability() == Ability.TOXIC_CHAIN and random.randint(1, 100) <= 30:
+                    msg += self.nv.apply_status("b-poison", battle, attacker=attacker, source=f"{attacker.name}'s toxic chain")
                 if attacker.held_item == "shell-bell":
                     # Shell bell does not trigger when a move is buffed by sheer force.
                     if attacker.ability() != Ability.SHEER_FORCE or move.effect_chance is None:
@@ -2017,6 +2023,8 @@ class DuelPokemon():
                 return f"{self.name}'s claws stayed sharp because of its hyper cutter!\n"
             if self.ability(attacker=attacker, move=move) == Ability.KEEN_EYE and stat == "accuracy":
                 return f"{self.name}'s aim stayed true because of its keen eye!\n"
+            if self.ability(attacker=attacker, move=move) == Ability.MINDS_EYE and stat == "accuracy":
+                return f"{self.name}'s aim stayed true because of its mind's eye!\n"
             if self.ability(attacker=attacker, move=move) == Ability.BIG_PECKS and stat == "defense":
                 return f"{self.name}'s defense stayed strong because of its big pecks!\n"
             if self.owner.mist.active() and (attacker is None or attacker.ability() != Ability.INFILTRATOR):
@@ -2187,7 +2195,12 @@ class DuelPokemon():
                 continue
             if self.miracle_eye and attacker_type == ElementType.PSYCHIC and defender_type == ElementType.DARK:
                 continue
-            if attacker_type in (ElementType.FIGHTING, ElementType.NORMAL) and defender_type == ElementType.GHOST and attacker is not None and attacker.ability() == Ability.SCRAPPY:
+            if (
+                attacker_type in (ElementType.FIGHTING, ElementType.NORMAL)
+                and defender_type == ElementType.GHOST
+                and attacker is not None
+                and attacker.ability() in [Ability.SCRAPPY, Ability.MINDS_EYE]
+            ):
                 continue
             if attacker_type == ElementType.GROUND and defender_type == ElementType.FLYING and self.grounded(battle, attacker=attacker, move=move):
                 continue
@@ -2202,6 +2215,8 @@ class DuelPokemon():
             effectiveness *= e
         if attacker_type == ElementType.FIRE and self.tar_shot:
             effectiveness *= 2
+        if effectiveness >= 1 and self.hp == self.starting_hp and self.ability(attacker=attacker, move=move) == Ability.TERA_SHELL:
+            effectiveness = 0.5
         return effectiveness
     
     def weight(self, *, attacker=None, move=None):

@@ -441,6 +441,9 @@ class NonVolatileEffect():
             self.current = status
             bad = " badly" if status == "b-poison" else ""
             msg += f"{self.pokemon.name} was{bad} poisoned{source}!\n"
+            
+            if move is not None and attacker is not None and attacker.ability() == Ability.POISON_PUPPETEER:
+                msg += self.pokemon.confuse(attacker=attacker, source=f"{attacker.name}'s poison puppeteer")
         if status == "paralysis":
             if ElementType.ELECTRIC in self.pokemon.type_ids:
                 return f"{self.pokemon.name} is an electric type and can't be paralyzed!\n"
