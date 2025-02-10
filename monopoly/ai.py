@@ -408,6 +408,9 @@ class MonopolyAI():
 	
 	def incoming_trade(self, game, them_id, incoming, outgoing):
 		"""Decide whether to accept or deny an incoming trade."""
+		#edge case - offered nothing and want <$50
+		if incoming[0] == 0 and incoming[1] == 0 and not incoming[2]:
+			return 'n'
 		value = 0
 		#begin by basing the value on the money change
 		value += incoming[0]
@@ -425,10 +428,8 @@ class MonopolyAI():
 			ownedby[prop] = them_id
 		me_delta += self._calc_prop_value(game, ownedby, self.me)
 		them_delta += self._calc_prop_value(game, ownedby, them_id)
-		if me_delta > them_delta:
-			value += me_delta
-		else:
-			value -= them_delta
+		value += me_delta
+		value -= them_delta
 		if value > -50:
 			return 'y'
 		return 'n'

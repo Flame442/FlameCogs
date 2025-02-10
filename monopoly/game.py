@@ -1063,6 +1063,9 @@ class MonopolyGame():
 			if choice is None:
 				raise asyncio.TimeoutError()
 			if choice == 'm':
+				if money_p > 0:
+					self.msg += 'Money cannot be on both sides of the trade.\n'
+					continue
 				await self.channel.send(f'How much money? They have ${self.bal[partner]}.')
 				money = await self.bot.wait_for(
 					'message',
@@ -1350,18 +1353,15 @@ class MonopolyGame():
 		"""Mortgage and unmortgage properties."""
 		mortgageable = []
 		for a in range(40):
-			if self.ownedby[a] == self.p and self.numhouse[a] <= 0:
-				mortgageable.append(a)
-		#properties cannot be mortgaged if any property in their color group has a house
-		for a in mortgageable:
-			groupHasHouse = False
-			for group in PROPGROUPS.values():
-				if a in group:
-					if any(self.numhouse[prop] not in (-1, 0) for prop in group):
-						groupHasHouse = True
-					break
-			if groupHasHouse:
-				mortgageable.remove(a)
+			if self.ownedby[a] != self.p:
+				continue
+			#properties cannot be mortgaged if any property in their color group has a house
+			if self.numhouse[a] != -1:
+				group = PROPGROUPS[PROPCOLORS[a]]
+				if not all(self.numhouse[prop] == 0 for prop in group):
+					continue
+			mortgageable.append(a)
+
 		if not mortgageable:
 			self.msg += 'You do not have any properties that are able to be mortgaged.\n'
 			return
