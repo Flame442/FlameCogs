@@ -188,9 +188,10 @@ class PartyGames(commands.Cog):
 					)
 					if health[p.id] == 0:
 						await ctx.send(_('{p} is eliminated!').format(p=p.mention))
-						players.remove(p)
-						if len(players) == 1:
-							await ctx.send(_('{p} wins!').format(p=players[0].mention))
+						alive = [uid for uid, hp in health.items() if hp > 0]
+						if len(alive) == 1:
+							winner = [u for u in players if u.id in alive]
+							await ctx.send(_('{p} wins!').format(p=winner[0].mention))
 							if ctx.channel.id in self.games:
 								self.games.remove(ctx.channel.id)
 							return
