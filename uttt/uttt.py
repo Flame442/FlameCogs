@@ -1,5 +1,5 @@
 import discord
-from redbot.core import commands
+from redbot.core import commands, Config
 import asyncio
 import logging
 from .game import UTTTGame
@@ -12,6 +12,10 @@ class UTTT(commands.Cog):
         self.bot = bot
         self.log = logging.getLogger('red.flamecogs.uttt')
         self.games = []
+        self.config = Config.get_conf(self, identifier=145519400223506432)
+        self.config.register_guild(
+            deleteHistory=False,
+        )
     
     @commands.guild_only()
     @commands.command()
@@ -53,7 +57,40 @@ class UTTT(commands.Cog):
         
         game = UTTTGame(ctx, *players)
         self.games.append(game)
+    
+    @commands.guild_only()
+    @commands.guildowner()
+    @commands.group(invoke_without_command=True)
+    async def utttset(self, ctx):
+        """Config options for UTTT."""
+        await ctx.send_help()
+        cfg = await self.config.guild(ctx.guild).all()
+        msg = (
+            'Delete previous messages: {deleteHistory}\n'
+        ).format_map(cfg)
+        await ctx.send(f'```py\n{msg}```')
+    
+    @utttset.command()
+    async def delete(self, ctx, value: bool=None):
+        """
+        Set if old messages should be deleted when new ones are sent.
         
+        Defaults to False.
+        This value is server specific.
+        """
+        if value is None:
+            v = await self.config.guild(ctx.guild).deleteHistory()
+            if v:
+                await ctx.send('Messages are currently deleted when new ones are sent.')
+            else:
+                await ctx.send('Messages are currently retained.')
+        else:
+            await self.config.guild(ctx.guild).deleteHistory.set(value)
+            if value:
+                await ctx.send('Messages will now be deleted when new ones are sent.')
+            else:
+                await ctx.send('Messages will now be retained.')
+    
     @commands.guild_only()
     @commands.guildowner()
     @commands.command()

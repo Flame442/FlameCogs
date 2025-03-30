@@ -575,6 +575,16 @@ First to win three sub boards in a row wins.
 Stop the game of ultimate tic tac toe in the current channel.  
 This command is only usable by the server owner and bot owner.
 
+**`[p]utttset <argument>`**  
+Config options for UTTT.  
+This command is only usable by the server owner and bot owner.
+
+**`[p]utttset delete [value]`**  
+Set if old messages should be deleted when new ones are sent.  
+Defaults to `False`.  
+This command is only usable by the server owner and bot owner.  
+This value is server specific.
+
 ## Wordstats
 
 This cog will track commonly used words by server and member.

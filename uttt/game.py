@@ -130,7 +130,7 @@ class UTTTGame():
             # Pick the sub board
             if self.sub is None:
                 view = PickTileView(self, self.big_board)
-                await self.ctx.send(
+                last_message = await self.ctx.send(
                     f'{self.generate_board()}{self.players[self.p].display_name}, pick a sub board.',
                     view=view,
                 )
@@ -141,10 +141,15 @@ class UTTTGame():
                     )
                     return self.stop()
                 self.sub = view.tile
+                if await self.cog.config.guild(self.channel.guild).deleteHistory():
+                    try:
+                        await last_message.delete()
+                    except discord.HTTPException:
+                        pass
 
             # Pick the tile
             view = PickTileView(self, self.board[self.sub])
-            await self.ctx.send(
+            last_message = await self.ctx.send(
                 f'{self.generate_board()}{self.players[self.p].display_name}, make your move.',
                 view=view,
             )
@@ -156,6 +161,11 @@ class UTTTGame():
                 return self.stop()
             move = view.tile
             self.board[self.sub][move] = self.p
+            if await self.cog.config.guild(self.channel.guild).deleteHistory():
+                try:
+                    await last_message.delete()
+                except discord.HTTPException:
+                    pass
             
             # Check for sub board / game wins
             if self.check_board(self.board[self.sub]):
