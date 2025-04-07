@@ -700,9 +700,6 @@ class Move():
                 msg += defender.nv.apply_status("sleep", battle, attacker=attacker, move=self)
         if self.effect == 38:
             msg += attacker.nv.apply_status("sleep", battle, attacker=attacker, move=self, turns=3, force=True)
-            if attacker.nv.sleep():
-                msg += f"{attacker.name}'s slumber restores its health back to full!\n"
-                attacker.hp = attacker.starting_hp
         if self.effect in (50, 119, 167, 200):
             msg += defender.confuse(attacker=attacker, move=self)
         # This checks if attacker.locked_move is not None as locked_move is cleared if the poke dies to rocky helmet or similar items
