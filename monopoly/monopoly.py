@@ -1,16 +1,12 @@
 import discord
 from redbot.core import commands
 from redbot.core import Config
-from redbot.core import checks
-from redbot.core.utils.chat_formatting import humanize_list
+from redbot.core.utils.chat_formatting import humanize_list, pagify
+from redbot.core.utils.menus import menu, DEFAULT_CONTROLS, close_menu
 from typing import Union
 import asyncio, os
 from .game import MonopolyGame
 from .views import GetPlayersView
-
-#temp imports for backwards compatibility
-from redbot.core.data_manager import cog_data_path
-import ast
 
 
 class Monopoly(commands.Cog):
@@ -56,7 +52,6 @@ class Monopoly(commands.Cog):
 			if savefile not in saves:
 				return await ctx.send(
 					'There is no save file with that name.\n'
-					'Does it need to be converted? '
 					'Is it saved in another guild?\n'
 					f'Use `{ctx.prefix}monopoly list` to list save files.'
 				)
@@ -121,9 +116,11 @@ class Monopoly(commands.Cog):
 			msg += f'\n[Saves you are in]\n{savenames_in}\n'
 		if savenames_out:
 			msg += f'\n[Saves you are not in]\n{savenames_out}\n'
-		await ctx.send(f'```ini{msg}```')			
+		pages = [f'```ini{m}```' for m in pagify(msg, shorten_by=15)]
+		c = DEFAULT_CONTROLS if len(pages) > 1 else {"\N{CROSS MARK}": close_menu}
+		await menu(ctx, pages, c)		
 	
-	@checks.guildowner()
+	@commands.guildowner()
 	@monopoly.command()
 	async def delete(self, ctx, *savefiles: str):
 		"""
@@ -148,112 +145,9 @@ class Monopoly(commands.Cog):
 		if fail:
 			msg += f'The following savefiles were not found: `{humanize_list(fail)}`\n'
 		await ctx.send(msg)
-	
+
 	@commands.guild_only()
-	@commands.group(invoke_without_command=True, hidden=True) 
-	async def monopolyconvert(self, ctx, savefile: str):
-		"""Convert a savefile to work with the latest version of this cog."""
-		if savefile in ('delete', 'list'):
-			return await ctx.send(
-				'You cannot convert a save file with that name as '
-				'it conflicts with the name of a new command.'
-			)
-		hold = []
-		for x in os.listdir(cog_data_path(self)):
-			if x[-4:] == '.txt':
-				hold.append(x[:-4])
-		if savefile in hold:
-			cfgdict = {}
-			with open(f'{cog_data_path(self)}/{savefile}.txt') as f:
-				for line in f:
-					line = line.strip()
-					if not line or line.startswith('#'):
-						continue
-					try:
-						key, value = line.split('=') #split to variable and value
-					except ValueError:
-						await ctx.send(f'Bad line in save file {savefile}:\n{line}')
-						continue
-					key, value = key.strip(), value.strip()
-					value = ast.literal_eval(value)
-					cfgdict[key] = value #put in dictionary
-			try:
-				uid = cfgdict['id'] 
-				del cfgdict['id']
-				cfgdict['uid'] = uid
-				
-				isalive = cfgdict['alive'] 
-				del cfgdict['alive']
-				cfgdict['isalive'] = isalive
-				
-				cfgdict['injail'] = cfgdict['injail'][1:]
-				cfgdict['tile'] = cfgdict['tile'][1:]
-				cfgdict['bal'] = cfgdict['bal'][1:]
-				cfgdict['goojf'] = cfgdict['goojf'][1:]
-				cfgdict['isalive'] = cfgdict['isalive'][1:]
-				cfgdict['jailturn'] = cfgdict['jailturn'][1:]
-				cfgdict['injail'] = cfgdict['injail'][1:]
-				cfgdict['uid'] = cfgdict['uid'][1:]
-				cfgdict['p'] -= 1
-				cfgdict['ownedby'] = [x - 1 for x in cfgdict['ownedby']]
-				cfgdict['freeparkingsum'] = 0
-			except Exception:
-				return await ctx.send('One or more values are missing from the config file.')
-			try:
-				del cfgdict['tilename']
-			except Exception:
-				pass
-			for key in (
-				'injail', 'tile', 'bal', 'ownedby', 'numhouse',
-				'ismortgaged', 'goojf', 'isalive', 'jailturn', 'p',
-				'num', 'numalive', 'uid', 'freeparkingsum'
-			):
-				if key not in cfgdict:
-					return await ctx.send(
-						f'The value "{key}" is missing from the config file.'
-					)
-			savefile = savefile.replace(' ', '')
-			async with self.config.guild(ctx.guild).saves() as saves:
-				if savefile in saves:
-					await ctx.send('There is already another save with that name. Override it?')
-					try:
-						response = await self.bot.wait_for(
-							'message',
-							timeout=60,
-							check=lambda m: (
-								m.channel == ctx.channel
-								and m.author == ctx.author
-							)
-						)
-					except asyncio.TimeoutError:
-						return await ctx.send('You took too long to respond.')
-					if response.content.lower() not in ('yes', 'y'):
-						return await ctx.send('Not overriding.')
-				saves[savefile] = cfgdict
-			await ctx.send('Savefile converted successfully.')
-		elif hold:
-			savenames = '\n'.join(hold)
-			return await ctx.send(
-				f'That file does not exist.\nConvertable save files:\n```\n{savenames}```'
-			)
-		else:
-			return await ctx.send('You do not have any save files to convert.')
-	
-	@monopolyconvert.command(name='list')
-	async def monopolyconvert_list(self, ctx):
-		"""List save files that can be converted."""
-		saves = []
-		for x in os.listdir(cog_data_path(self)):
-			if x[-4:] == '.txt':
-				saves.append(x[:-4])
-		if saves:
-			savenames = '\n'.join(saves)
-			await ctx.send(f'Convertable save files:\n```\n{savenames}```')
-		else:
-			await ctx.send('You do not have any save files to convert.')
-	
-	@commands.guild_only()
-	@checks.guildowner()
+	@commands.guildowner()
 	@commands.command()
 	async def monopolystop(self, ctx):
 		"""Stop the game of monopoly in this channel."""
@@ -267,7 +161,7 @@ class Monopoly(commands.Cog):
 			await ctx.send('There is no ongoing game in this channel.')
 	
 	@commands.guild_only()
-	@checks.guildowner()
+	@commands.guildowner()
 	@commands.group(invoke_without_command=True)
 	async def monopolyset(self, ctx):
 		"""Config options for monopoly."""

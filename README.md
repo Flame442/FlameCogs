@@ -285,7 +285,7 @@ This cog will let you play monopoly with up to 7 other people in your server.
 ### Usage
 
 **`[p]monopoly [savename]`**  
-Begin a game of monopoly.   
+Begin a game of monopoly.  
 Use the optional parameter `savename` to load a saved game.
 
 **`[p]monopoly delete <savefiles>`**  
@@ -294,13 +294,7 @@ This cannot be undone.
 This command is only usable by the server owner and bot owner.
 
 **`[p]monopoly list`**  
-List available save files.   
-
-**`[p]monopolyconvert <savefile>`**  
-Convert a savefile to work with the latest version of this cog.
-
-**`[p]monopolyconvert list`**  
-List save files that can be converted.
+List available save files.
 
 **`[p]monopolystop`**  
 Stop the game of monopoly in the current channel.  
