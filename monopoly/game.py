@@ -919,8 +919,11 @@ class MonopolyGame():
 				for i in range(40):
 					if self.ownedby[i] == self.p:
 						self.ownedby[i] = -1
-						self.numhouse[i] = 0
-						self.ismortgaged[i] = 0
+						# Don't override nominal negative values when clearing
+						if self.numhouse[i] > 0:
+							self.numhouse[i] = 0
+						if self .ismortgaged[i] > 0:
+							self.ismortgaged[i] = 0
 				self.numalive -= 1
 				self.isalive[self.p] = False
 				self.injail[self.p] = False #prevent them from executing jail code
